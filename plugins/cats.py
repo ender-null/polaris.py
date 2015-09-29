@@ -1,12 +1,5 @@
-import __main__
-import config
-import os
-import utilies
-import requests
-import urllib
-import json
-import random
-import re
+from __main__ import *
+from utilies import *
 
 doc = '/cat\nGet a cat pic!'
 triggers = {
@@ -27,9 +20,9 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return __main__.tb.send_message(msg.chat.id, config.locale.errors['connection'] + '\nError: ' + str(jstr.status_code))
+		return core.send_message(msg.chat.id, config.locale.errors['connection'] + '\nError: ' + str(jstr.status_code))
 	
-	utilies.download_and_send(__main__.tb, msg.chat.id, url, 'photo')
+	download_and_send(msg.chat.id, url, 'photo')
 
 plugin = {
     'doc': doc,

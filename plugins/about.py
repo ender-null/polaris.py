@@ -1,12 +1,7 @@
-import __main__
-import utilies
-import sys
-import datetime
-import platform
-import subprocess
-import re
+from __main__ import *
+from utilies import *
 
-doc = '/about\nInfo about *' + __main__.bot.first_name + '*'
+doc = '/about\nInfo about *' + bot.first_name + '*'
 triggers = {
 	'^/about',
 	'^/start',
@@ -34,9 +29,9 @@ def action(msg):
 	text = utilies.tag_replace(text, msg)
 	
 	if re.compile('/system').search(msg.text):
-		__main__.tb.send_message(msg.chat.id, running, disable_web_page_preview=True, parse_mode="Markdown")
+		core.send_message(msg.chat.id, running, disable_web_page_preview=True, parse_mode="Markdown")
 	else:
-		__main__.tb.send_message(msg.chat.id, text, disable_web_page_preview=True, parse_mode="Markdown")
+		core.send_message(msg.chat.id, text, disable_web_page_preview=True, parse_mode="Markdown")
 
 plugin = {
     'doc': doc,

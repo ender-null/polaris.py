@@ -1,5 +1,5 @@
-import __main__
-import utilies
+from __main__ import *
+from utilies import *
 
 doc = '/echo *[text]*\nRepeat a string.'
 triggers = {
@@ -7,12 +7,12 @@ triggers = {
 }
 
 def action(msg):			
-	input = utilies.get_input(msg.text)
+	input = get_input(msg.text)
 		
 	if not input:
-		return __main__.tb.send_message(msg.chat.id, doc, parse_mode="Markdown")
+		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 	
-	__main__.tb.send_message(msg.chat.id, input, parse_mode="Markdown")
+	core.send_message(msg.chat.id, input, parse_mode="Markdown")
 
 plugin = {
     'doc': doc,

@@ -1,5 +1,5 @@
-import __main__
-import utilies
+from __main__ import *
+from utilies import *
 
 doc = '/help _[command]_\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
 triggers = {
@@ -8,32 +8,30 @@ triggers = {
 }
 
 def action(msg):			
-	input = utilies.get_input(msg.text)
+	input = get_input(msg.text)
 	
-	'''
 	if input:
-		for v in __main__.plugins:
+		for i,v in plugins.items():
 			if hasattr(v, 'doc'):
-				if '/' + input == v.doc:
-					return __main__.tb.send_message(msg.chat.id, v.doc)
-	'''
-	
-	help_message = ''
-	for k,v in __main__.plugins.items():
+				if '/' + input == v.doc.splitlines()[0]:
+					return core.send_message(msg.chat.id, v.doc, parse_mode="Markdown")
+		
+	help = ''
+	for i,v in plugins.items():
 		if hasattr(v, 'doc'):
-			a = '\t' + v.doc.split('\n', 1)[0]
-			help_message = help_message + a + '\n'
-	
-	message = '*Commands*:\n' + help_message
+			a = v.doc.splitlines()[0]
+			help += a + '\n'
+		
+	message = '*Commands*:\n' + help
 	
 	if msg.from_user.id != msg.chat.id:
-		if not __main__.tb.send_message(msg.from_user.id, message, parse_mode="Markdown"):
-			return __main__.tb.send_message(msg.chat.id, message, parse_mode="Markdown")
-		return __main__.tb.send_message(msg.chat.id, 'I have sent you the requested information in a *private message*.', parse_mode="Markdown")
+		if not core.send_message(msg.from_user.id, message, parse_mode="Markdown"):
+			return core.send_message(msg.chat.id, message, parse_mode="Markdown")
+		return core.send_message(msg.chat.id, 'I have sent you the requested information in a *private message*.', parse_mode="Markdown")
 	else:
-		return __main__.tb.send_message(msg.chat.id, message, parse_mode="Markdown")
+		return core.send_message(msg.chat.id, message, parse_mode="Markdown")
 	
-	__main__.tb.send_message(msg.chat.id, message, parse_mode="Markdown")
+	core.send_message(msg.chat.id, message, parse_mode="Markdown")
 
 plugin = {
     'doc': doc,

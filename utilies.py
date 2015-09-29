@@ -1,4 +1,5 @@
-import __main__
+from __main__ import *
+import telebot
 import os
 import config
 import time
@@ -7,9 +8,76 @@ import requests
 import subprocess
 import magic
 import importlib
+import urllib
+import json
+import random
+import re
+import sys
+import platform
+
+def on_msg_receive(msg):
+	
+ 	msg = process_msg(msg)
+	
+ 	if msg.date < time.mktime(datetime.datetime.now().timetuple()) - 10:
+ 		return
+ 	if not hasattr(msg, 'text'):
+ 		return
+
+ 	lower = msg.text.lower()
+
+	for i,v in plugins.items():
+		for t in v.triggers:
+			if re.compile(t).search(lower):
+				print '\033[93m\tTrigger: ' + t + '\033[0m'
+				if hasattr(v, 'typing'):
+					core.send_chat_action(msg.chat.id, 'typing')
+				if config.debug == False:
+					try:	
+						v.action(msg)
+					except Exception as e:
+						core.send_message(msg.chat.id, str(e))
+				else:
+					v.action(msg)
+					
+def bot_init():	
+	print('Fetching bot information...')
+	global core
+	core = telebot.TeleBot(config.apis['telegram_bot'])
+	
+	global bot
+	bot = core.get_me()
+	while bot == False:
+		print('\033[91mFailure fetching bot information. Trying again...\033[0m')
+		bot = core.get_me()
+
+	print('Loading plugins...')
+	global plugins
+	plugins = {}
+	plugins = load_plugins()
+
+	print('Plugins loaded: ' + str(len(plugins)) + '.')
+	
+	print('@' + str(bot.username) + ', AKA ' + str(bot.first_name) + ' (' + str(bot.id) + ')')
+
+	global is_started
+ 	is_started = True
+ 	
+def process_msg(msg):
+	if hasattr(msg, 'new_chat_participant'):
+		if msg.new_chat_participant.id != bot.id:
+			msg.text = 'hi ' + str(bot.first_name)
+			msg.from_user = msg.new_chat_participant
+		else:
+			msg.text = '/about'
+
+	if hasattr(msg, 'left_chat_participant'):
+		if msg.left_chat_participant.id != bot.id:
+			msg.text = 'bye ' + str(bot.first_name)
+			msg.from_user = msg.left_chat_participant
+	return msg
 
 def load_plugins():
-	plugins = {}
 	for p in config.plugins:
 		try:
 			print('\033[92m\tLoading plugin: ' + p + '\033[0m')
@@ -30,8 +98,7 @@ def first_word(text):
 		return False
 	return text.split(' ', 1)[0]
 	
-def download_and_send(bot, chat, url, type=None, caption=None, headers=None, params=None):
-	
+def download_and_send(chat, url, type=None, caption=None, headers=None, params=None):	
 	name = os.path.splitext(str(time.mktime(datetime.datetime.now().timetuple())))[0]
 	extension = os.path.splitext(url)[1][1:]
 	if extension == '':
@@ -50,7 +117,7 @@ def download_and_send(bot, chat, url, type=None, caption=None, headers=None, par
 					f.write(chunk)
 					f.flush()
 	except IOError, e:
-		return bot.send_message(chat, config.locale.errors['download'])
+		return core.send_message(chat, config.locale.errors['download'])
 		
 	filename = fix_extension(tmp, filename)
 	'''
@@ -62,22 +129,22 @@ def download_and_send(bot, chat, url, type=None, caption=None, headers=None, par
 	file = open(tmp + filename, 'rb')
 	
 	if type == 'photo':
-		bot.send_chat_action(chat, 'upload_photo')
+		core.send_chat_action(chat, 'upload_photo')
 		if extension == 'gif':
-			bot.send_document(chat, file)
+			core.send_document(chat, file)
 		else:
-			bot.send_photo(chat, file, caption)
+			core.send_photo(chat, file, caption)
 	elif type == 'audio':
-		bot.send_chat_action(chat, 'upload_audio')
-		bot.send_document(chat, file)
+		core.send_chat_action(chat, 'upload_audio')
+		core.send_document(chat, file)
 	elif type == 'voice':
-		bot.send_chat_action(chat, 'upload_voice')
-		bot.send_document(chat, file)
+		core.send_chat_action(chat, 'upload_voice')
+		core.send_document(chat, file)
 	elif type == 'sticker':
-		bot.send_document(chat, file)
+		core.send_document(chat, file)
 	else:
-		bot.send_chat_action(chat, 'upload_document')
-		bot.send_document(chat, file)
+		core.send_chat_action(chat, 'upload_document')
+		core.send_document(chat, file)
 		
 	clean_temporal(tmp, filename)
 
@@ -136,8 +203,8 @@ def tag_replace(text, msg):
 	tags = {
 		'#FROM_FIRSTNAME': msg.from_user.first_name,
 		'#FROM_USERNAME': msg.from_user.username,
-		'#BOT_FIRSTNAME': __main__.bot.first_name,
-		'#BOT_USERNAME': __main__.bot.username,
+		'#BOT_FIRSTNAME': bot.first_name,
+		'#BOT_USERNAME': bot.username,
 		'	': '',
 	}
 	
