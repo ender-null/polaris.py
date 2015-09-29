@@ -20,35 +20,35 @@ def on_msg_receive(msg):
 	for i,v in plugins.items():
 		for t in v.triggers:
 			if re.compile(t).search(lower):
-				print '\tTrigger: ' + t
+				print '\033[93m\tTrigger: ' + t + '\033[0m'
 				if hasattr(v, 'typing'):
 					tb.send_chat_action(msg.chat.id, 'typing')
 					
 				v.action(msg)
  	
 def bot_init():
-	print('Loading configuration...')
+	print('\033[1mLoading configuration...\033[0m')
 
 	import config
 	import utilies
 
-	print('Fetching bot information...')
+	print('\033[1mFetching bot information...\033[0m')
 	global tb
 	tb = telebot.TeleBot(config.apis['telegram_bot'])
 	
 	global bot
 	bot = tb.get_me()
 	while bot == False:
-		print('Failure fetching bot information. Trying again...')
+		print('\033[91mFailure fetching bot information. Trying again...\033[0m')
 		bot = tb.get_me()
 
-	print('Loading plugins...')
+	print('\033[1mLoading plugins...\033[0m')
 	global plugins
 	plugins = {}
 		
 	plugins = utilies.load_plugins()
 
-	print('\nPlugins loaded: ' + str(len(plugins)) + '.\nGenerating help message...')
+	print('\033[1mPlugins loaded: ' + str(len(plugins)) + '.\nGenerating help message...\033[0m')
 
 	global help_message
 	help_message = ''
@@ -57,7 +57,7 @@ def bot_init():
 			a = v.doc.splitlines()[0]
 			help_message = help_message + a + '\n'
 	
-	print('\n@' + str(bot.username) + ', AKA ' + str(bot.first_name) + ' (' + str(bot.id) + ')')
+	print('\033[95m\n@' + str(bot.username) + ', AKA ' + str(bot.first_name) + ' (' + str(bot.id) + ')\033[0m')
 
 	global is_started
  	is_started = True
@@ -84,13 +84,13 @@ while is_started == True:
 	res = tb.get_updates(last_update+1)
 	
 	if not res:
-		print('\tError getting updates.')
+		print('\033[91mError getting updates.\033[0m')
 	else:
 		for v in res:
 			if v.update_id > last_update:
 				last_update = v.update_id
 				if hasattr(v.message, 'text'):
-					print 'Message: ' + v.message.from_user.first_name + ' - ' + v.message.text
+					print '\033[94m' + v.message.from_user.first_name + '@' + str(v.message.chat.id) + ': ' + v.message.text + '\033[0m'
 				on_msg_receive(v.message)
 
-print('Halted.')
+print('\033[92mHalted.\033[0m')

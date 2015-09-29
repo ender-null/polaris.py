@@ -12,15 +12,15 @@ def load_plugins():
 	for p in config.plugins:
 		try:
 			p = p[:-3] if p.endswith('.py') else p
-			print("\tLoading plugin: {}".format(p))
+			print('\033[92m\tLoading plugin: ' + p + '\033[0m')
 			if plugins.get(p):
 				m = importlib.reload(plugins[p])
 			else:
 				m = importlib.import_module('plugins.{}'.format(p))
 			plugins[p] = m
 		except Exception as e:
-			print('\033[31m\tError loading plugin {}\033[39m'.format(p))
-			print('\033[31m\t{}\033[39m'.format(e))
+			print('\033[91m\tError loading plugin ' + p + '\033[0m')
+			print('\033[91m\t' + str(e) + '\033[0m')
 	
 	return plugins
 
