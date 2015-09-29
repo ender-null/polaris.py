@@ -1,3 +1,4 @@
+import __main__
 import os
 import config
 import time
@@ -11,13 +12,8 @@ def load_plugins():
 	plugins = {}
 	for p in config.plugins:
 		try:
-			p = p[:-3] if p.endswith('.py') else p
 			print('\033[92m\tLoading plugin: ' + p + '\033[0m')
-			if plugins.get(p):
-				m = importlib.reload(plugins[p])
-			else:
-				m = importlib.import_module('plugins.{}'.format(p))
-			plugins[p] = m
+			plugins[p] = importlib.import_module('plugins.{}'.format(p))
 		except Exception as e:
 			print('\033[91m\tError loading plugin ' + p + '\033[0m')
 			print('\033[91m\t' + str(e) + '\033[0m')
@@ -28,6 +24,11 @@ def get_input(text):
 	if not ' ' in text:
 		return False
 	return text[text.find(" ") + 1:]
+
+def first_word(text):
+	if not ' ' in text:
+		return False
+	return text.split(' ', 1)[0]
 	
 def download_and_send(bot, chat, url, type=None, caption=None, headers=None, params=None):
 	
@@ -110,7 +111,13 @@ def fix_extension(file_path, file_name):
 		return file_name
 			
 def mime_match(mimetype):
-	if mimetype == 'audio/mpeg':
+	if mimetype == 'image/png':
+		return 'png'
+	elif mimetype == 'image/jpeg':
+		return 'jpg'
+	elif mimetype == 'image/gif':
+		return 'gif'
+	elif mimetype == 'audio/mpeg':
 		return 'mp3'
 	else:
 		return None
@@ -124,3 +131,17 @@ def convert_to_voice(path, file_name):
 	subprocess.call(cmd)
 	os.remove(path + file_name)
 	return output_name
+	
+def tag_replace(text, msg):
+	tags = {
+		'#FROM_FIRSTNAME': msg.from_user.first_name,
+		'#FROM_USERNAME': msg.from_user.username,
+		'#BOT_FIRSTNAME': __main__.bot.first_name,
+		'#BOT_USERNAME': __main__.bot.username,
+		'	': '',
+	}
+	
+	for k,v in tags.items():
+		if k in text:
+			text = text.replace(k, v)
+	return text

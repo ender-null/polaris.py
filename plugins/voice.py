@@ -8,7 +8,7 @@ import json
 import random
 import re
 
-doc = '/voice <text>\nSays something... in the cool way.'
+doc = '/voice *[text]*\nSays something... in the cool way.'
 triggers = {
 	'^/voice',
 	'^/say',
@@ -19,7 +19,7 @@ def action(msg):
 	input = utilies.get_input(msg.text)
 	
 	if not input:
-		return __main__.tb.send_message(msg.chat.id, doc)
+		return __main__.tb.send_message(msg.chat.id, doc, parse_mode="Markdown")
 	
 	if re.compile('di').search(msg.text):
 		lang = 'es'

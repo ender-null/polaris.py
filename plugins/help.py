@@ -1,11 +1,10 @@
 import __main__
 import utilies
 
-doc = '/help [command]\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
+doc = '/help _[command]_\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
 triggers = {
 	'^/help',
 	'^/h$',
-	'^/start$'
 }
 
 def action(msg):			
@@ -25,16 +24,16 @@ def action(msg):
 			a = '\t' + v.doc.split('\n', 1)[0]
 			help_message = help_message + a + '\n'
 	
-	message = 'Commands:\n' + help_message
+	message = '*Commands*:\n' + help_message
 	
 	if msg.from_user.id != msg.chat.id:
-		if not send_message(msg.from_user.id, message):
-			return __main__.tb.send_message(msg.chat.id, message)
-		return __main__.tb.send_message(msg.chat.id, 'I have sent you the requested information in a private message.')
+		if not __main__.tb.send_message(msg.from_user.id, message, parse_mode="Markdown"):
+			return __main__.tb.send_message(msg.chat.id, message, parse_mode="Markdown")
+		return __main__.tb.send_message(msg.chat.id, 'I have sent you the requested information in a *private message*.', parse_mode="Markdown")
 	else:
-		return __main__.tb.send_message(msg.chat.id, message)
+		return __main__.tb.send_message(msg.chat.id, message, parse_mode="Markdown")
 	
-	__main__.tb.send_message(msg.chat.id, message)
+	__main__.tb.send_message(msg.chat.id, message, parse_mode="Markdown")
 
 plugin = {
     'doc': doc,

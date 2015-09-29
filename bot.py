@@ -3,6 +3,7 @@ import importlib
 import time
 import datetime
 import re
+import sys
 
 VERSION = '0.1'
  
@@ -24,9 +25,13 @@ def on_msg_receive(msg):
 				if hasattr(v, 'typing'):
 					tb.send_chat_action(msg.chat.id, 'typing')
 					
-				v.action(msg)
- 	
+				try:	
+					v.action(msg)
+				except Exception as e:
+					tb.send_message(msg.chat.id, str(e))
+
 def bot_init():
+	print sys.getdefaultencoding()
 	print('\033[1mLoading configuration...\033[0m')
 
 	import config

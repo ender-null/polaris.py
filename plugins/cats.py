@@ -8,7 +8,7 @@ import json
 import random
 import re
 
-doc = '	/cat\nGet a cat pic!'
+doc = '/cat\nGet a cat pic!'
 triggers = {
 	'^/cats?'
 }
@@ -18,7 +18,7 @@ def action(msg):
 	url = 'http://thecatapi.com/api/images/get'
 	params = {
 		'format': 'src',
-		'api_key': config.apis['catapi'],
+		'api_key': config.apis['catapi']
 	}
 	
 	jstr = requests.get(
@@ -29,9 +29,7 @@ def action(msg):
 	if jstr.status_code != 200:
 		return __main__.tb.send_message(msg.chat.id, config.locale.errors['connection'] + '\nError: ' + str(jstr.status_code))
 	
-	result_url = jstr.url
-	
-	utilies.download_and_send(__main__.tb, msg.chat.id, url, 'photo', params=params)
+	utilies.download_and_send(__main__.tb, msg.chat.id, url, 'photo')
 
 plugin = {
     'doc': doc,
