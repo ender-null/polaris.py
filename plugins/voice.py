@@ -1,7 +1,7 @@
 from __main__ import *
 from utilies import *
 
-doc = '/voice *[text]*\nSays something... in the cool way.'
+doc = '/voice *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
 triggers = {
 	'^/voice',
 	'^/say',
@@ -37,7 +37,7 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'] + '\nError: ' + str(jstr.status_code))
+		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code))
 	
 	result_url = jstr.url
 	

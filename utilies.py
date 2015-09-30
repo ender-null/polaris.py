@@ -1,7 +1,7 @@
 from __main__ import *
+import config
 import telebot
 import os
-import config
 import time
 import datetime
 import requests
@@ -40,7 +40,7 @@ def on_msg_receive(msg):
 				else:
 					v.action(msg)
 					
-def bot_init():	
+def bot_init():
 	print('Fetching bot information...')
 	global core
 	core = telebot.TeleBot(config.apis['telegram_bot'])

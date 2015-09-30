@@ -22,7 +22,7 @@ def action(msg):
 	input = get_input(msg.text)
 		
 	if not input:
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 		
 	url = 'http://ajax.googleapis.com/ajax/services/search/images'
 	params = {
@@ -32,13 +32,16 @@ def action(msg):
 		'q': input
 	}
 	
+	if msg.text.startswith('/insfw'):
+		del params['safe']
+	
 	jstr = requests.get(
 		url,
 		params = params,
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'] + '\nError: ' + str(jstr.status_code))
+		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code))
 	
 	jdat = json.loads(jstr.text)
 

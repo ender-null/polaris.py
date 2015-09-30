@@ -1,5 +1,5 @@
 errors = {
-	'connection': 'Connection error.',
+	'connection': 'Connection error: {}',
 	'results': 'No results found.',
 	'argument': 'Invalid argument.',
 	'syntax': 'Invalid syntax.',
