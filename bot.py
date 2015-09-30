@@ -16,8 +16,6 @@ while utilies.is_started == True:
 		for v in res:
 			if v.update_id > last_update:
 				last_update = v.update_id
-				if hasattr(v.message, 'text'):
-					print '\033[94m' + v.message.from_user.first_name + '@' + str(v.message.chat.id) + ': ' + v.message.text + '\033[0m'
 				utilies.on_msg_receive(v.message)
 
 print('Halted.')

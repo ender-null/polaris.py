@@ -1,10 +1,10 @@
 from __main__ import *
 from utilies import *
 
-doc = '/help _[command]_\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
+doc = config.command_start + 'help _[command]_\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
 triggers = {
-	'^/help',
-	'^/h$',
+	'^' + config.command_start + 'help',
+	'^' + config.command_start + 'h$',
 }
 
 def action(msg):			
@@ -27,7 +27,7 @@ def action(msg):
 	if msg.from_user.id != msg.chat.id:
 		if not core.send_message(msg.from_user.id, message, parse_mode="Markdown"):
 			return core.send_message(msg.chat.id, message, parse_mode="Markdown")
-		return core.send_message(msg.chat.id, 'I have sent you the requested information in a *private message*.', parse_mode="Markdown")
+		return core.send_message(msg.chat.id, 'I have sent it in a *private message*.', parse_mode="Markdown")
 	else:
 		return core.send_message(msg.chat.id, message, parse_mode="Markdown")
 	

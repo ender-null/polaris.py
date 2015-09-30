@@ -29,7 +29,6 @@ def on_msg_receive(msg):
 	for i,v in plugins.items():
 		for t in v.triggers:
 			if re.compile(t).search(lower):
-				print '\033[93m\tTrigger: ' + t + '\033[0m'
 				if hasattr(v, 'typing'):
 					core.send_chat_action(msg.chat.id, 'typing')
 				if config.debug == False:
@@ -117,7 +116,7 @@ def download_and_send(chat, url, type=None, caption=None, headers=None, params=N
 					f.write(chunk)
 					f.flush()
 	except IOError, e:
-		return core.send_message(chat, config.locale.errors['download'])
+		return core.send_message(chat, config.locale.errors['download'], parse_mode="Markdown")
 		
 	filename = fix_extension(tmp, filename)
 	'''
@@ -205,6 +204,7 @@ def tag_replace(text, msg):
 		'#FROM_USERNAME': msg.from_user.username,
 		'#BOT_FIRSTNAME': bot.first_name,
 		'#BOT_USERNAME': bot.username,
+		'#BOT_NAME': bot.first_name.split('-')[0],
 		'	': '',
 	}
 	

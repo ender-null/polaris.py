@@ -1,21 +1,26 @@
 from __main__ import *
 from utilies import *
 
-doc = '/about\nInfo about *' + bot.first_name + '*'
+doc = config.command_start + 'about\nInfo about *' + bot.first_name + '*'
 triggers = {
-	'^/about',
+	'^' + config.command_start + 'about',
+	'^' + config.command_start + 'system',
+	'^' + config.command_start + 'start',
 	'^/start',
-	'^/system'
 }
 
 def action(msg):			
-	header = 'Hello #FROM_FIRSTNAME!'
-	header += '\nMy name is *#BOT_FIRSTNAME*, nice to meet you.'
-	header += '\nI\'m a multi-purpose Telegram Bot developed by @luksireiku.'
+	header = 'Hi! I\'m *#BOT_FIRSTNAME*'
+	header += '\nNice to meet you.'
 
-	help = '\nUse /help for a list of commands.'
-	license = '\n@#BOT_USERNAME is licensed under the *GPLv2*.'	
+	help = '\nUse ' + config.command_start + 'help for a list of commands.'
+	license = '\n*#BOT_NAME* is licensed under the *GPLv2*.'	
 	source = '\n[Source Code on Github](https://github.com/luksireiku/polaris)'
+	channel = '\nChannel: @PolarisUpdates'
+		
+	about = header + '\n' + source + license + channel
+	about = utilies.tag_replace(about, msg)
+	start = utilies.tag_replace(header, msg)
 	
 	running = '\n*Running on*:\n'
 	running += '*System*: ' + subprocess.check_output('head -n1 /etc/issue | cut -d " " -f -3', shell=True)
@@ -24,14 +29,13 @@ def action(msg):
 	running += '*RAM*: ' + subprocess.check_output('dmidecode | grep "Range Size" | head -n 1 | cut -d " " -f 3-', shell=True)
 	running += '*Python*: ' + str(platform.python_version()) + ' (' + str(platform.python_compiler()) + ')' + '\n'
 	running += '*Uptime*: ' + subprocess.check_output('uptime -p', shell=True)
-	
-	text = header + '\n' + license + '\n' + help
-	text = utilies.tag_replace(text, msg)
-	
-	if re.compile('/system').search(msg.text):
-		core.send_message(msg.chat.id, running, disable_web_page_preview=True, parse_mode="Markdown")
+		
+	if re.compile(config.command_start + 'about').search(msg.text):
+		core.send_message(msg.chat.id, about, disable_web_page_preview=True, parse_mode="Markdown")
+	elif re.compile(config.command_start + 'system').search(msg.text):
+		core.send_message(msg.chat.id, running, parse_mode="Markdown")
 	else:
-		core.send_message(msg.chat.id, text, disable_web_page_preview=True, parse_mode="Markdown")
+		core.send_message(msg.chat.id, start, disable_web_page_preview=True, parse_mode="Markdown")
 
 plugin = {
     'doc': doc,

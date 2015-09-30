@@ -1,11 +1,11 @@
 from __main__ import *
 from utilies import *
 
-doc = '/voice *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
+doc = config.command_start + 'voice *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
 triggers = {
-	'^/voice',
-	'^/say',
-	'^/di',
+	'^' + config.command_start + 'voice',
+	'^' + config.command_start + 'say',
+	'^' + config.command_start + 'di',
 }
 
 def action(msg):			

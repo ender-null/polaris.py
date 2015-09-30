@@ -1,11 +1,12 @@
 from __main__ import *
 from utilies import *
 
-doc = '/zgzbus *[poste]*\nGets real time bus poste data. Only works for [Urbanos de Zaragoza](http://www.urbanosdezaragoza.es).'
+doc = config.command_start + 'zgzbus *[poste]*\nGets real time bus poste data. Only works for [Urbanos de Zaragoza](http://www.urbanosdezaragoza.es).'
 
 triggers = {
-	'^/zgzbus',
-	'^/poste',
+	'^' + config.command_start + 'zgzbus',
+	'^' + config.command_start + 'zgzbus',
+	'^' + config.command_start + 'poste',
 }
 
 def action(msg):

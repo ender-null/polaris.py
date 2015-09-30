@@ -1,13 +1,13 @@
 from __main__ import *
 from utilies import *
 
-doc = '/define *[term]*\nReturns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
+doc = config.command_start + 'define *[term]*\nReturns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
 
 triggers = {
-	'^/define',
-	'^/ud',
-	'^/urbandictionary',
-	'^/urban'
+	'^' + config.command_start + 'define',
+	'^' + config.command_start + 'ud',
+	'^' + config.command_start + 'urbandictionary',
+	'^' + config.command_start + 'urban'
 }
 
 def action(msg):
@@ -27,7 +27,7 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code))
+		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code), parse_mode="Markdown")
 	
 	jdat = json.loads(jstr.text)
 

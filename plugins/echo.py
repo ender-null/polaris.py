@@ -1,9 +1,9 @@
 from __main__ import *
 from utilies import *
 
-doc = '/echo *[text]*\nRepeat a string.'
+doc = config.command_start + 'echo *[text]*\nRepeat a string.'
 triggers = {
-	'^/echo'
+	'^' + config.command_start + 'echo'
 }
 
 def action(msg):			
