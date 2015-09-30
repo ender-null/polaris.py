@@ -1,7 +1,7 @@
 from __main__ import *
 from utilies import *
 
-doc = '/define *[term]*\nReturns the first definition for a given term from [http://urbandictionary.com](Urban Dictionary).'
+doc = '/define *[term]*\nReturns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
 
 triggers = {
 	'^/define',

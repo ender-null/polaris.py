@@ -1,7 +1,7 @@
 from __main__ import *
 from utilies import *
 
-doc = '/zgzbus *[poste]*\nGets real time bus poste data. Only works for [http://www.urbanosdezaragoza.es](Urbanos de Zaragoza).'
+doc = '/zgzbus *[poste]*\nGets real time bus poste data. Only works for [Urbanos de Zaragoza](http://www.urbanosdezaragoza.es).'
 
 triggers = {
 	'^/zgzbus',
