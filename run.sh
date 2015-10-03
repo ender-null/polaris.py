@@ -1,2 +1,5 @@
-#!/bin/bash
-while true; do python bot.py; done
+#!/bin/sh
+while true
+do
+	python bot.py
+done
