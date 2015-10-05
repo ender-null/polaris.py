@@ -15,9 +15,9 @@ import re
 import sys
 import platform
 
-def on_msg_receive(msg):
+def on_message_receive(msg):
 	
- 	msg = process_msg(msg)
+ 	msg = process_message(msg)
 	
  	if msg.date < time.mktime(datetime.datetime.now().timetuple()) - 10:
  		return
@@ -31,7 +31,7 @@ def on_msg_receive(msg):
 			if re.compile(t).search(lower):
 				if hasattr(v, 'typing'):
 					core.send_chat_action(msg.chat.id, 'typing')
-				if config.debug == False:
+				if config.handle_exceptions == True:
 					try:	
 						v.action(msg)
 					except Exception as e:
@@ -62,7 +62,7 @@ def bot_init():
 	global is_started
  	is_started = True
  	
-def process_msg(msg):
+def process_message(msg):
 	if hasattr(msg, 'new_chat_participant'):
 		if msg.new_chat_participant.id != bot.id:
 			msg.text = 'hi ' + str(bot.first_name)
@@ -74,6 +74,10 @@ def process_msg(msg):
 		if msg.left_chat_participant.id != bot.id:
 			msg.text = 'bye ' + str(bot.first_name)
 			msg.from_user = msg.left_chat_participant
+			
+	if hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text'):
+		msg.text += ' ' + msg.reply_to_message.text
+	
 	return msg
 
 def load_plugins():
@@ -119,12 +123,10 @@ def download_and_send(chat, url, type=None, caption=None, headers=None, params=N
 		return core.send_message(chat, config.locale.errors['download'], parse_mode="Markdown")
 		
 	filename = fix_extension(tmp, filename)
-	'''
-	if os.path.splitext(filename)[1][1:]=='mp3':
-		print '\t\tmp3 found!'
+	
+	if type=='voice':
 		filename = convert_to_voice(tmp, filename)
-		print '\t\tConverted to: ' + filename
-	'''
+	
 	file = open(tmp + filename, 'rb')
 	
 	if type == 'photo':
@@ -135,10 +137,10 @@ def download_and_send(chat, url, type=None, caption=None, headers=None, params=N
 			core.send_photo(chat, file, caption)
 	elif type == 'audio':
 		core.send_chat_action(chat, 'upload_audio')
-		core.send_document(chat, file)
+		core.send_audio(chat, file)
 	elif type == 'voice':
 		core.send_chat_action(chat, 'upload_voice')
-		core.send_document(chat, file)
+		core.send_voice(chat, file)
 	elif type == 'sticker':
 		core.send_document(chat, file)
 	else:
@@ -189,21 +191,44 @@ def mime_match(mimetype):
 		return None
 		
 def convert_to_voice(path, file_name):
-	output_name = os.path.splitext(file_name)[0] + '.opus'
+	output_name = os.path.splitext(file_name)[0] + '.ogg'
+	
 	cmd = 'avconv -i ' + path + file_name + ' -f wav - | opusenc --downmix-mono - ' + path + output_name
+	subprocess.call(cmd, shell=True, stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
 	
-	print cmd
-	
-	subprocess.call(cmd)
 	os.remove(path + file_name)
+	
 	return output_name
 	
 def tag_replace(text, msg):
+	dt = datetime.time
+	greeting = 'Hi'
+	if dt.hour >= 5 and dt.hour < 12 :
+		greeting = config.locale.greeting['morning']
+	elif dt.hour <= 12 and dt.hour < 17:
+		greeting = config.locale.greeting['afternoon']
+	elif dt.hour <= 17 and dt.hour < 21:
+		greeting = config.locale.greeting['evening']
+	else:
+		greeting = config.locale.greeting['night']
+	
+	goodbye = 'Goodbye'
+	if dt.hour >= 5 and dt.hour < 12 :
+		goodbye = config.locale.goodbye['morning']
+	elif dt.hour <= 12 and dt.hour < 17:
+		goodbye = config.locale.goodbye['afternoon']
+	elif dt.hour <= 17 and dt.hour < 21:
+		goodbye = config.locale.goodbye['evening']
+	else:
+		goodbye = config.locale.goodbye['night']
+
 	tags = {
 		'#FROM_FIRSTNAME': msg.from_user.first_name,
 		'#FROM_USERNAME': msg.from_user.username,
 		'#BOT_FIRSTNAME': bot.first_name,
 		'#BOT_USERNAME': bot.username,
+		'#GREETING': greeting,
+		'#GOODBYE': goodbye,
 		'#BOT_NAME': bot.first_name.split('-')[0],
 		'	': '',
 	}

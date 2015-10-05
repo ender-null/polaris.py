@@ -58,8 +58,7 @@ def action(msg):
 		i = random.randint(1, len(jdat['responseData']['results']))-1
 
 		result_url = jdat['responseData']['results'][i]['url']
-		#caption = jdat['responseData']['results'][i]['contentNoFormatting'] + '\n' + jdat['responseData']['results'][i]['visibleUrl']
-		caption = input
+		caption = '"' + input + '"'
 		
 		for v in exts:
 			if re.compile(v).search(result_url):

@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 interactions = {
-	'Hi, *#FROM_FIRSTNAME!*': {
+	'#GREETING, *#FROM_FIRSTNAME!*': {
 		'hello #BOT_NAME',
 		'hey #BOT_NAME',
 		'hi #BOT_NAME',
 	},
-	'See ya, *#FROM_FIRSTNAME!*': {
+	'#GOODBYE, *#FROM_FIRSTNAME!*': {
 		'bye #BOT_NAME',
 		'later #BOT_NAME',
 		'see ya #BOT_NAME',
@@ -44,6 +45,21 @@ interactions = {
 		'syn'
 	}
 }
+greeting = {
+	'morning': u'Ohayō gozaimasu',
+	'afternoon': u'Konnichi wa',
+	'evening': u'Konban wa',
+	'night': u'Konban wa',
+}
+
+goodbye = {
+	'morning': u'Shitsurei shimasu',
+	'afternoon': u'Sayōnara',
+	'evening': u'Mata ashita',
+	#'night': u'Oyasumi nasai',
+	'night': u'Sayōnara',
+}
+
 errors = {
 	'connection': 'Connection error: {}',
 	'results': 'No results found.',

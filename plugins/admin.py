@@ -36,6 +36,7 @@ def action(msg):
 	elif msg.text.startswith(config.command_start + 'stop'):
 		is_started = False
 		message = 'Shutting down...'
+		sys.exit()
 		
 	core.send_message(msg.chat.id, message, parse_mode="Markdown")
 
