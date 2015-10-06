@@ -201,8 +201,9 @@ def convert_to_voice(path, file_name):
 	return output_name
 	
 def tag_replace(text, msg):
-	dt = datetime.time
+	dt = datetime.datetime.now()
 	greeting = 'Hi'
+
 	if dt.hour >= 5 and dt.hour < 12 :
 		greeting = config.locale.greeting['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
@@ -230,6 +231,9 @@ def tag_replace(text, msg):
 		'#GREETING': greeting,
 		'#GOODBYE': goodbye,
 		'#BOT_NAME': bot.first_name.split('-')[0],
+		'#SMILE': config.locale.emoji['smile'],
+		'#SAD': config.locale.emoji['sad'],
+		'#EMBARASSED': config.locale.emoji['embarassed'],
 		'	': '',
 	}
 	

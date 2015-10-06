@@ -28,9 +28,11 @@ def action(msg):
 			user_chat = msg.reply_to_message.chat.first_name
 			user_chat_id = str(msg.reply_to_message.chat.id)
 	
-	message = '#GREETING, I am #BOT_FIRSTNAME and you are *' + user_firstname + '*.\n\n'
-	message += 'Your username is @' + user_name + ' and your user id is *' + user_id + '*.\n'
-	message += 'You are currently chatting in _' + user_chat + '_ (' + user_chat_id + ').'
+	message = '#GREETING, I am *#BOT_FIRSTNAME* and you are *' + user_firstname + '*.\n\n'
+	message += '*Username*: @' + user_name + '\n'
+	message += '*User ID*: ' + user_id + '\n'
+	message += '*Chat*: ' + user_chat + '\n'
+	message += '*Chat ID*: ' + user_chat_id + ''
 	
 	message = tag_replace(message, msg)
 	

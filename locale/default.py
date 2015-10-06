@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 interactions = {
-	'#GREETING, *#FROM_FIRSTNAME!*': {
+	'#GREETING, *#FROM_FIRSTNAME*! #SMILE': {
 		'hello #BOT_NAME',
 		'hey #BOT_NAME',
 		'hi #BOT_NAME',
 	},
-	'#GOODBYE, *#FROM_FIRSTNAME!*': {
+	'#GOODBYE, *#FROM_FIRSTNAME*! #SMILE': {
 		'bye #BOT_NAME',
 		'later #BOT_NAME',
 		'see ya #BOT_NAME',
 	},
-	'Thank you, *#FROM_FIRSTNAME!*': {
+	'Thank you, *#FROM_FIRSTNAME*! #SMILE': {
 		'thanks,? #BOT_NAME',
 		'thank you,? #BOT_NAME',
 		'ty,? #BOT_NAME',
@@ -18,17 +18,17 @@ interactions = {
 		'tnx,? #BOT_NAME',
 		'arigat*,? #BOT_NAME',
 	},
-	'Welcome back, *#FROM_FIRSTNAME!*': {
+	'Welcome back, *#FROM_FIRSTNAME*! #SMILE': {
 		'^i\'m back',
 		'^i\'m home',
 		'^tadaima',
 	},
-	'*#FROM_FIRSTNAME*... >.<': {
+	'*#FROM_FIRSTNAME*... #EMBARASSED': {
 		'i love you,? #BOT_NAME',
 		'marry me,? #BOT_NAME',
 		'#BOT_NAME <3',
 	},
-	'I\'m sorry *#FROM_FIRSTNAME*...': {
+	'I\'m sorry *#FROM_FIRSTNAME*... #SAD': {
 		'bad,? #BOT_NAME',
 		'fuck you,? #BOT_NAME',
 		'you suck,? #BOT_NAME',
@@ -56,8 +56,7 @@ goodbye = {
 	'morning': u'Shitsurei shimasu',
 	'afternoon': u'SayÅnara',
 	'evening': u'Mata ashita',
-	#'night': u'Oyasumi nasai',
-	'night': u'SayÅnara',
+	'night': u'Oyasumi nasai',
 }
 
 errors = {
@@ -68,4 +67,10 @@ errors = {
 	'permission': 'Permission denied.',
 	'id': 'Must be used via reply or by specifying a user\'s ID.',
 	'download': 'Download failed.'
+}
+
+emoji = {
+	'smile': u'í ½í¸„',
+	'sad': u'í ½í¸”',
+	'embarassed': u'í ½í¸³',
 }

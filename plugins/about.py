@@ -18,7 +18,7 @@ def action(msg):
 	source = '\n[Source Code on Github](https://github.com/luksireiku/polaris)'
 	channel = '\nChannel: @PolarisUpdates'
 		
-	about = header + '\n' + source + license + channel
+	about = header + '\n' + license + channel
 	about = utilies.tag_replace(about, msg)
 	start = utilies.tag_replace(header, msg)
 	
