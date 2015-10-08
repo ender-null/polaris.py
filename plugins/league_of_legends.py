@@ -18,23 +18,23 @@ triggers = {
 }
 
 def get_server(msg):
-	if msg.text.startswith(config.command_start + 'br'):
+	if re.compile(config.command_start + 'br').search(msg.text):
 		return 'br'
-	elif msg.text.startswith(config.command_start + 'eune'):
+	elif re.compile(config.command_start + 'eune').search(msg.text):
 		return 'eune'
-	elif msg.text.startswith(config.command_start + 'kr'):
+	elif re.compile(config.command_start + 'kr').search(msg.text):
 		return 'kr'
-	elif msg.text.startswith(config.command_start + 'lan'):
+	elif re.compile(config.command_start + 'lan').search(msg.text):
 		return 'lan'
-	elif msg.text.startswith(config.command_start + 'las'):
+	elif re.compile(config.command_start + 'las').search(msg.text):
 		return 'las'
-	elif msg.text.startswith(config.command_start + 'na'):
+	elif re.compile(config.command_start + 'na').search(msg.text):
 		return 'na'
-	elif msg.text.startswith(config.command_start + 'oce'):
+	elif re.compile(config.command_start + 'oce').search(msg.text):
 		return 'oce'
-	elif msg.text.startswith(config.command_start + 'ru'):
+	elif re.compile(config.command_start + 'ru').search(msg.text):
 		return 'ru'
-	elif msg.text.startswith(config.command_start + 'tr'):
+	elif re.compile(config.command_start + 'tr').search(msg.text):
 		return 'tr'
 	else:
 		return 'euw'
@@ -99,15 +99,16 @@ def action(msg):
 		pass
 	
 	
-	text = 'Name: ' + summoner[input]['name'] + '\n'
-	text += 'Level: ' + str(summoner[input]['summonerLevel']) + '\n\n'
+	text = 'Name: ' + summoner[input]['name']
+	text += '\nLevel: ' + str(summoner[input]['summonerLevel'])
+	text += '\n\nNormal games:'
 	for summary in stats['playerStatSummaries']:
 		if summary['playerStatSummaryType'] == 'Unranked':
-			text += '5vs5 wins: ' + str(summary['wins']) + '\n'
+			text += '\n\t5vs5 Wins: ' + str(summary['wins'])
 		elif summary['playerStatSummaryType'] == 'Unranked3x3':
-			text += '3vs3 wins: ' + str(summary['wins']) + '\n'
+			text += '\n\t3vs3 Wins: ' + str(summary['wins'])
 		elif summary['playerStatSummaryType'] == 'AramUnranked5x5':
-			text += 'ARAM wins: ' + str(summary['wins']) + '\n'
+			text += '\n\tARAM Wins: ' + str(summary['wins'])
 	
 	if '30' in str(summoner[input]['summonerLevel']):
 		if ranked[str(summoner[input]['id'])][0]['queue'] == 'RANKED_SOLO_5x5':
@@ -120,10 +121,9 @@ def action(msg):
 					info = ranked[str(summoner[input]['id'])][0]['entries'][i]
 					found = True
 			
-			text += '\nRanked\n'
-			text += 'League: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info['division'] + ' (' + str(info['leaguePoints']) + 'LP)\n'
-			text += 'Wins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + '\n'
-			text += 'Winrate: ' + str(int(( float(info['wins']) / (float(info['wins']) + float(info['losses'])) ) * 100)).replace('.','\'') + '%'
+			text += '\n\nRanked games:'
+			text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info['division'] + ' (' + str(info['leaguePoints']) + 'LP)'
+			text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(int(( float(info['wins']) / (float(info['wins']) + float(info['losses'])) ) * 100)).replace('.','\'') + '%)'
 			
 	#core.send_message(msg.chat.id, text, parse_mode="Markdown")
 	download_and_send(msg.chat.id, summoner_icon, 'photo', text)
