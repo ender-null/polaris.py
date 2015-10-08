@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .important { color: #336699; }
+    </style>
+{% endblock %}
+{% block content %}
+    <h1>Index</h1>
+	<div>
+		<a href='home'>Home</a>
+		<a href='plugins'>Plugins</a>
+		<a href='log'>Log</a>
+	</div>
+    <p>
+      Welcome to my awesome homepage.
+    </p>
+{% endblock %}

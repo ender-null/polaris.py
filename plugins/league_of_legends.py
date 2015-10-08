@@ -17,69 +17,84 @@ triggers = {
 	'^' + config.command_start + 'tr',
 }
 
+def get_server(msg):
+	if msg.text.startswith(config.command_start + 'br'):
+		return 'br'
+	elif msg.text.startswith(config.command_start + 'eune'):
+		return 'eune'
+	elif msg.text.startswith(config.command_start + 'kr'):
+		return 'kr'
+	elif msg.text.startswith(config.command_start + 'lan'):
+		return 'lan'
+	elif msg.text.startswith(config.command_start + 'las'):
+		return 'las'
+	elif msg.text.startswith(config.command_start + 'na'):
+		return 'na'
+	elif msg.text.startswith(config.command_start + 'oce'):
+		return 'oce'
+	elif msg.text.startswith(config.command_start + 'ru'):
+		return 'ru'
+	elif msg.text.startswith(config.command_start + 'tr'):
+		return 'tr'
+	else:
+		return 'euw'
+
+def get_summoner(server, input):
+	url = 'https://' + server + '.api.pvp.net/api/lol/' + server + '/v1.4/summoner/by-name/' + input		
+	params = {
+		'api_key': config.apis['league_of_legends']
+	}
+	res = requests.get(
+		url,
+		params = params,
+	)
+	if res.status_code != 200:
+		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(res.status_code), parse_mode="Markdown")
+	return json.loads(res.text)
+
+def get_summoner_icon(server, summoner, summoner_name):
+	url = 'http://ddragon.leagueoflegends.com/cdn/5.19.1/img/profileicon/'
+	return url + str(summoner[summoner_name]['profileIconId']) + '.png'
+	
+def get_stats(server, summoner_id, summoner_name):
+	url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v1.3/stats/by-summoner/' + summoner_id + '/summary'
+	params = {
+		'api_key': config.apis['league_of_legends']
+	}
+	res = requests.get(
+		url,
+		params = params,
+	)
+	if res.status_code != 200:
+		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(res.status_code), parse_mode="Markdown")
+	return json.loads(res.text)
+	
+def get_stats_ranked(server, summoner_id, summoner_name):
+	url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v2.5/league/by-summoner/' + summoner_id
+	params = {
+		'api_key': config.apis['league_of_legends']
+	}
+	res = requests.get(
+		url,
+		params = params,
+	)
+	if res.status_code != 200:
+		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(res.status_code), parse_mode="Markdown")
+	return json.loads(res.text)
+
 def action(msg):
 	input = get_input(msg.text).lower().replace(' ', '')
 	
 	if not input:
 		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 	
-	if msg.text.startswith(config.command_start + 'br'):
-		server = 'br'
-	elif msg.text.startswith(config.command_start + 'eune'):
-		server = 'eune'
-	elif msg.text.startswith(config.command_start + 'kr'):
-		server = 'kr'
-	elif msg.text.startswith(config.command_start + 'lan'):
-		server = 'lan'
-	elif msg.text.startswith(config.command_start + 'las'):
-		server = 'las'
-	elif msg.text.startswith(config.command_start + 'na'):
-		server = 'na'
-	elif msg.text.startswith(config.command_start + 'oce'):
-		server = 'oce'
-	elif msg.text.startswith(config.command_start + 'ru'):
-		server = 'ru'
-	elif msg.text.startswith(config.command_start + 'tr'):
-		server = 'tr'
-	else:
-		server = 'euw'
-
-	params = {
-		'api_key': config.apis['league_of_legends']
-	}
-	
-	
-		
-	summoner_url = 'https://' + server + '.api.pvp.net/api/lol/' + server + '/v1.4/summoner/by-name/' + input		
-	summoner_res = requests.get(
-		summoner_url,
-		params = params,
-	)
-	if summoner_res.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(summoner_res.status_code), parse_mode="Markdown")
-	summoner = json.loads(summoner_res.text)
-	
-	
-	
-	stats_url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v1.3/stats/by-summoner/' + str(summoner[input]['id']) + '/summary'
-	stats_res = requests.get(
-		stats_url,
-		params = params,
-	)
-	if stats_res.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(stats_res.status_code), parse_mode="Markdown")
-	stats = json.loads(stats_res.text)
-	
-	summoner_icon_url = 'http://ddragon.leagueoflegends.com/cdn/5.19.1/img/profileicon/'
-	summoner_icon = summoner_icon_url + str(summoner[input]['profileIconId']) + '.png'
+	server = get_server(msg)
+	summoner = get_summoner(server, input)
+	stats = get_stats(server, str(summoner[input]['id']), input)
+	summoner_icon = get_summoner_icon(server, summoner, input)
 	
 	try:
-		ranked_url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v2.5/league/by-summoner/' + str(summoner[input]['id'])
-		ranked_res = requests.get(
-			ranked_url,
-			params = params,
-		)
-		ranked = json.loads(ranked_res.text)
+		ranked = get_stats_ranked(server, str(summoner[input]['id']), input)
 	except:
 		pass
 	
@@ -95,7 +110,6 @@ def action(msg):
 			text += 'ARAM wins: ' + str(summary['wins']) + '\n'
 	
 	if '30' in str(summoner[input]['summonerLevel']):
-
 		if ranked[str(summoner[input]['id'])][0]['queue'] == 'RANKED_SOLO_5x5':
 			i = 0
 			found = False
