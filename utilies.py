@@ -38,7 +38,7 @@ def on_message_receive(msg):
 					try:	
 						v.action(msg)
 					except Exception as e:
-						core.send_message(msg.chat.id, str(e))
+						core.send_message(config.admin_group, str(e))
 				else:
 					v.action(msg)
 					
@@ -79,13 +79,13 @@ def process_message(msg):
 			msg.from_user = msg.left_chat_participant
 	'''
 	
-	if hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text'):
+	if hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text') and msg.chat.id != config.admin_group:
 		if msg.reply_to_message.from_user.id == bot.id and not msg.reply_to_message.text.startswith(config.command_start):
 			msg.text = str(bot.first_name) + ' ' + msg.text
 		else:
 			msg.text += ' ' + msg.reply_to_message.text
 			
-	if msg.chat.id == msg.from_user.id and not msg.text.startswith(config.command_start):
+	if msg.chat.id == msg.from_user.id and not msg.text.startswith(config.command_start) and msg.chat.id != config.admin_group:
 		msg.text = str(bot.first_name) + ' ' + msg.text
 		
 	return msg
@@ -109,7 +109,12 @@ def get_input(text):
 def first_word(text):
 	if not ' ' in text:
 		return False
-	return text.split(' ', 1)[0]
+	return text.split()[0]
+
+def last_word(text):
+	if not ' ' in text:
+		return False
+	return text.split()[-1] 
 	
 def download_and_send(chat, url, type=None, caption=None, headers=None, params=None):	
 	name = os.path.splitext(str(time.mktime(datetime.datetime.now().timetuple())))[0]
