@@ -18,5 +18,4 @@ def action(msg):
 plugin = {
     'triggers': triggers,
     'action': action,
-	'typing': None,
 }

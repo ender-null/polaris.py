@@ -26,11 +26,14 @@ def on_message_receive(msg):
 
  	lower = msg.text.lower()
 
-	for i,v in plugins.items():
+	for i,v in plugins.items():			
 		for t in v.triggers:
+			t = tag_replace(t, msg)
 			if re.compile(t).search(lower):
 				if hasattr(v, 'typing'):
+					print 'typing'
 					core.send_chat_action(msg.chat.id, 'typing')
+					
 				if config.handle_exceptions == True:
 					try:	
 						v.action(msg)
@@ -69,15 +72,22 @@ def process_message(msg):
 			msg.from_user = msg.new_chat_participant
 		else:
 			msg.text = '/about'
-
+	'''
 	if hasattr(msg, 'left_chat_participant'):
 		if msg.left_chat_participant.id != bot.id:
 			msg.text = 'bye ' + str(bot.first_name)
 			msg.from_user = msg.left_chat_participant
-			
-	if hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text'):
-		msg.text += ' ' + msg.reply_to_message.text
+	'''
 	
+	if hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text'):
+		if msg.reply_to_message.from_user.id == bot.id and not msg.reply_to_message.text.startswith(config.command_start):
+			msg.text = str(bot.first_name) + ' ' + msg.text
+		else:
+			msg.text += ' ' + msg.reply_to_message.text
+			
+	if msg.chat.id == msg.from_user.id and not msg.text.startswith(config.command_start):
+		msg.text = str(bot.first_name) + ' ' + msg.text
+		
 	return msg
 
 def load_plugins():
@@ -231,6 +241,7 @@ def tag_replace(text, msg):
 		'#GREETING': greeting,
 		'#GOODBYE': goodbye,
 		'#BOT_NAME': bot.first_name.split('-')[0],
+		'#BOT_NAME_LOWER': bot.first_name.split('-')[0].lower(),
 		'#SMILE': config.locale.emoji['smile'],
 		'#SAD': config.locale.emoji['sad'],
 		'#EMBARASSED': config.locale.emoji['embarassed'],

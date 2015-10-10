@@ -5,16 +5,16 @@ doc = config.command_start + 'summoner *[summoner]*\nGets stats from summoner.'
 
 triggers = {
 	'^' + config.command_start + 'summoner',
-	'^' + config.command_start + 'br',
-	'^' + config.command_start + 'eune',
-	'^' + config.command_start + 'euw',
-	'^' + config.command_start + 'kr',
-	'^' + config.command_start + 'lan',
-	'^' + config.command_start + 'las',
-	'^' + config.command_start + 'na',
-	'^' + config.command_start + 'oce',
-	'^' + config.command_start + 'ru',
-	'^' + config.command_start + 'tr',
+	'^' + config.command_start + 'br ',
+	'^' + config.command_start + 'eune ',
+	'^' + config.command_start + 'euw ',
+	'^' + config.command_start + 'kr ',
+	'^' + config.command_start + 'lan ',
+	'^' + config.command_start + 'las ',
+	'^' + config.command_start + 'na ',
+	'^' + config.command_start + 'oce ',
+	'^' + config.command_start + 'ru ',
+	'^' + config.command_start + 'tr ',
 }
 
 def get_server(msg):
@@ -92,13 +92,11 @@ def action(msg):
 	summoner = get_summoner(server, input)
 	stats = get_stats(server, str(summoner[input]['id']), input)
 	summoner_icon = get_summoner_icon(server, summoner, input)
-	
 	try:
 		ranked = get_stats_ranked(server, str(summoner[input]['id']), input)
 	except:
-		pass
-	
-	
+		ranked = None
+		
 	text = 'Name: ' + summoner[input]['name']
 	text += '\nLevel: ' + str(summoner[input]['summonerLevel'])
 	text += '\n\nNormal games:'
@@ -109,21 +107,24 @@ def action(msg):
 			text += '\n\t3vs3 Wins: ' + str(summary['wins'])
 		elif summary['playerStatSummaryType'] == 'AramUnranked5x5':
 			text += '\n\tARAM Wins: ' + str(summary['wins'])
-	
+		
 	if '30' in str(summoner[input]['summonerLevel']):
-		if ranked[str(summoner[input]['id'])][0]['queue'] == 'RANKED_SOLO_5x5':
-			i = 0
-			found = False
-			while not found:
-				if str(ranked[str(summoner[input]['id'])][0]['entries'][i]['playerOrTeamId']) != str(summoner[input]['id']):
-					i += 1
-				else:
-					info = ranked[str(summoner[input]['id'])][0]['entries'][i]
-					found = True
-			
-			text += '\n\nRanked games:'
-			text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info['division'] + ' (' + str(info['leaguePoints']) + 'LP)'
-			text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(int(( float(info['wins']) / (float(info['wins']) + float(info['losses'])) ) * 100)).replace('.','\'') + '%)'
+		if ranked == None:
+			text += '\n\nUnranked'
+		else:
+			if ranked[str(summoner[input]['id'])][0]['queue'] == 'RANKED_SOLO_5x5':
+				i = 0
+				found = False
+				while not found:
+					if str(ranked[str(summoner[input]['id'])][0]['entries'][i]['playerOrTeamId']) != str(summoner[input]['id']):
+						i += 1
+					else:
+						info = ranked[str(summoner[input]['id'])][0]['entries'][i]
+						found = True
+				
+				text += '\n\nRanked games:'
+				text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info['division'] + ' (' + str(info['leaguePoints']) + 'LP)'
+				text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(int(( float(info['wins']) / (float(info['wins']) + float(info['losses'])) ) * 100)).replace('.','\'') + '%)'
 			
 	#core.send_message(msg.chat.id, text, parse_mode="Markdown")
 	download_and_send(msg.chat.id, summoner_icon, 'photo', text)

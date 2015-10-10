@@ -13,14 +13,14 @@ def action(msg):
 	if input:
 		for i,v in plugins.items():
 			if hasattr(v, 'doc'):
-				if '/' + input == v.doc.splitlines()[0]:
+				if config.command_start + input == v.doc.splitlines()[0]:
 					return core.send_message(msg.chat.id, v.doc, parse_mode="Markdown")
 		
 	help = ''
 	for i,v in plugins.items():
 		if hasattr(v, 'doc'):
 			a = v.doc.splitlines()[0]
-			help += a + '\n'
+			help += '\t' + a + '\n'
 		
 	message = '*Commands*:\n' + help
 	

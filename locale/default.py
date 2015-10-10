@@ -41,7 +41,7 @@ interactions = {
 	'How can I help you, *#FROM_FIRSTNAME*?': {
 		'^#BOT_NAME$',
 	},
-	'_Ack_': {
+	'`Ack`': {
 		'syn'
 	}
 }
