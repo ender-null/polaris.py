@@ -19,9 +19,9 @@ def on_message_receive(msg):
 	
  	msg = process_message(msg)
 	
- 	if msg.date < time.mktime(datetime.datetime.now().timetuple()) - 10:
- 		return
- 	if not hasattr(msg, 'text'):
+	if config.ignore['old_messages']==True and msg.date < time.mktime(datetime.datetime.now().timetuple()) - 10:
+		return
+ 	if config.ignore['media']==True and not hasattr(msg, 'text'):
  		return
 
  	lower = msg.text.lower()
@@ -45,7 +45,7 @@ def on_message_receive(msg):
 def bot_init():
 	print('Fetching bot information...')
 	global core
-	core = telebot.TeleBot(config.apis['telegram_bot'])
+	core = telebot.TeleBot(config.api['telegram_bot'])
 	
 	global bot
 	bot = core.get_me()
@@ -66,26 +66,25 @@ def bot_init():
  	is_started = True
  	
 def process_message(msg):
-	if hasattr(msg, 'new_chat_participant'):
+	if config.process['new_chat_participant']==True and hasattr(msg, 'new_chat_participant'):
 		if msg.new_chat_participant.id != bot.id:
 			msg.text = 'hi ' + str(bot.first_name)
 			msg.from_user = msg.new_chat_participant
 		else:
 			msg.text = '/about'
-	'''
-	if hasattr(msg, 'left_chat_participant'):
+	
+	if config.process['left_chat_participant']==True and hasattr(msg, 'left_chat_participant'):
 		if msg.left_chat_participant.id != bot.id:
 			msg.text = 'bye ' + str(bot.first_name)
 			msg.from_user = msg.left_chat_participant
-	'''
 	
-	if hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text') and msg.chat.id != config.admin_group:
-		if msg.reply_to_message.from_user.id == bot.id and not msg.reply_to_message.text.startswith(config.command_start):
+	if config.process['reply_to_message']==True and hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text') and msg.chat.id != config.admin_group:
+		if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config.command_start):
 			msg.text = str(bot.first_name) + ' ' + msg.text
-		else:
+		elif msg.text.startswith(config.command_start):
 			msg.text += ' ' + msg.reply_to_message.text
 			
-	if msg.chat.id == msg.from_user.id and not msg.text.startswith(config.command_start) and msg.chat.id != config.admin_group:
+	if config.process['chatter']==True and hasattr(msg, 'text') and msg.chat.id == msg.from_user.id and not msg.text.startswith(config.command_start) and msg.chat.id != config.admin_group:
 		msg.text = str(bot.first_name) + ' ' + msg.text
 		
 	return msg

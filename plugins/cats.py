@@ -11,7 +11,7 @@ def action(msg):
 	url = 'http://thecatapi.com/api/images/get'
 	params = {
 		'format': 'src',
-		'api_key': config.apis['catapi']
+		'api_key': config.api['catapi']
 	}
 	
 	jstr = requests.get(
