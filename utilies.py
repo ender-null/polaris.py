@@ -15,6 +15,30 @@ import re
 import sys
 import platform
 
+def bot_init():
+	reload(config)
+	print('Getting bot data...')
+	global core
+	core = telebot.TeleBot(config.api['telegram_bot'])
+	
+	global bot
+	bot = core.get_me()
+	while bot == False:
+		print('\tFailure getting bot data. Trying again...')
+		bot = core.get_me()
+	print('\tFirst name:\t' + bot.first_name)
+	print('\tUsername:\t' + bot.username)
+	print('\tUser id:\t' + str(bot.id))
+
+	print('\nLoading plugins...')
+	global plugins
+	plugins = {}
+	plugins = load_plugins()
+
+	global is_started
+ 	is_started = True
+	print('\n' + bot.first_name + ' is started!')
+	
 def on_message_receive(msg):
 	
  	msg = process_message(msg)
@@ -26,12 +50,11 @@ def on_message_receive(msg):
 
  	lower = msg.text.lower()
 
-	for i,v in plugins.items():			
+	for i,v in plugins.items():
 		for t in v.triggers:
 			t = tag_replace(t, msg)
 			if re.compile(t).search(lower):
 				if hasattr(v, 'typing'):
-					print 'typing'
 					core.send_chat_action(msg.chat.id, 'typing')
 					
 				if config.handle_exceptions == True:
@@ -41,30 +64,7 @@ def on_message_receive(msg):
 						core.send_message(config.admin_group, str(e))
 				else:
 					v.action(msg)
-					
-def bot_init():
-	print('Fetching bot information...')
-	global core
-	core = telebot.TeleBot(config.api['telegram_bot'])
-	
-	global bot
-	bot = core.get_me()
-	while bot == False:
-		print('\033[91mFailure fetching bot information. Trying again...\033[0m')
-		bot = core.get_me()
-
-	print('Loading plugins...')
-	global plugins
-	plugins = {}
-	plugins = load_plugins()
-
-	print('Plugins loaded: ' + str(len(plugins)) + '.')
-	
-	print('@' + str(bot.username) + ', AKA ' + str(bot.first_name) + ' (' + str(bot.id) + ')')
-
-	global is_started
- 	is_started = True
- 	
+					 	
 def process_message(msg):
 	if config.process['new_chat_participant']==True and hasattr(msg, 'new_chat_participant'):
 		if msg.new_chat_participant.id != bot.id:
@@ -83,22 +83,34 @@ def process_message(msg):
 			msg.text = str(bot.first_name) + ' ' + msg.text
 		elif msg.text.startswith(config.command_start):
 			msg.text += ' ' + msg.reply_to_message.text
-			
-	if config.process['chatter']==True and hasattr(msg, 'text') and msg.chat.id == msg.from_user.id and not msg.text.startswith(config.command_start) and msg.chat.id != config.admin_group:
+	
+	if config.process['chatter']==True and hasattr(msg, 'text') and msg.chat.type == 'private' and not msg.text.startswith(config.command_start) and msg.chat.id != config.admin_group:
 		msg.text = str(bot.first_name) + ' ' + msg.text
 		
 	return msg
 
 def load_plugins():
-	for p in config.plugins:
+	for plugin in config.plugins:
 		try:
-			print('\033[92m\tLoading plugin: ' + p + '\033[0m')
-			plugins[p] = importlib.import_module('plugins.{}'.format(p))
+			plugins[plugin] = importlib.import_module('plugins.' + plugin)
+			print('\t[OK] ' + plugin)
 		except Exception as e:
-			print('\033[91m\tError loading plugin ' + p + '\033[0m')
-			print('\033[91m\t' + str(e) + '\033[0m')
+			print('\t[Failed] ' + plugin + ': ' + str(e))
 	
+	print('\n\tLoaded: ' + str(len(plugins)) + '/' + str(len(config.plugins)))
 	return plugins
+	
+def load_plugins_new():
+	plugins_loaded = {}
+	for plugin in config.plugins:
+		try:
+			plugins_loaded[plugin] = importlib.import_module('plugins.' + plugin)
+			print('\t[OK] ' + plugin)
+		except Exception as e:
+			print('\t[Failed] ' + plugin + ': ' + str(e))
+	
+	print('\n\tLoaded: ' + str(len(plugins_loaded)) + '/' + str(len(config.plugins)))
+	return plugins_loaded
 
 def get_input(text):
 	if not ' ' in text:

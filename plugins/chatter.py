@@ -7,6 +7,8 @@ triggers = {
 	'#BOT_NAME_LOWER',
 }
 
+typing = True
+
 def action(msg):
 	input = msg.text.replace(bot.first_name + ' ', '')
 		
@@ -16,14 +18,7 @@ def action(msg):
 	unescape = HTMLParser().unescape
 	
 	try:
-		message = unescape(bot_session.think(input));
+		message = unescape(bot_session.think(input))
+		core.send_message(msg.chat.id, message)
 	except:
-		message = '...'
-	
-	core.send_message(msg.chat.id, message)
-
-plugin = {
-    'triggers': triggers,
-    'action': action,
-	'typing': True,
-}
+		pass

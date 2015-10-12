@@ -65,9 +65,3 @@ def action(msg):
 				is_real = True
 	
 	download_and_send(msg.chat.id, result_url, 'photo', caption)
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-}

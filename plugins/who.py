@@ -2,9 +2,12 @@ from __main__ import *
 from utilies import *
 
 doc = config.command_start + 'who\nGets user info.'
+
 triggers = {
 	'^' + config.command_start + 'who'
 }
+
+typing = True
 
 def action(msg):			
 	user_firstname = msg.from_user.first_name
@@ -37,10 +40,3 @@ def action(msg):
 	message = tag_replace(message, msg)
 	
 	core.send_message(msg.chat.id, message, parse_mode="Markdown")
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-	'typing': None
-}

@@ -2,6 +2,7 @@ from __main__ import *
 from utilies import *
 
 doc = config.command_start + 'cat\nGet a cat pic!'
+
 triggers = {
 	'^' + config.command_start + 'cats?'
 }
@@ -23,9 +24,3 @@ def action(msg):
 		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code))
 	
 	download_and_send(msg.chat.id, url, 'photo')
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-}

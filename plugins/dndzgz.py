@@ -9,6 +9,8 @@ triggers = {
 	'^' + config.command_start + 'poste',
 }
 
+typing = True
+
 def action(msg):
 	input = get_input(msg.text)
 		
@@ -39,10 +41,3 @@ def action(msg):
 		text += '*' + first_word(k) + '* ' + get_input(k) + ' -> _' + get_input(v) + '_\n'
 	
 	core.send_message(msg.chat.id, text, parse_mode="Markdown")
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-	'typing': None,
-}

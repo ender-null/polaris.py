@@ -2,10 +2,13 @@ from __main__ import *
 from utilies import *
 
 doc = config.command_start + 'help _[command]_\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
+
 triggers = {
 	'^' + config.command_start + 'help',
 	'^' + config.command_start + 'h$',
 }
+
+typing = True
 
 def action(msg):			
 	input = get_input(msg.text)
@@ -32,10 +35,3 @@ def action(msg):
 		return core.send_message(msg.chat.id, message, parse_mode="Markdown")
 	
 	core.send_message(msg.chat.id, message, parse_mode="Markdown")
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-	'typing': None
-}

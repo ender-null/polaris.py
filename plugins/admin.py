@@ -8,21 +8,21 @@ triggers = {
 	'^' + config.command_start + 'stop',
 }
 
+typing = True
+
 def action(msg):			
 	input = get_input(msg.text)
 	
 	message = config.locale.errors['argument']
 	
-	if msg.from_user.id not in config.admins:
+	if msg.from_user.id not in config.admin:
 		return core.send_message(msg.chat.id, config.locale.errors['permission'])
 	
 	if msg.text.startswith(config.command_start + 'run'):
 		message = subprocess.check_output(input, shell=True)
 		
 	elif msg.text.startswith(config.command_start + 'reload'):
-		reload(config)
 		bot_init()
-		
 		message = 'Bot reloaded!'
 		
 	elif msg.text.startswith(config.command_start + 'msg'):
@@ -38,9 +38,3 @@ def action(msg):
 		sys.exit()
 		
 	core.send_message(msg.chat.id, message, parse_mode="Markdown")
-
-plugin = {
-    'triggers': triggers,
-    'action': action,
-    'typing': None,
-}

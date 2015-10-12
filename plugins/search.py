@@ -10,6 +10,7 @@ triggers = {
 	'^' + config.command_start + 'gnsfw'
 }
 
+typing = True
 
 def action(msg):
 	input = get_input(msg.text)
@@ -48,9 +49,3 @@ def action(msg):
 		text += result_title + '\n' + result_url + '\n\n' 
 	
 	core.send_message(msg.chat.id, text, disable_web_page_preview=True, parse_mode="Markdown")
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-}

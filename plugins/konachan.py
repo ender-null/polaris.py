@@ -41,9 +41,3 @@ def action(msg):
 	caption = str(len(jdat)) + ' results matching: "' + input + '"'
 	
 	download_and_send(msg.chat.id, result_url, 'photo', caption)
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-}

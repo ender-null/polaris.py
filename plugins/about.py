@@ -2,12 +2,15 @@ from __main__ import *
 from utilies import *
 
 doc = config.command_start + 'about\nInfo about *' + bot.first_name + '*'
+
 triggers = {
 	'^' + config.command_start + 'about',
 	'^' + config.command_start + 'system',
 	'^' + config.command_start + 'start',
 	'^/start',
 }
+
+typing = True
 
 def action(msg):			
 	header = 'Hi! I\'m *#BOT_FIRSTNAME*'
@@ -36,10 +39,3 @@ def action(msg):
 		core.send_message(msg.chat.id, running, parse_mode="Markdown")
 	else:
 		core.send_message(msg.chat.id, start, disable_web_page_preview=True, parse_mode="Markdown")
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-	'typing': None
-}

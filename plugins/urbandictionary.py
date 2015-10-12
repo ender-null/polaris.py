@@ -10,6 +10,8 @@ triggers = {
 	'^' + config.command_start + 'urban'
 }
 
+typing = True
+
 def action(msg):
 	input = get_input(msg.text)
 		
@@ -42,10 +44,3 @@ def action(msg):
 		text += '\nExample:\n_' + jdat['list'][i]['example'] + '_'
 	
 	core.send_message(msg.chat.id, text, parse_mode="Markdown")
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-	'typing': None,
-}

@@ -128,10 +128,3 @@ def action(msg):
 			
 	#core.send_message(msg.chat.id, text, parse_mode="Markdown")
 	download_and_send(msg.chat.id, summoner_icon, 'photo', text)
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-	'typing': None,
-}

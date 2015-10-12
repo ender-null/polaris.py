@@ -2,6 +2,7 @@ from __main__ import *
 from utilies import *
 
 doc = config.command_start + 'voice *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
+
 triggers = {
 	'^' + config.command_start + 'voice',
 	'^' + config.command_start + 'v ',
@@ -43,9 +44,3 @@ def action(msg):
 	result_url = jstr.url
 	
 	download_and_send(msg.chat.id, url, 'voice', headers=headers, params=params)
-
-plugin = {
-    'doc': doc,
-    'triggers': triggers,
-    'action': action,
-}
