@@ -28,7 +28,7 @@ def action(msg):
 		core.send_message(config.admin_group, message, parse_mode="Markdown")
 		
 	else:
-		if hasattr(msg, 'reply_to_message') and msg.chat.type == 'private':
+		if hasattr(msg, 'reply_to_message') and msg.reply_to_message.from_user.id == bot.id:
 			message_id = last_word(msg.reply_to_message.text.split('\n')[-1])
 			chat_id = last_word(msg.reply_to_message.text.split('\n')[-2])
-			core.send_message(chat_id, msg.text, reply_to_message_id=message_id)
+			core.send_message(chat_id, msg.text, reply_to_message_id=message_id, parse_mode="Markdown")

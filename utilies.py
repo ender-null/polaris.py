@@ -66,25 +66,35 @@ def on_message_receive(msg):
 					v.action(msg)
 					 	
 def process_message(msg):
-	if config.process['new_chat_participant']==True and hasattr(msg, 'new_chat_participant'):
+	if (config.process['new_chat_participant']==True
+	and hasattr(msg, 'new_chat_participant')):
 		if msg.new_chat_participant.id != bot.id:
 			msg.text = 'hi ' + str(bot.first_name)
 			msg.from_user = msg.new_chat_participant
 		else:
 			msg.text = '/about'
 	
-	if config.process['left_chat_participant']==True and hasattr(msg, 'left_chat_participant'):
+	if (config.process['left_chat_participant']==True
+	and hasattr(msg, 'left_chat_participant')):
 		if msg.left_chat_participant.id != bot.id:
 			msg.text = 'bye ' + str(bot.first_name)
 			msg.from_user = msg.left_chat_participant
 	
-	if config.process['reply_to_message']==True and hasattr(msg, 'reply_to_message') and hasattr(msg.reply_to_message, 'text') and hasattr(msg, 'text') and msg.chat.id != config.admin_group:
+	if (config.process['reply_to_message']==True
+	and hasattr(msg, 'reply_to_message')
+	and hasattr(msg.reply_to_message, 'text')
+	and hasattr(msg, 'text')
+	and msg.chat.id != config.admin_group):
 		if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config.command_start):
 			msg.text = str(bot.first_name) + ' ' + msg.text
 		elif msg.text.startswith(config.command_start):
 			msg.text += ' ' + msg.reply_to_message.text
 	
-	if config.process['chatter']==True and hasattr(msg, 'text') and msg.chat.type == 'private' and not msg.text.startswith(config.command_start) and msg.chat.id != config.admin_group:
+	if (config.process['chatter']==True
+	and hasattr(msg, 'text')
+	and msg.chat.type == 'private'
+	and not msg.text.startswith(config.command_start)
+	and msg.chat.id != config.admin_group):
 		msg.text = str(bot.first_name) + ' ' + msg.text
 		
 	return msg
