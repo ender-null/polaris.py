@@ -1,7 +1,6 @@
 import utilies as u
 import time
 import datetime
-import web
 
 u.bot_init()
 last_update = 0

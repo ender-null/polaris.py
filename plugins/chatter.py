@@ -1,6 +1,6 @@
 from __main__ import *
 from utilies import *
-from extra.chatterbotapi import ChatterBotFactory, ChatterBotType
+import cleverbot
 from HTMLParser import HTMLParser
 
 triggers = {
@@ -11,14 +11,13 @@ typing = True
 
 def action(msg):
 	input = msg.text.replace(bot.first_name + ' ', '')
-		
-	factory = ChatterBotFactory()
-	bot_core = factory.create(ChatterBotType.CLEVERBOT)
-	bot_session = bot_core.create_session()
+	
+	cb = cleverbot.Cleverbot()	
 	unescape = HTMLParser().unescape
 	
 	try:
-		message = unescape(bot_session.think(input))
-		core.send_message(msg.chat.id, message)
+		message = unescape(cb.ask(input))
 	except:
-		pass
+		message = '...'
+		
+	core.send_message(msg.chat.id, message)
