@@ -11,18 +11,19 @@ def action(msg):
 			if msg.chat.id != msg.from_user.id and msg.chat.type=='private':
 				msg.chat.title = msg.chat.first_name
 			
-			message = msg.text.replace(bot.first_name + ' ', '')
+			message = escape_markup(msg.text)
+			message = message.replace(bot.first_name + ' ', '')
 			message += '\n------------------------\n'
 
 			if msg.from_user.username:
-				message += '*Name*: [' + msg.from_user.first_name.replace("_", "\_") + '](http://telegram.me/' + msg.from_user.username.replace("_", "\_") + ')\n'
+				message += '*Name*: [' + escape_markup(msg.from_user.first_name) + '](http://telegram.me/' + escape_markup(msg.from_user.username) + ')\n'
 			else:
-				message += '*Name*: ' + msg.from_user.first_name.replace("_", "\_") + '\n'
+				message += '*Name*: ' + escape_markup(msg.from_user.first_name) + '\n'
 				
 			message += '*User ID*: ' + str(msg.from_user.id) + '\n'
 			
 			if msg.chat.type == 'group':
-				message += '*Group*: ' + msg.chat.title.replace("_", "\_") + '\n'
+				message += '*Group*: ' + escape_markup(msg.chat.title) + '\n'
 				message += '*Group ID*: ' + str(msg.chat.id) + '\n'
 			message += '*Message ID*: ' + str(msg.message_id)
 			

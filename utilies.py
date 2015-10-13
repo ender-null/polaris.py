@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __main__ import *
 import config
 import telebot
@@ -262,21 +263,30 @@ def tag_replace(text, msg):
 		goodbye = config.locale.goodbye['night']
 
 	tags = {
-		'#FROM_FIRSTNAME': msg.from_user.first_name,
-		'#FROM_USERNAME': msg.from_user.username,
-		'#BOT_FIRSTNAME': bot.first_name,
-		'#BOT_USERNAME': bot.username,
+		'#FROM_FIRSTNAME': escape_markup(msg.from_user.first_name),
+		'#BOT_FIRSTNAME': escape_markup(bot.first_name),
+		'#BOT_USERNAME': escape_markup(bot.username),
 		'#GREETING': greeting,
 		'#GOODBYE': goodbye,
-		'#BOT_NAME': bot.first_name.split('-')[0],
-		'#BOT_NAME_LOWER': bot.first_name.split('-')[0].lower(),
-		'#SMILE': config.locale.emoji['smile'],
-		'#SAD': config.locale.emoji['sad'],
-		'#EMBARASSED': config.locale.emoji['embarassed'],
+		'#BOT_NAME': escape_markup(bot.first_name.split('-')[0]),
+		'#BOT_NAME_LOWER': escape_markup(bot.first_name.split('-')[0].lower()),
+		'#SMILE': u'😄',
+		'#SAD': u'😔',
+		'#EMBARASSED': u'😳',
 		'	': '',
 	}
+	
+	if msg.from_user.username:
+		tags['#FROM_USERNAME'] = escape_markup(msg.from_user.username)
 	
 	for k,v in tags.items():
 		if k in text:
 			text = text.replace(k, v)
+	return text
+
+def escape_markup(text):
+	text = text.replace("_", "\_")
+	text = text.replace("*", "\*")
+	text = text.replace("`", "\`")
+	text = text.replace("```", "\```")
 	return text

@@ -68,9 +68,3 @@ errors = {
 	'id': 'Must be used via reply or by specifying a user\'s ID.',
 	'download': 'Download failed.'
 }
-
-emoji = {
-	'smile': u'í ½í¸„',
-	'sad': u'í ½í¸”',
-	'embarassed': u'í ½í¸³',
-}

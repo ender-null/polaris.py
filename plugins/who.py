@@ -15,12 +15,12 @@ def action(msg):
 		msg.from_user = msg.reply_to_message.from_user
 		msg.chat = msg.reply_to_message.chat
 	
-	message = '#GREETING, I am *#BOT_FIRSTNAME* and you are *' + msg.from_user.first_name + '*.\n\n'.replace("_", "\_")
+	message = '#GREETING, I am *#BOT_FIRSTNAME* and you are *' + escape_markup(msg.from_user.first_name) + '*.\n\n'
 	if msg.from_user.username:
-		message += '*Username*: @' + msg.from_user.username.replace("_", "\_") + '\n'
+		message += '*Username*: @' + escape_markup(msg.from_user.username) + '\n'
 	message += '*User ID*: ' + str(msg.from_user.id) + '\n'
 	if msg.chat.type == 'group':
-		message += '*Chat*: ' + msg.chat.title.replace("_", "\_") + '\n'
+		message += '*Chat*: ' + escape_markup(msg.chat.title) + '\n'
 		message += '*Chat ID*: ' + str(msg.chat.id) + ''
 	
 	message = tag_replace(message, msg)
