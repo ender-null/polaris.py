@@ -47,8 +47,10 @@ def on_message_receive(msg):
 		return
  	if config.ignore['media']==True and not hasattr(msg, 'text'):
  		return
-
- 	lower = msg.text.lower()
+	
+	if not hasattr(msg, 'text'):
+		msg.text = ''
+	lower = msg.text.lower()
 
 	for i,v in plugins.items():
 		for t in v.triggers:

@@ -10,32 +10,18 @@ triggers = {
 typing = True
 
 def action(msg):			
-	user_firstname = msg.from_user.first_name
-	user_id = str(msg.from_user.id)
-	user_name = msg.from_user.username
-	if hasattr(msg.chat, 'title'):
-		user_chat = msg.chat.title
-		user_chat_id = str(msg.chat.id)
-	else:
-		user_chat = msg.chat.first_name
-		user_chat_id = str(msg.chat.id)
 	
 	if hasattr(msg, 'reply_to_message'):
-		user_firstname = msg.reply_to_message.from_user.first_name
-		user_id = str(msg.reply_to_message.from_user.id)
-		user_name = msg.reply_to_message.from_user.username
-		if hasattr(msg.reply_to_message.chat, 'title'):
-			user_chat = msg.reply_to_message.chat.title
-			user_chat_id = str(msg.reply_to_message.chat.id)
-		else:
-			user_chat = msg.reply_to_message.chat.first_name
-			user_chat_id = str(msg.reply_to_message.chat.id)
+		msg.from_user = msg.reply_to_message.from_user
+		msg.chat = msg.reply_to_message.chat
 	
-	message = '#GREETING, I am *#BOT_FIRSTNAME* and you are *' + user_firstname + '*.\n\n'
-	message += '*Username*: @' + user_name + '\n'
-	message += '*User ID*: ' + user_id + '\n'
-	message += '*Chat*: ' + user_chat + '\n'
-	message += '*Chat ID*: ' + user_chat_id + ''
+	message = '#GREETING, I am *#BOT_FIRSTNAME* and you are *' + msg.from_user.first_name + '*.\n\n'.replace("_", "\_")
+	if msg.from_user.username:
+		message += '*Username*: @' + msg.from_user.username.replace("_", "\_") + '\n'
+	message += '*User ID*: ' + str(msg.from_user.id) + '\n'
+	if msg.chat.type == 'group':
+		message += '*Chat*: ' + msg.chat.title.replace("_", "\_") + '\n'
+		message += '*Chat ID*: ' + str(msg.chat.id) + ''
 	
 	message = tag_replace(message, msg)
 	
