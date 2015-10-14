@@ -138,7 +138,7 @@ def first_word(text):
 def all_but_first_word(text):
 	if not ' ' in text:
 		return False
-	return text.split()[1:]
+	return text.replace(first_word(text) + ' ', '')
 	
 def last_word(text):
 	if not ' ' in text:
