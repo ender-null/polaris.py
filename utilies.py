@@ -87,7 +87,7 @@ def process_message(msg):
 	and hasattr(msg, 'reply_to_message')
 	and hasattr(msg.reply_to_message, 'text')
 	and hasattr(msg, 'text')
-	and msg.chat.id != config.admin_group):
+	and msg.chat.id != config.groups['log']):
 		if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config.command_start):
 			msg.text = str(bot.first_name) + ' ' + msg.text
 		elif msg.text.startswith(config.command_start):
@@ -97,7 +97,7 @@ def process_message(msg):
 	and hasattr(msg, 'text')
 	and msg.chat.type == 'private'
 	and not msg.text.startswith(config.command_start)
-	and msg.chat.id != config.admin_group):
+	and msg.chat.id != config.groups['log']):
 		msg.text = str(bot.first_name) + ' ' + msg.text
 		
 	return msg
