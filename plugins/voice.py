@@ -37,6 +37,8 @@ def action(msg):
 		params = params,
 		headers = headers
 	)
+	
+	print jstr.content
 		
 	if jstr.status_code != 200:
 		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code))

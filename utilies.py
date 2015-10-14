@@ -64,7 +64,7 @@ def on_message_receive(msg):
 					try:	
 						v.action(msg)
 					except Exception as e:
-						core.send_message(config.admin_group, str(e))
+						core.send_message(config.groups['alerts'], str(e))
 				else:
 					v.action(msg)
 					 	
@@ -135,6 +135,11 @@ def first_word(text):
 		return False
 	return text.split()[0]
 
+def all_but_first_word(text):
+	if not ' ' in text:
+		return False
+	return text.split()[1:]
+	
 def last_word(text):
 	if not ' ' in text:
 		return False
@@ -162,10 +167,7 @@ def download_and_send(chat, url, type=None, caption=None, headers=None, params=N
 		return core.send_message(chat, config.locale.errors['download'], parse_mode="Markdown")
 		
 	filename = fix_extension(tmp, filename)
-	
-	if type=='voice':
-		filename = convert_to_voice(tmp, filename)
-	
+		
 	file = open(tmp + filename, 'rb')
 	
 	if type == 'photo':
