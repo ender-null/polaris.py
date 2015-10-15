@@ -1,13 +1,13 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'define *[term]*\nReturns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
+doc = config['command_start'] + 'define *[term]*\nReturns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
 
 triggers = {
-	'^' + config.command_start + 'define',
-	'^' + config.command_start + 'ud',
-	'^' + config.command_start + 'urbandictionary',
-	'^' + config.command_start + 'urban'
+	'^' + config['command_start'] + 'define',
+	'^' + config['command_start'] + 'ud',
+	'^' + config['command_start'] + 'urbandictionary',
+	'^' + config['command_start'] + 'urban'
 }
 
 typing = True

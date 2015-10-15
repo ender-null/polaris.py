@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __main__ import *
-import config
 import telebot
 import os
 import time
@@ -14,13 +13,20 @@ import json
 import random
 import re
 import sys
+import json
 import platform
+from clint.textui import colored
 
 def bot_init():
-	reload(config)
-	print('Getting bot data...')
+	print('Loading config... ')
+	global config
+	config = load_json('config.json')
+	config['locale'] = load_json('locale/' + config['locale'] + '.json')
+	config['groups'] = load_json('groups.json')
+	
+	print('\nGetting bot data...')
 	global core
-	core = telebot.TeleBot(config.api['telegram_bot'])
+	core = telebot.TeleBot(config['api']['telegram_bot'])
 	
 	global bot
 	bot = core.get_me()
@@ -44,9 +50,9 @@ def on_message_receive(msg):
 	
  	msg = process_message(msg)
 	
-	if config.ignore['old_messages']==True and msg.date < time.mktime(datetime.datetime.now().timetuple()) - 10:
+	if config['ignore']['old_messages']==True and msg.date < time.mktime(datetime.datetime.now().timetuple()) - 10:
 		return
- 	if config.ignore['media']==True and not hasattr(msg, 'text'):
+ 	if config['ignore']['media']==True and not hasattr(msg, 'text'):
  		return
 	
 	if not hasattr(msg, 'text'):
@@ -60,7 +66,7 @@ def on_message_receive(msg):
 				if hasattr(v, 'typing'):
 					core.send_chat_action(msg.chat.id, 'typing')
 					
-				if config.handle_exceptions == True:
+				if config['handle_exceptions'] == True:
 					try:	
 						v.action(msg)
 					except Exception as e:
@@ -69,7 +75,7 @@ def on_message_receive(msg):
 					v.action(msg)
 					 	
 def process_message(msg):
-	if (config.process['new_chat_participant']==True
+	if (config['process']['new_chat_participant']==True
 	and hasattr(msg, 'new_chat_participant')):
 		if msg.new_chat_participant.id != bot.id:
 			msg.text = 'hi ' + str(bot.first_name)
@@ -77,53 +83,60 @@ def process_message(msg):
 		else:
 			msg.text = '/about'
 	
-	if (config.process['left_chat_participant']==True
+	if (config['process']['left_chat_participant']==True
 	and hasattr(msg, 'left_chat_participant')):
 		if msg.left_chat_participant.id != bot.id:
 			msg.text = 'bye ' + str(bot.first_name)
 			msg.from_user = msg.left_chat_participant
 	
-	if (config.process['reply_to_message']==True
+	if (config['process']['reply_to_message']==True
 	and hasattr(msg, 'reply_to_message')
 	and hasattr(msg.reply_to_message, 'text')
 	and hasattr(msg, 'text')
-	and msg.chat.id != config.groups['log']):
-		if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config.command_start):
+	and msg.chat.id != config['groups']['log']):
+		if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config['command_start']):
 			msg.text = str(bot.first_name) + ' ' + msg.text
-		elif msg.text.startswith(config.command_start):
+		elif msg.text.startswith(config['command_start']):
 			msg.text += ' ' + msg.reply_to_message.text
 	
-	if (config.process['chatter']==True
+	if (config['process']['chatter']==True
 	and hasattr(msg, 'text')
 	and msg.chat.type == 'private'
-	and not msg.text.startswith(config.command_start)
-	and msg.chat.id != config.groups['log']):
+	and not msg.text.startswith(config['command_start'])
+	and msg.chat.id != config['groups']['log']):
 		msg.text = str(bot.first_name) + ' ' + msg.text
 		
 	return msg
 
 def load_plugins():
-	for plugin in config.plugins:
+	for plugin in config['plugins']:
 		try:
 			plugins[plugin] = importlib.import_module('plugins.' + plugin)
 			print('\t[OK] ' + plugin)
 		except Exception as e:
 			print('\t[Failed] ' + plugin + ': ' + str(e))
 	
-	print('\n\tLoaded: ' + str(len(plugins)) + '/' + str(len(config.plugins)))
+	print('\n\tLoaded: ' + str(len(plugins)) + '/' + str(len(config['plugins'])))
 	return plugins
 	
-def load_plugins_new():
-	plugins_loaded = {}
-	for plugin in config.plugins:
-		try:
-			plugins_loaded[plugin] = importlib.import_module('plugins.' + plugin)
-			print('\t[OK] ' + plugin)
-		except Exception as e:
-			print('\t[Failed] ' + plugin + ': ' + str(e))
-	
-	print('\n\tLoaded: ' + str(len(plugins_loaded)) + '/' + str(len(config.plugins)))
-	return plugins_loaded
+def save_json(path, data):
+	try:
+		with open(path, 'w') as f:
+			print('\t[OK] ' + path)
+			json.dump(data, f, sort_keys=True, indent=4)
+	except:
+		print(colored.red('\t[Failed] ' + path))
+		pass
+
+
+def load_json(path):
+	try:
+		with open(path, 'r') as f:
+			print('\t[OK] ' + path)
+			return json.load(f)
+	except:
+		print('\t[Failed] ' + path)
+		return {}
 
 def get_input(text):
 	if not ' ' in text:
@@ -246,23 +259,23 @@ def tag_replace(text, msg):
 	greeting = 'Hi'
 
 	if dt.hour >= 5 and dt.hour < 12 :
-		greeting = config.locale.greeting['morning']
+		greeting = config['locale']['greeting']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		greeting = config.locale.greeting['afternoon']
+		greeting = config['locale']['greeting']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		greeting = config.locale.greeting['evening']
+		greeting = config['locale']['greeting']['evening']
 	else:
-		greeting = config.locale.greeting['night']
+		greeting = config['locale']['greeting']['night']
 	
 	goodbye = 'Goodbye'
 	if dt.hour >= 5 and dt.hour < 12 :
-		goodbye = config.locale.goodbye['morning']
+		goodbye = config['locale']['goodbye']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		goodbye = config.locale.goodbye['afternoon']
+		goodbye = config['locale']['goodbye']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		goodbye = config.locale.goodbye['evening']
+		goodbye = config['locale']['goodbye']['evening']
 	else:
-		goodbye = config.locale.goodbye['night']
+		goodbye = config['locale']['goodbye']['night']
 
 	tags = {
 		'#FROM_FIRSTNAME': escape_markup(msg.from_user.first_name),

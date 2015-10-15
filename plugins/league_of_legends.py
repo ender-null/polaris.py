@@ -1,40 +1,40 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'summoner *[summoner]*\nGets stats from summoner.'
+doc = config['command_start'] + 'summoner *[summoner]*\nGets stats from summoner.'
 
 triggers = {
-	'^' + config.command_start + 'summoner',
-	'^' + config.command_start + 'br ',
-	'^' + config.command_start + 'eune ',
-	'^' + config.command_start + 'euw ',
-	'^' + config.command_start + 'kr ',
-	'^' + config.command_start + 'lan ',
-	'^' + config.command_start + 'las ',
-	'^' + config.command_start + 'na ',
-	'^' + config.command_start + 'oce ',
-	'^' + config.command_start + 'ru ',
-	'^' + config.command_start + 'tr ',
+	'^' + config['command_start'] + 'summoner',
+	'^' + config['command_start'] + 'br ',
+	'^' + config['command_start'] + 'eune ',
+	'^' + config['command_start'] + 'euw ',
+	'^' + config['command_start'] + 'kr ',
+	'^' + config['command_start'] + 'lan ',
+	'^' + config['command_start'] + 'las ',
+	'^' + config['command_start'] + 'na ',
+	'^' + config['command_start'] + 'oce ',
+	'^' + config['command_start'] + 'ru ',
+	'^' + config['command_start'] + 'tr ',
 }
 
 def get_server(msg):
-	if re.compile(config.command_start + 'br').search(msg.text):
+	if re.compile(config['command_start'] + 'br').search(msg.text):
 		return 'br'
-	elif re.compile(config.command_start + 'eune').search(msg.text):
+	elif re.compile(config['command_start'] + 'eune').search(msg.text):
 		return 'eune'
-	elif re.compile(config.command_start + 'kr').search(msg.text):
+	elif re.compile(config['command_start'] + 'kr').search(msg.text):
 		return 'kr'
-	elif re.compile(config.command_start + 'lan').search(msg.text):
+	elif re.compile(config['command_start'] + 'lan').search(msg.text):
 		return 'lan'
-	elif re.compile(config.command_start + 'las').search(msg.text):
+	elif re.compile(config['command_start'] + 'las').search(msg.text):
 		return 'las'
-	elif re.compile(config.command_start + 'na').search(msg.text):
+	elif re.compile(config['command_start'] + 'na').search(msg.text):
 		return 'na'
-	elif re.compile(config.command_start + 'oce').search(msg.text):
+	elif re.compile(config['command_start'] + 'oce').search(msg.text):
 		return 'oce'
-	elif re.compile(config.command_start + 'ru').search(msg.text):
+	elif re.compile(config['command_start'] + 'ru').search(msg.text):
 		return 'ru'
-	elif re.compile(config.command_start + 'tr').search(msg.text):
+	elif re.compile(config['command_start'] + 'tr').search(msg.text):
 		return 'tr'
 	else:
 		return 'euw'

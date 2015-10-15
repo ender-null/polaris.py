@@ -1,10 +1,10 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'who\nGets user info.'
+doc = config['command_start'] + 'who\nGets user info.'
 
 triggers = {
-	'^' + config.command_start + 'who'
+	'^' + config['command_start'] + 'who'
 }
 
 typing = True

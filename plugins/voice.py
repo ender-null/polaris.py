@@ -1,12 +1,12 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'voice *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
+doc = config['command_start'] + 'voice *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
 
 triggers = {
-	'^' + config.command_start + 'voice',
-	'^' + config.command_start + 'v ',
-	'^' + config.command_start + 'say',
+	'^' + config['command_start'] + 'voice',
+	'^' + config['command_start'] + 'v ',
+	'^' + config['command_start'] + 'say',
 }
 
 langs = [

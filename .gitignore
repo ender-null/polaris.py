@@ -57,6 +57,6 @@ docs/_build/
 target/
 
 tmp/
-config.py
-config.pyc
+config.json
+groups.json
 log.txt

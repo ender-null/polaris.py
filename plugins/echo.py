@@ -1,10 +1,10 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'echo *[text]*\nRepeat a string.'
+doc = config['command_start'] + 'echo *[text]*\nRepeat a string.'
 
 triggers = {
-	'^' + config.command_start + 'echo'
+	'^' + config['command_start'] + 'echo'
 }
 
 typing = True

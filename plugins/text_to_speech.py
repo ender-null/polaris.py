@@ -2,11 +2,11 @@ from __main__ import *
 from utilies import *
 from gtts import gTTS
 
-doc = config.command_start + 'speech *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
+doc = config['command_start'] + 'speech *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
 
 triggers = {
-	'^' + config.command_start + 'tts',
-	'^' + config.command_start + 'speech',
+	'^' + config['command_start'] + 'tts',
+	'^' + config['command_start'] + 'speech',
 }
 
 langs = [

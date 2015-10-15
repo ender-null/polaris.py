@@ -1,13 +1,13 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'image *[query]*\nThis command performs a Google Images search for the given query. One random top result is returned. Safe search is enabled by default; use *' + config.command_start + 'insfw* to get potentially NSFW results.'
+doc = config['command_start'] + 'image *[query]*\nThis command performs a Google Images search for the given query. One random top result is returned. Safe search is enabled by default; use *' + config['command_start'] + 'insfw* to get potentially NSFW results.'
 
 triggers = {
-	'^' + config.command_start + 'images?',
-	'^' + config.command_start + 'img',
-	'^' + config.command_start + 'i ',
-	'^' + config.command_start + 'insfw'
+	'^' + config['command_start'] + 'images?',
+	'^' + config['command_start'] + 'img',
+	'^' + config['command_start'] + 'i ',
+	'^' + config['command_start'] + 'insfw'
 }
 
 exts = {
@@ -32,7 +32,7 @@ def action(msg):
 		'q': input
 	}
 	
-	if msg.text.startswith(config.command_start + 'insfw'):
+	if msg.text.startswith(config['command_start'] + 'insfw'):
 		del params['safe']
 	
 	jstr = requests.get(

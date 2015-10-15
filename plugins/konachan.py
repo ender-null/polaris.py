@@ -1,12 +1,12 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'konachan *[tags]*\nGets an image from [Konachan](http://konachan.com); use *' + config.command_start + 'knsfw* to get potentially NSFW results.'
+doc = config['command_start'] + 'konachan *[tags]*\nGets an image from [Konachan](http://konachan.com); use *' + config['command_start'] + 'knsfw* to get potentially NSFW results.'
 
 triggers = {
-	'^' + config.command_start + 'konachan',
-	'^' + config.command_start + 'k ',
-	'^' + config.command_start + 'knsfw'
+	'^' + config['command_start'] + 'konachan',
+	'^' + config['command_start'] + 'k ',
+	'^' + config['command_start'] + 'knsfw'
 }
 
 def action(msg):
@@ -17,7 +17,7 @@ def action(msg):
 	
 	payload = input.replace(' ', '+')
 	
-	if not msg.text.startswith(config.command_start + 'knsfw'):
+	if not msg.text.startswith(config['command_start'] + 'knsfw'):
 		payload += '+rating:s'
 		
 	url = 'http://konachan.com/post.json'

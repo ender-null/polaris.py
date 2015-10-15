@@ -1,10 +1,10 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'cat\nGet a cat pic!'
+doc = config['command_start'] + 'cat\nGet a cat pic!'
 
 triggers = {
-	'^' + config.command_start + 'cats?'
+	'^' + config['command_start'] + 'cats?'
 }
 
 def action(msg):			

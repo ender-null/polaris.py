@@ -1,13 +1,13 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'search *[query]*\nThis command performs a Google search for the given query. Safe search is enabled by default; use *' + config.command_start + 'gnsfw* to get potentially NSFW results'
+doc = config['command_start'] + 'search *[query]*\nThis command performs a Google search for the given query. Safe search is enabled by default; use *' + config['command_start'] + 'gnsfw* to get potentially NSFW results'
 
 triggers = {
-	'^' + config.command_start + 'search',
-	'^' + config.command_start + 'google',
-	'^' + config.command_start + 'g',
-	'^' + config.command_start + 'gnsfw'
+	'^' + config['command_start'] + 'search',
+	'^' + config['command_start'] + 'google',
+	'^' + config['command_start'] + 'g',
+	'^' + config['command_start'] + 'gnsfw'
 }
 
 typing = True
@@ -26,7 +26,7 @@ def action(msg):
 		'q': input
 	}
 	
-	if msg.text.startswith(config.command_start + 'insfw'):
+	if msg.text.startswith(config['command_start'] + 'insfw'):
 		del params['safe']
 	
 	jstr = requests.get(

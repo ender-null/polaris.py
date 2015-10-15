@@ -2,10 +2,10 @@ from __main__ import *
 from utilies import *
 
 triggers = {
-	'^' + config.command_start + 'run ',
-	'^' + config.command_start + 'reload',
-	'^' + config.command_start + 'msg ',
-	'^' + config.command_start + 'stop',
+	'^' + config['command_start'] + 'run ',
+	'^' + config['command_start'] + 'reload',
+	'^' + config['command_start'] + 'msg ',
+	'^' + config['command_start'] + 'stop',
 }
 
 typing = True
@@ -18,14 +18,14 @@ def action(msg):
 	if msg.from_user.id not in config.admin:
 		return core.send_message(msg.chat.id, config.locale.errors['permission'])
 	
-	if msg.text.startswith(config.command_start + 'run'):
+	if msg.text.startswith(config['command_start'] + 'run'):
 		message = subprocess.check_output(input, shell=True)
 		
-	elif msg.text.startswith(config.command_start + 'reload'):
+	elif msg.text.startswith(config['command_start'] + 'reload'):
 		bot_init()
 		message = 'Bot reloaded!'
 		
-	elif msg.text.startswith(config.command_start + 'msg'):
+	elif msg.text.startswith(config['command_start'] + 'msg'):
 		chat_id = first_word(input)
 		text = get_input(input)
 		
@@ -33,7 +33,7 @@ def action(msg):
 			return core.send_message(msg.chat.id, config.locale.errors['argument'], parse_mode="Markdown")
 		return
 			
-	elif msg.text.startswith(config.command_start + 'stop'):
+	elif msg.text.startswith(config['command_start'] + 'stop'):
 		is_started = False
 		sys.exit()
 		

@@ -6,9 +6,9 @@ triggers = {
 }
 
 def action(msg):
-	if (msg.chat.id != config.groups['admin']
-	and msg.chat.id != config.groups['alerts']
-	and msg.chat.id != config.groups['log']):
+	if (msg.chat.id != config['groups']['admin']
+	and msg.chat.id != config['groups']['alerts']
+	and msg.chat.id != config['groups']['log']):
 		if msg.text != '':
 			if msg.chat.id != msg.from_user.id and msg.chat.type=='private':
 				msg.chat.title = msg.chat.first_name
@@ -29,9 +29,9 @@ def action(msg):
 				message += '*Group ID*: ' + str(msg.chat.id) + '\n'
 			message += '*Message ID*: ' + str(msg.message_id)
 			
-			core.send_message(config.groups['log'], message, parse_mode="Markdown")
+			core.send_message(config['groups']['log'], message, parse_mode="Markdown")
 		else:
-			core.forward_message(config.groups['log'], msg.chat.id, msg.message_id)
+			core.forward_message(config['groups']['log'], msg.chat.id, msg.message_id)
 		
 	else:
 		if hasattr(msg, 'reply_to_message') and msg.reply_to_message.from_user.id == bot.id:

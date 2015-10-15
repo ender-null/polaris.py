@@ -1,11 +1,11 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'help _[command]_\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
+doc = config['command_start'] + 'help _[command]_\nGet list of basic information for all commands, or more detailed documentation on a specified command.'
 
 triggers = {
-	'^' + config.command_start + 'help',
-	'^' + config.command_start + 'h$',
+	'^' + config['command_start'] + 'help',
+	'^' + config['command_start'] + 'h$',
 }
 
 typing = True
@@ -16,7 +16,7 @@ def action(msg):
 	if input:
 		for i,v in plugins.items():
 			if hasattr(v, 'doc'):
-				if config.command_start + input == v.doc.splitlines()[0]:
+				if config['command_start'] + input == v.doc.splitlines()[0]:
 					return core.send_message(msg.chat.id, v.doc, parse_mode="Markdown")
 		
 	help = ''

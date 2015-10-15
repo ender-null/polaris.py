@@ -1,12 +1,12 @@
 from __main__ import *
 from utilies import *
 
-doc = config.command_start + 'about\nInfo about *' + bot.first_name + '*'
+doc = config['command_start'] + 'about\nInfo about *' + bot.first_name + '*'
 
 triggers = {
-	'^' + config.command_start + 'about',
-	'^' + config.command_start + 'system',
-	'^' + config.command_start + 'start',
+	'^' + config['command_start'] + 'about',
+	'^' + config['command_start'] + 'system',
+	'^' + config['command_start'] + 'start',
 	'^/start',
 }
 
@@ -16,7 +16,7 @@ def action(msg):
 	header = 'Hi! I\'m *#BOT_FIRSTNAME*'
 	header += '\nNice to meet you.'
 
-	help = '\nUse ' + config.command_start + 'help for a list of commands.'
+	help = '\nUse ' + config['command_start'] + 'help for a list of commands.'
 	license = '\n*#BOT_NAME* is licensed under the *GPLv2*.'	
 	source = '\n[Source Code on Github](https://github.com/luksireiku/polaris)'
 	channel = '\nChannel: @PolarisUpdates'
@@ -33,9 +33,9 @@ def action(msg):
 	running += '\t*Python*: ' + str(platform.python_version()) + ' (' + str(platform.python_compiler()) + ')' + '\n'
 	running += '\t*Uptime*: ' + subprocess.check_output('uptime -p', shell=True)
 		
-	if re.compile(config.command_start + 'about').search(msg.text):
+	if re.compile(config['command_start'] + 'about').search(msg.text):
 		core.send_message(msg.chat.id, about, disable_web_page_preview=True, parse_mode="Markdown")
-	elif re.compile(config.command_start + 'system').search(msg.text):
+	elif re.compile(config['command_start'] + 'system').search(msg.text):
 		core.send_message(msg.chat.id, running, parse_mode="Markdown")
 	else:
 		core.send_message(msg.chat.id, start, disable_web_page_preview=True, parse_mode="Markdown")
