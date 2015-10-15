@@ -42,7 +42,7 @@ def get_server(msg):
 def get_summoner(server, input):
 	url = 'https://' + server + '.api.pvp.net/api/lol/' + server + '/v1.4/summoner/by-name/' + input		
 	params = {
-		'api_key': config.api['league_of_legends']
+		'api_key': config['api']['league_of_legends']
 	}
 	res = requests.get(
 		url,
@@ -59,7 +59,7 @@ def get_summoner_icon(server, summoner, summoner_name):
 def get_stats(server, summoner_id, summoner_name):
 	url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v1.3/stats/by-summoner/' + summoner_id + '/summary'
 	params = {
-		'api_key': config.api['league_of_legends']
+		'api_key': config['api']['league_of_legends']
 	}
 	res = requests.get(
 		url,
@@ -72,7 +72,7 @@ def get_stats(server, summoner_id, summoner_name):
 def get_stats_ranked(server, summoner_id, summoner_name):
 	url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v2.5/league/by-summoner/' + summoner_id
 	params = {
-		'api_key': config.api['league_of_legends']
+		'api_key': config['api']['league_of_legends']
 	}
 	res = requests.get(
 		url,
