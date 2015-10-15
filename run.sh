@@ -1,5 +1,5 @@
 #!/bin/sh
 while true
 do
-	python bot.py > log.txt
+	python bot.py
 done

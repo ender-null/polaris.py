@@ -21,7 +21,7 @@ def bot_init():
 	print('Loading config... ')
 	global config
 	config = load_json('config.json')
-	config['locale'] = load_json('locale/' + config['locale'] + '.json')
+	config['locale'] = load_json('locale/' + config['locale_file'] + '.json')
 	config['groups'] = load_json('groups.json')
 	
 	print('\nGetting bot data...')
@@ -70,7 +70,7 @@ def on_message_receive(msg):
 					try:	
 						v.action(msg)
 					except Exception as e:
-						core.send_message(config.groups['alerts'], str(e))
+						core.send_message(config['groups']['alerts'], str(e))
 				else:
 					v.action(msg)
 					 	
@@ -177,7 +177,7 @@ def download_and_send(chat, url, type=None, caption=None, headers=None, params=N
 					f.write(chunk)
 					f.flush()
 	except IOError, e:
-		return core.send_message(chat, config.locale.errors['download'], parse_mode="Markdown")
+		return core.send_message(chat, config['locale']['errors']['download'], parse_mode="Markdown")
 		
 	filename = fix_extension(tmp, filename)
 		
@@ -256,7 +256,6 @@ def convert_to_voice(path, file_name):
 	
 def tag_replace(text, msg):
 	dt = datetime.datetime.now()
-	greeting = 'Hi'
 
 	if dt.hour >= 5 and dt.hour < 12 :
 		greeting = config['locale']['greeting']['morning']
@@ -267,7 +266,6 @@ def tag_replace(text, msg):
 	else:
 		greeting = config['locale']['greeting']['night']
 	
-	goodbye = 'Goodbye'
 	if dt.hour >= 5 and dt.hour < 12 :
 		goodbye = config['locale']['goodbye']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
@@ -285,9 +283,6 @@ def tag_replace(text, msg):
 		'#GOODBYE': goodbye,
 		'#BOT_NAME': escape_markup(bot.first_name.split('-')[0]),
 		'#BOT_NAME_LOWER': escape_markup(bot.first_name.split('-')[0].lower()),
-		'#SMILE': u'😄',
-		'#SAD': u'😔',
-		'#EMBARASSED': u'😳',
 		'	': '',
 	}
 	

@@ -21,6 +21,6 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code))
+		return core.send_message(msg.chat.id, config['locale']['errors']['connection'].format(jstr.status_code))
 	
 	download_and_send(msg.chat.id, url, 'photo')

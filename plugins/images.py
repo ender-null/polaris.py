@@ -41,19 +41,19 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code), parse_mode="Markdown")
+		return core.send_message(msg.chat.id, config['locale']['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
 	
 	jdat = json.loads(jstr.text)
 
 	if jdat['responseData']['results'] < 1:
-		return core.send_message(msg.chat.id, config.locale.errors['results'])
+		return core.send_message(msg.chat.id, config['locale']['errors']['results'])
 		
 	is_real = False
 	counter = 0
 	while is_real == False:
 		counter = counter + 1
 		if counter > 5 or len(jdat['responseData']['results']) < 1:
-			return core.send_message(msg.chat.id, config.locale.errors['results'], parse_mode="Markdown")
+			return core.send_message(msg.chat.id, config['locale']['errors']['results'], parse_mode="Markdown")
 		
 		i = random.randint(1, len(jdat['responseData']['results']))-1
 

@@ -49,7 +49,7 @@ def get_summoner(server, input):
 		params = params,
 	)
 	if res.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(res.status_code), parse_mode="Markdown")
+		return core.send_message(msg.chat.id, config['locale']['errors']['connection'].format(res.status_code), parse_mode="Markdown")
 	return json.loads(res.text)
 
 def get_summoner_icon(server, summoner, summoner_name):
@@ -66,7 +66,7 @@ def get_stats(server, summoner_id, summoner_name):
 		params = params,
 	)
 	if res.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(res.status_code), parse_mode="Markdown")
+		return core.send_message(msg.chat.id, config['locale']['errors']['connection'].format(res.status_code), parse_mode="Markdown")
 	return json.loads(res.text)
 	
 def get_stats_ranked(server, summoner_id, summoner_name):
@@ -79,7 +79,7 @@ def get_stats_ranked(server, summoner_id, summoner_name):
 		params = params,
 	)
 	if res.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(res.status_code), parse_mode="Markdown")
+		return core.send_message(msg.chat.id, config['locale']['errors']['connection'].format(res.status_code), parse_mode="Markdown")
 	return json.loads(res.text)
 
 def action(msg):

@@ -1,16 +1,16 @@
 {
     "interactions": {
-        "#GREETING, *#FROM_FIRSTNAME*! #SMILE": [
+        "#GREETING, *#FROM_FIRSTNAME*! 😄": [
             "hello #BOT_NAME",
             "hey #BOT_NAME",
             "hi #BOT_NAME"
         ],
-        "#GOODBYE, *#FROM_FIRSTNAME*! #SMILE": [
+        "#GOODBYE, *#FROM_FIRSTNAME*! 😄": [
             "bye #BOT_NAME",
             "later #BOT_NAME",
             "see ya #BOT_NAME"
         ],
-        "Thank you, *#FROM_FIRSTNAME*! #SMILE": [
+        "Thank you, *#FROM_FIRSTNAME*! 😄": [
             "thanks,? #BOT_NAME",
             "thank you,? #BOT_NAME",
             "ty,? #BOT_NAME",
@@ -18,17 +18,17 @@
             "tnx,? #BOT_NAME",
             "arigat*,? #BOT_NAME"
         ],
-        "Welcome back, *#FROM_FIRSTNAME*! #SMILE": [
+        "Welcome back, *#FROM_FIRSTNAME*! 😄": [
             "^i\"m back",
             "^i\"m home",
             "^tadaima"
         ],
-        "*#FROM_FIRSTNAME*... #EMBARASSED": [
+        "*#FROM_FIRSTNAME*... 😳": [
             "i love you,? #BOT_NAME",
             "marry me,? #BOT_NAME",
             "#BOT_NAME <3"
         ],
-        "I\"m sorry *#FROM_FIRSTNAME*... #SAD": [
+        "I\"m sorry *#FROM_FIRSTNAME*... 😔": [
             "bad,? #BOT_NAME",
             "fuck you,? #BOT_NAME",
             "you suck,? #BOT_NAME",

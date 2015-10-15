@@ -28,12 +28,12 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, config.locale.errors['connection'].format(jstr.status_code), parse_mode="Markdown")
+		return core.send_message(msg.chat.id, config['locale']['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
 	
 	jdat = json.loads(jstr.text)
 	
 	if len(jdat) < 1:
-		return core.send_message(msg.chat.id, config.locale.errors['results'])
+		return core.send_message(msg.chat.id, config['locale']['errors']['results'])
 	
 	i = random.randint(1, len(jdat))-1
 	

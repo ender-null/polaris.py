@@ -60,3 +60,4 @@ tmp/
 config.json
 groups.json
 log.txt
+locale/weeabo.json
