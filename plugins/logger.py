@@ -6,9 +6,15 @@ triggers = {
 }
 
 def action(msg):
-	if (msg.chat.id != config['groups']['admin']
-	and msg.chat.id != config['groups']['alerts']
-	and msg.chat.id != config['groups']['log']):
+	
+	if ((str(msg.chat.id) in groups and groups[str(msg.chat.id)]['special'] == 'admin')
+	or (str(msg.chat.id) in groups and groups[str(msg.chat.id)]['special'] == 'alerts')
+	or (str(msg.chat.id) in groups and groups[str(msg.chat.id)]['special'] == 'log')):
+		log = False
+	else:
+		log = True
+
+	if log == True:
 		if msg.text != '':
 			if msg.chat.id != msg.from_user.id and msg.chat.type=='private':
 				msg.chat.title = msg.chat.first_name
@@ -29,10 +35,13 @@ def action(msg):
 				message += '*Group ID*: ' + str(msg.chat.id) + '\n'
 			message += '*Message ID*: ' + str(msg.message_id)
 			
-			core.send_message(config['groups']['log'], message, parse_mode="Markdown")
+			for group in groups.items():
+				if group[1]['special'] == 'log':
+					core.send_message(group[0], message, parse_mode="Markdown")
 		else:
-			core.forward_message(config['groups']['log'], msg.chat.id, msg.message_id)
-		
+			for group in groups.items():
+				if group[1]['special'] == 'log':
+					core.forward_message(group[0],  msg.chat.id, msg.message_id)
 	else:
 		if hasattr(msg, 'reply_to_message') and msg.reply_to_message.from_user.id == bot.id:
 			message_id = last_word(msg.reply_to_message.text.split('\n')[-1])

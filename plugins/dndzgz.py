@@ -29,12 +29,12 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, config['locale']['errors']['connection'].format(jstr.status_code))
+		return core.send_message(msg.chat.id, locale['default']['errors']['connection'].format(jstr.status_code))
 	
 	jdat = json.loads(jstr.text)
 
 	if jdat['items'] < 1:
-		return core.send_message(msg.chat.id, config['locale']['errors']['results'])
+		return core.send_message(msg.chat.id, locale['default']['errors']['results'])
 
 	text = '*' + jdat['title'] + '*\n'
 	for k,v in jdat['items']:

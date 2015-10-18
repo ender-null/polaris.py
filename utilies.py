@@ -21,8 +21,14 @@ def bot_init():
 	print('Loading config... ')
 	global config
 	config = load_json('config.json')
-	config['locale'] = load_json('locale/' + config['locale_file'] + '.json')
-	config['groups'] = load_json('groups.json')
+	
+	global locale
+	locale = {}
+	for file in config['locales']:
+		locale[file] = load_json('locale/' + file + '.json')
+		
+	global groups
+	groups = load_json('groups.json')
 	
 	print('\nGetting bot data...')
 	global core
@@ -70,7 +76,9 @@ def on_message_receive(msg):
 					try:	
 						v.action(msg)
 					except Exception as e:
-						core.send_message(config['groups']['alerts'], str(e))
+						for group in groups.items():
+							if group[1]['special'] == 'alerts':
+								core.send_message(group[0], str(e))
 				else:
 					v.action(msg)
 					 	
@@ -78,7 +86,7 @@ def process_message(msg):
 	if (config['process']['new_chat_participant']==True
 	and hasattr(msg, 'new_chat_participant')):
 		if msg.new_chat_participant.id != bot.id:
-			msg.text = 'hi ' + str(bot.first_name)
+			msg.text = 'hi ' + bot.first_name
 			msg.from_user = msg.new_chat_participant
 		else:
 			msg.text = '/about'
@@ -86,25 +94,27 @@ def process_message(msg):
 	if (config['process']['left_chat_participant']==True
 	and hasattr(msg, 'left_chat_participant')):
 		if msg.left_chat_participant.id != bot.id:
-			msg.text = 'bye ' + str(bot.first_name)
+			msg.text = 'bye ' + bot.first_name
 			msg.from_user = msg.left_chat_participant
 	
 	if (config['process']['reply_to_message']==True
 	and hasattr(msg, 'reply_to_message')
 	and hasattr(msg.reply_to_message, 'text')
-	and hasattr(msg, 'text')
-	and msg.chat.id != config['groups']['log']):
-		if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config['command_start']):
-			msg.text = str(bot.first_name) + ' ' + msg.text
-		elif msg.text.startswith(config['command_start']):
-			msg.text += ' ' + msg.reply_to_message.text
+	and hasattr(msg, 'text')):
+		for group in groups.items():
+			if group[1]['special'] == 'log' and group[0] == msg.chat.id:
+				if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config['command_start']):
+					msg.text = bot.first_name + ' ' + msg.text
+				elif msg.text.startswith(config['command_start']):
+					msg.text += ' ' + msg.reply_to_message.text
 	
 	if (config['process']['chatter']==True
 	and hasattr(msg, 'text')
 	and msg.chat.type == 'private'
-	and not msg.text.startswith(config['command_start'])
-	and msg.chat.id != config['groups']['log']):
-		msg.text = str(bot.first_name) + ' ' + msg.text
+	and not msg.text.startswith(config['command_start'])):
+		for group in groups.items():
+			if group[1]['special'] == 'log' and group[0] == msg.chat.id:
+				msg.text = bot.first_name + ' ' + msg.text
 		
 	return msg
 
@@ -177,7 +187,7 @@ def download_and_send(chat, url, type=None, caption=None, headers=None, params=N
 					f.write(chunk)
 					f.flush()
 	except IOError, e:
-		return core.send_message(chat, config['locale']['errors']['download'], parse_mode="Markdown")
+		return core.send_message(chat, locale['default']['errors']['download'], parse_mode="Markdown")
 		
 	filename = fix_extension(tmp, filename)
 		
@@ -258,22 +268,22 @@ def tag_replace(text, msg):
 	dt = datetime.datetime.now()
 
 	if dt.hour >= 5 and dt.hour < 12 :
-		greeting = config['locale']['greeting']['morning']
+		greeting = locale['default']['greeting']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		greeting = config['locale']['greeting']['afternoon']
+		greeting = locale['default']['greeting']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		greeting = config['locale']['greeting']['evening']
+		greeting = locale['default']['greeting']['evening']
 	else:
-		greeting = config['locale']['greeting']['night']
+		greeting = locale['default']['greeting']['night']
 	
 	if dt.hour >= 5 and dt.hour < 12 :
-		goodbye = config['locale']['goodbye']['morning']
+		goodbye = locale['default']['goodbye']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		goodbye = config['locale']['goodbye']['afternoon']
+		goodbye = locale['default']['goodbye']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		goodbye = config['locale']['goodbye']['evening']
+		goodbye = locale['default']['goodbye']['evening']
 	else:
-		goodbye = config['locale']['goodbye']['night']
+		goodbye = locale['default']['goodbye']['night']
 
 	tags = {
 		'#FROM_FIRSTNAME': escape_markup(msg.from_user.first_name),
