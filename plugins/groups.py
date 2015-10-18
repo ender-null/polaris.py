@@ -29,6 +29,7 @@ def action(msg):
 			groups[str(msg.chat.id)]['rules'] = ''
 			groups[str(msg.chat.id)]['locale'] = 'default'
 			groups[str(msg.chat.id)]['special'] = None
+			groups[str(msg.chat.id)]['hide'] = False
 			groups[str(msg.chat.id)]['mods'] = {}
 			groups[str(msg.chat.id)]['mods'][msg.from_user.id] = msg.from_user.first_name
 		
@@ -46,7 +47,8 @@ def action(msg):
 		if input == 'groups':
 			message = '*Groups:*'
 			for group in groups.items():
-				message += '\n\t' + group[1]['title'] + ' (' + group[0] + ')'
+				if group[1]['hide'] != True:
+					message += '\n\t' + group[1]['title'] + ' (' + group[0] + ')'
 		elif input == 'mods':
 			message = '*Mods for ' + groups[str(msg.chat.id)]['title'] + ':*'
 			for mod in groups[str(msg.chat.id)]['mods'].items():
