@@ -76,6 +76,7 @@ def on_message_receive(msg):
 					try:	
 						v.action(msg)
 					except Exception as e:
+						core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['exception'])
 						for group in groups.items():
 							if group[1]['special'] == 'alerts':
 								core.send_message(group[0], str(e))
@@ -101,20 +102,17 @@ def process_message(msg):
 	and hasattr(msg, 'reply_to_message')
 	and hasattr(msg.reply_to_message, 'text')
 	and hasattr(msg, 'text')):
-		for group in groups.items():
-			if group[1]['special'] == 'log' and group[0] == msg.chat.id:
-				if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config['command_start']):
-					msg.text = bot.first_name + ' ' + msg.text
-				elif msg.text.startswith(config['command_start']):
-					msg.text += ' ' + msg.reply_to_message.text
+		if str(msg.chat.id) in groups and groups[str(msg.chat.id)]['special'] != 'log':
+			if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config['command_start']):
+				msg.text = bot.first_name + ' ' + msg.text
+			elif msg.text.startswith(config['command_start']):
+				msg.text += ' ' + msg.reply_to_message.text
 	
 	if (config['process']['chatter']==True
 	and hasattr(msg, 'text')
 	and msg.chat.type == 'private'
 	and not msg.text.startswith(config['command_start'])):
-		for group in groups.items():
-			if group[1]['special'] == 'log' and group[0] == msg.chat.id:
-				msg.text = bot.first_name + ' ' + msg.text
+		msg.text = bot.first_name + ' ' + msg.text
 		
 	return msg
 
@@ -166,7 +164,37 @@ def all_but_first_word(text):
 def last_word(text):
 	if not ' ' in text:
 		return False
-	return text.split()[-1] 
+	return text.split()[-1]
+	
+def get_coords(input):
+	url = 'http://maps.googleapis.com/maps/api/geocode/json'
+	params = {
+		'address': input
+	}
+	
+	jstr = requests.get(
+		url,
+		params = params,
+	)
+		
+	if jstr.status_code != 200:
+		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
+	
+	jdat = json.loads(jstr.text)
+	
+	if jdat['status'] == 'ZERO_RESULTS':
+		return false
+
+	return {
+		jdat['results'][0]['geometry']['location']['lat'],
+		jdat['results'][0]['geometry']['location']['lng']
+	}
+	
+def get_locale(chat_id):
+	if str(chat_id) in groups:
+		return groups[str(chat_id)]['locale']
+	else:
+		return 'default'
 	
 def download_and_send(chat, url, type=None, caption=None, headers=None, params=None):	
 	name = os.path.splitext(str(time.mktime(datetime.datetime.now().timetuple())))[0]
@@ -187,7 +215,7 @@ def download_and_send(chat, url, type=None, caption=None, headers=None, params=N
 					f.write(chunk)
 					f.flush()
 	except IOError, e:
-		return core.send_message(chat, locale['default']['errors']['download'], parse_mode="Markdown")
+		return core.send_message(chat, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")
 		
 	filename = fix_extension(tmp, filename)
 		
@@ -268,22 +296,22 @@ def tag_replace(text, msg):
 	dt = datetime.datetime.now()
 
 	if dt.hour >= 5 and dt.hour < 12 :
-		greeting = locale['default']['greeting']['morning']
+		greeting = locale[get_locale(msg.chat.id)]['greeting']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		greeting = locale['default']['greeting']['afternoon']
+		greeting = locale[get_locale(msg.chat.id)]['greeting']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		greeting = locale['default']['greeting']['evening']
+		greeting = locale[get_locale(msg.chat.id)]['greeting']['evening']
 	else:
-		greeting = locale['default']['greeting']['night']
+		greeting = locale[get_locale(msg.chat.id)]['greeting']['night']
 	
 	if dt.hour >= 5 and dt.hour < 12 :
-		goodbye = locale['default']['goodbye']['morning']
+		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		goodbye = locale['default']['goodbye']['afternoon']
+		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		goodbye = locale['default']['goodbye']['evening']
+		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['evening']
 	else:
-		goodbye = locale['default']['goodbye']['night']
+		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['night']
 
 	tags = {
 		'#FROM_FIRSTNAME': escape_markup(msg.from_user.first_name),

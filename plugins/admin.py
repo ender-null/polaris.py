@@ -16,7 +16,7 @@ def action(msg):
 	message = locale['default']['errors']['argument']
 	
 	if msg.from_user.id not in config['admin']:
-		return core.send_message(msg.chat.id, locale['default']['errors']['permission'])
+		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['permission'])
 	
 	if msg.text.startswith(config['command_start'] + 'run'):
 		message = subprocess.check_output(input, shell=True)
@@ -30,7 +30,7 @@ def action(msg):
 		text = get_input(input)
 		
 		if not core.send_message(chat_id, text):
-			return core.send_message(msg.chat.id, locale['default']['errors']['argument'], parse_mode="Markdown")
+			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['argument'], parse_mode="Markdown")
 		return
 			
 	elif msg.text.startswith(config['command_start'] + 'stop'):

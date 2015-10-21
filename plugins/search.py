@@ -35,12 +35,12 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale['default']['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
+		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
 	
 	jdat = json.loads(jstr.text)
 
 	if jdat['responseData']['results'] < 1:
-		return core.send_message(msg.chat.id, locale['default']['errors']['results'], parse_mode="Markdown")
+		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'], parse_mode="Markdown")
 	
 	text = '*Search*: "_' + input + '_"\n\n'
 	for i in range(0, len(jdat['responseData']['results'])):

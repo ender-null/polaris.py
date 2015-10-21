@@ -8,8 +8,8 @@ triggers = {
 def action(msg):
 	input = msg.text.lower()
 
-	for interaction in locale['default']['interactions']:
-		for trigger in locale['default']['interactions'][interaction]:
+	for interaction in locale[get_locale(msg.chat.id)]['interactions']:
+		for trigger in locale[get_locale(msg.chat.id)]['interactions'][interaction]:
 			trigger = tag_replace(trigger, msg)
 			if re.compile(trigger.lower()).search(input):
 				interaction = tag_replace(interaction, msg)
