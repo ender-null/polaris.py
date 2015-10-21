@@ -165,7 +165,7 @@ def last_word(text):
 	if not ' ' in text:
 		return False
 	return text.split()[-1]
-	
+		
 def get_coords(input):
 	url = 'http://maps.googleapis.com/maps/api/geocode/json'
 	params = {
