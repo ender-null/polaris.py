@@ -184,11 +184,13 @@ def get_coords(input):
 	
 	if jdat['status'] == 'ZERO_RESULTS':
 		return false
+	
+	locality = jdat['results'][0]['address_components'][0]['long_name']
+	for address in jdat['results'][0]['address_components']:
+		if 'country' in address['types']:
+			country = address['long_name']
 
-	return {
-		jdat['results'][0]['geometry']['location']['lat'],
-		jdat['results'][0]['geometry']['location']['lng']
-	}
+	return jdat['results'][0]['geometry']['location']['lat'], jdat['results'][0]['geometry']['location']['lng'], locality, country
 	
 def get_locale(chat_id):
 	if str(chat_id) in groups:
