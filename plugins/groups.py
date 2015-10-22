@@ -10,7 +10,7 @@ triggers = [
 	'^' + config['command_start'] + 'add',
 	'^' + config['command_start'] + 'remove',
 	'^' + config['command_start'] + 'set',
-	'^' + config['command_start'] + 'kick',
+	'^' + config['command_start'] + 'kill',
 	'^' + config['command_start'] + 'broadcast',
 	'^' + config['command_start'] + 'promote',
 	'^' + config['command_start'] + 'demote'
@@ -121,8 +121,15 @@ def action(msg):
 	elif msg.text.startswith(config['command_start'] + 'broadcast'):
 		message = 'Unsupported action.'
 		
-	elif msg.text.startswith(config['command_start'] + 'kick'):
-		message = 'Unsupported action.'
+	elif msg.text.startswith(config['command_start'] + 'kill'):
+		if hasattr(msg, 'reply_to_message'):
+			for group in groups.items():
+				if group[1]['special']=='admin':
+					message = '/kick ' + str(msg.reply_to_message.from_user.id) + ' from ' + str(msg.chat.id)[1:]
+					core.send_message(group[0], message)
+			return
+		else:
+			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['id'])
 		
 	elif msg.text.startswith(config['command_start'] + 'desc'):
 		if str(msg.chat.id) in groups:
