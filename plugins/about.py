@@ -1,15 +1,13 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'about\nInfo about *' + bot.first_name + '*'
-
-triggers = {
-	'^' + config['command_start'] + 'about',
-	'^' + config['command_start'] + 'system',
-	'^' + config['command_start'] + 'start',
-	'^/start',
-}
-
+commands = [
+	'^about',
+	'^system',
+	'^start',
+	'/start'
+]
+description = 'Info about *' + bot.first_name + '*'
 typing = True
 
 def action(msg):			
@@ -21,21 +19,24 @@ def action(msg):
 	source = '\n[Source Code on Github](https://github.com/luksireiku/polaris)'
 	channel = '\nChannel: @PolarisUpdates'
 		
-	about = header + '\n' + license + channel
-	about = tag_replace(about, msg)
-	start = tag_replace(header, msg)
-	
-	running = '\n*Running on*:\n'
-	running += '\t*System*: ' + subprocess.check_output('head -n1 /etc/issue | cut -d " " -f -3', shell=True)
-	running += '\t*Kernel*: ' + subprocess.check_output('uname -rs', shell=True)
-	running += '\t*Processor*: ' + subprocess.check_output('cat /proc/cpuinfo | grep "model name" | tr -s " " | cut -d " " -f 3-', shell=True)
-	running += '\t*RAM*: ' + subprocess.check_output('dmidecode | grep "Range Size" | head -n 1 | cut -d " " -f 3-', shell=True)
-	running += '\t*Python*: ' + str(platform.python_version()) + ' (' + str(platform.python_compiler()) + ')' + '\n'
-	running += '\t*Uptime*: ' + subprocess.check_output('uptime -p', shell=True)
-		
 	if re.compile(config['command_start'] + 'about').search(msg.text):
+		about = header + '\n' + license + channel
+		about = tag_replace(about, msg)
+	
 		core.send_message(msg.chat.id, about, disable_web_page_preview=True, parse_mode="Markdown")
+		
 	elif re.compile(config['command_start'] + 'system').search(msg.text):
+		running = '\n*Running on*:\n'
+		running += '\t*System*: ' + subprocess.check_output('head -n1 /etc/issue | cut -d " " -f -3', shell=True)
+		running += '\t*Kernel*: ' + subprocess.check_output('uname -rs', shell=True)
+		running += '\t*Processor*: ' + subprocess.check_output('cat /proc/cpuinfo | grep "model name" | tr -s " " | cut -d " " -f 3-', shell=True)
+		running += '\t*RAM*: ' + subprocess.check_output('dmidecode | grep "Range Size" | head -n 1 | cut -d " " -f 3-', shell=True)
+		running += '\t*Python*: ' + str(platform.python_version()) + ' (' + str(platform.python_compiler()) + ')' + '\n'
+		running += '\t*Uptime*: ' + subprocess.check_output('uptime -p', shell=True)
+		
 		core.send_message(msg.chat.id, running, parse_mode="Markdown")
+		
 	else:
-		core.send_message(msg.chat.id, start, disable_web_page_preview=True, parse_mode="Markdown")
+		start = tag_replace(header, msg)
+		
+		core.send_message(msg.chat.id, start, parse_mode="Markdown")

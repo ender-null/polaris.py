@@ -1,11 +1,11 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'cat\nGet a cat pic!'
-
-triggers = {
-	'^' + config['command_start'] + 'cats?'
-}
+commands = [
+	'^cat'
+]
+description = 'Get a cat pic!'
+typing = True
 
 def action(msg):			
 

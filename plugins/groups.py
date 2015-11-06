@@ -1,20 +1,22 @@
 from __main__ import *
 from utilies import *
 
-triggers = [
-	'^' + config['command_start'] + 'info',
-	'^' + config['command_start'] + 'desc',
-	'^' + config['command_start'] + 'rules',
-	'^' + config['command_start'] + 'join',
-	'^' + config['command_start'] + 'list',
-	'^' + config['command_start'] + 'add',
-	'^' + config['command_start'] + 'remove',
-	'^' + config['command_start'] + 'set',
-	'^' + config['command_start'] + 'kill',
-	'^' + config['command_start'] + 'broadcast',
-	'^' + config['command_start'] + 'promote',
-	'^' + config['command_start'] + 'demote'
+commands = [
+	'^info',
+	'^desc',
+	'^rules',
+	'^join',
+	'^add',
+	'^remove',
+	'^set',
+	'^kill',
+	'^exterminate',
+	'^broadcast',
+	'^promote',
+	'^demote'
 ]
+typing = True
+hidden = True
 
 def action(msg):			
 	input = get_input(msg.text)
@@ -46,7 +48,7 @@ def action(msg):
 				groups[str(msg.chat.id)]['mods'] = {}
 				groups[str(msg.chat.id)]['mods'][msg.from_user.id] = msg.from_user.first_name
 			
-				save_json('groups.json', groups)
+				save_json('data/groups.json', groups)
 				
 				message = 'Group added.'
 			else:
@@ -87,7 +89,7 @@ def action(msg):
 				
 			message = 'Updated hide status of ' + groups[str(msg.chat.id)]['title'] + '.'
 			
-		save_json('groups.json', groups)
+		save_json('data/groups.json', groups)
 		
 	elif msg.text.startswith(config['command_start'] + 'list'):
 		if input == 'groups':
@@ -153,7 +155,7 @@ def action(msg):
 		if hasattr(msg, 'reply_to_message'):
 			groups[str(msg.chat.id)]['mods'][str(msg.reply_to_message.from_user.id)] = str(msg.reply_to_message.from_user.first_name)
 			message = msg.reply_to_message.from_user.first_name + ' is now a moderator.'
-			save_json('groups.json', groups)
+			save_json('data/groups.json', groups)
 		else:
 			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['id'])
 		
@@ -161,7 +163,7 @@ def action(msg):
 		if hasattr(msg, 'reply_to_message'):
 			del groups[str(msg.chat.id)]['mods'][str(msg.reply_to_message.from_user.id)]
 			message = msg.reply_to_message.from_user.first_name + ' is not a moderator.'
-			save_json('groups.json', groups)
+			save_json('data/groups.json', groups)
 		else:
 			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['id'])
 		

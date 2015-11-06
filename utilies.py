@@ -15,20 +15,20 @@ import re
 import sys
 import json
 import platform
-from clint.textui import colored
+from collections import OrderedDict
 
 def bot_init():
 	print('Loading config... ')
 	global config
-	config = load_json('config.json')
+	config = load_json('data/config.json')
 	
 	global locale
-	locale = {}
+	locale = OrderedDict()
 	for file in config['locales']:
 		locale[file] = load_json('locale/' + file + '.json')
 		
 	global groups
-	groups = load_json('groups.json')
+	groups = load_json('data/groups.json')
 	
 	print('\nGetting bot data...')
 	global core
@@ -45,7 +45,7 @@ def bot_init():
 
 	print('\nLoading plugins...')
 	global plugins
-	plugins = {}
+	plugins = OrderedDict()
 	plugins = load_plugins()
 
 	global is_started
@@ -65,23 +65,24 @@ def on_message_receive(msg):
 		msg.text = ''
 	lower = msg.text.lower()
 
-	for i,v in plugins.items():
-		for t in v.triggers:
-			t = tag_replace(t, msg)
-			if re.compile(t).search(lower):
-				if hasattr(v, 'typing'):
+	for i,plugin in plugins.items():
+		for command in plugin.commands:
+			trigger = command.replace("^", "^" + config['command_start'])
+			trigger = tag_replace(trigger, msg)
+			if re.compile(trigger).search(lower):
+				if hasattr(plugin, 'typing'):
 					core.send_chat_action(msg.chat.id, 'typing')
 					
 				if config['handle_exceptions'] == True:
 					try:	
-						v.action(msg)
+						plugin.action(msg)
 					except Exception as e:
-						core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['exception'])
+						#core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['exception'])
 						for group in groups.items():
 							if group[1]['special'] == 'alerts':
 								core.send_message(group[0], str(e))
 				else:
-					v.action(msg)
+					plugin.action(msg)
 					 	
 def process_message(msg):
 	if (config['process']['new_chat_participant']==True

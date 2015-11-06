@@ -1,20 +1,22 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'zgzbus *[poste]*\nGets real time bus poste data. Only works for [Urbanos de Zaragoza](http://www.urbanosdezaragoza.es).'
-
-triggers = {
-	'^' + config['command_start'] + 'zgzbus',
-	'^' + config['command_start'] + 'zgzbus',
-	'^' + config['command_start'] + 'poste',
-}
-
+commands = [
+	'^zgzbus',
+	'^poste',
+	'^bus',
+]
+parameters = (
+	('poste', True),
+)
+description = 'Gets real time bus poste data. Only works for [Urbanos de Zaragoza](http://www.urbanosdezaragoza.es).'
 typing = True
 
 def action(msg):
 	input = get_input(msg.text)
 		
 	if not input:
+		doc = commands[0].replace('^', config['command_start']) + '\n' + description
 		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
 		
 	url = 'http://www.dndzgz.com/point'

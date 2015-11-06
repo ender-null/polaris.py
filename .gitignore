@@ -61,3 +61,5 @@ config.json
 groups.json
 log.txt
 locale/weeabo.json
+data/config.json
+data/groups.json

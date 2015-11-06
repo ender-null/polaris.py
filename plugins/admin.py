@@ -1,14 +1,15 @@
 from __main__ import *
 from utilies import *
 
-triggers = {
-	'^' + config['command_start'] + 'run ',
-	'^' + config['command_start'] + 'reload',
-	'^' + config['command_start'] + 'msg ',
-	'^' + config['command_start'] + 'stop',
-}
-
+commands = [
+	'^run ',
+	'^reload'
+	'^msg '
+	'^stop'
+]
+description = 'Get list of basic information for all commands, or more detailed documentation on a specified command.'
 typing = True
+hidden = True
 
 def action(msg):			
 	input = get_input(msg.text)
