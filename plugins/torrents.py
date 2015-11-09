@@ -90,9 +90,13 @@ def action(msg):
 
 	message = '*Kickass search*: "_' + input + '_"\n\n'
 	for i in range(0, limit):
-		message += get_category_icon(jdat['list'][i]['category']) + ' [' + delete_markup(jdat['list'][i]['title']) + '](' + delete_markup(jdat['list'][i]['torrentLink']) + ')\n'
-		message += u'📦 ' + get_size(jdat['list'][i]['size']) + ' | '
-		message += u'🌱 ' + str(jdat['list'][i]['seeds']) + u' | 👤 ' + str(jdat['list'][i]['peers']) + '\n\n'
+		message += get_category_icon(jdat['list'][i]['category']) + ' [' + delete_markup(jdat['list'][i]['title']) + '](' + delete_markup(jdat['list'][i]['torrentLink']) + ')'
+		if jdat['list'][i]['verified'] == 0:
+			message += u' ❗️'
+		message += u'\n📦 ' + get_size(jdat['list'][i]['size']) + ' | '
+		message += u'🌱 ' + str(jdat['list'][i]['seeds'])
+		message += u' | 👤 ' + str(jdat['list'][i]['peers'])
+		message += u' | 👍 ' + str(jdat['list'][i]['votes']) + '\n\n'
 
 	message = message.replace('&amp;', '&')
 	
