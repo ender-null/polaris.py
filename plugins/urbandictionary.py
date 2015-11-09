@@ -1,22 +1,23 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'define *[term]*\nReturns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
-
-triggers = {
-	'^' + config['command_start'] + 'define',
-	'^' + config['command_start'] + 'ud',
-	'^' + config['command_start'] + 'urbandictionary',
-	'^' + config['command_start'] + 'urban'
-}
-
+commands = [
+	'^define',
+	'^ud',
+	'^urbandictionary'
+]
+parameters = (
+	('term', True),
+)
+description = 'Returns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
 typing = True
 
 def action(msg):
 	input = get_input(msg.text)
 		
 	if not input:
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		doc = get_doc(commands, parameters, description)
+		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 		
 	url = 'http://api.urbandictionary.com/v0/define'
 	params = {

@@ -1,9 +1,10 @@
 from __main__ import *
 from utilies import *
 
-triggers = {
+commands = [
 	''
-}
+]
+hidden = True
 
 def action(msg):
 	

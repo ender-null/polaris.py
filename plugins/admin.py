@@ -3,8 +3,8 @@ from utilies import *
 
 commands = [
 	'^run ',
-	'^reload'
-	'^msg '
+	'^reload',
+	'^msg ',
 	'^stop'
 ]
 description = 'Get list of basic information for all commands, or more detailed documentation on a specified command.'

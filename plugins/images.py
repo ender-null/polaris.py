@@ -1,14 +1,17 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'image *[query]*\nThis command performs a Google Images search for the given query. One random top result is returned. Safe search is enabled by default; use *' + config['command_start'] + 'insfw* to get potentially NSFW results.'
-
-triggers = {
-	'^' + config['command_start'] + 'images?',
-	'^' + config['command_start'] + 'img',
-	'^' + config['command_start'] + 'i ',
-	'^' + config['command_start'] + 'insfw'
-}
+commands = [
+	'^image',
+	'^img',
+	'^i ',
+	'^insfw'
+]
+parameters = (
+	('query', True),
+)
+description = 'This command performs a Google Images search for the given query. One random top result is returned. Safe search is enabled by default; use *' + config['command_start'] + 'insfw* to get potentially NSFW results.'
+typing = True
 
 exts = {
 	'.png$',
@@ -22,6 +25,7 @@ def action(msg):
 	input = get_input(msg.text)
 		
 	if not input:
+		doc = get_doc(commands, parameters, description)
 		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 		
 	url = 'http://ajax.googleapis.com/ajax/services/search/images'

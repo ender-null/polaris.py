@@ -3,12 +3,14 @@
         "#GREETING, *#FROM_FIRSTNAME*! 😄": [
             "hello #BOT_NAME",
             "hey #BOT_NAME",
-            "hi #BOT_NAME"
+            "hi #BOT_NAME",
+			"^!new_chat_participant$"
         ],
         "#GOODBYE, *#FROM_FIRSTNAME*! 😄": [
             "bye #BOT_NAME",
             "later #BOT_NAME",
-            "see ya #BOT_NAME"
+            "see ya #BOT_NAME",
+			"^!left_chat_participant$"
         ],
         "Thank you, *#FROM_FIRSTNAME*! 😄": [
             "thanks,? #BOT_NAME",

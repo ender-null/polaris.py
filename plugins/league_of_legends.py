@@ -1,21 +1,24 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'summoner *[summoner]*\nGets stats from summoner.'
-
-triggers = {
-	'^' + config['command_start'] + 'summoner',
-	'^' + config['command_start'] + 'br ',
-	'^' + config['command_start'] + 'eune ',
-	'^' + config['command_start'] + 'euw ',
-	'^' + config['command_start'] + 'kr ',
-	'^' + config['command_start'] + 'lan ',
-	'^' + config['command_start'] + 'las ',
-	'^' + config['command_start'] + 'na ',
-	'^' + config['command_start'] + 'oce ',
-	'^' + config['command_start'] + 'ru ',
-	'^' + config['command_start'] + 'tr ',
-}
+commands = [
+	'^stats',
+	'^br ',
+	'^eune ',
+	'^euw ',
+	'^kr ',
+	'^lan ',
+	'^las ',
+	'^na ',
+	'^oce ',
+	'^ru ',
+	'^tr '
+]
+parameters = (
+	('summoner name', True),
+)
+description = 'Gets stats from League of Legends summoner.'
+typing = True
 
 def get_server(msg):
 	if re.compile(config['command_start'] + 'br').search(msg.text):
@@ -83,10 +86,13 @@ def get_stats_ranked(server, summoner_id, summoner_name):
 	return json.loads(res.text)
 
 def action(msg):
-	input = get_input(msg.text).lower().replace(' ', '')
+	input = get_input(msg.text)
 	
 	if not input:
+		doc = get_doc(commands, parameters, description)
 		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+	else:
+		input = input.lower().replace(' ', '')
 	
 	server = get_server(msg)
 	summoner = get_summoner(server, input)
@@ -97,7 +103,7 @@ def action(msg):
 	except:
 		ranked = None
 		
-	text = 'Name: ' + summoner[input]['name']
+	text = summoner[input]['name']
 	text += '\nLevel: ' + str(summoner[input]['summonerLevel'])
 	text += '\n\nNormal games:'
 	for summary in stats['playerStatSummaries']:

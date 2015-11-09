@@ -2,9 +2,9 @@ from __main__ import *
 from utilies import *
 
 commands = [
-	'^zgzbus',
-	'^poste',
 	'^bus',
+	'^poste',
+	'^zgzbus',
 ]
 parameters = (
 	('poste', True),
@@ -16,8 +16,8 @@ def action(msg):
 	input = get_input(msg.text)
 		
 	if not input:
-		doc = commands[0].replace('^', config['command_start']) + '\n' + description
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		doc = get_doc(commands, parameters, description)
+		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 		
 	url = 'http://www.dndzgz.com/point'
 	params = {

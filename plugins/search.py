@@ -1,22 +1,24 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'search *[query]*\nThis command performs a Google search for the given query. Safe search is enabled by default; use *' + config['command_start'] + 'gnsfw* to get potentially NSFW results'
-
-triggers = {
-	'^' + config['command_start'] + 'search',
-	'^' + config['command_start'] + 'google',
-	'^' + config['command_start'] + 'g',
-	'^' + config['command_start'] + 'gnsfw'
-}
-
+commands = [
+	'^search',
+	'^google',
+	'^g ',
+	'^gnswf'
+]
+parameters = (
+	('query', True),
+)
+description = 'This command performs a Google search for the given query. Safe search is enabled by default; use *' + config['command_start'] + 'gnsfw* to get potentially NSFW results.'
 typing = True
 
 def action(msg):
 	input = get_input(msg.text)
 		
 	if not input:
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+		doc = get_doc(commands, parameters, description)
+		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
 		
 	url = 'http://ajax.googleapis.com/ajax/services/search/web'
 	params = {
@@ -46,6 +48,6 @@ def action(msg):
 	for i in range(0, len(jdat['responseData']['results'])):
 		result_url = jdat['responseData']['results'][i]['unescapedUrl']
 		result_title = jdat['responseData']['results'][i]['titleNoFormatting']
-		text += result_title + '\n' + result_url + '\n\n' 
+		text += '\t[' + delete_markup(result_title) + '](' + delete_markup(result_url) + ')\n\n' 
 	
 	core.send_message(msg.chat.id, text, disable_web_page_preview=True, parse_mode="Markdown")

@@ -1,18 +1,22 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'konachan *[tags]*\nGets an image from [Konachan](http://konachan.com); use *' + config['command_start'] + 'knsfw* to get potentially NSFW results.'
-
-triggers = {
-	'^' + config['command_start'] + 'konachan',
-	'^' + config['command_start'] + 'k ',
-	'^' + config['command_start'] + 'knsfw'
-}
+commands = [
+	'^konachan',
+	'^k ',
+	'^knsfw',
+]
+parameters = (
+	('tags', True),
+)
+description = 'Gets an image from [Konachan](http://konachan.com); use *' + config['command_start'] + 'knsfw* to get potentially NSFW results.'
+typing = True
 
 def action(msg):
 	input = get_input(msg.text)
 	
 	if not input:
+		doc = get_doc(commands, parameters, description)
 		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 	
 	payload = input.replace(' ', '+')

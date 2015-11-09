@@ -88,7 +88,7 @@ def process_message(msg):
 	if (config['process']['new_chat_participant']==True
 	and hasattr(msg, 'new_chat_participant')):
 		if msg.new_chat_participant.id != bot.id:
-			msg.text = 'hi ' + bot.first_name
+			msg.text = '!new_chat_participant'
 			msg.from_user = msg.new_chat_participant
 		else:
 			msg.text = '/about'
@@ -96,7 +96,7 @@ def process_message(msg):
 	if (config['process']['left_chat_participant']==True
 	and hasattr(msg, 'left_chat_participant')):
 		if msg.left_chat_participant.id != bot.id:
-			msg.text = 'bye ' + bot.first_name
+			msg.text = '!left_chat_participant'
 			msg.from_user = msg.left_chat_participant
 	
 	if (config['process']['reply_to_message']==True
@@ -322,8 +322,8 @@ def tag_replace(text, msg):
 		'#BOT_USERNAME': escape_markup(bot.username),
 		'#GREETING': greeting,
 		'#GOODBYE': goodbye,
-		'#BOT_NAME': escape_markup(bot.first_name.split('-')[0]),
 		'#BOT_NAME_LOWER': escape_markup(bot.first_name.split('-')[0].lower()),
+		'#BOT_NAME': escape_markup(bot.first_name.split('-')[0]),
 		'	': '',
 	}
 	
@@ -336,8 +336,33 @@ def tag_replace(text, msg):
 	return text
 
 def escape_markup(text):
-	text = text.replace("_", "\_")
-	text = text.replace("*", "\*")
-	text = text.replace("`", "\`")
-	text = text.replace("```", "\```")
+	characters = ['_', '*', '[', ']', '(', ')', '`', '```']
+	
+	for character in characters:
+		text = text.replace(character, '\\' + character)
+
 	return text
+
+def delete_markup(text):
+	characters = ['_', '*', '[', ']', '(', ')', '`', '```']
+	
+	for character in characters:
+		text = text.replace(character, '')
+
+	return text
+
+def get_doc(commands, parameters, description):
+	doc = commands[0].replace('^', config['command_start'])
+	if parameters:
+		doc += format_parameters(parameters)
+	doc += '\n' + description
+	return doc
+
+def format_parameters(parameters):
+	formated_parameters = ''
+	for parameter,required in parameters:
+		if required == True:
+			formated_parameters += ' *[' + parameter + ']*'
+		else:
+			formated_parameters += ' _[' + parameter + ']_'
+	return formated_parameters

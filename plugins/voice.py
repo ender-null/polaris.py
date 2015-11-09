@@ -1,13 +1,17 @@
 from __main__ import *
 from utilies import *
 
-doc = config['command_start'] + 'voice *[text]*\nGenerates an audio file using Google Text-To-Speech API.'
-
-triggers = {
-	'^' + config['command_start'] + 'voice',
-	'^' + config['command_start'] + 'v ',
-	'^' + config['command_start'] + 'say',
-}
+commands = [
+	'^voice',
+	'^v ',
+	'^say'
+]
+parameters = (
+	('language', False),
+	('text', True),
+)
+description = 'Generates an audio file using Google Text-To-Speech API.'
+typing = True
 
 langs = [
 	'af', 'aq', 'ar', 'hy', 'ca', 'zh', 'zh-cn', 'zh-tw', 'zh-yue',
@@ -22,6 +26,7 @@ def action(msg):
 	input = get_input(msg.text)
 	
 	if not input:
+		doc = get_doc(commands, parameters, description)
 		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 	
 	for v in langs:
