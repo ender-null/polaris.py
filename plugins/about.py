@@ -18,9 +18,10 @@ def action(msg):
 	license = '\n*#BOT_NAME* is licensed under the *GPLv2*.'	
 	source = '\n[Source Code on Github](https://github.com/luksireiku/polaris)'
 	channel = '\nChannel: @PolarisUpdates'
+	group = '\nJoin [Society of Polaris](https://telegram.me/joinchat/B09roADwf_-EFMjy_9Q1qA)!'
 		
 	if re.compile(config['command_start'] + 'about').search(msg.text):
-		about = header + '\n' + license + channel
+		about = header + '\n' + license + channel + group
 		about = tag_replace(about, msg)
 	
 		core.send_message(msg.chat.id, about, disable_web_page_preview=True, parse_mode="Markdown")
