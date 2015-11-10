@@ -25,14 +25,14 @@ def action(msg):
 			message += '\n------------------------\n'
 
 			if msg.from_user.username:
-				message += '*Name*: [' + escape_markup(msg.from_user.first_name) + '](http://telegram.me/' + escape_markup(msg.from_user.username) + ')\n'
+				message += '*Name*: [' + escape_markup(msg.from_user.first_name) + '](http://telegram.me/' + msg.from_user.username + ')\n'
 			else:
 				message += '*Name*: ' + escape_markup(msg.from_user.first_name) + '\n'
 				
 			message += '*User ID*: ' + str(msg.from_user.id) + '\n'
 			
 			if msg.chat.type == 'group':
-				message += '*Group*: ' + escape_markup(msg.chat.title) + '\n'
+				message += '*Group*: ' + msg.chat.title + '\n'
 				message += '*Group ID*: ' + str(msg.chat.id) + '\n'
 			message += '*Message ID*: ' + str(msg.message_id)
 			
