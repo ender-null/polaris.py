@@ -15,12 +15,10 @@ def send_request(url, params=None, headers=None, files=None):
 		files = files
 	)
 	
-	'''
 	if jstr.status_code != 200:
 		return False
-	'''
 	
-	return json.loads(jstr.text), jstr.status_code
+	return json.loads(jstr.text)
 
 def api_request(api_method, params=None, headers=None, files=None):
 	url = api_url + api_method

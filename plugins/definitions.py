@@ -13,11 +13,11 @@ description = 'Returns the first definition for a given term from [Urban Diction
 typing = True
 
 def action(msg):
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 		
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 		
 	url = 'http://api.urbandictionary.com/v0/define'
 	params = {
@@ -30,12 +30,12 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
+		return send_error(msg, 'connection', jstr.status_code)
 	
 	jdat = json.loads(jstr.text)
 
 	if jdat['result_type'] == 'no_results':
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['results'])
 
 	i = random.randint(1, len(jdat['list']))-1
 	
@@ -44,4 +44,4 @@ def action(msg):
 	if jdat['list'][i]['example']:
 		text += '\nExample:\n_' + jdat['list'][i]['example'] + '_'
 	
-	core.send_message(msg.chat.id, text, parse_mode="Markdown")
+	send_message(msg['chat']['id'], text, parse_mode="Markdown")

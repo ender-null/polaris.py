@@ -15,7 +15,7 @@ def action(msg):
 	jstr = requests.get(url)
 		
 	if jstr.status_code != 200:
-		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
 	
 	soup = BeautifulSoup(jstr.text, 'lxml')
 
@@ -23,4 +23,4 @@ def action(msg):
 	text = text.replace('<br/>','\n')
 	text = text.replace('\t','')
 	
-	send_message(msg.chat.id, text, parse_mode="Markdown")
+	send_message(msg['chat']['id'], text, parse_mode="Markdown")

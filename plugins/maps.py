@@ -15,15 +15,15 @@ description = 'Returns a map for a specified location.'
 typing = True
 
 def action(msg):
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")	
 		
 	lat,lon,locality,country = get_coords(input)
 	
-	if get_command(msg.text).startswith('m'): 
+	if get_command(msg['text']).startswith('m'): 
 		photo_url = 'https://maps.googleapis.com/maps/api/staticmap'
 		photo_params = {
 			'size': '640x320',
@@ -33,6 +33,11 @@ def action(msg):
 		
 		message = locality + ' (' + country + ')'
 		
-		download_and_send(msg.chat.id, photo_url, 'photo', params=photo_params, caption=message)
+		map = download(photo_url, params=photo_params)
+		
+		if map:
+			send_photo(msg['chat']['id'], map)
+		else:
+			send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['download'], parse_mode="Markdown")
 	else:
-		core.send_location(msg.chat.id, lat, lon)
+		send_location(msg['chat']['id'], lat, lon)

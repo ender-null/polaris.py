@@ -6,7 +6,7 @@ commands = [
 	'^start',
 	'/start'
 ]
-description = 'Info about *' + bot.first_name + '*'
+description = 'Info about *' + bot['first_name'] + '*'
 typing = True
 
 def action(msg):			
@@ -19,13 +19,13 @@ def action(msg):
 	channel = '\nChannel: @PolarisUpdates'
 	group = '\nJoin [Society of Polaris](https://telegram.me/joinchat/B09roADwf_-EFMjy_9Q1qA)!'
 		
-	if re.compile(config['command_start'] + 'about').search(msg.text):
+	if get_command(msg['text']) == 'about':
 		about = header + '\n' + license + channel + group
 		about = tag_replace(about, msg)
 	
-		send_message(msg.chat.id, about, disable_web_page_preview=True, parse_mode="Markdown")
+		send_message(msg['chat']['id'], about, disable_web_page_preview=True, parse_mode="Markdown")
 		
-	elif re.compile(config['command_start'] + 'system').search(msg.text):
+	elif get_command(msg['text']) == 'system':
 		running = '\n*Running on*:\n'
 		running += '\t*System*: ' + subprocess.check_output('head -n1 /etc/issue | cut -d " " -f -3', shell=True)
 		running += '\t*Kernel*: ' + subprocess.check_output('uname -rs', shell=True)
@@ -34,9 +34,9 @@ def action(msg):
 		running += '\t*Python*: ' + str(platform.python_version()) + ' (' + str(platform.python_compiler()) + ')' + '\n'
 		running += '\t*Uptime*: ' + subprocess.check_output('uptime -p', shell=True)
 		
-		send_message(msg.chat.id, running, parse_mode="Markdown")
+		send_message(msg['chat']['id'], running, parse_mode="Markdown")
 		
 	else:
 		start = tag_replace(header, msg)
 		
-		send_message(msg.chat.id, start, parse_mode="Markdown")
+		send_message(msg['chat']['id'], start, parse_mode="Markdown")

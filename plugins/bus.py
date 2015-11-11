@@ -13,11 +13,11 @@ typing = True
 hidden = True
 
 def action(msg):
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 		
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return send_message(msg.chat.id, doc, parse_mode="Markdown")
+		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 		
 	url = 'http://www.dndzgz.com/point'
 	params = {
@@ -25,21 +25,16 @@ def action(msg):
 		'id': input
 	}
 	
-	jstr = requests.get(
-		url,
-		params = params,
-	)
+	jdat,error = send_request(url, params)
 		
-	if jstr.status_code != 200:
-		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
-	
-	jdat = json.loads(jstr.text)
-		
+	if not jdat:
+		return send_error(msg, 'connection', error)
+			
 	if 'Error obteniendo datos' in jdat['items'][0]:
-		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
+		return send_error(msg, 'results')
 
 	text = '*' + jdat['title'] + '*\n'
 	for k,v in jdat['items']:
 		text += '*' + first_word(k) + '* ' + get_input(k) + ' -> _' + get_input(v) + '_\n'
 	
-	send_message(msg.chat.id, text, parse_mode="Markdown")
+	send_message(msg['chat']['id'], text, parse_mode="Markdown")

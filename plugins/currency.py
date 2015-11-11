@@ -16,11 +16,11 @@ typing = True
 hidden = True
 
 def action(msg):
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")	
 			
 	url = 'http://www.google.com/finance/converter'
 	params = {
@@ -35,7 +35,7 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(jstr.status_code))
 	
 	jdat = json.loads(jstr.text)
 	
@@ -68,4 +68,4 @@ def action(msg):
 	local message = amount .. ' ' .. from .. ' = ' .. result .. ' ' .. to
 	'''
 	
-	#core.send_location(msg.chat.id, lat, lon)
+	#send_location(msg['chat']['id'], lat, lon)

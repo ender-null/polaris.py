@@ -34,17 +34,15 @@ def bot_init():
 		locale[file] = load_json('locale/' + file + '.json')
 	
 	print('\nGetting bot data...')
-	global core
-	core = telebot.TeleBot(config['api']['telegram_bot'])
-	
 	global bot
-	bot = core.get_me()
+	bot = get_me()
 	while bot == False:
 		print('\tFailure getting bot data. Trying again...')
-		bot = core.get_me()
-	print('\tFirst name:\t' + bot.first_name)
-	print('\tUsername:\t' + bot.username)
-	print('\tUser id:\t' + str(bot.id))
+		bot = get_me()
+	bot = bot['result']
+	print('\tFirst name:\t' + bot['first_name'])
+	print('\tUsername:\t' + bot['username'])
+	print('\tUser id:\t' + str(bot['id']))
 
 	print('\nLoading plugins...')
 	global plugins
@@ -53,31 +51,33 @@ def bot_init():
 
 	global is_started
  	is_started = True
-	print('\n' + bot.first_name + ' is started!')
+	print('\n' + bot['first_name'] + ' is started!')
 	
 def on_message_receive(msg):
-	
  	msg = process_message(msg)
+	now = time.mktime(datetime.datetime.now().timetuple())
 	
-	if config['ignore']['old_messages']==True and msg.date < time.mktime(datetime.datetime.now().timetuple()) - 10:
+	if config['ignore']['old_messages']==True and msg['date'] < now - 10:
 		return
- 	if config['ignore']['media']==True and not hasattr(msg, 'text'):
+ 	if config['ignore']['media']==True and not msg['text']:
  		return
 	
-	if not hasattr(msg, 'text'):
-		msg.text = ''
-	lower = msg.text.lower()
-
+	if not msg['text']:
+		msg['text'] = ''
+		
+	lower = msg['text'].lower()
+	
+	print lower
 	for i,plugin in plugins.items():
 		for command in plugin.commands:
 			trigger = command.replace("^", "^" + config['command_start'])
 			trigger = tag_replace(trigger, msg)
-			if re.compile(trigger).search(lower):					
+			if re.compile(lower).search(trigger):
 				if config['handle_exceptions'] == True:
-					try:	
+					try:
 						plugin.action(msg)
 					except Exception as e:
-						#core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['exception'])
+						send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['exception'])
 						for group in groups.items():
 							if group[1]['special'] == 'alerts':
 								send_message(group[0], str(e))
@@ -87,33 +87,33 @@ def on_message_receive(msg):
 def process_message(msg):
 	if (config['process']['new_chat_participant']==True
 	and hasattr(msg, 'new_chat_participant')):
-		if msg.new_chat_participant.id != bot.id:
-			msg.text = '!new_chat_participant'
-			msg.from_user = msg.new_chat_participant
+		if msg['new_chat_participant']['id'] != bot['id']:
+			msg['text'] = '!new_chat_participant'
+			msg['from'] = msg['new_chat_participant']
 		else:
-			msg.text = '/about'
+			msg['text'] = '/about'
 	
 	if (config['process']['left_chat_participant']==True
 	and hasattr(msg, 'left_chat_participant')):
-		if msg.left_chat_participant.id != bot.id:
-			msg.text = '!left_chat_participant'
-			msg.from_user = msg.left_chat_participant
+		if msg['left_chat_participant']['id'] != bot['id']:
+			msg['text'] = '!left_chat_participant'
+			msg['from'] = msg['left_chat_participant']
 	
 	if (config['process']['reply_to_message']==True
 	and hasattr(msg, 'reply_to_message')
-	and hasattr(msg.reply_to_message, 'text')
+	and hasattr(msg['reply_to_message'], 'text')
 	and hasattr(msg, 'text')):
-		if str(msg.chat.id) in groups and groups[str(msg.chat.id)]['special'] != 'log':
-			if msg.reply_to_message.from_user.id == bot.id and not msg.text.startswith(config['command_start']):
-				msg.text = bot.first_name + ' ' + msg.text
-			elif msg.text.startswith(config['command_start']):
-				msg.text += ' ' + msg.reply_to_message.text
+		if str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] != 'log':
+			if msg['reply_to_message']['from']['id'] == bot['id'] and not msg['text'].startswith(config['command_start']):
+				msg['text'] = bot['first_name'] + ' ' + msg['text']
+			elif msg['text'].startswith(config['command_start']):
+				msg['text'] += ' ' + msg['reply_to_message']['text']
 	
 	if (config['process']['chatter']==True
 	and hasattr(msg, 'text')
-	and msg.chat.type == 'private'
-	and not msg.text.startswith(config['command_start'])):
-		msg.text = bot.first_name + ' ' + msg.text
+	and msg['chat']['type'] == 'private'
+	and not msg['text'].startswith(config['command_start'])):
+		msg['text'] = bot['first_name'] + ' ' + msg['text']
 		
 	return msg
 
@@ -221,51 +221,6 @@ def download(url, headers=None, params=None):
 	file = open(tmp + filename, 'rb')	
 	clean_temporal(tmp, filename)
 	return file
-		
-def download_and_send(chat, url, type=None, caption=None, headers=None, params=None):	
-	name = os.path.splitext(str(time.mktime(datetime.datetime.now().timetuple())))[0]
-	extension = os.path.splitext(url)[1][1:]
-	if extension == '':
-		filename = name
-	else:
-		filename = name + '.' + extension
-
-	tmp = 'tmp/'
-	open_temporal(tmp)
-	
-	try:
-		jstr = requests.get(url, params=params, headers=headers, stream=True)
-		with open(tmp + filename, 'wb') as f:
-			for chunk in jstr.iter_content(chunk_size=1024): 
-				if chunk:
-					f.write(chunk)
-					f.flush()
-	except IOError, e:
-		return core.send_message(chat, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")
-		
-	filename = fix_extension(tmp, filename)
-		
-	file = open(tmp + filename, 'rb')
-	
-	if type == 'photo':
-		core.send_chat_action(chat, 'upload_photo')
-		if extension == 'gif':
-			core.send_document(chat, file)
-		else:
-			core.send_photo(chat, file, caption)
-	elif type == 'audio':
-		core.send_chat_action(chat, 'upload_audio')
-		core.send_audio(chat, file)
-	elif type == 'voice':
-		core.send_chat_action(chat, 'upload_voice')
-		core.send_voice(chat, file)
-	elif type == 'sticker':
-		core.send_document(chat, file)
-	else:
-		core.send_chat_action(chat, 'upload_document')
-		core.send_document(chat, file)
-		
-	clean_temporal(tmp, filename)
 
 def open_temporal(tmp):
 	if not os.path.exists(tmp):
@@ -309,51 +264,43 @@ def mime_match(mimetype):
 		return 'txt'
 	else:
 		return None
-		
-def convert_to_voice(path, file_name):
-	output_name = os.path.splitext(file_name)[0] + '.ogg'
-	
-	cmd = 'avconv -i ' + path + file_name + ' -f wav - | opusenc --downmix-mono - ' + path + output_name
-	subprocess.call(cmd, shell=True, stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
-	
-	os.remove(path + file_name)
-	
-	return output_name
 	
 def tag_replace(text, msg):
 	dt = datetime.datetime.now()
 
 	if dt.hour >= 5 and dt.hour < 12 :
-		greeting = locale[get_locale(msg.chat.id)]['greeting']['morning']
+		greeting = locale[get_locale(msg['chat']['id'])]['greeting']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		greeting = locale[get_locale(msg.chat.id)]['greeting']['afternoon']
+		greeting = locale[get_locale(msg['chat']['id'])]['greeting']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		greeting = locale[get_locale(msg.chat.id)]['greeting']['evening']
+		greeting = locale[get_locale(msg['chat']['id'])]['greeting']['evening']
 	else:
-		greeting = locale[get_locale(msg.chat.id)]['greeting']['night']
+		greeting = locale[get_locale(msg['chat']['id'])]['greeting']['night']
 	
 	if dt.hour >= 5 and dt.hour < 12 :
-		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['morning']
+		goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['morning']
 	elif dt.hour <= 12 and dt.hour < 17:
-		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['afternoon']
+		goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['afternoon']
 	elif dt.hour <= 17 and dt.hour < 21:
-		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['evening']
+		goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['evening']
 	else:
-		goodbye = locale[get_locale(msg.chat.id)]['goodbye']['night']
+		goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['night']
 
 	tags = {
-		'#FROM_FIRSTNAME': escape_markup(msg.from_user.first_name),
-		'#BOT_FIRSTNAME': escape_markup(bot.first_name),
-		'#BOT_USERNAME': escape_markup(bot.username),
+		'#FROM_FIRSTNAME': escape_markup(msg['from']['first_name']),
+		'#BOT_FIRSTNAME': escape_markup(bot['first_name']),
+		'#BOT_USERNAME': escape_markup(bot['username']),
 		'#GREETING': greeting,
 		'#GOODBYE': goodbye,
-		'#BOT_NAME_LOWER': escape_markup(bot.first_name.split('-')[0].lower()),
-		'#BOT_NAME': escape_markup(bot.first_name.split('-')[0]),
+		'#BOT_NAME_LOWER': escape_markup(bot['first_name'].split('-')[0].lower()),
+		'#BOT_NAME': escape_markup(bot['first_name'].split('-')[0]),
 		'	': '',
 	}
 	
-	if msg.from_user.username:
-		tags['#FROM_USERNAME'] = escape_markup(msg.from_user.username)
+	if hasattr(msg['from'], 'username'):
+		tags['#FROM_USERNAME'] = escape_markup(msg['from']['username'])
+	else:
+		tags['#FROM_USERNAME'] = None
 	
 	for k,v in tags.items():
 		if k in text:
@@ -393,14 +340,14 @@ def format_parameters(parameters):
 	return formated_parameters
 	
 def is_admin(msg):
-	if msg.from_user.id in config['admin']:
+	if msg['from']['id'] in config['admin']:
 		return True
 	else:
 		return False
 		
 def is_mod(msg):
 	if (is_admin(msg)
-	or str(msg.from_user.id) in groups[str(msg.chat.id)]['mods']):
+	or str(msg['from']['id']) in groups[str(msg['chat']['id'])]['mods']):
 		return True
 	else:
 		return False
@@ -422,3 +369,8 @@ def get_size(number):
 		unit = unit + 1
 		
 	return str(number),units[unit]
+	
+def send_error(msg, error_type, error_id=200):
+	loc = get_locale(msg['chat']['id'])
+	message = locale[loc]['errors'][error_type].format(error_id)
+	send_message(msg['chat']['id'], message)

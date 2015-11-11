@@ -10,7 +10,7 @@ description = 'Get list of basic information for all commands, or more detailed 
 hidden = True
 
 def action(msg):
-	input = msg.text.replace(bot.first_name + ' ', '')
+	input = msg['text'].replace(bot['first_name'] + ' ', '')
 	
 	cb = cleverbot.Cleverbot()	
 	unescape = HTMLParser().unescape
@@ -20,4 +20,4 @@ def action(msg):
 	except:
 		message = '...'
 		
-	core.send_message(msg.chat.id, message)
+	send_message(msg['chat']['id'], message)

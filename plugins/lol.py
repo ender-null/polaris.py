@@ -21,23 +21,23 @@ description = 'Gets stats from League of Legends summoner.'
 typing = True
 
 def get_server(msg):
-	if re.compile(config['command_start'] + 'br').search(msg.text):
+	if re.compile(config['command_start'] + 'br').search(msg['text']):
 		return 'br'
-	elif re.compile(config['command_start'] + 'eune').search(msg.text):
+	elif re.compile(config['command_start'] + 'eune').search(msg['text']):
 		return 'eune'
-	elif re.compile(config['command_start'] + 'kr').search(msg.text):
+	elif re.compile(config['command_start'] + 'kr').search(msg['text']):
 		return 'kr'
-	elif re.compile(config['command_start'] + 'lan').search(msg.text):
+	elif re.compile(config['command_start'] + 'lan').search(msg['text']):
 		return 'lan'
-	elif re.compile(config['command_start'] + 'las').search(msg.text):
+	elif re.compile(config['command_start'] + 'las').search(msg['text']):
 		return 'las'
-	elif re.compile(config['command_start'] + 'na').search(msg.text):
+	elif re.compile(config['command_start'] + 'na').search(msg['text']):
 		return 'na'
-	elif re.compile(config['command_start'] + 'oce').search(msg.text):
+	elif re.compile(config['command_start'] + 'oce').search(msg['text']):
 		return 'oce'
-	elif re.compile(config['command_start'] + 'ru').search(msg.text):
+	elif re.compile(config['command_start'] + 'ru').search(msg['text']):
 		return 'ru'
-	elif re.compile(config['command_start'] + 'tr').search(msg.text):
+	elif re.compile(config['command_start'] + 'tr').search(msg['text']):
 		return 'tr'
 	else:
 		return 'euw'
@@ -52,7 +52,7 @@ def get_summoner(server, input):
 		params = params,
 	)
 	if res.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
 	return json.loads(res.text)
 
 def get_summoner_icon(server, summoner, summoner_name):
@@ -69,7 +69,7 @@ def get_stats(server, summoner_id, summoner_name):
 		params = params,
 	)
 	if res.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
 	return json.loads(res.text)
 	
 def get_stats_ranked(server, summoner_id, summoner_name):
@@ -82,15 +82,15 @@ def get_stats_ranked(server, summoner_id, summoner_name):
 		params = params,
 	)
 	if res.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
 	return json.loads(res.text)
 
 def action(msg):
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 	
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 	else:
 		input = input.lower().replace(' ', '')
 	
@@ -132,5 +132,5 @@ def action(msg):
 				text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info['division'] + ' (' + str(info['leaguePoints']) + 'LP)'
 				text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(int(( float(info['wins']) / (float(info['wins']) + float(info['losses'])) ) * 100)).replace('.','\'') + '%)'
 			
-	#core.send_message(msg.chat.id, text, parse_mode="Markdown")
-	download_and_send(msg.chat.id, summoner_icon, 'photo', text)
+	#send_message(msg['chat']['id'], text, parse_mode="Markdown")
+	download_and_send(msg['chat']['id'], summoner_icon, 'photo', text)

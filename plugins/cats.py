@@ -20,7 +20,7 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
+		return send_error(msg, 'connection', jstr.status_code)
 	
 	photo = download(url)
-	send_photo(msg.chat.id, photo)
+	send_photo(msg['chat']['id'], photo)

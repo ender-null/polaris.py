@@ -14,7 +14,7 @@ typing = True
 hidden = True
 
 def action(msg):			
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 	
 	if input:
 		for i,v in plugins.items():
@@ -24,7 +24,7 @@ def action(msg):
 					if hasattr(v, 'parameters'):
 						doc += format_parameters(v.parameters)
 					doc += '\n' + v.description
-					return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+					return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 	else:
 		help = ''
 		for i,v in plugins.items():
@@ -38,9 +38,9 @@ def action(msg):
 			
 		message = '*Commands*:\n' + help
 		
-		if msg.from_user.id != msg.chat.id:
-			if not core.send_message(msg.from_user.id, message, parse_mode="Markdown"):
-				return core.send_message(msg.chat.id, message, parse_mode="Markdown")
-			return core.send_message(msg.chat.id, 'I have sent it in a *private message*.', parse_mode="Markdown")
+		if msg['from']['id'] != msg['chat']['id']:
+			if not send_message(msg['from']['id'], message, parse_mode="Markdown"):
+				return send_message(msg['chat']['id'], message, parse_mode="Markdown")
+			return send_message(msg['chat']['id'], 'I have sent it in a *private message*.', parse_mode="Markdown")
 		else:
-			return core.send_message(msg.chat.id, message, parse_mode="Markdown")
+			return send_message(msg['chat']['id'], message, parse_mode="Markdown")

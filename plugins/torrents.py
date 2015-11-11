@@ -34,11 +34,11 @@ def get_category_icon(category):
 		return u'❔'
 
 def action(msg):
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 		
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 		
 	url = 'http://kat.cr/json.php'
 	params = {
@@ -51,12 +51,12 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
 	
 	jdat = json.loads(jstr.text)
 
 	if jdat['total_results'] == 0:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['results'])
 	
 	limit = 6
 	if len(jdat['total_results']) < limit:
@@ -68,7 +68,7 @@ def action(msg):
 			del v
 
 	if len(jdat['list']) == 0:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['results'])
 
 	message = '*Kickass search*: "_' + input + '_"\n\n'
 	for i in range(0, limit):
@@ -86,4 +86,4 @@ def action(msg):
 
 	message = message.replace('&amp;', '&')
 	
-	core.send_message(msg.chat.id, message, parse_mode="Markdown")
+	send_message(msg['chat']['id'], message, parse_mode="Markdown")

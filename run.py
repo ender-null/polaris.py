@@ -1,15 +1,15 @@
-import utilies as u
+import utilies
 import time
 import datetime
 
-u.bot_init()
+utilies.bot_init()
 last_update = 0
 
-while u.is_started == True:
-	result = u.core.get_updates(last_update+1)
+while utilies.is_started == True:
+	result = utilies.get_updates(last_update+1)['result']
 	for update in result:
-		if update.update_id > last_update:
-			last_update = update.update_id
-			u.on_message_receive(update.message)
+		if update['update_id'] > last_update:
+			last_update = update['update_id']
+			utilies.on_message_receive(update['message'])
 
 print('Halted.')

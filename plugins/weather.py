@@ -31,11 +31,11 @@ def get_icon(weather_icon):
 	return weather_emoji[weather_icon[:2]]
 
 def action(msg):
-	input = get_input(msg.text)
+	input = get_input(msg['text'])
 	
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")	
 		
 	lat,lon,locality,country = get_coords(input)
 	
@@ -58,12 +58,12 @@ def action(msg):
 	)
 		
 	if weather_jstr.status_code != 200:
-		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(weather_jstr.status_code))
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(weather_jstr.status_code))
 	
 	weather_jdat = json.loads(weather_jstr.text)
 
 	if weather_jdat['cod'] == '404':
-		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
+		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['results'])
 		
 		
 	photo_url = 'https://maps.googleapis.com/maps/api/streetview'
@@ -82,6 +82,6 @@ def action(msg):
 	photo = download(photo_url, photo_params)
 	
 	if photo:
-		send_photo(msg.chat.id, photo, caption = message)
+		send_photo(msg['chat']['id'], photo, caption = message)
 	else:
-		send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")
+		send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['download'], parse_mode="Markdown")
