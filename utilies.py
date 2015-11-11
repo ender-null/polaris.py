@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+
 from __main__ import *
+from bindings import *
+
 import telebot
 import os
 import time
@@ -22,13 +25,13 @@ def bot_init():
 	global config
 	config = load_json('data/config.json')
 	
+	global groups
+	groups = load_json('data/groups.json')
+	
 	global locale
 	locale = OrderedDict()
 	for file in config['locales']:
 		locale[file] = load_json('locale/' + file + '.json')
-		
-	global groups
-	groups = load_json('data/groups.json')
 	
 	print('\nGetting bot data...')
 	global core
@@ -147,6 +150,10 @@ def load_json(path):
 		print('\t[Failed] ' + path)
 		return {}
 
+def get_command(text):
+	if text.startswith(config['command_start']):
+		return text.split(' ')[0].lstrip(config['command_start'])
+
 def get_input(text):
 	if not ' ' in text:
 		return False
@@ -198,7 +205,34 @@ def get_locale(chat_id):
 		return groups[str(chat_id)]['locale']
 	else:
 		return 'default'
+
+def download(url, headers=None, params=None):	
+	name = os.path.splitext(str(time.mktime(datetime.datetime.now().timetuple())))[0]
+	extension = os.path.splitext(url)[1][1:]
+	if extension == '':
+		filename = name
+	else:
+		filename = name + '.' + extension
+
+	tmp = 'tmp/'
+	open_temporal(tmp)
 	
+	try:
+		jstr = requests.get(url, params=params, headers=headers, stream=True)
+		with open(tmp + filename, 'wb') as f:
+			for chunk in jstr.iter_content(chunk_size=1024): 
+				if chunk:
+					f.write(chunk)
+					f.flush()
+	except IOError, e:
+		return core.send_message(chat, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")
+		
+	filename = fix_extension(tmp, filename)
+		
+	file = open(tmp + filename, 'rb')	
+	clean_temporal(tmp, filename)
+	return file
+		
 def download_and_send(chat, url, type=None, caption=None, headers=None, params=None):	
 	name = os.path.splitext(str(time.mktime(datetime.datetime.now().timetuple())))[0]
 	extension = os.path.splitext(url)[1][1:]
@@ -336,7 +370,7 @@ def tag_replace(text, msg):
 	return text
 
 def escape_markup(text):
-	characters = ['_', '*', '[', ']', '(', ')', '`', '```']
+	characters = ['_', '*', '[', ')', '`']
 	
 	for character in characters:
 		text = text.replace(character, '\\' + character)
@@ -344,7 +378,7 @@ def escape_markup(text):
 	return text
 
 def delete_markup(text):
-	characters = ['_', '*', '[', ']', '(', ')', '`', '```']
+	characters = ['_', '*', '[', ']', '(', ')', '`']
 	
 	for character in characters:
 		text = text.replace(character, '')
@@ -362,7 +396,38 @@ def format_parameters(parameters):
 	formated_parameters = ''
 	for parameter,required in parameters:
 		if required == True:
-			formated_parameters += ' *[' + parameter + ']*'
+			formated_parameters += ' *<' + parameter + '>*'
 		else:
-			formated_parameters += ' _[' + parameter + ']_'
+			formated_parameters += ' \[' + parameter + ']'
 	return formated_parameters
+	
+def is_admin(msg):
+	if msg.from_user.id in config['admin']:
+		return True
+	else:
+		return False
+		
+def is_mod(msg):
+	if (is_admin(msg)
+	or str(msg.from_user.id) in groups[str(msg.chat.id)]['mods']):
+		return True
+	else:
+		return False
+		
+def get_size(number):
+	size = ''
+	unit = 0
+	
+	units = [
+		'',
+		'K',
+		'M',
+		'G',
+		'T'
+	]
+	
+	while (number > 1024):
+		number = number/1024
+		unit = unit + 1
+		
+	return str(number),units[unit]

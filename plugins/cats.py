@@ -1,4 +1,3 @@
-from __main__ import *
 from utilies import *
 
 commands = [
@@ -21,6 +20,7 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
+		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
 	
-	download_and_send(msg.chat.id, url, 'photo')
+	photo = download(url)
+	send_photo(msg.chat.id, photo)

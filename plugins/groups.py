@@ -6,6 +6,7 @@ commands = [
 	'^desc',
 	'^rules',
 	'^join',
+	'^list',
 	'^add',
 	'^remove',
 	'^set',
@@ -17,20 +18,12 @@ commands = [
 ]
 hidden = True
 
-def is_mod(user_id):
-	if (user_id in config['admin']
-	or str(user_id) in groups[str(msg.chat.id)]['mods']):
-		return True
-	else:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['permission'])
-	
-
 def action(msg):			
 	input = get_input(msg.text)
 	
 	message = locale['default']['errors']['argument']
 	
-	if is_mod(msg.from_user.id) and msg.text.startswith(config['command_start'] + 'add'):
+	if is_mod(msg) and get_command(msg.text) == 'add':
 		if msg.chat.type == 'group':
 			if not str(msg.chat.id) in groups:
 				if len(first_word(msg.chat.title)) == 1:
@@ -61,11 +54,11 @@ def action(msg):
 		else:
 			message = 'You can only add chat groups.'
 		
-	elif is_mod(msg.from_user.id) and msg.text.startswith(config['command_start'] + 'remove'):
+	elif is_mod(msg) and get_command(msg.text) == 'remove':
 		del groups[str(msg.chat.id)]
 		message = 'Group removed.'
 		
-	elif is_mod(msg.from_user.id) and msg.text.startswith(config['command_start'] + 'set'):
+	elif is_mod(msg) and get_command(msg.text) == 'set':
 		if first_word(input) == 'link':
 			groups[str(msg.chat.id)]['link'] = all_but_first_word(input)
 			message = 'Updated invite link of ' + groups[str(msg.chat.id)]['title'] + '.'
@@ -101,23 +94,35 @@ def action(msg):
 			
 		save_json('data/groups.json', groups)
 		
-	elif msg.text.startswith(config['command_start'] + 'list'):
+	elif get_command(msg.text) == 'list':
 		if input == 'groups':
 			message = '*Groups:*'
 			for group in groups.items():
 				if group[1]['hide'] != True:
-					message += '\n\t' + group[1]['title'] + ' \[' + group[1]['realm'] + '] (' + group[0] + ')'
+					message += '\n\t'
+					
+					if group[1]['link']:
+						message += '[' + group[1]['title'] + '](' + group[1]['link'] + ')'
+					else:
+						message += group[1]['title']
+						
+					message += '\t' + group[1]['realm']
+					
+					if group[1]['alias']:
+						message += '\t(' + group[1]['alias'] + ')'
+						
 		elif input == 'mods':
 			message = '*Mods for ' + groups[str(msg.chat.id)]['title'] + ':*'
 			for mod in groups[str(msg.chat.id)]['mods'].items():
 				message += '\n\t' + mod[1]
-		elif input == 'help':
-			message = '*Help:*'
+				
+		elif (input == 'commands' or input == 'help'):
+			message = '*Mod commands:*'
 			for t in commands:
 				t = tag_replace(t, msg)
 				message += '\n\t' + t.replace('^', '#')
 	
-	elif msg.text.startswith(config['command_start'] + 'info'):
+	elif get_command(msg.text) == 'info':
 		if str(msg.chat.id) in groups:
 			message = '*Info of ' + groups[str(msg.chat.id)]['title'] + ' [' + groups[str(msg.chat.id)]['realm'] + ']*'
 			message += '\n' + groups[str(msg.chat.id)]['description']
@@ -130,10 +135,10 @@ def action(msg):
 		else:
 			message = 'Group not added.'
 	
-	elif is_mod(msg.from_user.id) and  msg.text.startswith(config['command_start'] + 'broadcast'):
+	elif is_mod(msg) and get_command(msg.text) == 'broadcast':
 		message = 'Unsupported action.'
 		
-	elif is_mod(msg.from_user.id) and  msg.text.startswith(config['command_start'] + 'kill'):
+	elif is_mod(msg) and get_command(msg.text) == 'kill':
 		if hasattr(msg, 'reply_to_message'):
 			for group in groups.items():
 				if group[1]['special']=='admin':
@@ -143,7 +148,7 @@ def action(msg):
 		else:
 			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['id'])
 		
-	elif msg.text.startswith(config['command_start'] + 'desc'):
+	elif get_command(msg.text) == 'desc':
 		if str(msg.chat.id) in groups:
 			if groups[str(msg.chat.id)]['description'] != '':
 				message = '*Description:*\n' + groups[str(msg.chat.id)]['description']
@@ -152,7 +157,7 @@ def action(msg):
 		else:
 			message = 'Group not added.'
 			
-	elif msg.text.startswith(config['command_start'] + 'rules'):
+	elif get_command(msg.text) == 'rules':
 		if str(msg.chat.id) in groups:
 			if groups[str(msg.chat.id)]['rules'] != '':
 				message = '*Rules:*\n' + groups[str(msg.chat.id)]['rules']
@@ -161,7 +166,7 @@ def action(msg):
 		else:
 			message = 'Group not added.'
 		
-	elif is_mod(msg.from_user.id) and  msg.text.startswith(config['command_start'] + 'promote'):
+	elif is_mod(msg) and get_command(msg.text) == 'promote':
 		if hasattr(msg, 'reply_to_message'):
 			groups[str(msg.chat.id)]['mods'][str(msg.reply_to_message.from_user.id)] = str(msg.reply_to_message.from_user.first_name)
 			message = msg.reply_to_message.from_user.first_name + ' is now a moderator.'
@@ -169,7 +174,7 @@ def action(msg):
 		else:
 			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['id'])
 		
-	elif is_mod(msg.from_user.id) and  msg.text.startswith(config['command_start'] + 'demote'):
+	elif is_mod(msg) and get_command(msg.text) == 'demote':
 		if hasattr(msg, 'reply_to_message'):
 			del groups[str(msg.chat.id)]['mods'][str(msg.reply_to_message.from_user.id)]
 			message = msg.reply_to_message.from_user.first_name + ' is not a moderator.'
@@ -177,7 +182,7 @@ def action(msg):
 		else:
 			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['id'])
 		
-	elif msg.text.startswith(config['command_start'] + 'join'):
+	elif get_command(msg.text) == 'join':
 		for group in groups.items():
 			if group[1]['alias'].lower() == input.lower():
 				if group[1]['link'] != '':
@@ -187,5 +192,8 @@ def action(msg):
 					message = 'No invite link available.'
 			else:
 				message = 'Group not found.'
+	else:
+		print 'else ' + get_command(msg.text)
+		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['permission'])
 		
 	core.send_message(msg.chat.id, message, parse_mode="Markdown")

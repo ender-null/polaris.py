@@ -1,4 +1,3 @@
-from __main__ import *
 from utilies import *
 
 commands = [
@@ -11,4 +10,4 @@ def action(msg):
 		and not msg.text
 		and not hasattr(msg, 'new_chat_participant')
 		and not hasattr(msg, 'left_chat_participant')):
-			core.forward_message('@porndb',  msg.chat.id, msg.message_id)
+			forward_message('@porndb',  msg.chat.id, msg.message_id)

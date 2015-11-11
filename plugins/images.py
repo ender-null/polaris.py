@@ -1,4 +1,3 @@
-from __main__ import *
 from utilies import *
 
 commands = [
@@ -26,7 +25,7 @@ def action(msg):
 		
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+		return send_message(msg.chat.id, doc, parse_mode="Markdown")
 		
 	url = 'http://ajax.googleapis.com/ajax/services/search/images'
 	params = {
@@ -45,19 +44,19 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
+		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
 	
 	jdat = json.loads(jstr.text)
 
 	if jdat['responseData']['results'] < 1:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
+		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
 		
 	is_real = False
 	counter = 0
 	while is_real == False:
 		counter = counter + 1
 		if counter > 5 or len(jdat['responseData']['results']) < 1:
-			return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'], parse_mode="Markdown")
+			return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'], parse_mode="Markdown")
 		
 		i = random.randint(1, len(jdat['responseData']['results']))-1
 
@@ -67,5 +66,6 @@ def action(msg):
 		for v in exts:
 			if re.compile(v).search(result_url):
 				is_real = True
-	
-	download_and_send(msg.chat.id, result_url, 'photo', caption)
+		
+	photo = download(result_url)
+	send_photo(msg.chat.id, photo, caption = caption)

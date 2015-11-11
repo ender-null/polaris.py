@@ -3,6 +3,7 @@ from utilies import *
 
 commands = [
 	'^help',
+	'^commands',
 	'^h$'
 ]
 parameters = (
@@ -10,6 +11,7 @@ parameters = (
 )
 description = 'Get list of basic information for all commands, or more detailed documentation on a specified command.'
 typing = True
+hidden = True
 
 def action(msg):			
 	input = get_input(msg.text)
@@ -20,11 +22,7 @@ def action(msg):
 				if config['command_start'] + input == v.commands[0].replace('^', '#'):
 					doc = config['command_start'] + v.commands[0].replace('^', '')
 					if hasattr(v, 'parameters'):
-						for parameter,required in v.parameters:
-							if required == True:
-								doc += ' *[' + parameter + ']*'
-							else:
-								doc += ' _[' + parameter + ']_'
+						doc += format_parameters(v.parameters)
 					doc += '\n' + v.description
 					return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
 	else:
@@ -35,11 +33,7 @@ def action(msg):
 				help += v.commands[0].replace('^', '')
 				
 				if hasattr(v, 'parameters'):
-					for parameter,required in v.parameters:
-						if required == True:
-							help += ' *[' + parameter + ']*'
-						else:
-							help += ' _[' + parameter + ']_'
+						help += format_parameters(v.parameters)
 				help += '\n'
 			
 		message = '*Commands*:\n' + help

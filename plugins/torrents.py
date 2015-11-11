@@ -17,39 +17,21 @@ def get_category_icon(category):
 	if category == 'Anime':
 		return u'🎌'
 	elif category == 'Applications':
-		return u'💻'
+		return u'📱'
 	elif category == 'Books':
-		return u'📔'
+		return u'📖'
 	elif category == 'Games':
 		return u'🎮'
 	elif category == 'Movies':
-		return u'🎥'
+		return u'🎞'
 	elif category == 'Music':
-		return u'🎵'
+		return u'💽'
 	elif category == 'TV':
-		return u'📺'
+		return u'🎞'
 	elif category == 'XXX':
 		return u'🔞'
 	else:
 		return u'❔'
-		
-def get_size(number):
-	size = ''
-	unit = 0
-	
-	units = [
-		'B',
-		'KB',
-		'MB',
-		'GB',
-		'TB'
-	]
-	
-	while (number > 1024):
-		number = number/1024
-		unit = unit + 1
-		
-	return str(number) + ' ' + units[unit]
 
 def action(msg):
 	input = get_input(msg.text)
@@ -90,13 +72,17 @@ def action(msg):
 
 	message = '*Kickass search*: "_' + input + '_"\n\n'
 	for i in range(0, limit):
-		message += get_category_icon(jdat['list'][i]['category']) + ' [' + delete_markup(jdat['list'][i]['title']) + '](' + delete_markup(jdat['list'][i]['torrentLink']) + ')'
+		message += get_category_icon(jdat['list'][i]['category']) + ' [' + escape_markup(jdat['list'][i]['title']) + '](' + delete_markup(jdat['list'][i]['torrentLink']) + ')'
 		if jdat['list'][i]['verified'] == 0:
 			message += u' ❗️'
-		message += u'\n📦 ' + get_size(jdat['list'][i]['size']) + ' | '
-		message += u'🌱 ' + str(jdat['list'][i]['seeds'])
-		message += u' | 👤 ' + str(jdat['list'][i]['peers'])
-		message += u' | 👍 ' + str(jdat['list'][i]['votes']) + '\n\n'
+		size,unit = get_size(jdat['list'][i]['size'])
+		message += '\n\t *' + size + ' ' + unit + 'B* | '
+
+		size,unit = get_size(jdat['list'][i]['seeds'])
+		message += '*' + size + unit + '* Seeds'
+		
+		size,unit = get_size(jdat['list'][i]['votes'])
+		message += ' | ' + size + unit + u' 👍\n\n'
 
 	message = message.replace('&amp;', '&')
 	

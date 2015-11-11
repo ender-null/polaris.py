@@ -1,4 +1,3 @@
-from __main__ import *
 from utilies import *
 
 commands = [
@@ -24,7 +23,7 @@ def action(msg):
 		about = header + '\n' + license + channel + group
 		about = tag_replace(about, msg)
 	
-		core.send_message(msg.chat.id, about, disable_web_page_preview=True, parse_mode="Markdown")
+		send_message(msg.chat.id, about, disable_web_page_preview=True, parse_mode="Markdown")
 		
 	elif re.compile(config['command_start'] + 'system').search(msg.text):
 		running = '\n*Running on*:\n'
@@ -35,9 +34,9 @@ def action(msg):
 		running += '\t*Python*: ' + str(platform.python_version()) + ' (' + str(platform.python_compiler()) + ')' + '\n'
 		running += '\t*Uptime*: ' + subprocess.check_output('uptime -p', shell=True)
 		
-		core.send_message(msg.chat.id, running, parse_mode="Markdown")
+		send_message(msg.chat.id, running, parse_mode="Markdown")
 		
 	else:
 		start = tag_replace(header, msg)
 		
-		core.send_message(msg.chat.id, start, parse_mode="Markdown")
+		send_message(msg.chat.id, start, parse_mode="Markdown")

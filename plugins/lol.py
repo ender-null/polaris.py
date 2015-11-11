@@ -15,7 +15,7 @@ commands = [
 	'^tr '
 ]
 parameters = (
-	('summoner name', True),
+	('summoner', True),
 )
 description = 'Gets stats from League of Legends summoner.'
 typing = True

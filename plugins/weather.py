@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __main__ import *
 from utilies import *
 from random import randint
 
@@ -35,7 +34,7 @@ def action(msg):
 		
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		return send_message(msg.chat.id, doc, parse_mode="Markdown")	
 		
 	lat,lon,locality,country = get_coords(input)
 	
@@ -53,12 +52,12 @@ def action(msg):
 	)
 		
 	if weather_jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(weather_jstr.status_code))
+		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(weather_jstr.status_code))
 	
 	weather_jdat = json.loads(weather_jstr.text)
 
 	if weather_jdat['cod'] == '404':
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
+		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['results'])
 		
 		
 	photo_url = 'https://maps.googleapis.com/maps/api/streetview'
@@ -72,5 +71,6 @@ def action(msg):
 	message = locality + ' (' + country + ')'
 	message += '\n' + str(int(weather_jdat['main']['temp'])) + u'ºC - ' + str(weather_jdat['weather'][0]['description']).title() + ' ' +  get_icon(weather_jdat['weather'][0]['icon'])
 	message += u'\n💧 ' + str(weather_jdat['main']['humidity']) + u'% | 🎐 ' + str(int(weather_jdat['wind']['speed'] * 3.6)) + ' km/h'
-	
-	download_and_send(msg.chat.id, photo_url, 'photo', params=photo_params, caption=message)
+		
+	photo = download(photo_url)
+	send_photo(msg.chat.id, photo, caption = message)

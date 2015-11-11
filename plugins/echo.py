@@ -1,4 +1,3 @@
-from __main__ import *
 from utilies import *
 
 commands = [
@@ -15,6 +14,6 @@ def action(msg):
 		
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")	
+		return send_message(msg.chat.id, doc, parse_mode="Markdown")	
 
-	core.send_message(msg.chat.id, input, parse_mode="Markdown")
+	send_message(msg.chat.id, input, parse_mode="Markdown")
