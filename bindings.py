@@ -15,10 +15,12 @@ def send_request(url, params=None, headers=None, files=None):
 		files = files
 	)
 	
+	'''
 	if jstr.status_code != 200:
-		return 'Connection error: ' + jstr.status_code
+		return False
+	'''
 	
-	return json.loads(jstr.text)
+	return json.loads(jstr.text), jstr.status_code
 
 def api_request(api_method, params=None, headers=None, files=None):
 	url = api_url + api_method
@@ -27,12 +29,6 @@ def api_request(api_method, params=None, headers=None, files=None):
 	
 def get_me():
 	return api_request('getMe')
-	
-def get_updates(offset=None):
-	params = {}
-	if offset:
-		params['offset'] = offset
-	return api_request('getUpdates', params)
 
 def send_message(chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None, parse_mode=None):
 	params = {
@@ -49,7 +45,16 @@ def send_message(chat_id, text, disable_web_page_preview=None, reply_to_message_
 	if parse_mode:
 		params['parse_mode'] = parse_mode
 	
+	api_request('sendChatAction', 'typing')
 	return api_request('sendMessage', params)
+	
+def forward_message(chat_id, from_chat_id, message_id):
+	params = {
+		'chat_id': chat_id,
+		'from_chat_id': from_chat_id,
+		'message_id': message_id
+	}
+	return api_request('forwardMessage', params)
 	
 def send_photo(chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
 	params = {
@@ -68,15 +73,125 @@ def send_photo(chat_id, photo, caption=None, reply_to_message_id=None, reply_mar
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
+	api_request('sendChatAction', 'upload_photo')
 	return api_request('sendPhoto', params, files=files)
+
+def send_audio(chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None, reply_markup=None):
+	params = {
+		'chat_id': chat_id
+	}
 	
-def forward_message(chat_id, from_chat_id, message_id):
+	files = None
+	if not isinstance(audio, string_types):
+		files = {'audio': audio}
+	else:
+		params['audio'] = audio
+	if duration:
+		params['duration'] = duration
+	if performer:
+		params['performer'] = performer
+	if title:
+		params['title'] = title
+	if reply_to_message_id:
+		params['reply_to_message_id'] = reply_to_message_id
+	if reply_markup:
+		params['reply_markup'] = reply_markup
+	
+	api_request('sendChatAction', 'upload_audio')
+	return api_request('sendAudio', params, files=files)
+
+def send_document(chat_id, document, reply_to_message_id=None, reply_markup=None):
+	params = {
+		'chat_id': chat_id
+	}
+	
+	files = None
+	if not isinstance(document, string_types):
+		files = {'document': document}
+	else:
+		params['document'] = document
+	if reply_to_message_id:
+		params['reply_to_message_id'] = reply_to_message_id
+	if reply_markup:
+		params['reply_markup'] = reply_markup
+	
+	api_request('sendChatAction', 'upload_document')
+	return api_request('sendDocument', params, files=files)
+
+def send_sticker(chat_id, sticker, reply_to_message_id=None, reply_markup=None):
+	params = {
+		'chat_id': chat_id
+	}
+	
+	files = None
+	if not isinstance(sticker, string_types):
+		files = {'sticker': sticker}
+	else:
+		params['sticker'] = sticker
+	if reply_to_message_id:
+		params['reply_to_message_id'] = reply_to_message_id
+	if reply_markup:
+		params['reply_markup'] = reply_markup
+	
+	api_request('sendChatAction', 'upload_document')
+	return api_request('sendSticker', params, files=files)
+	
+def send_video(chat_id, video, duration=None, caption=None, reply_to_message_id=None, reply_markup=None):
+	params = {
+		'chat_id': chat_id
+	}
+	
+	files = None
+	if not isinstance(video, string_types):
+		files = {'video': video}
+	else:
+		params['video'] = video
+	if duration:
+		params['duration'] = duration
+	if caption:
+		params['caption'] = caption
+	if reply_to_message_id:
+		params['reply_to_message_id'] = reply_to_message_id
+	if reply_markup:
+		params['reply_markup'] = reply_markup
+	
+	api_request('sendChatAction', 'upload_video')
+	return api_request('sendVideo', params, files=files)
+	
+def send_voice(chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
+	params = {
+		'chat_id': chat_id
+	}
+	
+	files = None
+	if not isinstance(voice, string_types):
+		files = {'voice': voice}
+	else:
+		params['voice'] = voice
+	if duration:
+		params['duration'] = duration
+	if reply_to_message_id:
+		params['reply_to_message_id'] = reply_to_message_id
+	if reply_markup:
+		params['reply_markup'] = reply_markup
+	
+	api_request('sendChatAction', 'upload_audio')
+	return api_request('sendVoice', params, files=files)
+	
+def send_location(chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
 	params = {
 		'chat_id': chat_id,
-		'from_chat_id': from_chat_id,
-		'message_id': message_id
+		'longitude': latitude,
+		'longitude': longitude
 	}
-	return api_request('sendMessage', params)
+	
+	if reply_to_message_id:
+		params['reply_to_message_id'] = reply_to_message_id
+	if reply_markup:
+		params['reply_markup'] = reply_markup
+	
+	api_request('sendChatAction', 'find_location')
+	return api_request('sendLocation', params, files=files)
 	
 def send_chat_action(chat_id, action):
 	params = {
@@ -84,3 +199,40 @@ def send_chat_action(chat_id, action):
 		'action': action
 	}
 	return api_request('sendChatAction', params)
+	
+def get_user_profile_photos(user_id, offset=None, limit=None):
+	params = {
+		'user_id': user_id
+	}
+	
+	if offset:
+		params['offset'] = offset
+	if limit:
+		params['limit'] = limit
+		
+	return api_request('getUserProfilePhotos', params)
+	
+def get_updates(offset=None, limit=None, timeout=None):
+	params = {}
+	if offset:
+		params['offset'] = offset
+	if limit:
+		params['limit'] = limit
+	if timeout:
+		params['timeout'] = timeout
+	return api_request('getUpdates', params)
+	
+def set_webhook(url=None, certificate=None):
+	params = {}
+	if url:
+		params['url'] = url
+	if certificate:
+		params['certificate'] = certificate
+	return api_request('setWebhook', params)
+	
+def get_file(file_id):
+	params = {
+		'file_id': file_id
+	}
+	return api_request('getFile', params)
+	

@@ -27,7 +27,7 @@ def action(msg):
 	
 	if not input:
 		doc = get_doc(commands, parameters, description)
-		return core.send_message(msg.chat.id, doc, parse_mode="Markdown")
+		return send_message(msg.chat.id, doc, parse_mode="Markdown")
 	
 	for v in langs:
 		if first_word(input) == v:
@@ -59,8 +59,13 @@ def action(msg):
 	)
 		
 	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
+		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
 	
 	result_url = jstr.url
 	
-	download_and_send(msg.chat.id, url, 'voice', headers=headers, params=params)
+	voice = download(result_url, headers=headers, params=params)
+	
+	if voice:
+		send_voice(msg.chat.id, voice)
+	else:
+		send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")

@@ -68,4 +68,8 @@ def action(msg):
 				is_real = True
 		
 	photo = download(result_url)
-	send_photo(msg.chat.id, photo, caption = caption)
+	
+	if photo:
+		send_photo(msg.chat.id, photo, caption = caption)
+	else:
+		send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")

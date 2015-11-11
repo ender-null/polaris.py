@@ -38,13 +38,13 @@ def action(msg):
 			
 			for group in groups.items():
 				if group[1]['special'] == 'log':
-					core.send_message(group[0], message, parse_mode="Markdown")
+					send_message(group[0], message, parse_mode="Markdown")
 		else:
 			for group in groups.items():
 				if group[1]['special'] == 'log':
-					core.forward_message(group[0],  msg.chat.id, msg.message_id)
+					forward_message(group[0],  msg.chat.id, msg.message_id)
 	else:
 		if hasattr(msg, 'reply_to_message') and msg.reply_to_message.from_user.id == bot.id:
 			message_id = last_word(msg.reply_to_message.text.split('\n')[-1])
 			chat_id = last_word(msg.reply_to_message.text.split('\n')[-2])
-			core.send_message(chat_id, msg.text, reply_to_message_id=message_id, parse_mode="Markdown")
+		send_message(chat_id, msg.text, reply_to_message_id=message_id, parse_mode="Markdown")

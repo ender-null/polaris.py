@@ -39,8 +39,15 @@ def action(msg):
 	
 	i = random.randint(1, len(jdat))-1
 	
+	if not jdat:
+		return send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
+	
 	result_url = jdat[i]['file_url']
 	caption = str(len(jdat)) + ' results matching: "' + input + '"'
 	
 	photo = download(result_url)
-	send_photo(msg.chat.id, photo, caption = caption)
+	
+	if photo:
+		send_photo(msg.chat.id, photo, caption = caption)
+	else:
+		send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")

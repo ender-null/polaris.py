@@ -72,10 +72,7 @@ def on_message_receive(msg):
 		for command in plugin.commands:
 			trigger = command.replace("^", "^" + config['command_start'])
 			trigger = tag_replace(trigger, msg)
-			if re.compile(trigger).search(lower):
-				if hasattr(plugin, 'typing'):
-					core.send_chat_action(msg.chat.id, 'typing')
-					
+			if re.compile(trigger).search(lower):					
 				if config['handle_exceptions'] == True:
 					try:	
 						plugin.action(msg)
@@ -83,7 +80,7 @@ def on_message_receive(msg):
 						#core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['exception'])
 						for group in groups.items():
 							if group[1]['special'] == 'alerts':
-								core.send_message(group[0], str(e))
+								send_message(group[0], str(e))
 				else:
 					plugin.action(msg)
 					 	
@@ -179,19 +176,11 @@ def get_coords(input):
 	params = {
 		'address': input
 	}
-	
-	jstr = requests.get(
-		url,
-		params = params,
-	)
 		
-	if jstr.status_code != 200:
-		return core.send_message(msg.chat.id, locale[get_locale(msg.chat.id)]['errors']['connection'].format(jstr.status_code))
-	
-	jdat = json.loads(jstr.text)
+	jdat = send_request(url, params = params,)
 	
 	if jdat['status'] == 'ZERO_RESULTS':
-		return false
+		return False,False,False,False
 	
 	locality = jdat['results'][0]['address_components'][0]['long_name']
 	for address in jdat['results'][0]['address_components']:
@@ -225,7 +214,7 @@ def download(url, headers=None, params=None):
 					f.write(chunk)
 					f.flush()
 	except IOError, e:
-		return core.send_message(chat, locale[get_locale(msg.chat.id)]['errors']['download'], parse_mode="Markdown")
+		return None
 		
 	filename = fix_extension(tmp, filename)
 		
@@ -316,6 +305,8 @@ def mime_match(mimetype):
 		return 'gif'
 	elif mimetype == 'audio/mpeg':
 		return 'mp3'
+	elif mimetype == 'text/plain':
+		return 'txt'
 	else:
 		return None
 		
