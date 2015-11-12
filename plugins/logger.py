@@ -24,7 +24,7 @@ def run(msg):
 			message = message.replace(bot['first_name'] + ' ', '')
 			message += '\n------------------------\n'
 
-			if msg['from']['username']:
+			if 'username' in msg['from']:
 				message += '*Name*: [' + escape_markup(msg['from']['first_name']) + '](http://telegram.me/' + msg['from']['username'] + ')\n'
 			else:
 				message += '*Name*: ' + escape_markup(msg['from']['first_name']) + '\n'

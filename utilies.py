@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-
 from __main__ import *
 from bindings import *
-
-import telebot
 import os
 import time
 import datetime
@@ -11,7 +8,6 @@ import requests
 import subprocess
 import magic
 import importlib
-import urllib
 import json
 import random
 import re
@@ -19,6 +15,9 @@ import sys
 import json
 import platform
 from collections import OrderedDict
+from StringIO import StringIO
+import tempfile
+import urllib
 
 def bot_init():
 	print('Loading config... ')
@@ -59,10 +58,10 @@ def on_message_receive(msg):
 	
 	if config['ignore']['old_messages']==True and msg['date'] < now - 10:
 		return
- 	if config['ignore']['media']==True and not msg['text']:
+ 	if config['ignore']['media']==True and not 'text' in msg:
  		return
 	
-	if not msg['text']:
+	if not 'text' in msg:
 		msg['text'] = ''
 	lower = msg['text'].lower()
 	
@@ -86,7 +85,7 @@ def on_message_receive(msg):
 					 	
 def process_message(msg):
 	if (config['process']['new_chat_participant']==True
-	and hasattr(msg, 'new_chat_participant')):
+	and 'new_chat_participant' in msg):
 		if msg['new_chat_participant']['id'] != bot['id']:
 			msg['text'] = '!new_chat_participant'
 			msg['from'] = msg['new_chat_participant']
@@ -94,15 +93,15 @@ def process_message(msg):
 			msg['text'] = '/about'
 	
 	if (config['process']['left_chat_participant']==True
-	and hasattr(msg, 'left_chat_participant')):
+	and 'left_chat_participant' in msg):
 		if msg['left_chat_participant']['id'] != bot['id']:
 			msg['text'] = '!left_chat_participant'
 			msg['from'] = msg['left_chat_participant']
 	
 	if (config['process']['reply_to_message']==True
-	and hasattr(msg, 'reply_to_message')
-	and hasattr(msg['reply_to_message'], 'text')
-	and hasattr(msg, 'text')):
+	and 'reply_to_message' in msg
+	and 'text' in msg['reply_to_message']
+	and 'text' in msg):
 		if str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] != 'log':
 			if msg['reply_to_message']['from']['id'] == bot['id'] and not msg['text'].startswith(config['command_start']):
 				msg['text'] = bot['first_name'] + ' ' + msg['text']
@@ -110,7 +109,7 @@ def process_message(msg):
 				msg['text'] += ' ' + msg['reply_to_message']['text']
 	
 	if (config['process']['chatter']==True
-	and hasattr(msg, 'text')
+	and 'text' in msg
 	and msg['chat']['type'] == 'private'
 	and not msg['text'].startswith(config['command_start'])):
 		msg['text'] = bot['first_name'] + ' ' + msg['text']
@@ -195,75 +194,17 @@ def get_locale(chat_id):
 	else:
 		return 'default'
 
-def download(url, headers=None, params=None):	
-	name = os.path.splitext(str(time.mktime(datetime.datetime.now().timetuple())))[0]
-	extension = os.path.splitext(url)[1][1:]
-	if extension == '':
-		filename = name
-	else:
-		filename = name + '.' + extension
-
-	tmp = 'tmp/'
-	open_temporal(tmp)
-	
+def download(url, headers=None, params=None):
 	try:
 		jstr = requests.get(url, params=params, headers=headers, stream=True)
-		with open(tmp + filename, 'wb') as f:
-			for chunk in jstr.iter_content(chunk_size=1024): 
-				if chunk:
-					f.write(chunk)
-					f.flush()
+		f = tempfile.NamedTemporaryFile(delete=False)
+		for chunk in jstr.iter_content(chunk_size=1024): 
+			if chunk:
+				f.write(chunk)
 	except IOError, e:
 		return None
-		
-	filename = fix_extension(tmp, filename)
-		
-	file = open(tmp + filename, 'rb')	
-	clean_temporal(tmp, filename)
-	return file
-
-def open_temporal(tmp):
-	if not os.path.exists(tmp):
-		os.makedirs(tmp)
-	
-def clean_temporal(tmp, filename):
-	if os.path.exists(tmp):
-		if os.path.isfile(tmp + filename):
-			os.remove(tmp + filename)
-		
-		try:
-			os.rmdir(tmp)
-		except OSError:
-			print('Temporal folder (' + tmp + ') is not empty.')
-			
-def fix_extension(file_path, file_name):
-	extension = os.path.splitext(file_path + file_name)[1][1:]
-	if extension == '':
-		mime = magic.Magic(mime=True)
-		mimetype = mime.from_file(file_path + file_name)
-		extension = '.' + mime_match(mimetype)
-		
-		if extension != None:
-			os.rename(file_path + file_name, file_path + file_name + extension)
-			return file_name + extension
-		else:
-			return file_name
-	else:
-		return file_name
-			
-def mime_match(mimetype):
-	if mimetype == 'image/png':
-		return 'png'
-	elif mimetype == 'image/jpeg':
-		return 'jpg'
-	elif mimetype == 'image/gif':
-		return 'gif'
-	elif mimetype == 'audio/mpeg':
-		return 'mp3'
-	elif mimetype == 'text/plain':
-		return 'txt'
-	else:
-		return None
+	f.seek(0)
+	return f
 	
 def tag_replace(text, msg):
 	dt = datetime.datetime.now()

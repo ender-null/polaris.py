@@ -12,6 +12,6 @@ def run(msg):
 	for interaction in locale[get_locale(msg['chat']['id'])]['interactions']:
 		for trigger in locale[get_locale(msg['chat']['id'])]['interactions'][interaction]:
 			trigger = tag_replace(trigger, msg)
-			if re.compile(trigger.lower()).search(input):
+			if re.match(trigger.lower(), input):
 				interaction = tag_replace(interaction, msg)
 				return send_message(msg['chat']['id'], interaction, parse_mode="Markdown")

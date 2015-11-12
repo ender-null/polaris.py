@@ -66,7 +66,7 @@ def run(msg):
 		for v in exts:
 			if re.compile(v).search(result_url):
 				is_real = True
-		
+	
 	photo = download(result_url)
 	
 	if photo:
