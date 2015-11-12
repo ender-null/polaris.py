@@ -11,7 +11,7 @@ parameters = (
 	('text', True),
 )
 description = 'Generates an audio file using Google Text-To-Speech API.'
-typing = True
+action = 'upload_audio'
 
 langs = [
 	'af', 'aq', 'ar', 'hy', 'ca', 'zh', 'zh-cn', 'zh-tw', 'zh-yue',
@@ -22,7 +22,7 @@ langs = [
 	'es-us', 'sw', 'sv', 'ta', 'th', 'tr', 'vi', 'cy'
 ]
 
-def action(msg):			
+def run(msg):			
 	input = get_input(msg['text'])
 	
 	if not input:

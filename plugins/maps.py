@@ -12,9 +12,9 @@ parameters = (
 	('location', True),
 )
 description = 'Returns a map for a specified location.'
-typing = True
+action = 'upload_photo'
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 
 	if not input:
@@ -38,6 +38,6 @@ def action(msg):
 		if map:
 			send_photo(msg['chat']['id'], map)
 		else:
-			send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['download'], parse_mode="Markdown")
+			send_error(msg, 'download')
 	else:
 		send_location(msg['chat']['id'], lat, lon)

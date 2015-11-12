@@ -18,26 +18,26 @@ parameters = (
 	('summoner', True),
 )
 description = 'Gets stats from League of Legends summoner.'
-typing = True
+action = 'upload_photo'
 
 def get_server(msg):
-	if re.compile(config['command_start'] + 'br').search(msg['text']):
+	if get_command(msg['text']) == 'br':
 		return 'br'
-	elif re.compile(config['command_start'] + 'eune').search(msg['text']):
+	elif get_command(msg['text']) == 'eune':
 		return 'eune'
-	elif re.compile(config['command_start'] + 'kr').search(msg['text']):
+	elif get_command(msg['text']) == 'kr':
 		return 'kr'
-	elif re.compile(config['command_start'] + 'lan').search(msg['text']):
+	elif get_command(msg['text']) == 'lan':
 		return 'lan'
-	elif re.compile(config['command_start'] + 'las').search(msg['text']):
+	elif get_command(msg['text']) == 'las':
 		return 'las'
-	elif re.compile(config['command_start'] + 'na').search(msg['text']):
+	elif get_command(msg['text']) == 'na':
 		return 'na'
-	elif re.compile(config['command_start'] + 'oce').search(msg['text']):
+	elif get_command(msg['text']) == 'oce':
 		return 'oce'
-	elif re.compile(config['command_start'] + 'ru').search(msg['text']):
+	elif get_command(msg['text']) == 'ru':
 		return 'ru'
-	elif re.compile(config['command_start'] + 'tr').search(msg['text']):
+	elif get_command(msg['text']) == 'tr':
 		return 'tr'
 	else:
 		return 'euw'
@@ -47,13 +47,7 @@ def get_summoner(server, input):
 	params = {
 		'api_key': config['api']['league_of_legends']
 	}
-	res = requests.get(
-		url,
-		params = params,
-	)
-	if res.status_code != 200:
-		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
-	return json.loads(res.text)
+	return send_request(url, params=params)
 
 def get_summoner_icon(server, summoner, summoner_name):
 	url = 'http://ddragon.leagueoflegends.com/cdn/5.19.1/img/profileicon/'
@@ -64,28 +58,16 @@ def get_stats(server, summoner_id, summoner_name):
 	params = {
 		'api_key': config['api']['league_of_legends']
 	}
-	res = requests.get(
-		url,
-		params = params,
-	)
-	if res.status_code != 200:
-		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
-	return json.loads(res.text)
+	return send_request(url, params=params)
 	
 def get_stats_ranked(server, summoner_id, summoner_name):
 	url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v2.5/league/by-summoner/' + summoner_id
 	params = {
 		'api_key': config['api']['league_of_legends']
 	}
-	res = requests.get(
-		url,
-		params = params,
-	)
-	if res.status_code != 200:
-		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(res.status_code), parse_mode="Markdown")
-	return json.loads(res.text)
+	return send_request(url, params=params)
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 	
 	if not input:
@@ -95,9 +77,18 @@ def action(msg):
 		input = input.lower().replace(' ', '')
 	
 	server = get_server(msg)
+	if not server:
+		return send_error(msg, 'results')
 	summoner = get_summoner(server, input)
+	if not summoner:
+		return send_error(msg, 'results')
 	stats = get_stats(server, str(summoner[input]['id']), input)
+	if not stats:
+		return send_error(msg, 'results')
 	summoner_icon = get_summoner_icon(server, summoner, input)
+	if not summoner_icon:
+		return send_error(msg, 'results')
+	
 	try:
 		ranked = get_stats_ranked(server, str(summoner[input]['id']), input)
 	except:
@@ -131,6 +122,10 @@ def action(msg):
 				text += '\n\nRanked games:'
 				text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info['division'] + ' (' + str(info['leaguePoints']) + 'LP)'
 				text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(int(( float(info['wins']) / (float(info['wins']) + float(info['losses'])) ) * 100)).replace('.','\'') + '%)'
-			
-	#send_message(msg['chat']['id'], text, parse_mode="Markdown")
-	download_and_send(msg['chat']['id'], summoner_icon, 'photo', text)
+
+	photo = download(summoner_icon)
+	
+	if photo:
+		send_photo(msg['chat']['id'], photo, caption = caption)
+	else:
+		send_error(msg, 'download')

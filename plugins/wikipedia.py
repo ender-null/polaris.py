@@ -9,10 +9,10 @@ parameters = (
 	('topic', True),
 )
 description = 'Search Wikipedia for a relevant article and return its summary.'
-typing = True
+action = 'typing'
 hidden = True
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 		
 	if not input:

@@ -11,9 +11,9 @@ parameters = (
 	('query', True),
 )
 description = 'This command performs a Google search for the given query. Safe search is enabled by default; use *' + config['command_start'] + 'gnsfw* to get potentially NSFW results.'
-typing = True
+action = 'typing'
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 		
 	if not input:

@@ -7,9 +7,9 @@ parameters = (
 	('text', True),
 )
 description = 'Repeat a string.'
-typing = True
+action = 'typing'
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 		
 	if not input:

@@ -6,10 +6,10 @@ commands = [
 	'^ascodevida'
 ]
 description = 'Returns a random Hot Sick, Rude, Offensive & Politically Incorrect joke from [Sickipedia](http://sickipedia.org).'
-typing = True
+action = 'typing'
 hidden = True
 
-def action(msg):
+def run(msg):
 	url = 'http://www.ascodevida.com/aleatorio'
 	
 	jstr = requests.get(url)

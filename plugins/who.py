@@ -5,9 +5,9 @@ commands = [
 	'^who'
 ]
 description = 'Gets user info.'
-typing = True
+action = 'typing'
 
-def action(msg):			
+def run(msg):			
 	
 	if hasattr(msg, 'reply_to_message'):
 		msg['from'] = msg['reply_to_message']['from']

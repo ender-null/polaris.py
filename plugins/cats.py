@@ -4,9 +4,9 @@ commands = [
 	'^cat'
 ]
 description = 'Get a cat pic!'
-typing = True
+action = 'upload_photo'
 
-def action(msg):			
+def run(msg):			
 
 	url = 'http://thecatapi.com/api/images/get'
 	params = {

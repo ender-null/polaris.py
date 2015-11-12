@@ -64,25 +64,25 @@ def on_message_receive(msg):
 	
 	if not msg['text']:
 		msg['text'] = ''
-		
 	lower = msg['text'].lower()
 	
-	print lower
 	for i,plugin in plugins.items():
 		for command in plugin.commands:
 			trigger = command.replace("^", "^" + config['command_start'])
 			trigger = tag_replace(trigger, msg)
-			if re.compile(lower).search(trigger):
+			if re.match(trigger, lower):
 				if config['handle_exceptions'] == True:
 					try:
-						plugin.action(msg)
+						if hasattr(plugin, 'action'):
+							send_chat_action(msg['chat']['id'], plugin.action)
+						plugin.run(msg)
 					except Exception as e:
-						send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['exception'])
+						#send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['exception'])
 						for group in groups.items():
 							if group[1]['special'] == 'alerts':
 								send_message(group[0], str(e))
 				else:
-					plugin.action(msg)
+					plugin.run(msg)
 					 	
 def process_message(msg):
 	if (config['process']['new_chat_participant']==True
@@ -114,7 +114,7 @@ def process_message(msg):
 	and msg['chat']['type'] == 'private'
 	and not msg['text'].startswith(config['command_start'])):
 		msg['text'] = bot['first_name'] + ' ' + msg['text']
-		
+
 	return msg
 
 def load_plugins():
@@ -156,10 +156,10 @@ def get_input(text):
 		return False
 	return text[text.find(" ") + 1:]
 
-def first_word(text):
+def first_word(text, i=0):
 	if not ' ' in text:
 		return False
-	return text.split()[0]
+	return text.split()[i-1]
 
 def all_but_first_word(text):
 	if not ' ' in text:

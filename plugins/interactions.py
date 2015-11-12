@@ -6,7 +6,7 @@ commands = [
 ]
 hidden = True
 
-def action(msg):
+def run(msg):
 	input = msg['text'].lower()
 
 	for interaction in locale[get_locale(msg['chat']['id'])]['interactions']:

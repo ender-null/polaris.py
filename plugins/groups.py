@@ -18,7 +18,7 @@ commands = [
 ]
 hidden = True
 
-def action(msg):			
+def run(msg):			
 	input = get_input(msg['text'])
 	
 	message = locale['default']['errors']['argument']

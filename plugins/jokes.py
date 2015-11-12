@@ -7,9 +7,9 @@ commands = [
 	'^sickipedia'
 ]
 description = 'Returns a random Hot Sick, Rude, Offensive & Politically Incorrect joke from [Sickipedia](http://sickipedia.org).'
-typing = True
+action = 'typing'
 
-def action(msg):
+def run(msg):
 	url = 'http://www.sickipedia.org/random'
 	
 	jstr = requests.get(url)

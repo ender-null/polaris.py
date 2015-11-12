@@ -9,10 +9,10 @@ parameters = (
 	('poste', True),
 )
 description = 'Gets real time bus poste data. Only works for [Urbanos de Zaragoza](http://www.urbanosdezaragoza.es).'
-typing = True
+action = 'typing'
 hidden = True
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 		
 	if not input:

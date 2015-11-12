@@ -9,63 +9,55 @@ commands = [
 parameters = (
 	('to', True),
 	('from', True),
-	('ammount', False),
+	('amount', False),
 )
 description = 'Convert an amount from one currency to another.'
-typing = True
+action = 'typing'
 hidden = True
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 
 	if not input:
 		doc = get_doc(commands, parameters, description)
 		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")	
-			
-	url = 'http://www.google.com/finance/converter'
-	params = {
-		'size': '640x320',
-		'markers': 'color:red|label:X|' + str(lat) + ',' + str(lon),
-		'key': config['api']['googledev']
-	}
 	
-	jstr = requests.get(
-		url,
-		params = params,
-	)
-		
-	if jstr.status_code != 200:
-		return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(jstr.status_code))
-	
-	jdat = json.loads(jstr.text)
-	
-	'''
-	local from = first_word(input):upper()
-	local to = first_word(input, 2):upper()
-	local amount = first_word(input, 3)
-	local result
+	print input
+	from_currency = first_word(input).upper()
+	print from_currency
+	to = first_word(input, 2).upper()
+	print to
+	amount = first_word(input, 3)
+	print amount
 
-	if not tonumber(amount) then
+	if not int(amount):
 		amount = 1
 		result = 1
-	end
 
-	if from ~= to then
+	if from_currency != to:
+		url = 'http://www.google.com/finance/converter'
+		params = {
+			'from': from_currency,
+			'to': to,
+			'a': amount
+		}
+		
+		jstr = requests.get(
+			url,
+			params = params,
+		)
+			
+		if jstr.status_code != 200:
+			return send_error(msg, 'connection', jstr.status_code)
 
-		local url = url .. '?from=' .. from .. '&to=' .. to .. '&a=' .. amount
+		
+		print jstr.url
+		
+		str = re.match("<span class=bld>(.*) %u+</span>", jstr.text).group(1)
+		if not str:
+			return send_error(msg, 'results')
+		result = str
 
-		local str, res = HTTP.request(url)
-		if res ~= 200 then
-			return send_msg(msg, config.locale.errors.connection)
-		end
-
-		local str = str:match('<span class=bld>(.*) %u+</span>')
-		if not str then return send_msg(msg, config.locale.errors.results) end
-		result = string.format('%.2f', str)
-
-	end
-
-	local message = amount .. ' ' .. from .. ' = ' .. result .. ' ' .. to
-	'''
+	message = amount + ' ' + from_currency + ' = ' + result + ' ' + to
 	
-	#send_location(msg['chat']['id'], lat, lon)
+	send_message(msg['chat']['id'], lat, lon)

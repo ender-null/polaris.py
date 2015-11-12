@@ -11,7 +11,7 @@ parameters = (
 	('location', True),
 )
 description = 'Returns the current temperature and weather conditions for a specified location.'
-typing = True
+action = 'upload_photo'
 
 def get_icon(weather_icon):
 	weather_emoji = {}
@@ -30,7 +30,7 @@ def get_icon(weather_icon):
 	
 	return weather_emoji[weather_icon[:2]]
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 	
 	if not input:

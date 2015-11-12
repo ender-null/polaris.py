@@ -10,9 +10,9 @@ parameters = (
 	('tags', True),
 )
 description = 'Gets an image from [Konachan](http://konachan.com), use *' + config['command_start'] + 'knsfw* to get potentially NSFW results.'
-typing = True
+action = 'upload_photo'
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 	
 	if not input:

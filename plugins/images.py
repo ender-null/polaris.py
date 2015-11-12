@@ -10,7 +10,7 @@ parameters = (
 	('query', True),
 )
 description = 'This command performs a Google Images search for the given query. One random top result is returned. Safe search is enabled by default; use *' + config['command_start'] + 'insfw* to get potentially NSFW results.'
-typing = True
+action = 'upload_photo'
 
 exts = {
 	'.png$',
@@ -20,7 +20,7 @@ exts = {
 	'.gif$'
 }
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 		
 	if not input:
@@ -72,4 +72,4 @@ def action(msg):
 	if photo:
 		send_photo(msg['chat']['id'], photo, caption = caption)
 	else:
-		send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['download'], parse_mode="Markdown")
+		send_error(msg, 'download')

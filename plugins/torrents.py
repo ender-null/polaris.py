@@ -11,7 +11,7 @@ parameters = (
 	('query', True),
 )
 description = 'Search Kickass Torrents. Results may be NSFW.'
-typing = True
+action = 'typing'
 
 def get_category_icon(category):
 	if category == 'Anime':
@@ -33,7 +33,7 @@ def get_category_icon(category):
 	else:
 		return u'❔'
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 		
 	if not input:

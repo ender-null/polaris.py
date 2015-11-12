@@ -7,9 +7,9 @@ commands = [
 	'/start'
 ]
 description = 'Info about *' + bot['first_name'] + '*'
-typing = True
+action = 'typing'
 
-def action(msg):			
+def run(msg):			
 	header = 'Hi! I\'m *#BOT_FIRSTNAME*'
 	header += '\nNice to meet you.'
 

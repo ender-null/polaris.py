@@ -10,10 +10,10 @@ parameters = (
 	('command', False),
 )
 description = 'Get list of basic information for all commands, or more detailed documentation on a specified command.'
-typing = True
+action = 'typing'
 hidden = True
 
-def action(msg):			
+def run(msg):			
 	input = get_input(msg['text'])
 	
 	if input:

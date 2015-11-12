@@ -43,7 +43,6 @@ def send_message(chat_id, text, disable_web_page_preview=None, reply_to_message_
 	if parse_mode:
 		params['parse_mode'] = parse_mode
 	
-	api_request('sendChatAction', 'typing')
 	return api_request('sendMessage', params)
 	
 def forward_message(chat_id, from_chat_id, message_id):
@@ -71,7 +70,6 @@ def send_photo(chat_id, photo, caption=None, reply_to_message_id=None, reply_mar
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	api_request('sendChatAction', 'upload_photo')
 	return api_request('sendPhoto', params, files=files)
 
 def send_audio(chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None, reply_markup=None):
@@ -95,7 +93,6 @@ def send_audio(chat_id, audio, duration=None, performer=None, title=None, reply_
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	api_request('sendChatAction', 'upload_audio')
 	return api_request('sendAudio', params, files=files)
 
 def send_document(chat_id, document, reply_to_message_id=None, reply_markup=None):
@@ -113,7 +110,6 @@ def send_document(chat_id, document, reply_to_message_id=None, reply_markup=None
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	api_request('sendChatAction', 'upload_document')
 	return api_request('sendDocument', params, files=files)
 
 def send_sticker(chat_id, sticker, reply_to_message_id=None, reply_markup=None):
@@ -131,7 +127,6 @@ def send_sticker(chat_id, sticker, reply_to_message_id=None, reply_markup=None):
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	api_request('sendChatAction', 'upload_document')
 	return api_request('sendSticker', params, files=files)
 	
 def send_video(chat_id, video, duration=None, caption=None, reply_to_message_id=None, reply_markup=None):
@@ -153,7 +148,6 @@ def send_video(chat_id, video, duration=None, caption=None, reply_to_message_id=
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	api_request('sendChatAction', 'upload_video')
 	return api_request('sendVideo', params, files=files)
 	
 def send_voice(chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
@@ -173,7 +167,6 @@ def send_voice(chat_id, voice, duration=None, reply_to_message_id=None, reply_ma
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	api_request('sendChatAction', 'upload_audio')
 	return api_request('sendVoice', params, files=files)
 	
 def send_location(chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
@@ -188,7 +181,6 @@ def send_location(chat_id, latitude, longitude, reply_to_message_id=None, reply_
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	api_request('sendChatAction', 'find_location')
 	return api_request('sendLocation', params, files=files)
 	
 def send_chat_action(chat_id, action):

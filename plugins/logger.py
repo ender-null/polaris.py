@@ -6,7 +6,7 @@ commands = [
 ]
 hidden = True
 
-def action(msg):
+def run(msg):
 	
 	if ((str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'admin')
 	or (str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'alerts')
@@ -14,8 +14,6 @@ def action(msg):
 		log = False
 	else:
 		log = True
-		
-	print log
 
 	if log == True:
 		if msg['text'] != '':
@@ -26,7 +24,7 @@ def action(msg):
 			message = message.replace(bot['first_name'] + ' ', '')
 			message += '\n------------------------\n'
 
-			if hasattr(msg['from'], username):
+			if msg['from']['username']:
 				message += '*Name*: [' + escape_markup(msg['from']['first_name']) + '](http://telegram.me/' + msg['from']['username'] + ')\n'
 			else:
 				message += '*Name*: ' + escape_markup(msg['from']['first_name']) + '\n'
@@ -46,7 +44,7 @@ def action(msg):
 				if group[1]['special'] == 'log':
 					forward_message(group[0],  msg['chat']['id'], msg['message_id'])
 	else:
-		if hasattr(msg, 'reply_to_message') and msg['reply_to_message']['from']['id'] == bot['id']:
+		if msg['reply_to_message'] and msg['reply_to_message']['from']['id'] == bot['id']:
 			message_id = last_word(msg['reply_to_message']['text'].split('\n')[-1])
 			chat_id = last_word(msg['reply_to_message']['text'].split('\n')[-2])
 		send_message(chat_id, msg['text'], reply_to_message_id=message_id, parse_mode="Markdown")

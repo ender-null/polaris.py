@@ -7,9 +7,10 @@ commands = [
 	'#BOT_NAME_LOWER'
 ]
 description = 'Get list of basic information for all commands, or more detailed documentation on a specified command.'
+action = 'typing'
 hidden = True
 
-def action(msg):
+def run(msg):
 	input = msg['text'].replace(bot['first_name'] + ' ', '')
 	
 	cb = cleverbot.Cleverbot()	

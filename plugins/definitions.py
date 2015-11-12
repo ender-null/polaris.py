@@ -10,9 +10,9 @@ parameters = (
 	('term', True),
 )
 description = 'Returns the first definition for a given term from [Urban Dictionary](http://urbandictionary.com).'
-typing = True
+action = 'typing'
 
-def action(msg):
+def run(msg):
 	input = get_input(msg['text'])
 		
 	if not input:
