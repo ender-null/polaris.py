@@ -23,4 +23,8 @@ def run(msg):
 		return send_error(msg, 'connection', jstr.status_code)
 	
 	photo = download(url)
-	send_photo(msg['chat']['id'], photo)
+	
+	if photo:
+		send_photo(msg['chat']['id'], photo)
+	else:
+		send_error(msg, 'download')

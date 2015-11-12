@@ -38,12 +38,7 @@ def run(msg):
 		return send_message(msg['chat']['id'], doc, parse_mode="Markdown")	
 		
 	lat,lon,locality,country = get_coords(input)
-	
-	print lat
-	print lon
-	print locality
-	print country
-	
+		
 	weather_url = 'http://api.openweathermap.org/data/2.5/weather'
 	weather_params = {
 		'lat': lat,
@@ -78,10 +73,9 @@ def run(msg):
 	message += '\n' + str(int(weather_jdat['main']['temp'])) + u'ºC - ' + str(weather_jdat['weather'][0]['description']).title() + ' ' +  get_icon(weather_jdat['weather'][0]['icon'])
 	message += u'\n💧 ' + str(weather_jdat['main']['humidity']) + u'% | 🎐 ' + str(int(weather_jdat['wind']['speed'] * 3.6)) + ' km/h'
 	
-	
-	photo = download(photo_url, photo_params)
-	
+	photo = download(photo_url, params=photo_params)
 	if photo:
-		send_photo(msg['chat']['id'], photo, caption = message)
+		if not send_photo(msg['chat']['id'], photo, caption = message):
+			send_error(msg, 'unknown')
 	else:
-		send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['download'], parse_mode="Markdown")
+		send_error(msg, 'download')

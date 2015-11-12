@@ -44,7 +44,7 @@ def run(msg):
 				if group[1]['special'] == 'log':
 					forward_message(group[0],  msg['chat']['id'], msg['message_id'])
 	else:
-		if msg['reply_to_message'] and msg['reply_to_message']['from']['id'] == bot['id']:
+		if 'reply_to_message' in msg and msg['reply_to_message']['from']['id'] == bot['id']:
 			message_id = last_word(msg['reply_to_message']['text'].split('\n')[-1])
 			chat_id = last_word(msg['reply_to_message']['text'].split('\n')[-2])
 		send_message(chat_id, msg['text'], reply_to_message_id=message_id, parse_mode="Markdown")

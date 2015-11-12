@@ -6,7 +6,7 @@ import time
 import datetime
 import requests
 import subprocess
-import magic
+import mimetypes
 import importlib
 import json
 import random
@@ -18,6 +18,7 @@ from collections import OrderedDict
 from StringIO import StringIO
 import tempfile
 import urllib
+import magic
 
 def bot_init():
 	print('Loading config... ')
@@ -76,11 +77,13 @@ def on_message_receive(msg):
 							send_chat_action(msg['chat']['id'], plugin.action)
 						plugin.run(msg)
 					except Exception as e:
-						#send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['exception'])
+						send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['exception'])
 						for group in groups.items():
 							if group[1]['special'] == 'alerts':
 								send_message(group[0], str(e))
 				else:
+					if hasattr(plugin, 'action'):
+						send_chat_action(msg['chat']['id'], plugin.action)
 					plugin.run(msg)
 					 	
 def process_message(msg):
@@ -194,17 +197,35 @@ def get_locale(chat_id):
 	else:
 		return 'default'
 
-def download(url, headers=None, params=None):
+def download(url, params=None, headers=None):
 	try:
 		jstr = requests.get(url, params=params, headers=headers, stream=True)
-		f = tempfile.NamedTemporaryFile(delete=False)
+		ext = os.path.splitext(url)[1]
+		f = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
 		for chunk in jstr.iter_content(chunk_size=1024): 
 			if chunk:
 				f.write(chunk)
 	except IOError, e:
 		return None
 	f.seek(0)
-	return f
+	if not ext:
+		f.name = fix_extension(f.name)
+	file = open(f.name, 'rb')
+	return file
+
+	
+def fix_extension(file_path):
+		url = urllib.pathname2url(file_path)
+		type = magic.from_file(file_path, mime=True)
+		extension = mimetypes.guess_extension(type, strict=False)
+		if extension != None:
+			# I hate to have to use this s***, f*** jpe
+			if '.jpe' in extension:
+				extension = extension.replace('jpe','jpg')
+			os.rename(file_path, file_path + extension)
+			return file_path + extension
+		else:
+			return file_path
 	
 def tag_replace(text, msg):
 	dt = datetime.datetime.now()

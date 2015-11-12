@@ -181,7 +181,7 @@ def send_location(chat_id, latitude, longitude, reply_to_message_id=None, reply_
 	if reply_markup:
 		params['reply_markup'] = reply_markup
 	
-	return api_request('sendLocation', params, files=files)
+	return api_request('sendLocation', params)
 	
 def send_chat_action(chat_id, action):
 	params = {

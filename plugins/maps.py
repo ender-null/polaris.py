@@ -12,7 +12,7 @@ parameters = (
 	('location', True),
 )
 description = 'Returns a map for a specified location.'
-action = 'upload_photo'
+action = 'find_location'
 
 def run(msg):
 	input = get_input(msg['text'])
@@ -40,4 +40,5 @@ def run(msg):
 		else:
 			send_error(msg, 'download')
 	else:
-		send_location(msg['chat']['id'], lat, lon)
+		if not send_location(msg['chat']['id'], lat, lon):
+			send_error(msg, 'unknown')

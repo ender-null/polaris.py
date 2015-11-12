@@ -67,6 +67,7 @@
         "permission": "Permission denied.",
         "id": "Must be used via reply or by specifying a user\"s ID.",
         "download": "Download failed.",
-        "exception": "Exception found."
+        "exception": "Exception found.",
+        "unknown": "Unknown error."
     }
 }
