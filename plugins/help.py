@@ -4,6 +4,7 @@ from utilies import *
 commands = [
 	'^help',
 	'^commands',
+	'^genhelp',
 	'^h$'
 ]
 parameters = (
@@ -27,16 +28,25 @@ def run(msg):
 					return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 	else:
 		help = ''
+		gen = ''
 		for i,v in plugins.items():
 			if not hasattr(v, 'hidden'):
 				help += '\t' + config['command_start']
 				help += v.commands[0].replace('^', '')
+				
+				if hasattr(v, 'description'):
+						gen += v.commands[0].replace('^', '')
+						gen += ' - ' + v.description
+						gen += '\n'
 				
 				if hasattr(v, 'parameters'):
 						help += format_parameters(v.parameters)
 				help += '\n'
 			
 		message = '*Commands*:\n' + help
+		
+		if get_command(msg['text']) == 'genhelp':
+			return send_message(msg['chat']['id'], gen, parse_mode="Markdown", disable_web_page_preview=True)
 		
 		if msg['from']['id'] != msg['chat']['id']:
 			if not send_message(msg['from']['id'], message, parse_mode="Markdown"):

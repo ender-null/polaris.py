@@ -47,7 +47,7 @@ def get_summoner(server, input):
 	params = {
 		'api_key': config['api']['league_of_legends']
 	}
-	return send_request(url, params=params)
+	return send_request(url, params)
 
 def get_summoner_icon(server, summoner, summoner_name):
 	url = 'http://ddragon.leagueoflegends.com/cdn/5.19.1/img/profileicon/'
@@ -58,14 +58,14 @@ def get_stats(server, summoner_id, summoner_name):
 	params = {
 		'api_key': config['api']['league_of_legends']
 	}
-	return send_request(url, params=params)
+	return send_request(url, params)
 	
 def get_stats_ranked(server, summoner_id, summoner_name):
 	url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v2.5/league/by-summoner/' + summoner_id
 	params = {
 		'api_key': config['api']['league_of_legends']
 	}
-	return send_request(url, params=params)
+	return send_request(url, params)
 
 def run(msg):
 	input = get_input(msg['text'])
@@ -81,13 +81,13 @@ def run(msg):
 		return send_error(msg, 'results')
 	summoner = get_summoner(server, input)
 	if not summoner:
-		return send_error(msg, 'results')
+		return send_error(msg, 'unknown')
 	stats = get_stats(server, str(summoner[input]['id']), input)
 	if not stats:
-		return send_error(msg, 'results')
+		return send_error(msg, 'permission')
 	summoner_icon = get_summoner_icon(server, summoner, input)
 	if not summoner_icon:
-		return send_error(msg, 'results')
+		return send_error(msg, 'id')
 	
 	try:
 		ranked = get_stats_ranked(server, str(summoner[input]['id']), input)
