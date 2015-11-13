@@ -9,5 +9,5 @@ Multi-purpose telegram bot written in Python. I made this for personal use so I 
 * ~~Implement locales.~~
 * Change settings and locales without restarting.
 * Move all plugin documentation to locales.
-* Use requests instead of pyTelegramBotAPI.
-* Add group management stuff.
+* ~~Use requests instead of pyTelegramBotAPI.~~
+* Add group management stuff. (In progress)
