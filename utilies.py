@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
-# from StringIO import StringIO
 from __main__ import *
 from bindings import *
 import datetime
@@ -9,12 +8,8 @@ import json
 import magic
 import mimetypes
 import os
-# import platform
-# import random
 import re
 import requests
-# import subprocess
-# import sys
 import tempfile
 import time
 import urllib

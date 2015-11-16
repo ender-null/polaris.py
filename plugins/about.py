@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from utilies import *
+import platform
+import subprocess
 
 
 commands = [

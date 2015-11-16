@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __main__ import *
 from utilies import *
+import random
 
 
 commands = [
