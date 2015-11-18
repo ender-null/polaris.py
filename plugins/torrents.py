@@ -9,7 +9,7 @@ commands = [
     '^kickass'
 ]
 
-parameters = (('query', True))
+parameters = {('query', True)}
 
 description = 'Search Kickass Torrents. Results may be NSFW.'
 action = 'typing'
@@ -17,7 +17,7 @@ action = 'typing'
 
 def get_category_icon(category):
     if category == 'Anime':
-        return u'🎌'
+        return u'🇯🇵'
     elif category == 'Applications':
         return u'📱'
     elif category == 'Books':
@@ -48,18 +48,13 @@ def run(msg):
         'q': input
     }
 
-    jstr = requests.get(
-        url,
-        params=params,
-    )
-
-    if jstr.status_code != 200:
-        return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
-
-    jdat = json.loads(jstr.text)
+    jdat = send_request(url, params)
+    
+    if not jdat:
+        return send_error(msg, 'connection')
 
     if jdat['total_results'] == 0:
-        return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['results'])
+        return send_error(msg, 'results')
 
     limit = 6
     if len(jdat['total_results']) < limit:
@@ -70,11 +65,11 @@ def run(msg):
             del v
 
     if len(jdat['list']) == 0:
-        return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['results'])
+        return send_error(msg, 'results')
 
-    message = '*Kickass search*: "_' + input + '_"\n\n'
+    message = '*Kickass Search*: "_' + input + '_"\n\n'
     for i in range(0, limit):
-        message += get_category_icon(jdat['list'][i]['category']) + ' [' + escape_markup(jdat['list'][i]['title']) + '](' + delete_markup(jdat['list'][i]['torrentLink']) + ')'
+        message += get_category_icon(jdat['list'][i]['category']) + ' [' + delete_markup(jdat['list'][i]['title']) + '](' + get_short_url(jdat['list'][i]['torrentLink']) + ')'
         if jdat['list'][i]['verified'] == 0:
             message += u' ❗️'
         size, unit = get_size(jdat['list'][i]['size'])

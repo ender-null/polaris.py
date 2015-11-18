@@ -10,7 +10,7 @@ commands = [
     '^knsfw',
 ]
 
-parameters = (('tags', True))
+parameters = {('tags', True)}
 
 description = 'Gets an image from [Konachan](http://konachan.com), use *' + config['command_start'] + 'knsfw* to get potentially NSFW results.'
 action = 'upload_photo'
@@ -39,12 +39,12 @@ def run(msg):
     )
 
     if len(jdat) < 1:
-        return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['results'])
+        return send_error(msg, 'results')
 
     i = random.randint(1, len(jdat))-1
 
     if not jdat:
-        return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(jstr.status_code), parse_mode="Markdown")
+        return send_error(msg, 'connection', jstr.status_code)
 
     result_url = jdat[i]['file_url']
     caption = str(len(jdat)) + ' results matching: "' + input + '"'
@@ -54,4 +54,4 @@ def run(msg):
     if photo:
         send_photo(msg['chat']['id'], photo, caption=caption)
     else:
-        send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['download'], parse_mode="Markdown")
+        send_error(msg, 'download')

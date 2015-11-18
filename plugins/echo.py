@@ -3,7 +3,7 @@ from utilies import *
 
 
 commands = ['^echo']
-parameters = (('text', True))
+parameters = {('text', True)}
 description = 'Repeat a string.'
 action = 'typing'
 

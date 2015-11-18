@@ -9,10 +9,11 @@ def get_token():
 api_url = 'https://api.telegram.org/bot' + get_token() + '/'
 
 
-def send_request(url, params=None, headers=None, files=None):
-    jstr = requests.post(url, params=params, headers=headers, files=files)
+def send_request(url, params=None, headers=None, files=None, data=None):
+    jstr = requests.get(url, params=params, headers=headers, files=files, data=data)
 
     if jstr.status_code != 200:
+        print '\n\tRequest URL: ' + jstr.url
         return False
 
     return json.loads(jstr.text)
@@ -177,7 +178,7 @@ def send_location(chat_id, latitude, longitude, reply_to_message_id=None,
                   reply_markup=None):
     params = {
         'chat_id': chat_id,
-        'longitude': latitude,
+        'latitude': latitude,
         'longitude': longitude
     }
 

@@ -53,9 +53,9 @@ def on_message_receive(msg):
     msg = process_message(msg)
     now = time.mktime(datetime.datetime.now().timetuple())
 
-    if not config['ignore']['old_messages'] and msg['date'] < now - 10:
+    if config['ignore']['old_messages'] and msg['date'] < now - 10:
         return
-    if not config['ignore']['media'] and 'text' not in msg:
+    if config['ignore']['media'] and 'text' not in msg:
         return
 
     if 'text' not in msg:
@@ -187,9 +187,9 @@ def get_coords(input):
     url = 'http://maps.googleapis.com/maps/api/geocode/json'
     params = {'address': input}
 
-    jdat = send_request(url, params=params,)
+    jdat = send_request(url, params=params)
 
-    if jdat['status'] == 'ZERO_RESULTS':
+    if not jdat or jdat['status'] == 'ZERO_RESULTS':
         return False, False, False, False
 
     locality = jdat['results'][0]['address_components'][0]['long_name']
@@ -200,6 +200,20 @@ def get_coords(input):
     return (jdat['results'][0]['geometry']['location']['lat'],
             jdat['results'][0]['geometry']['location']['lng'],
             locality, country)
+            
+def get_short_url(long_url):
+    url = 'https://www.googleapis.com/urlshortener/v1/url?longUrl=' + long_url + '&key=' + config['api']['googledev']
+    params = {'longUrl': long_url, 'key': config['api']['googledev']}
+    headers = {'content-type': 'application/json'}
+
+    jstr = requests.post(url, data=json.dumps(params), headers=headers)
+
+    if jstr.status_code != 200:
+        return False
+    
+    jdat = json.loads(jstr.text)
+
+    return (jdat['id'])
 
 
 def get_locale(chat_id):
@@ -354,7 +368,9 @@ def get_size(number):
     return str(number), units[unit]
 
 
-def send_error(msg, error_type, error_id=200):
+def send_error(msg, error_type, status_code=200):
     loc = get_locale(msg['chat']['id'])
-    message = locale[loc]['errors'][error_type].format(error_id)
+    message = locale[loc]['errors'][error_type]
+    if status_code != 200:
+        message += '\n\t_Status code: ' + status_code + '_'
     send_message(msg['chat']['id'], message)

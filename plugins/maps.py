@@ -6,14 +6,14 @@ from utilies import *
 commands = [
     '^map',
     '^m ',
-    '^location',
-    '^loc ',
-    '^l ',
+    '^position',
+    '^pos ',
+    '^p ',
 ]
 
-parameters = (('location', True))
+parameters = {('location', True)}
 
-description = 'Returns a map for a specified location.'
+description = 'Returns a photo with a map for a specified location. Use *' + config['command_start'] + 'position* to get the position.'
 action = 'find_location'
 
 
@@ -30,7 +30,7 @@ def run(msg):
         photo_url = 'https://maps.googleapis.com/maps/api/staticmap'
         photo_params = {
             'size': '640x320',
-            'markers': 'color:red|label:X|' + str(lat) + ',' + str(lon),
+            'markers': 'color:red|label:·|' + str(lat) + ',' + str(lon),
             'key': config['api']['googledev']
         }
 

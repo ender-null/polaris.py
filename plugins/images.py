@@ -9,7 +9,7 @@ commands = [
     '^insfw'
 ]
 
-parameters = (('query', True))
+parameters = {('query', True)}
 
 description = 'This command performs a Google Images search for the given query. One random top result is returned. Safe search is enabled by default; use *' + config['command_start'] + 'insfw* to get potentially NSFW results.'
 action = 'upload_photo'

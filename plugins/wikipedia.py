@@ -8,7 +8,7 @@ commands = [
     '^wiki'
 ]
 
-parameters = (('topic', True))
+parameters = {('topic', True)}
 
 description = 'Search Wikipedia for a relevant article and return its summary.'
 action = 'typing'

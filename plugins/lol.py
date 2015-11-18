@@ -53,14 +53,7 @@ def get_summoner(server, input):
     params = {
         'api_key': config['api']['league_of_legends']
     }
-    res = requests.get(
-        url,
-        params=params,
-    )
-    if res.status_code != 200:
-        return None
-    return json.loads(res.text)
-#   return send_request(url, params)
+    return send_request(url, params)
 
 
 def get_summoner_icon(server, summoner, summoner_name):
@@ -74,14 +67,7 @@ def get_stats(server, summoner_id, summoner_name):
         'api_key': config['api']['league_of_legends']
     }
 
-    res = requests.get(
-        url,
-        params=params,
-    )
-    if res.status_code != 200:
-        return send_error(msg, 'connection', res.status_code)
-    return json.loads(res.text)
-    #return send_request(url, params)
+    return send_request(url, params)
 
 
 def get_stats_ranked(server, summoner_id, summoner_name):
@@ -89,14 +75,7 @@ def get_stats_ranked(server, summoner_id, summoner_name):
     params = {
         'api_key': config['api']['league_of_legends']
     }
-    res = requests.get(
-        url,
-        params=params,
-    )
-    if res.status_code != 200:
-        return send_error(msg, 'connection', res.status_code)
-    return json.loads(res.text)
-    #return send_request(url, params)
+    return send_request(url, params)
 
 
 def run(msg):

@@ -128,6 +128,8 @@ def run(msg):
     elif get_command(msg['text']) == 'info':
         if str(msg['chat']['id']) in groups:
             message = '*Info of ' + groups[str(msg['chat']['id'])]['title'] + ' [' + groups[str(msg['chat']['id'])]['realm'] + ']*'
+            if groups[str(msg['chat']['id'])]['alias'] != '':
+                message += '\t (' + groups[str(msg['chat']['id'])]['alias'] + ')'
             message += '\n' + groups[str(msg['chat']['id'])]['description']
             if groups[str(msg['chat']['id'])]['rules'] != '':
                 message += '\n\n*Rules:*\n' + groups[str(msg['chat']['id'])]['rules']
@@ -142,7 +144,7 @@ def run(msg):
         message = 'Unsupported action.'
 
     elif is_mod(msg) and get_command(msg['text']) == 'kill':
-        if hasattr(msg, 'reply_to_message'):
+        if 'reply_to_message' in msg:
             for group in groups.items():
                 if group[1]['special'] == 'admin':
                     message = '/kick ' + str(msg['reply_to_message']['from']['id']) + ' from ' + str(msg['chat']['id'])[1:]
@@ -170,7 +172,7 @@ def run(msg):
             message = 'Group not added.'
 
     elif is_mod(msg) and get_command(msg['text']) == 'promote':
-        if hasattr(msg, 'reply_to_message'):
+        if 'reply_to_message' in msg:
             groups[str(msg['chat']['id'])]['mods'][str(msg['reply_to_message']['from']['id'])] = str(msg['reply_to_message']['from']['first_name'])
             message = msg['reply_to_message']['from']['first_name'] + ' is now a moderator.'
             save_json('data/groups.json', groups)
@@ -178,7 +180,7 @@ def run(msg):
             return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['id'])
 
     elif is_mod(msg) and get_command(msg['text']) == 'demote':
-        if hasattr(msg, 'reply_to_message'):
+        if 'reply_to_message' in msg:
             del groups[str(msg['chat']['id'])]['mods'][str(msg['reply_to_message']['from']['id'])]
             message = msg['reply_to_message']['from']['first_name'] + ' is not a moderator.'
             save_json('data/groups.json', groups)
