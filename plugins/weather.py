@@ -54,7 +54,7 @@ def run(msg):
     if not weather:
         return send_error(msg, 'connection')
 
-    if weather_jdat['cod'] == '404':
+    if weather['cod'] == '404':
         return send_error(msg, 'results')
 
     photo_url = 'https://maps.googleapis.com/maps/api/streetview'
@@ -66,8 +66,8 @@ def run(msg):
     }
 
     message = locality + ' (' + country + ')'
-    message += '\n' + str(int(weather_jdat['main']['temp'])) + u'ºC - ' + str(weather_jdat['weather'][0]['description']).title() + ' ' + get_icon(weather_jdat['weather'][0]['icon'])
-    message += u'\n💧 ' + str(weather_jdat['main']['humidity']) + u'% | 🌬 ' + str(int(weather_jdat['wind']['speed'] * 3.6)) + ' km/h'
+    message += '\n' + str(int(weather['main']['temp'])) + u'ºC - ' + str(weather['weather'][0]['description']).title() + ' ' + get_icon(weather['weather'][0]['icon'])
+    message += u'\n💧 ' + str(weather['main']['humidity']) + u'% | 🌬 ' + str(int(weather['wind']['speed'] * 3.6)) + ' km/h'
 
     photo = download(photo_url, params=photo_params)
     if photo:

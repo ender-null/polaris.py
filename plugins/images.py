@@ -38,30 +38,25 @@ def run(msg):
         'q': input
     }
 
-    if msg['text'].startswith(config['command_start'] + 'insfw'):
+    if get_command(msg['text']) == 'insfw':
         del params['safe']
 
     jstr = requests.get(url, params=params)
 
     if jstr.status_code != 200:
-        return send_message(msg['chat']['id'],
-                            locale[get_locale(msg['chat']['id'])]['errors']['connection'].format(jstr.status_code),
-                            parse_mode="Markdown")
+        return send_error(msg, 'connection')
 
     jdat = json.loads(jstr.text)
 
     if jdat['responseData']['results'] < 1:
-        return send_message(msg['chat']['id'],
-                            locale[get_locale(msg['chat']['id'])]['errors']['results'])
+        return send_error(msg, 'results')
 
     is_real = False
     counter = 0
     while not is_real:
         counter = counter + 1
         if counter > 5 or len(jdat['responseData']['results']) < 1:
-            return send_message(msg['chat']['id'],
-                                locale[get_locale(msg['chat']['id'])]['errors']['results'],
-                                parse_mode="Markdown")
+            return send_error(msg, 'results')
 
         i = random.randint(1, len(jdat['responseData']['results']))-1
 
