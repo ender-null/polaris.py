@@ -30,10 +30,10 @@ def run(msg):
         'id': input
     }
 
-    jdat, error = send_request(url, params)
+    jdat = send_request(url, params)
 
     if not jdat:
-        return send_error(msg, 'connection', error)
+        return send_error(msg, 'connection')
 
     if 'Error obteniendo datos' in jdat['items'][0]:
         return send_error(msg, 'results')

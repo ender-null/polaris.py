@@ -123,11 +123,10 @@ def process_message(msg):
 
 def load_plugins():
     for plugin in config['plugins']:
-        try:
-            plugins[plugin] = importlib.import_module('plugins.' + plugin)
-            print('\t[OK] ' + plugin)
-        except Exception as e:
-            print('\t[Failed] ' + plugin + ': ' + str(e))
+        
+		plugins[plugin] = importlib.import_module('plugins.' + plugin)
+		print('\t[OK] ' + plugin)
+
 
     print('\n\tLoaded: ' + str(len(plugins)) +
           '/' + str(len(config['plugins'])))
