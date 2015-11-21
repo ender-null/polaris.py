@@ -182,6 +182,12 @@ def last_word(text):
         return False
     return text.split()[-1]
 
+def is_int(number):
+    try:
+        number = int(number)
+        return True
+    except ValueError:
+        return False
 
 def get_coords(input):
     url = 'http://maps.googleapis.com/maps/api/geocode/json'
@@ -376,6 +382,6 @@ def send_error(msg, error_type, status_code=200):
     send_message(msg['chat']['id'], message)
 
 def send_exception(exception):
-    for group in utilies.groups.items():
+    for group in groups.items():
         if group[1]['special'] == 'alerts':
-            utilies.send_message(group[0], str(exception))
+            send_message(group[0], str(exception))
