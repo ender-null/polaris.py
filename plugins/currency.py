@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __main__ import *
 from utilies import *
+from bs4 import BeautifulSoup
 
 
 commands = [
@@ -17,7 +17,6 @@ parameters = (
 
 description = 'Convert an amount from one currency to another.'
 action = 'typing'
-hidden = True
 
 
 def run(msg):
@@ -25,15 +24,12 @@ def run(msg):
 
     if not input:
         doc = get_doc(commands, parameters, description)
-        return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
+        return send_message(msg['chat']['id'], doc,
+                            parse_mode="Markdown")
 
-    print input
     from_currency = first_word(input).upper()
-    print from_currency
     to = first_word(input, 2).upper()
-    print to
     amount = first_word(input, 3)
-    print amount
 
     if not int(amount):
         amount = 1
@@ -55,11 +51,15 @@ def run(msg):
         if jstr.status_code != 200:
             return send_error(msg, 'connection', jstr.status_code)
 
-        print jstr.url
-
-        str = re.match("<span class=bld>(.*) %u+</span>", jstr.text).group(1)
-        if not str:
+        soup = BeautifulSoup(jstr.text, 'lxml')
+        text = soup.find(class_='bld')
+        
+        if text:
+            text = text.get_text()
+            text = str(text).split()[0]
+        else:
             return send_error(msg, 'results')
-        result = str
-
-    message = amount + ' ' + from_currency + ' = ' + result + ' ' + to
+        result = text
+    message = str(amount) + ' ' + from_currency + ' = *' + str(result) + ' ' + to + '*'
+    send_message(msg['chat']['id'], message,
+                 parse_mode="Markdown")

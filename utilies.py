@@ -66,18 +66,15 @@ def on_message_receive(msg):
         for command in plugin.commands:
             trigger = command.replace("^", "^" + config['command_start'])
             trigger = tag_replace(trigger, msg)
-            if re.match(trigger, lower):
+            if re.compile(trigger).search(lower):
                 if config['handle_exceptions'] == True:
                     try:
                         if hasattr(plugin, 'action'):
                             send_chat_action(msg['chat']['id'], plugin.action)
                         plugin.run(msg)
                     except Exception as e:
-                        send_message(msg['chat']['id'],
-                                     locale[get_locale(msg['chat']['id'])]['errors']['exception'])
-                        for group in groups.items():
-                            if group[1]['special'] == 'alerts':
-                                send_message(group[0], str(e))
+                        send_error(msg, 'exception')
+                        send_exception(e)
                 else:
                     if hasattr(plugin, 'action'):
                         send_chat_action(msg['chat']['id'], plugin.action)
@@ -152,6 +149,8 @@ def load_json(path):
         print('\t[Failed] ' + path)
         return {}
 
+def now():
+    return time.mktime(datetime.datetime.now().timetuple())
 
 def get_command(text):
     if text.startswith(config['command_start']):
@@ -164,10 +163,12 @@ def get_input(text):
     return text[text.find(" ") + 1:]
 
 
-def first_word(text, i=0):
-    if ' ' not in text:
+def first_word(text, i=1):
+    try:
+        word = text.split()[i-1]
+    except:
         return False
-    return text.split()[i-1]
+    return word
 
 
 def all_but_first_word(text):
@@ -373,3 +374,8 @@ def send_error(msg, error_type, status_code=200):
     if status_code != 200:
         message += '\n\t_Status code: ' + status_code + '_'
     send_message(msg['chat']['id'], message)
+
+def send_exception(exception):
+    for group in utilies.groups.items():
+        if group[1]['special'] == 'alerts':
+            utilies.send_message(group[0], str(exception))

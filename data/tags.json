@@ -1,18 +1,28 @@
 {
-    "test": {
+    "tutorialbrov": {
         "creator": 14143244,
         "type": "text",
-        "content": "this is a test"
+        "content": "Bienvenidos a la República de Brovrasħgĸa\nTutorial básico de Brovrasħgĸa.\n1- Corre. Rápido.\n2- El que no escribe, reenvía\n3- Whatsapp da sidita, Telegram lo cura\n4- Amaras y respetaras a Peto-tan sobre todas las cosas.\n\t4.1- A Polaris tambien."
     },
-    "lol": {
+    "rekt": {
         "creator": 14143244,
-        "type": "text",
-        "content": "lol"
+        "type": "sticker",
+        "content": "BQADBAADHwIAAhQfeAIy6fpfQlzUEgI"
+    },
+    "dealwithit": {
+        "creator": 14143244,
+        "type": "sticker",
+        "content": "BQADBAADBQIAAhQfeAJ9WnFJ517XJwI"
     },
     "nanisore": {
         "creator": 14143244,
         "type": "photo",
         "content": "AgADBAADvMExGwzP1wABgS8WWETu7Zk1WoswAATkkkR7tubvqjhIAQABAg"
+    },
+    "ayylmao": {
+        "creator": 14143244,
+        "type": "photo",
+        "content": "AgADAQAD2KcxG5CV8wd1eI823d0YsD3a1i8ABB7nWDF-otnEArcAAgI"
     },
     "ohhh": {
         "creator": 14143244,
@@ -43,5 +53,25 @@
         "creator": 14143244,
         "type": "document",
         "content": "BQADBAADEgIAAgzP1wAB7lZVAczwiPMC"
+    },
+    "cry": {
+        "creator": 14143244,
+        "type": "photo",
+        "content": "AgADBAADEL4xG76LNgABhivuF1EYFw7M54wwAARK2EqNoha80etOAAIC"
+    },
+    "sigh": {
+        "creator": 14143244,
+        "type": "photo",
+        "content": "AgADBAADw8ExGwzP1wABpYIE-gNUbp-_pmkwAASwoJ-xgQbuxfjfAQABAg"
+    },
+    "getrekt": {
+        "creator": 14143244,
+        "type": "photo",
+        "content": "AgADBAADxMExGwzP1wABWVub7bAUYtWOKXEwAARgWOdmpYJDxdesAQABAg"
+    },
+     "icandothis": {
+        "creator": 14143244,
+        "type": "photo",
+        "content": "AgADBAADxcExGwzP1wABwz3Hf6N6f4gaLoswAAQBKlF9xEt5tLlMAQABAg"
     }
 }
