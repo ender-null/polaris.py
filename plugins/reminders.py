@@ -3,6 +3,7 @@ from utilies import *
 
 commands = [
     '^remindme',
+    '^reminder',
     '^remind$',
     '^r '
 ]
@@ -20,13 +21,13 @@ reminders = load_json('data/reminders.json')
 
 def to_seconds(time, unit):
     if unit == 's':
-        return int(time)
+        return float(time)
     if unit == 'm':
-        return int(time * 60)
+        return float(time) * 60
     if unit == 'h':
-        return int(time * 60 * 60)
+        return float(time) * 60 * 60
     if unit == 'd':
-        return int(time * 60 * 60 * 24)
+        return float(time) * 60 * 60 * 24
 
 def run(msg):
     input = get_input(msg['text'])
@@ -52,7 +53,7 @@ def run(msg):
     else:
         text = '_' + text + '_'
     
-    alarm = int(now()) + to_seconds(time, unit)
+    alarm = now() + to_seconds(time, unit)
     
     reminder = OrderedDict()
     reminder['alarm'] = alarm
@@ -71,7 +72,7 @@ def run(msg):
     if unit == 'd':
         delay = delay.replace('d', ' days')
     
-    message = 'Your reminder has been set for *' + delay + '* from now:\n' + text
+    message = 'Your reminder has been set for *' + delay + '* from now:\n\n' + text
     send_message(msg['chat']['id'], message, parse_mode="Markdown")
 
 def cron():

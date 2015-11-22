@@ -95,6 +95,12 @@ def process_message(msg):
         if msg['left_chat_participant']['id'] != bot['id']:
             msg['text'] = '!left_chat_participant'
             msg['from'] = msg['left_chat_participant']
+        
+    if ('text' in msg and
+            'reply_to_message' in msg and
+            msg['reply_to_message']['from']['id'] == bot['id'] and
+            msg['reply_to_message']['text'].startswith('Reply with ')):
+        msg['text'] = config['command_start'] + 'content ' + msg['text']
 
     if (config['process']['reply_to_message'] and
             'reply_to_message' in msg and

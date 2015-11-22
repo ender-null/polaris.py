@@ -1,77 +1,102 @@
 {
-    "tutorialbrov": {
-        "creator": 14143244,
-        "type": "text",
-        "content": "Bienvenidos a la República de Brovrasħgĸa\nTutorial básico de Brovrasħgĸa.\n1- Corre. Rápido.\n2- El que no escribe, reenvía\n3- Whatsapp da sidita, Telegram lo cura\n4- Amaras y respetaras a Peto-tan sobre todas las cosas.\n\t4.1- A Polaris tambien."
-    },
-    "rekt": {
-        "creator": 14143244,
-        "type": "sticker",
-        "content": "BQADBAADHwIAAhQfeAIy6fpfQlzUEgI"
-    },
-    "dealwithit": {
-        "creator": 14143244,
-        "type": "sticker",
-        "content": "BQADBAADBQIAAhQfeAJ9WnFJ517XJwI"
-    },
-    "nanisore": {
-        "creator": 14143244,
-        "type": "photo",
-        "content": "AgADBAADvMExGwzP1wABgS8WWETu7Zk1WoswAATkkkR7tubvqjhIAQABAg"
-    },
     "ayylmao": {
-        "creator": 14143244,
-        "type": "photo",
-        "content": "AgADAQAD2KcxG5CV8wd1eI823d0YsD3a1i8ABB7nWDF-otnEArcAAgI"
-    },
-    "ohhh": {
-        "creator": 14143244,
-        "type": "sticker",
-        "content": "BQADBAADnAEAAl_9PAKIXxNYvTStCQI"
-    },
+        "content": "AgADAQAD2KcxG5CV8wd1eI823d0YsD3a1i8ABB7nWDF-otnEArcAAgI", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
     "challengeaccepted": {
-        "creator": 14143244,
-        "type": "sticker",
-        "content": "BQADBAADCgEAAnscSQABYlA_op99htQC"
-    },
-    "pleaseunderstand": {
-        "creator": 14143244,
-        "type": "sticker",
-        "content": "BQADBAADngADCiedAAGf-wHSqPiCSwI"
-    },
-    "throatskills": {
-        "creator": 14143244,
-        "type": "document",
-        "content": "BQADBAADEAIAAgzP1wABceMNNXvlt60C"
-    },
-    "follateuntransexual": {
-        "creator": 14143244,
-        "type": "document",
-        "content": "BQADBAADEQIAAgzP1wABZuU65VJz60IC"
-    },
-    "follatealamujerdealguien": {
-        "creator": 14143244,
-        "type": "document",
-        "content": "BQADBAADEgIAAgzP1wAB7lZVAczwiPMC"
-    },
+        "content": "BQADBAADCgEAAnscSQABYlA_op99htQC", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "cries": {
+        "content": "BQADBAAD5wADCiedAAF93cyaGE1zkAI", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
     "cry": {
-        "creator": 14143244,
-        "type": "photo",
-        "content": "AgADBAADEL4xG76LNgABhivuF1EYFw7M54wwAARK2EqNoha80etOAAIC"
-    },
-    "sigh": {
-        "creator": 14143244,
-        "type": "photo",
-        "content": "AgADBAADw8ExGwzP1wABpYIE-gNUbp-_pmkwAASwoJ-xgQbuxfjfAQABAg"
-    },
+        "content": "AgADBAADEL4xG76LNgABhivuF1EYFw7M54wwAARK2EqNoha80etOAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "dealwithit": {
+        "content": "BQADBAADBQIAAhQfeAJ9WnFJ517XJwI", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "dep": {
+        "content": "BQADBAADHwADMPKRB8-gEMwC8oeKAg", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "dontcare": {
+        "content": "BQADBAAD6gADOOEaAAF2u9kY9vEfcgI", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "follatealamujerdealguien": {
+        "content": "BQADBAADEgIAAgzP1wAB7lZVAczwiPMC", 
+        "creator": 14143244, 
+        "type": "document"
+    }, 
+    "follateuntransexual": {
+        "content": "BQADBAADEQIAAgzP1wABZuU65VJz60IC", 
+        "creator": 14143244, 
+        "type": "document"
+    }, 
     "getrekt": {
-        "creator": 14143244,
-        "type": "photo",
-        "content": "AgADBAADxMExGwzP1wABWVub7bAUYtWOKXEwAARgWOdmpYJDxdesAQABAg"
-    },
-     "icandothis": {
-        "creator": 14143244,
-        "type": "photo",
-        "content": "AgADBAADxcExGwzP1wABwz3Hf6N6f4gaLoswAAQBKlF9xEt5tLlMAQABAg"
+        "content": "AgADBAADxMExGwzP1wABWVub7bAUYtWOKXEwAARgWOdmpYJDxdesAQABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "helloworld:": {
+        "content": " Hello World!", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
+    "icandothis": {
+        "content": "AgADBAADxcExGwzP1wABwz3Hf6N6f4gaLoswAAQBKlF9xEt5tLlMAQABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "love": {
+        "content": "BQADBAADcwADCr0LBst99k6w-g23Ag", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "nanisore": {
+        "content": "AgADBAADvMExGwzP1wABgS8WWETu7Zk1WoswAATkkkR7tubvqjhIAQABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "ohhh": {
+        "content": "BQADBAADnAEAAl_9PAKIXxNYvTStCQI", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "pleaseunderstand": {
+        "content": "BQADBAADngADCiedAAGf-wHSqPiCSwI", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "rekt": {
+        "content": "BQADBAAD-QEAAl_9PAKHeJfbG_Va7QI", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "sigh": {
+        "content": "AgADBAADw8ExGwzP1wABpYIE-gNUbp-_pmkwAASwoJ-xgQbuxfjfAQABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "throatskills": {
+        "content": "BQADBAADEAIAAgzP1wABceMNNXvlt60C", 
+        "creator": 14143244, 
+        "type": "document"
+    }, 
+    "tutorialbrov": {
+        "content": "*\u00a1Bienvenidos a la Rep\u00fablica de Brovras\u0127g\u0138a!*\nTutorial b\u00e1sico de *Brovras\u0127g\u0138a*:\n\t*1-* _Corre. R\u00e1pido._\n\t*2-* _El que no escribe, reenv\u00eda._\n\t*3-* _Whatsapp da sidita, Telegram lo cura._\n\t*4-* _Amaras y respetaras a Peto-tan sobre todas las cosas._\n\t\t\t\t*4.1-* _A Polaris tambien._\n\t*5-* _Vale, no ser gilipollas, definitivamente._\n\t*6-* _Ey, la igualdad mola._", 
+        "creator": 14143244, 
+        "type": "text"
     }
 }
