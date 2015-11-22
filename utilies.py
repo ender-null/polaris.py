@@ -96,11 +96,13 @@ def process_message(msg):
             msg['text'] = '!left_chat_participant'
             msg['from'] = msg['left_chat_participant']
         
-    if ('text' in msg and
-            'reply_to_message' in msg and
+    if ('reply_to_message' in msg and
             msg['reply_to_message']['from']['id'] == bot['id'] and
             msg['reply_to_message']['text'].startswith('Reply with ')):
-        msg['text'] = config['command_start'] + 'content ' + msg['text']
+        if 'text' in msg:
+            msg['text'] = config['command_start'] + 'content ' + msg['text']
+        else:
+            msg['text'] = config['command_start'] + 'content'
 
     if (config['process']['reply_to_message'] and
             'reply_to_message' in msg and
@@ -126,13 +128,13 @@ def process_message(msg):
 
 def load_plugins():
     for plugin in config['plugins']:
-        
-		plugins[plugin] = importlib.import_module('plugins.' + plugin)
-		print('\t[OK] ' + plugin)
+        try:
+            plugins[plugin] = importlib.import_module('plugins.' + plugin)
+            print('\t[OK] ' + plugin)
+        except Exception as e:
+            print('\t[Failed] ' + plugin + ': ' + str(e))
 
-
-    print('\n\tLoaded: ' + str(len(plugins)) +
-          '/' + str(len(config['plugins'])))
+    print('\n\tLoaded: ' + str(len(plugins)) + '/' + str(len(config['plugins'])))
     return plugins
 
 

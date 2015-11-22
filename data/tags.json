@@ -49,15 +49,15 @@
         "creator": 14143244, 
         "type": "photo"
     }, 
-    "helloworld:": {
-        "content": " Hello World!", 
-        "creator": 14143244, 
-        "type": "text"
-    }, 
     "icandothis": {
         "content": "AgADBAADxcExGwzP1wABwz3Hf6N6f4gaLoswAAQBKlF9xEt5tLlMAQABAg", 
         "creator": 14143244, 
         "type": "photo"
+    }, 
+    "ignore": {
+        "content": "BQADBAADSgEAAqKYZgABQpUlDDClHMkC", 
+        "creator": 14143244, 
+        "type": "sticker"
     }, 
     "love": {
         "content": "BQADBAADcwADCr0LBst99k6w-g23Ag", 

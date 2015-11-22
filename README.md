@@ -13,8 +13,8 @@ Multi-purpose telegram bot written in Python. I made this for personal use so I 
 * Add group management stuff. (In progress)
 * Add user config.
 * Add channel managemens stuff.
-* Add Reminders plugin.
-* Add Tags plugin (In progress)
+* ~~Add Reminders plugin.~~
+* ~~Add Tags plugin.~~
 * Add Polls plugin.
 * Add YouTube plugin.
 * Add RSS plugin.
