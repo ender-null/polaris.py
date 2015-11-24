@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from utilies import *
 
-
 commands = ['']
 
 hidden = True
-
+nonstop = True
 
 def run(msg):
         if (msg['chat']['id'] == -27616291 and
@@ -19,5 +18,5 @@ def run(msg):
                 not 'sticker' in msg and
                 not 'audio' in msg and
                 not 'voice' in msg):
-
+            print('forwarded')
             forward_message('@porndb',  msg['chat']['id'], msg['message_id'])

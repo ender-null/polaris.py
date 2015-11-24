@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __main__ import *
 from utilies import *
 
 
@@ -37,7 +36,7 @@ def run(msg):
         if msg['chat']['type'] == 'group':
             #message += '*Group*: ' + escape_markup(msg['chat']['title']) + '\n'
             message += '*Group ID*: ' + str(msg['chat']['id']) + ''
-    else:
+    elif get_command(msg['text']) == 'fileid':
         message = '#GREETING!\n'
         if 'audio' in msg:
             file_id = msg['audio']['file_id']
@@ -59,6 +58,6 @@ def run(msg):
         else:
             message += 'I couldn\'t get the file id.'
 
-    message = tag_replace(message, msg)
+    message = tag_replace(message)
 
     send_message(msg['chat']['id'], message, parse_mode="Markdown")

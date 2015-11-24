@@ -7,6 +7,7 @@ import importlib
 import json
 import magic
 import mimetypes
+import sys
 import os
 import re
 import requests
@@ -50,10 +51,7 @@ def bot_init():
 
 
 def on_message_receive(msg):
-    msg = process_message(msg)
-    now = time.mktime(datetime.datetime.now().timetuple())
-
-    if config['ignore']['old_messages'] and msg['date'] < now - 10:
+    if config['ignore']['old_messages'] and msg['date'] < now() - 10:
         return
     if config['ignore']['media'] and 'text' not in msg:
         return
@@ -63,68 +61,28 @@ def on_message_receive(msg):
     lower = msg['text'].lower()
 
     for i, plugin in plugins.items():
+        more = True
         for command in plugin.commands:
             trigger = command.replace("^", "^" + config['command_start'])
             trigger = tag_replace(trigger, msg)
             if re.compile(trigger).search(lower):
-                if config['handle_exceptions'] == True:
-                    try:
-                        if hasattr(plugin, 'action'):
-                            send_chat_action(msg['chat']['id'], plugin.action)
-                        plugin.run(msg)
-                    except Exception as e:
-                        send_error(msg, 'exception')
-                        send_exception(e)
-                else:
+                try:
                     if hasattr(plugin, 'action'):
                         send_chat_action(msg['chat']['id'], plugin.action)
+                    if hasattr(plugin, 'process'):
+                        plugin.process(msg)
                     plugin.run(msg)
-
-
-def process_message(msg):
-    if (config['process']['new_chat_participant'] and
-            'new_chat_participant' in msg):
-        if msg['new_chat_participant']['id'] != bot['id']:
-            msg['text'] = '!new_chat_participant'
-            msg['from'] = msg['new_chat_participant']
-        else:
-            msg['text'] = '/about'
-
-    if (config['process']['left_chat_participant'] and
-       'left_chat_participant' in msg):
-        if msg['left_chat_participant']['id'] != bot['id']:
-            msg['text'] = '!left_chat_participant'
-            msg['from'] = msg['left_chat_participant']
-        
-    if ('reply_to_message' in msg and
-            msg['reply_to_message']['from']['id'] == bot['id'] and
-            msg['reply_to_message']['text'].startswith('Reply with ')):
-        if 'text' in msg:
-            msg['text'] = config['command_start'] + 'content ' + msg['text']
-        else:
-            msg['text'] = config['command_start'] + 'content'
-
-    if (config['process']['reply_to_message'] and
-            'reply_to_message' in msg and
-            'text' in msg['reply_to_message'] and
-            'text' in msg):
-
-        if (str(msg['chat']['id']) in groups and
-                groups[str(msg['chat']['id'])]['special'] != 'log'):
-            if (msg['reply_to_message']['from']['id'] == bot['id'] and
-                    not msg['text'].startswith(config['command_start'])):
-                msg['text'] = bot['first_name'] + ' ' + msg['text']
-            elif msg['text'].startswith(config['command_start']):
-                msg['text'] += ' ' + msg['reply_to_message']['text']
-
-    if (config['process']['chatter'] and
-            'text' in msg and
-            msg['chat']['type'] == 'private' and
-            not msg['text'].startswith(config['command_start'])):
-        msg['text'] = bot['first_name'] + ' ' + msg['text']
-
-    return msg
-
+                    
+                    if hasattr(plugin, 'nonstop') and not plugin.nonstop:
+                        more = False
+                    break
+                except Exception as e:
+                    send_error(msg, 'exception')
+                    send_exception(e)
+                    more = False
+                    break
+        if not more:
+            break
 
 def load_plugins():
     for plugin in config['plugins']:
@@ -138,20 +96,22 @@ def load_plugins():
     return plugins
 
 
-def save_json(path, data):
+def save_json(path, data, hide=False):
     try:
         with open(path, 'w') as f:
-            print('\t[OK] ' + path)
+            if not hide:
+                print('\t[OK] ' + path)
             json.dump(data, f, sort_keys=True, indent=4)
     except:
         print(colored.red('\t[Failed] ' + path))
         pass
 
 
-def load_json(path):
+def load_json(path, hide=False):
     try:
         with open(path, 'r') as f:
-            print('\t[OK] ' + path)
+            if not hide:
+                print('\t[OK] ' + path)
             return json.load(f)
     except:
         print('\t[Failed] ' + path)
@@ -162,7 +122,9 @@ def now():
 
 def get_command(text):
     if text.startswith(config['command_start']):
-        return text.split(' ')[0].lstrip(config['command_start'])
+        command = text.split(' ')[0].lstrip(config['command_start'])
+        command = command.replace('@' + bot['username'], '')
+        return command
 
 
 def get_input(text):
@@ -268,29 +230,32 @@ def fix_extension(file_path):
             return file_path
 
 
-def tag_replace(text, msg):
+def tag_replace(text, msg=False):
     dt = datetime.datetime.now()
+    if msg:
+        loc = get_locale(msg['chat']['id'])
+    else:
+        loc = 'default'
 
     if dt.hour >= 5 and dt.hour < 12:
-        greeting = locale[get_locale(msg['chat']['id'])]['greeting']['morning']
+        greeting = locale[loc]['greeting']['morning']
     elif dt.hour <= 12 and dt.hour < 17:
-        greeting = locale[get_locale(msg['chat']['id'])]['greeting']['afternoon']
+        greeting = locale[loc]['greeting']['afternoon']
     elif dt.hour <= 17 and dt.hour < 21:
-        greeting = locale[get_locale(msg['chat']['id'])]['greeting']['evening']
+        greeting = locale[loc]['greeting']['evening']
     else:
-        greeting = locale[get_locale(msg['chat']['id'])]['greeting']['night']
+        greeting = locale[loc]['greeting']['night']
 
     if dt.hour >= 5 and dt.hour < 12:
-        goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['morning']
+        goodbye = locale[loc]['goodbye']['morning']
     elif dt.hour <= 12 and dt.hour < 17:
-        goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['afternoon']
+        goodbye = locale[loc]['goodbye']['afternoon']
     elif dt.hour <= 17 and dt.hour < 21:
-        goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['evening']
+        goodbye = locale[loc]['goodbye']['evening']
     else:
-        goodbye = locale[get_locale(msg['chat']['id'])]['goodbye']['night']
+        goodbye = locale[loc]['goodbye']['night']
 
     tags = {
-        '#FROM_FIRSTNAME': escape_markup(msg['from']['first_name']),
         '#BOT_FIRSTNAME': escape_markup(bot['first_name']),
         '#BOT_USERNAME': escape_markup(bot['username']),
         '#GREETING': greeting,
@@ -299,11 +264,9 @@ def tag_replace(text, msg):
         '#BOT_NAME': escape_markup(bot['first_name'].split('-')[0]),
         '    ': '',
     }
-
-    if hasattr(msg['from'], 'username'):
-        tags['#FROM_USERNAME'] = escape_markup(msg['from']['username'])
-    else:
-        tags['#FROM_USERNAME'] = None
+    
+    if msg:
+        tags['#FROM_FIRSTNAME'] = msg['from']['first_name']
 
     for k, v in tags.items():
         if k in text:
@@ -392,4 +355,8 @@ def send_error(msg, error_type, status_code=200):
 def send_exception(exception):
     for group in groups.items():
         if group[1]['special'] == 'alerts':
-            send_message(group[0], str(exception))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+            message = str(exc_type) + ', ' + fname + ', ' + str(exc_tb.tb_lineno)
+            send_message(group[0], message)

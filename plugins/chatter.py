@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from __main__ import *
 from utilies import *
 import cleverbot
 from HTMLParser import HTMLParser
-
 
 commands = ['#BOT_NAME_LOWER']
 
@@ -13,6 +11,7 @@ hidden = True
 
 
 def run(msg):
+    print 'chatter'
     input = msg['text'].replace(bot['first_name'] + ' ', '')
 
     cb = cleverbot.Cleverbot()
@@ -24,3 +23,21 @@ def run(msg):
         message = '...'
 
     send_message(msg['chat']['id'], message)
+
+def process(msg):
+    if ('reply_to_message' in msg and
+        'text' in msg['reply_to_message'] and
+        'text' in msg):
+
+        if (str(msg['chat']['id']) in groups and
+            groups[str(msg['chat']['id'])]['special'] != 'log'):
+            if (msg['reply_to_message']['from']['id'] == bot['id'] and
+                    not msg['text'].startswith(config['command_start'])):
+                msg['text'] = bot['first_name'] + ' ' + msg['text']
+            elif msg['text'].startswith(config['command_start']):
+                msg['text'] += ' ' + msg['reply_to_message']['text']
+
+    if ('text' in msg and
+        msg['chat']['type'] == 'private' and
+        not msg['text'].startswith(config['command_start'])):
+        msg['text'] = bot['first_name'] + ' ' + msg['text']

@@ -1,13 +1,28 @@
 {
+    "alin": {
+        "content": "AgADBAADWa0xG6z1UgABVhAt_7qcAAHJiTKLMAAEMNqg3SoF8XAaVQEAAQI", 
+        "creator": 5436844, 
+        "type": "photo"
+    }, 
     "ayylmao": {
         "content": "AgADAQAD2KcxG5CV8wd1eI823d0YsD3a1i8ABB7nWDF-otnEArcAAgI", 
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "cancer": {
+        "content": "Se que no le dar\u00e1s me gusta porque tengo cancer.", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
     "challengeaccepted": {
         "content": "BQADBAADCgEAAnscSQABYlA_op99htQC", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "comunism": {
+        "content": "que opinan de los comunistas por favor opinen desde el respeto y sin hacer apologia a las apologizaciones\nen mi opinion el comunismo esta ok pero jajaja andeva con el aifon XD", 
+        "creator": 14143244, 
+        "type": "text"
     }, 
     "cries": {
         "content": "BQADBAAD5wADCiedAAF93cyaGE1zkAI", 
@@ -29,10 +44,30 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "detalle": {
+        "content": "AgADBAAD9cExGwzP1wABI9ISm66DeMduj6YwAASN3p06n0mn1-4vAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "dickface": {
+        "content": "CARAPOLLA jijijiji", 
+        "creator": 52033876, 
+        "type": "text"
+    }, 
     "dontcare": {
         "content": "BQADBAAD6gADOOEaAAF2u9kY9vEfcgI", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "excite": {
+        "content": "BQADBAADFgIAAgzP1wABKoPHkkdqcq8C", 
+        "creator": 14143244, 
+        "type": "document"
+    }, 
+    "felicidad": {
+        "content": "_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA \nFELiiCiiDADES EN TU DiiA \n_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA \nFELiiCiiDADES EN TU DiiA \n_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA \nFELiiCiiDADES EN TU DiiA \n_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA", 
+        "creator": 14143244, 
+        "type": "text"
     }, 
     "follatealamujerdealguien": {
         "content": "BQADBAADEgIAAgzP1wAB7lZVAczwiPMC", 
@@ -43,6 +78,11 @@
         "content": "BQADBAADEQIAAgzP1wABZuU65VJz60IC", 
         "creator": 14143244, 
         "type": "document"
+    }, 
+    "gay": {
+        "content": "BQADAQADeAQAAiMzHAABoarz2B1lOBYC", 
+        "creator": 14143244, 
+        "type": "sticker"
     }, 
     "getrekt": {
         "content": "AgADBAADxMExGwzP1wABWVub7bAUYtWOKXEwAARgWOdmpYJDxdesAQABAg", 
@@ -59,20 +99,50 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "inteligensia": {
+        "content": "#g sabine tienkamp", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
+    "latula": {
+        "content": "BQADBAADWgADdzKABKYGqOm-5MQuAg", 
+        "creator": 107015891, 
+        "type": "sticker"
+    }, 
     "love": {
         "content": "BQADBAADcwADCr0LBst99k6w-g23Ag", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "ludo": {
+        "content": "Ludo es un lindo pajero. Reply with text for #ludo", 
+        "creator": 5436844, 
+        "type": "text"
     }, 
     "nanisore": {
         "content": "AgADBAADvMExGwzP1wABgS8WWETu7Zk1WoswAATkkkR7tubvqjhIAQABAg", 
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "nepeta": {
+        "content": "BQADBAADRAADdzKABL5aJzXs-GPsAg", 
+        "creator": 5400785, 
+        "type": "sticker"
+    }, 
+    "newtag": {
+        "content": "BQADBAADxwMAAnjvHAABLNbQMoz2q18C", 
+        "creator": 1896312, 
+        "type": "document"
+    }, 
     "ohhh": {
         "content": "BQADBAADnAEAAl_9PAKIXxNYvTStCQI", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "petoisback": {
+        "content": "AgADBAAD-cExGwzP1wAB8AIL9XP4wuWVVaYwAAQ5FIrWroVcqroxAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
     }, 
     "pleaseunderstand": {
         "content": "BQADBAADngADCiedAAGf-wHSqPiCSwI", 
@@ -89,10 +159,20 @@
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "sonochinosadame": {
+        "content": "BQADBAADFwIAAgzP1wAB9N9ITrCVOXAC", 
+        "creator": 14143244, 
+        "type": "audio"
+    }, 
     "throatskills": {
         "content": "BQADBAADEAIAAgzP1wABceMNNXvlt60C", 
         "creator": 14143244, 
         "type": "document"
+    }, 
+    "troll": {
+        "content": "BQADBAADQAEAAnscSQABqWydSKTnASoC", 
+        "creator": 14143244, 
+        "type": "sticker"
     }, 
     "tutorialbrov": {
         "content": "*\u00a1Bienvenidos a la Rep\u00fablica de Brovras\u0127g\u0138a!*\nTutorial b\u00e1sico de *Brovras\u0127g\u0138a*:\n\t*1-* _Corre. R\u00e1pido._\n\t*2-* _El que no escribe, reenv\u00eda._\n\t*3-* _Whatsapp da sidita, Telegram lo cura._\n\t*4-* _Amaras y respetaras a Peto-tan sobre todas las cosas._\n\t\t\t\t*4.1-* _A Polaris tambien._\n\t*5-* _Vale, no ser gilipollas, definitivamente._\n\t*6-* _Ey, la igualdad mola._", 

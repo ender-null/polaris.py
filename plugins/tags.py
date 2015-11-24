@@ -6,10 +6,10 @@ tags = load_json('data/tags.json')
 	
 def get_tags(tags, size):
     i = 4
-    commands = [None] * (int(size) + 4)
+    commands = [None] * (int(size) + i)
     commands[0] = '^newtag'
     commands[1] = '^remtag'
-    commands[2] = '^lstag'
+    commands[2] = '^taglist'
     commands[3] = '^content'
     for tag, data in tags.items():
         commands[i] = '#' + tag
@@ -46,7 +46,7 @@ def run(msg):
                     message += '\nBut you are not allowed to delete it.'
                 return send_message(msg['chat']['id'], message, parse_mode="Markdown")
             
-            message = 'Reply with *' + type + '* for *#' + name + '*'
+            message = 'Reply with a *' + type + '* for the tag *#' + name + '*'
             
             force_reply_json = {'force_reply': True, 'selective': True}
             force_reply = json.dumps(force_reply_json)
@@ -57,8 +57,8 @@ def run(msg):
                          parse_mode="Markdown")
         elif get_command(msg['text']) == 'content':
             print 'second step'
-            name = first_word(msg['reply_to_message']['text'], 5).replace('#','')
-            type = first_word(msg['reply_to_message']['text'], 3)
+            name = first_word(msg['reply_to_message']['text'], 8).replace('#','')
+            type = first_word(msg['reply_to_message']['text'], 4)
             
             tag = OrderedDict()
             tag['creator'] = msg['from']['id']
@@ -102,7 +102,7 @@ def run(msg):
         else:
             message = 'The tag *' + name + '* is not set.'
         send_message(msg['chat']['id'], message, parse_mode="Markdown")
-    elif get_command(msg['text']) == 'lstag':
+    elif get_command(msg['text']) == 'taglist':
         message = '*All tags*:'
         for tag, data in tags.items():
             message += '\n\t#' + str(tag) + ' | ' + data['type'] + ' | ' + str(data['creator'])
@@ -124,3 +124,13 @@ def run(msg):
                     send_video(msg['chat']['id'], data['content'])
                 elif data['type'] == 'voice':
                     send_voice(msg['chat']['id'], data['content'])
+
+def process(msg):
+    if ('reply_to_message' in msg and
+        'text' in msg['reply_to_message'] and
+        msg['reply_to_message']['from']['id'] == bot['id'] and
+        msg['reply_to_message']['text'].startswith('Reply with ')):
+        if 'text' in msg:
+            msg['text'] = config['command_start'] + 'content ' + msg['text']
+        else:
+            msg['text'] = config['command_start'] + 'content'

@@ -5,6 +5,7 @@ from utilies import *
 
 commands = ['']
 hidden = True
+nonstop = True
 
 
 def run(msg):

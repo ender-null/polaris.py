@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __main__ import *
 from utilies import *
 
 
@@ -8,7 +7,9 @@ commands = [
     '^desc',
     '^rules',
     '^join',
-    '^list',
+    '^groups',
+    '^modlist',
+    '^modhelp',
     '^add',
     '^remove',
     '^set',
@@ -20,7 +21,6 @@ commands = [
 ]
 
 hidden = True
-
 
 def run(msg):
     input = get_input(msg['text'])
@@ -97,33 +97,32 @@ def run(msg):
 
         save_json('data/groups.json', groups)
 
-    elif get_command(msg['text']) == 'list':
-        if input == 'groups':
-            message = '*Groups:*'
-            for group in groups.items():
-                if group[1]['hide'] != True:
-                    message += '\n\t'
+    elif get_command(msg['text']) == 'groups':
+        message = '*Groups:*'
+        for group in groups.items():
+            if group[1]['hide'] != True:
+                message += '\n\t'
 
-                    if group[1]['link']:
-                        message += '[' + group[1]['title'] + '](' + group[1]['link'] + ')'
-                    else:
-                        message += group[1]['title']
+                if 'link' in group[1]:
+                    message += '[' + group[1]['title'] + '](' + group[1]['link'] + ')'
+                else:
+                    message += group[1]['title']
 
-                    message += '\t' + group[1]['realm']
+                message += '\t' + group[1]['realm']
 
-                    if group[1]['alias']:
-                        message += '\t(' + group[1]['alias'] + ')'
+                if 'alias' in group[1]:
+                    message += '\t(' + group[1]['alias'] + ')'
 
-        elif input == 'mods':
-            message = '*Mods for ' + groups[str(msg['chat']['id'])]['title'] + ':*'
-            for mod in groups[str(msg['chat']['id'])]['mods'].items():
-                message += '\n\t' + mod[1]
+    elif get_command(msg['text']) == 'modlist':
+        message = '*Mods for ' + groups[str(msg['chat']['id'])]['title'] + ':*'
+        for mod in groups[str(msg['chat']['id'])]['mods'].items():
+            message += '\n\t' + mod[1]
 
-        elif (input == 'commands' or input == 'help'):
-            message = '*Mod commands:*'
-            for t in commands:
-                t = tag_replace(t, msg)
-                message += '\n\t' + t.replace('^', '#')
+    elif is_mod(msg) and get_command(msg['text']) == 'modhelp':
+        message = '*Mod commands:*'
+        for t in commands:
+            t = tag_replace(t, msg)
+            message += '\n\t' + t.replace('^', '#')
 
     elif get_command(msg['text']) == 'info':
         if str(msg['chat']['id']) in groups:
@@ -202,3 +201,6 @@ def run(msg):
         return send_message(msg['chat']['id'], locale[get_locale(msg['chat']['id'])]['errors']['permission'])
 
     send_message(msg['chat']['id'], message, parse_mode="Markdown")
+
+def cron():
+    groups = load_json('data/groups.json', True)

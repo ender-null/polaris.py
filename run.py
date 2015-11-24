@@ -17,11 +17,8 @@ while utilies.is_started:
     if last_cron < utilies.now() - 5:
         for i, plugin in utilies.plugins.items():
             if hasattr(plugin, 'cron'):
-                if utilies.config['handle_exceptions'] == True:
-                    try:
-                        plugin.cron()
-                    except Exception as e:
-                        send_exception(e)
-                else:
+                try:
                     plugin.cron()
+                except Exception as e:
+                    send_exception(e)
 print('Halted.')
