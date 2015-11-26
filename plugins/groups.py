@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from utilies import *
-
+import bindings_cli as cli
 
 commands = [
     '^info',
@@ -34,7 +34,7 @@ def run(msg):
                     realm = first_word(msg['chat']['title'])
                     title = all_but_first_word(msg['chat']['title'])
                 else:
-                    realm = '*'
+                    realm = ''
                     title = msg['chat']['title']
 
                 groups[str(msg['chat']['id'])] = OrderedDict()
@@ -126,9 +126,9 @@ def run(msg):
 
     elif get_command(msg['text']) == 'info':
         if str(msg['chat']['id']) in groups:
-            message = '*Info of ' + groups[str(msg['chat']['id'])]['title'] + ' [' + groups[str(msg['chat']['id'])]['realm'] + ']*'
+            message = '*Info of ' + groups[str(msg['chat']['id'])]['title'] + '*'
             if groups[str(msg['chat']['id'])]['alias'] != '':
-                message += '\t (' + groups[str(msg['chat']['id'])]['alias'] + ')'
+                message += '\t_[' + groups[str(msg['chat']['id'])]['alias'] + ']_'
             message += '\n' + groups[str(msg['chat']['id'])]['description']
             if groups[str(msg['chat']['id'])]['rules'] != '':
                 message += '\n\n*Rules:*\n' + groups[str(msg['chat']['id'])]['rules']
@@ -142,12 +142,18 @@ def run(msg):
     elif is_mod(msg) and get_command(msg['text']) == 'broadcast':
         message = 'Unsupported action.'
 
-    elif is_mod(msg) and get_command(msg['text']) == 'kill':
+    elif is_mod(msg) and (get_command(msg['text']) == 'kill' or get_command(msg['text']) == 'exterminate'):
         if 'reply_to_message' in msg:
-            for group in groups.items():
-                if group[1]['special'] == 'admin':
-                    message = '/kick ' + str(msg['reply_to_message']['from']['id']) + ' from ' + str(msg['chat']['id'])[1:]
-                    send_message(group[0], message)
+            if not cli:
+                for group in groups.items():
+                    if group[1]['special'] == 'admin':
+                        message = '/kick ' + str(msg['reply_to_message']['from']['id']) + ' from ' + str(msg['chat']['id'])[1:]
+                        send_message(group[0], message)
+            else:
+                #message = msg['reply_to_message']['from']['first_name'] + " was a bad boy..."
+                message = "`EX-TER-MIN-ATE!`"
+                send_message(msg['chat']['id'], message, parse_mode="Markdown")
+                cli.chat_delete_user(msg['chat']['id'], msg['reply_to_message']['from']['id'])
             return
         else:
             return send_error(msg, 'id')
@@ -190,7 +196,13 @@ def run(msg):
         for group in groups.items():
             if group[1]['alias'].lower() == input.lower():
                 if group[1]['link'] != '':
-                    message = 'Invite link for *' + group[1]['title'] + '*:\n' + escape_markup(group[1]['link'])
+                    message = '*' + group[1]['title'] + '*'
+                    if group[1]['alias'] != '':
+                        message += '\t_[' + group[1]['alias'] + ']_'
+                    message += '\n_' + group[1]['description'] + '_'
+                    if group[1]['rules'] != '':
+                        message += '\n\n*Rules*:\n' + group[1]['rules']
+                    message += '\n\n[Join Group](' + group[1]['link'] + ')'
                     break
                 else:
                     message = 'No invite link available.'

@@ -13,7 +13,7 @@ def send_request(url, params=None, headers=None, files=None, data=None):
     jstr = requests.get(url, params=params, headers=headers, files=files, data=data)
 
     if jstr.status_code != 200:
-        print '\n\tRequest URL: ' + jstr.url
+        print jstr.text
         return False
 
     return json.loads(jstr.text)

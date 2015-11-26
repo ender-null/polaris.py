@@ -66,21 +66,21 @@ def on_message_receive(msg):
             trigger = command.replace("^", "^" + config['command_start'])
             trigger = tag_replace(trigger, msg)
             if re.compile(trigger).search(lower):
-                try:
-                    if hasattr(plugin, 'action'):
-                        send_chat_action(msg['chat']['id'], plugin.action)
-                    if hasattr(plugin, 'process'):
-                        plugin.process(msg)
-                    plugin.run(msg)
-                    
-                    if hasattr(plugin, 'nonstop') and not plugin.nonstop:
-                        more = False
-                    break
-                except Exception as e:
+                '''try:'''
+                if hasattr(plugin, 'action'):
+                    send_chat_action(msg['chat']['id'], plugin.action)
+                if hasattr(plugin, 'process'):
+                    plugin.process(msg)
+                plugin.run(msg)
+                
+                if hasattr(plugin, 'nonstop') and not plugin.nonstop:
+                    more = False
+                break
+                '''except Exception as e:
                     send_error(msg, 'exception')
                     send_exception(e)
                     more = False
-                    break
+                    break'''
         if not more:
             break
 
