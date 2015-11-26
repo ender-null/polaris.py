@@ -352,11 +352,13 @@ def send_error(msg, error_type, status_code=200):
         message += '\n\t_Status code: ' + status_code + '_'
     send_message(msg['chat']['id'], message)
 
-def send_exception(exception):
+def send_alert(message):
     for group in groups.items():
         if group[1]['special'] == 'alerts':
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
-            message = str(exc_type) + ', ' + fname + ', ' + str(exc_tb.tb_lineno)
             send_message(group[0], message)
+
+def send_exception(exception):
+    exc_type, exc_obj, exc_tb = sys.exc_info()
+    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+    message = str(exc_type) + ', ' + fname + ', ' + str(exc_tb.tb_lineno)
+    send_alert(message)
