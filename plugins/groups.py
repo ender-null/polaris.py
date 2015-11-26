@@ -15,6 +15,7 @@ commands = [
     '^set',
     '^kill',
     '^exterminate',
+    '^invite',
     '^broadcast',
     '^promote',
     '^demote'
@@ -122,7 +123,7 @@ def run(msg):
         message = '*Mod commands:*'
         for t in commands:
             t = tag_replace(t, msg)
-            message += '\n\t' + t.replace('^', '#')
+            message += '\n\t' + t.replace('^', config['command_start'])
 
     elif get_command(msg['text']) == 'info':
         if str(msg['chat']['id']) in groups:
@@ -144,16 +145,53 @@ def run(msg):
 
     elif is_mod(msg) and (get_command(msg['text']) == 'kill' or get_command(msg['text']) == 'exterminate'):
         if 'reply_to_message' in msg:
-            if not cli:
-                for group in groups.items():
-                    if group[1]['special'] == 'admin':
-                        message = '/kick ' + str(msg['reply_to_message']['from']['id']) + ' from ' + str(msg['chat']['id'])[1:]
-                        send_message(group[0], message)
+            user_id = msg['reply_to_message']['from']['id']
+            name = '@' + msg['reply_to_message']['from']['username']
+        elif input:
+            if input.isdigit():
+                user_id = input
+                name = input
             else:
-                #message = msg['reply_to_message']['from']['first_name'] + " was a bad boy..."
-                message = "`EX-TER-MIN-ATE!`"
-                send_message(msg['chat']['id'], message, parse_mode="Markdown")
-                cli.chat_delete_user(msg['chat']['id'], msg['reply_to_message']['from']['id'])
+                user_id = cli.user_id(input[1:])
+                name = input
+
+            if not user_id:
+                return send_error(msg, 'argument')
+            
+            message = '`EX-TER-MIN-ATE!`'
+            send_message(msg['chat']['id'], message, parse_mode="Markdown")
+            cli.chat_del_user(msg['chat']['id'], user_id)
+            
+            for group in groups.items():
+                if group[1]['special'] == 'admin':
+                    message = 'Kicked *' + name + '* from *' + msg['chat']['title'] + '* by ' + msg['from']['first_name']
+                    send_message(group[0], message, parse_mode="Markdown")
+            return
+        else:
+            return send_error(msg, 'id')
+    elif is_mod(msg) and get_command(msg['text']) == 'invite':
+        if 'reply_to_message' in msg:
+            user_id = msg['reply_to_message']['from']['id']
+            name = '@' + msg['reply_to_message']['from']['username']
+        elif input:
+            if input.isdigit():
+                user_id = input
+                name = input
+            else:
+                user_id = cli.user_id(input[1:])
+                name = input
+
+            if not user_id:
+                return send_error(msg, 'argument')
+            
+            message = 'Adding *' + name + '* to *' + msg['chat']['title'] + '*.'
+            send_message(msg['chat']['id'], message, parse_mode="Markdown")
+            cli.chat_add_user(msg['chat']['id'], user_id)
+            
+            for group in groups.items():
+                if group[1]['special'] == 'admin':
+                    message = 'Added *' + name + '* to *' + msg['chat']['title'] + '* by ' + msg['from']['first_name']
+                    send_message(group[0], message, parse_mode="Markdown")
             return
         else:
             return send_error(msg, 'id')
@@ -200,8 +238,8 @@ def run(msg):
                     if group[1]['alias'] != '':
                         message += '\t_[' + group[1]['alias'] + ']_'
                     message += '\n_' + group[1]['description'] + '_'
-                    if group[1]['rules'] != '':
-                        message += '\n\n*Rules*:\n' + group[1]['rules']
+                    '''if group[1]['rules'] != '':
+                        message += '\n\n*Rules*:\n' + group[1]['rules']'''
                     message += '\n\n[Join Group](' + group[1]['link'] + ')'
                     break
                 else:
