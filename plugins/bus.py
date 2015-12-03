@@ -4,6 +4,7 @@ from utilies import *
 
 commands = [
     '^bus',
+    '^b ',
     '^poste',
     '^zgzbus',
 ]
@@ -24,22 +25,42 @@ def run(msg):
         doc = get_doc(commands, parameters, description)
         return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 
-    url = 'http://www.dndzgz.com/point'
-    params = {
-        'service': 'bus',
-        'id': input
-    }
+    url = 'http://www.zaragoza.es/api/recurso/urbanismo-infraestructuras/transporte-urbano/poste/tuzsa-' + input + '.json'
 
-    jdat = send_request(url, params)
+    jdat = send_request(url)
 
     if not jdat:
         return send_error(msg, 'connection')
 
-    if 'Error obteniendo datos' in jdat['items'][0]:
-        return send_error(msg, 'results')
+    if 'error' in jdat:
+        return send_error(msg, 'unknown')
 
-    text = '*' + jdat['title'] + '*\n'
-    for k, v in jdat['items']:
-        text += '*' + first_word(k) + '* ' + get_input(k) + ' -> _' + get_input(v) + '_\n'
+    #text = jdat['title'] + '\n'
+    text = ''
+    for destino in jdat['destinos']:
+        text += destino['linea'] + ' ' + destino['destino']
+        text += '\n\t\t\t\t' + destino['primero']
+        text += '\n\t\t\t\t' + destino['segundo']
+        text += '\n'
+
+    lon, lat = jdat['geometry']['coordinates']
+    lat = float(lat) / 1000000
+    lon = float(lon) / 1000000
+    
+    print lat
+    print lon
+    
+    photo_url = 'https://maps.googleapis.com/maps/api/streetview'
+    photo_params = {
+        'size': '640x320',
+        'location': str(lat) + ',' + str(lon),
+        'pitch': 16,
+        'key': config['api']['googledev']
+    }
+    jstr = requests.get(photo_url, params=photo_params)
+    print jstr.url
+    
+    photo = download(photo_url, params=photo_params)
+    #send_photo(msg['chat']['id'], photo, caption=text):
 
     send_message(msg['chat']['id'], text, parse_mode="Markdown")

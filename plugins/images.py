@@ -15,11 +15,12 @@ description = 'This command performs a Google Images search for the given query.
 action = 'upload_photo'
 
 exts = {
-    '.png$',
     '.jpg$',
     '.jpeg$',
-    '.jpe$',
-    '.gif$'
+    '.gif$',
+    '.png$',
+    '.tif$',
+    '.bmp$'
 }
 
 
@@ -30,16 +31,17 @@ def run(msg):
         doc = get_doc(commands, parameters, description)
         return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 
-    url = 'http://ajax.googleapis.com/ajax/services/search/images'
+    url = 'https://www.googleapis.com/customsearch/v1'
     params = {
-        'v': '1.0',
-        'rsz': 8,
-        'safe': 'active',
+        'searchType': 'image',
+        'safe': 'medium',
+        'key': config['api']['googledev'],
+        'cx': '011243947282844107040:nwg-q67c7wa',
         'q': input
     }
 
     if get_command(msg['text']) == 'insfw':
-        del params['safe']
+        params['safe'] = 'off'
 
     jstr = requests.get(url, params=params)
 
@@ -48,19 +50,20 @@ def run(msg):
 
     jdat = json.loads(jstr.text)
 
-    if jdat['responseData']['results'] < 1:
+    if jdat['searchInformation']['totalResults'] == '0':
         return send_error(msg, 'results')
 
     is_real = False
     counter = 0
     while not is_real:
         counter = counter + 1
-        if counter > 5 or len(jdat['responseData']['results']) < 1:
+        if counter > 5 or jdat['searchInformation']['totalResults'] == '0':
             return send_error(msg, 'results')
 
-        i = random.randint(1, len(jdat['responseData']['results']))-1
+        i = random.randint(1, len(jdat['items']))-1
 
-        result_url = jdat['responseData']['results'][i]['url']
+        result_url = jdat['items'][i]['link']
+        #caption = jdat['items'][i]['snippet']
         caption = '"' + input + '"'
 
         for v in exts:

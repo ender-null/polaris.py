@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-from __main__ import *
 from utilies import *
 
+def process(msg):
+    print('logger')
 
-commands = ['']
-hidden = True
-nonstop = True
-
-
-def run(msg):
     if ((str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'admin') or
             (str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'alerts') or
             (str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'log')):
@@ -23,10 +18,12 @@ def run(msg):
 
             message = escape_markup(msg['text'])
             message = message.replace(bot['first_name'] + ' ', '')
-            message += '\n------------------------\n'
+            message += u'\n—————————————\n'
+            # message += '\n------------------------\n'
 
             if 'username' in msg['from']:
-                message += '*Name*: [' + escape_markup(msg['from']['first_name']) + '](http://telegram.me/' + msg['from']['username'] + ')\n'
+                message += '*Name*: [' + escape_markup(msg['from']['first_name']) + '](http://telegram.me/' + \
+                           msg['from']['username'] + ')\n'
             else:
                 message += '*Name*: ' + escape_markup(msg['from']['first_name']) + '\n'
 
@@ -43,7 +40,7 @@ def run(msg):
         else:
             for group in groups.items():
                 if group[1]['special'] == 'log':
-                    forward_message(group[0],  msg['chat']['id'], msg['message_id'])
+                    forward_message(group[0], msg['chat']['id'], msg['message_id'])
     else:
         if 'reply_to_message' in msg and msg['reply_to_message']['from']['id'] == bot['id']:
             message_id = last_word(msg['reply_to_message']['text'].split('\n')[-1])

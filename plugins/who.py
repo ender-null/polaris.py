@@ -33,9 +33,9 @@ def run(msg):
         if 'username' in msg['from']:
             message += '*Username*: @' + escape_markup(msg['from']['username']) + '\n'
         message += '*User ID*: ' + str(msg['from']['id']) + '\n'
-        if msg['chat']['type'] == 'group':
+        if msg['chat']['type'] != 'private':
             #message += '*Group*: ' + escape_markup(msg['chat']['title']) + '\n'
-            message += '*Group ID*: ' + str(msg['chat']['id']) + ''
+            message += '*Chat ID*: ' + str(msg['chat']['id']) + ''
     elif get_command(msg['text']) == 'fileid':
         message = '#GREETING!\n'
         if 'audio' in msg:

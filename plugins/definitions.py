@@ -2,7 +2,6 @@
 from utilies import *
 import random
 
-
 commands = [
     '^define',
     '^ud',
@@ -25,7 +24,7 @@ def run(msg):
     params = {'term': input}
 
     jdat = send_request(url, params)
-    
+
     if not jdat:
         return send_error(msg, 'connection')
 

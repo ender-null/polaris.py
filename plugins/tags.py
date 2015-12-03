@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from __main__ import *
 from utilies import *
 
 tags = load_json('data/tags.json')
-	
+
+
 def get_tags(tags, size):
     i = 4
     commands = [None] * (int(size) + i)
@@ -16,6 +16,7 @@ def get_tags(tags, size):
         i = i + 1
     return commands
 
+
 commands = get_tags(tags, len(tags))
 parameters = {
     ('name', True),
@@ -24,12 +25,14 @@ parameters = {
 description = 'Use this and I will kill you.'
 hidden = True
 
+
 def run(msg):
     if (get_command(msg['text']) == 'newtag'
-       or get_command(msg['text']) == 'content'):
-        
+        or get_command(msg['text']) == 'content'):
+
         if get_command(msg['text']) == 'newtag':
-            print 'first step'
+            print
+            'first step'
             input = get_input(msg['text'])
             if not input:
                 doc = get_doc(commands, parameters, description)
@@ -45,21 +48,22 @@ def run(msg):
                 else:
                     message += '\nBut you are not allowed to delete it.'
                 return send_message(msg['chat']['id'], message, parse_mode="Markdown")
-            
+
             message = 'Reply with a *' + type + '* for the tag *#' + name + '*'
-            
+
             force_reply_json = {'force_reply': True, 'selective': True}
             force_reply = json.dumps(force_reply_json)
-            
+
             send_message(msg['chat']['id'], message,
                          reply_to_message_id=msg['message_id'],
                          reply_markup=force_reply,
                          parse_mode="Markdown")
         elif get_command(msg['text']) == 'content':
-            print 'second step'
-            name = first_word(msg['reply_to_message']['text'], 8).replace('#','')
+            print
+            'second step'
+            name = first_word(msg['reply_to_message']['text'], 8).replace('#', '')
             type = first_word(msg['reply_to_message']['text'], 4)
-            
+
             tag = OrderedDict()
             tag['creator'] = msg['from']['id']
             tag['type'] = type
@@ -80,7 +84,7 @@ def run(msg):
 
             tags[name] = tag
             save_json('data/tags.json', tags)
-            
+
             message = 'Added tag *#' + name + '* for that *' + type + '*.'
             send_message(msg['chat']['id'], message,
                          reply_to_message_id=msg['message_id'],
@@ -125,11 +129,14 @@ def run(msg):
                 elif data['type'] == 'voice':
                     send_voice(msg['chat']['id'], data['content'])
 
+
 def process(msg):
+    print('tags')
+
     if ('reply_to_message' in msg and
-        'text' in msg['reply_to_message'] and
-        msg['reply_to_message']['from']['id'] == bot['id'] and
-        msg['reply_to_message']['text'].startswith('Reply with ')):
+                'text' in msg['reply_to_message'] and
+                msg['reply_to_message']['from']['id'] == bot['id'] and
+            msg['reply_to_message']['text'].startswith('Reply with ')):
         if 'text' in msg:
             msg['text'] = config['command_start'] + 'content ' + msg['text']
         else:

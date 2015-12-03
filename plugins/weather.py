@@ -41,6 +41,8 @@ def run(msg):
         return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 
     lat, lon, locality, country = get_coords(input)
+    print lat
+    print lon
 
     weather_url = 'http://api.openweathermap.org/data/2.5/weather'
     weather_params = {

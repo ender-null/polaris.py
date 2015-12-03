@@ -62,27 +62,28 @@ def on_message_receive(msg):
 
     for i, plugin in plugins.items():
         more = True
-        for command in plugin.commands:
-            trigger = command.replace("^", "^" + config['command_start'])
-            trigger = tag_replace(trigger, msg)
-            if re.compile(trigger).search(lower):
-                try:
+        if hasattr(plugin, 'process'):
+            print('\tprocess')
+            plugin.process(msg)
+        if hasattr(plugin, 'commands'):
+            for command in plugin.commands:
+                trigger = command.replace("^", "^" + config['command_start'])
+                trigger = tag_replace(trigger, msg)
+                if re.compile(trigger).search(lower):
+                    #try:
                     if hasattr(plugin, 'action'):
                         send_chat_action(msg['chat']['id'], plugin.action)
-                    if hasattr(plugin, 'process'):
-                        plugin.process(msg)
                     plugin.run(msg)
-                    
-                    if hasattr(plugin, 'nonstop') and not plugin.nonstop:
-                        more = False
-                    break
-                except Exception as e:
-                    send_error(msg, 'exception')
-                    send_exception(e)
                     more = False
                     break
-        if not more:
-            break
+                    #except Exception as e:
+                    #    send_error(msg, 'exception')
+                    #    send_exception(e)
+                    #    more = False
+                    #    break
+            if not more:
+                break
+
 
 def load_plugins():
     for plugin in config['plugins']:
@@ -117,8 +118,10 @@ def load_json(path, hide=False):
         print('\t[Failed] ' + path)
         return {}
 
+
 def now():
     return time.mktime(datetime.datetime.now().timetuple())
+
 
 def get_command(text):
     if text.startswith(config['command_start']):
@@ -135,7 +138,7 @@ def get_input(text):
 
 def first_word(text, i=1):
     try:
-        word = text.split()[i-1]
+        word = text.split()[i - 1]
     except:
         return False
     return word
@@ -152,12 +155,14 @@ def last_word(text):
         return False
     return text.split()[-1]
 
+
 def is_int(number):
     try:
         number = int(number)
         return True
     except ValueError:
         return False
+
 
 def get_coords(input):
     url = 'http://maps.googleapis.com/maps/api/geocode/json'
@@ -176,7 +181,8 @@ def get_coords(input):
     return (jdat['results'][0]['geometry']['location']['lat'],
             jdat['results'][0]['geometry']['location']['lng'],
             locality, country)
-            
+
+
 def get_short_url(long_url):
     url = 'https://www.googleapis.com/urlshortener/v1/url?longUrl=' + long_url + '&key=' + config['api']['googledev']
     params = {'longUrl': long_url, 'key': config['api']['googledev']}
@@ -186,7 +192,7 @@ def get_short_url(long_url):
 
     if jstr.status_code != 200:
         return False
-    
+
     jdat = json.loads(jstr.text)
 
     return (jdat['id'])
@@ -197,6 +203,14 @@ def get_locale(chat_id):
         return groups[str(chat_id)]['locale']
     else:
         return 'default'
+
+
+def loc(chat_id):
+    if str(chat_id) in groups:
+        loc = groups[str(chat_id)]['locale']
+        return locale[loc]
+    else:
+        return locale['default']
 
 
 def download(url, params=None, headers=None):
@@ -217,17 +231,18 @@ def download(url, params=None, headers=None):
 
 
 def fix_extension(file_path):
-        url = urllib.pathname2url(file_path)
-        type = magic.from_file(file_path, mime=True)
-        extension = mimetypes.guess_extension(type, strict=False)
-        if extension is not None:
-            # I hate to have to use this s***, f*** jpe
-            if '.jpe' in extension:
-                extension = extension.replace('jpe', 'jpg')
-            os.rename(file_path, file_path + extension)
-            return file_path + extension
-        else:
-            return file_path
+    url = urllib.pathname2url(file_path)
+    type = magic.from_file(file_path, mime=True)
+    extension = mimetypes.guess_extension(type, strict=False)
+    print type
+    if extension is not None:
+        # I hate to have to use this s***, f*** jpe
+        if '.jpe' in extension:
+            extension = extension.replace('jpe', 'jpg')
+        os.rename(file_path, file_path + extension)
+        return file_path + extension
+    else:
+        return file_path
 
 
 def tag_replace(text, msg=False):
@@ -264,7 +279,7 @@ def tag_replace(text, msg=False):
         '#BOT_NAME': escape_markup(bot['first_name'].split('-')[0]),
         '    ': '',
     }
-    
+
     if msg:
         tags['#FROM_FIRSTNAME'] = msg['from']['first_name']
 
@@ -319,7 +334,7 @@ def is_admin(msg):
 
 def is_mod(msg):
     if (is_admin(msg) or
-            str(msg['from']['id']) in groups[str(msg['chat']['id'])]['mods']):
+                str(msg['from']['id']) in groups[str(msg['chat']['id'])]['mods']):
 
         return True
     else:
@@ -339,7 +354,7 @@ def get_size(number):
     ]
 
     while (number > 1024):
-        number = number/1024
+        number = number / 1024
         unit = unit + 1
 
     return str(number), units[unit]
@@ -352,10 +367,12 @@ def send_error(msg, error_type, status_code=200):
         message += '\n\t_Status code: ' + status_code + '_'
     send_message(msg['chat']['id'], message)
 
+
 def send_alert(message):
     for group in groups.items():
         if group[1]['special'] == 'alerts':
             send_message(group[0], message)
+
 
 def send_exception(exception):
     exc_type, exc_obj, exc_tb = sys.exc_info()
