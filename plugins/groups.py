@@ -5,7 +5,7 @@ import bindings_cli as cli
 admincommands = [
     '^add',
     '^remove',
-    '^broadcast',
+    '^broadcast'
 ]
 modcommands = [
     '^modlist',
@@ -13,15 +13,15 @@ modcommands = [
     '^groupconfig',
     '^promote',
     '^demote',
+    '^invite',
     '^kill',
-    '^exterminate',
+    '^exterminate'
 ]
 commands = [
     '^groups',
     '^join',
     '^info',
-    '^rules',
-    '^invite',
+    '^rules'
 ]
 commands.extend(modcommands)
 commands.extend(admincommands)
@@ -37,29 +37,30 @@ def run(msg):
     uid = msg['from']['id']
     message = loc(cid)['errors']['argument']
 
+
     # Shows a list of public groups.
     if get_command(msg['text']) == 'groups':
         message = '*Groups:*'
         for gid, group in groups.items():
             if not group['hide']:
                 message += '\n\t'
-                if 'link' in group:
-                    message += '[{0}({1})'.format(group['title'], group['link'])
+                if group['link'] != '':
+                    message += u'[{0}]({1})'.format(group['title'], group['link'])
                 else:
                     message += group['title']
-                message += '\t{0}'.format(group['realm'])
+                message += u'\t{0}'.format(group['realm'])
                 if 'alias' in group:
-                    message += '\t({0})'.format(group['alias'])
+                    message += u'\t({0})'.format(group['alias'])
 
-    # Join a group.
     elif get_command(msg['text']) == 'join':
+        print get_command(msg['text'])
         for gid, group in groups.items():
             if group['alias'].lower() == input.lower():
-                if group['link']:
-                    message = '*{0}*'.format(group['title'])
+                if group['link'] != '':
+                    message = u'*{0}*'.format(group['title'])
                     if group['alias']:
-                        message += '\t_[{0}]_'.format(group['alias'])
-                    message += '\n_{0}_\n\n[Join Group]({1})'.format(group['description'], group['link'])
+                        message += u'\t_[{0}]_'.format(group['alias'])
+                    message += u'\n_{0}_\n\n[Join Group]({1})'.format(group['description'], group['link'])
                     break
                 else:
                     # If no chat link is provided, adds the user.
@@ -67,35 +68,33 @@ def run(msg):
             else:
                 message = 'Group not found.'
 
-    # Shows info about a group.
-    if get_command(msg['text']) == 'info':
+    elif get_command(msg['text']) == 'info':
         if str(cid) in groups:
-            message = '*Info of {0}*'.format(groups[str(cid)]['title'])
+            message = u'*Info of {0}*'.format(groups[str(cid)]['title'])
             if groups[str(cid)]['alias'] != '':
-                message += '\t_[{0}]_'.format(groups[str(cid)]['alias'])
-            message += '\n{0}'.format(groups[str(cid)]['description'])
+                message += u'\t_[{0}]_'.format(groups[str(cid)]['alias'])
+            message += u'\n{0}'.format(groups[str(cid)]['description'])
             if groups[str(cid)]['rules'] != '':
-                message += '\n\n*Rules:*\n{0}'.format(groups[str(cid)]['rules'])
+                message += u'\n\n*Rules:*\n{0}'.format(groups[str(cid)]['rules'])
             if groups[str(cid)]['locale'] != 'default':
                 message += '\n\n*Locale:* _{0}_'.format(groups[str(cid)]['locale'])
             if groups[str(cid)]['link'] != '':
-                message += '\n\n*Invite link:*\n{0}'.format(groups[str(cid)]['link'])
+                message += '\n\n*Invite link:*\n{0}'.format(get_short_url(groups[str(cid)]['link']))
 
         else:
             message = 'Group not added.'
 
-    # Shows chat rules.
+
     elif get_command(msg['text']) == 'rules':
         if str(cid) in groups:
             if groups[str(cid)]['rules'] != '':
-                message = '*Rules:*\n' + groups[str(cid)]['rules']
+                message = u'*Rules:*\n' + groups[str(cid)]['rules']
             else:
                 message = '_No rules_'
         else:
             message = 'Group not added.'
 
-    # Invites someone to group.
-    elif get_command(msg['text']) == 'invite':
+    elif get_command(msg['text']) == 'invite' and is_mod(msg):
         if input:
             if input.isdigit():
                 user_id = input
@@ -125,7 +124,7 @@ def run(msg):
         else:
             return send_error(msg, 'id')
 
-    elif get_command(msg['text']) == 'set' and is_mod(msg):
+    elif get_command(msg['text']) == 'groupconfig' and is_mod(msg):
         if first_word(input) == 'link':
             groups[str(cid)]['link'] = all_but_first_word(input)
             message = 'Updated invite link of ' + groups[str(cid)]['title'] + '.'
