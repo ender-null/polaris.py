@@ -33,7 +33,7 @@ def run(msg):
         help = ''
         gen = ''
         for i, v in plugins.items():
-            if not hasattr(v, 'hidden'):
+            if hasattr(v, 'commands') and not hasattr(v, 'hidden'):
                 help += '\t' + config['command_start']
                 help += v.commands[0].replace('^', '')
 

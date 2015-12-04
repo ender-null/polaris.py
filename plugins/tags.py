@@ -3,7 +3,6 @@ from utilies import *
 
 tags = load_json('data/tags.json')
 
-
 def get_tags(tags, size):
     i = 4
     commands = [None] * (int(size) + i)
@@ -131,8 +130,6 @@ def run(msg):
 
 
 def process(msg):
-    print('tags')
-
     if ('reply_to_message' in msg and
                 'text' in msg['reply_to_message'] and
                 msg['reply_to_message']['from']['id'] == bot['id'] and

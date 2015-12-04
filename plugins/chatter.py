@@ -3,7 +3,8 @@ from utilies import *
 import cleverbot
 from HTMLParser import HTMLParser
 
-commands = ['#BOT_NAME_LOWER']
+# If someone mentions the bot's first name, ignoring -chan or similar extensions.
+commands = [bot['first_name'].split('-')[0].lower()]
 
 description = 'Get list of basic information for all commands, or more detailed documentation on a specified command.'
 action = 'typing'
@@ -12,6 +13,7 @@ hidden = True
 
 def run(msg):
     print 'chatter'
+
     input = msg['text'].replace(bot['first_name'] + ' ', '')
 
     cb = cleverbot.Cleverbot()
@@ -40,4 +42,4 @@ def process(msg):
     if ('text' in msg and
         msg['chat']['type'] == 'private' and
         not msg['text'].startswith(config['command_start'])):
-        msg['text'] = bot['first_name'] + ' ' + msg['text']
+        msg['text'] = bot['first_name'].split('-')[0] + ' ' + msg['text']

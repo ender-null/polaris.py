@@ -2,8 +2,6 @@
 from utilies import *
 
 def process(msg):
-    print('logger')
-
     if ((str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'admin') or
             (str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'alerts') or
             (str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'log')):
@@ -18,8 +16,7 @@ def process(msg):
 
             message = escape_markup(msg['text'])
             message = message.replace(bot['first_name'] + ' ', '')
-            message += u'\n—————————————\n'
-            # message += '\n------------------------\n'
+            message += line()
 
             if 'username' in msg['from']:
                 message += '*Name*: [' + escape_markup(msg['from']['first_name']) + '](http://telegram.me/' + \

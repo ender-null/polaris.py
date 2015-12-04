@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
-from __main__ import *
 from bindings import *
 import datetime
 import importlib
@@ -14,6 +13,7 @@ import requests
 import tempfile
 import time
 import urllib
+import traceback
 
 
 def bot_init():
@@ -58,31 +58,33 @@ def on_message_receive(msg):
 
     if 'text' not in msg:
         msg['text'] = ''
-    lower = msg['text'].lower()
 
     for i, plugin in plugins.items():
         more = True
         if hasattr(plugin, 'process'):
-            print('\tprocess')
             plugin.process(msg)
+
         if hasattr(plugin, 'commands'):
             for command in plugin.commands:
                 trigger = command.replace("^", "^" + config['command_start'])
-                trigger = tag_replace(trigger, msg)
-                if re.compile(trigger).search(lower):
-                    #try:
-                    if hasattr(plugin, 'action'):
-                        send_chat_action(msg['chat']['id'], plugin.action)
-                    plugin.run(msg)
+                # trigger = tag_replace(trigger, msg)
+                if re.compile(trigger).search(msg['text'].lower()):
+                    try:
+						if hasattr(plugin, 'action'):
+							send_chat_action(msg['chat']['id'], plugin.action)
+						plugin.run(msg)
+                    except Exception as e:
+                        send_error(msg, 'exception')
+                        send_exception(e)
+
                     more = False
                     break
-                    #except Exception as e:
-                    #    send_error(msg, 'exception')
-                    #    send_exception(e)
-                    #    more = False
-                    #    break
-            if not more:
-                break
+
+        if hasattr(plugin, 'stop') and plugin.stop:
+            more = False
+
+        if not more:
+            break
 
 
 def load_plugins():
@@ -359,6 +361,11 @@ def get_size(number):
 
     return str(number), units[unit]
 
+def line(alt=False):
+    if alt:
+        return u'\n———————————————————\n'
+    else:
+        return u'\n`———————————————————`\n'
 
 def send_error(msg, error_type, status_code=200):
     loc = get_locale(msg['chat']['id'])
@@ -371,11 +378,17 @@ def send_error(msg, error_type, status_code=200):
 def send_alert(message):
     for group in groups.items():
         if group[1]['special'] == 'alerts':
-            send_message(group[0], message)
+            send_message(group[0], message, parse_mode="Markdown")
 
 
 def send_exception(exception):
     exc_type, exc_obj, exc_tb = sys.exc_info()
-    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-    message = str(exc_type) + ', ' + fname + ', ' + str(exc_tb.tb_lineno)
+    tb = traceback.extract_tb(exc_tb, 3)
+    message = 'Exception Found:'
+    for row in tb:
+        message += line()
+        for val in row:
+            message += '`' + str(val) + ', \t`'
+
+    print(message)
     send_alert(message)

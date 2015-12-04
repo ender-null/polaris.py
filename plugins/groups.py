@@ -51,7 +51,7 @@ def run(msg):
                 message += u'\t{0}'.format(group['realm'])
                 if 'alias' in group:
                     message += u'\t({0})'.format(group['alias'])
-
+    # Allows joining groups.
     elif get_command(msg['text']) == 'join':
         print get_command(msg['text'])
         for gid, group in groups.items():
@@ -67,7 +67,7 @@ def run(msg):
                     cli.chat_add_user(gid, uid)
             else:
                 message = 'Group not found.'
-
+    # Shows info about the current group.
     elif get_command(msg['text']) == 'info':
         if str(cid) in groups:
             message = u'*Info of {0}*'.format(groups[str(cid)]['title'])
@@ -178,9 +178,17 @@ def run(msg):
             user_id = msg['reply_to_message']['from']['id']
             name = '@' + msg['reply_to_message']['from']['username']
 
-            message = '`EX-TER-MIN-ATE!`'
+            message = '`EXTERMINATE!`'
             send_message(cid, message, parse_mode="Markdown")
             cli.chat_del_user(cid, user_id)
+
+            for group in groups.items():
+                if group[1]['special'] == 'admin':
+                    message = 'Kicked *' + name + '* from *' + msg['chat']['title'] + '* by ' + msg['from'][
+                        'first_name']
+                    send_message(group[0], message, parse_mode="Markdown")
+            return
+
         elif input:
             if input.isdigit():
                 user_id = input
@@ -192,7 +200,7 @@ def run(msg):
             if not user_id:
                 return send_error(msg, 'argument')
 
-            message = '`EX-TER-MIN-ATE!`'
+            message = '`EXTERMINATE!`'
             send_message(cid, message, parse_mode="Markdown")
             cli.chat_del_user(cid, user_id)
 
