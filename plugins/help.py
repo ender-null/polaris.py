@@ -13,7 +13,6 @@ commands = [
 parameters = {('command', False)}
 description = 'Get list of basic information for all commands, or more detailed documentation on a specified command.'
 action = 'typing'
-hidden = True
 
 
 def run(msg):

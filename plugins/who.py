@@ -13,7 +13,7 @@ def run(msg):
         msg['message_id'] = msg['reply_to_message']['message_id']
         msg['from'] = msg['reply_to_message']['from']
         msg['chat'] = msg['reply_to_message']['chat']
-        msg['text'] = msg['reply_to_message']['text']
+
         if 'audio' in msg['reply_to_message']:
             msg['audio'] = msg['reply_to_message']['audio']
         if 'document' in msg['reply_to_message']:
@@ -26,6 +26,7 @@ def run(msg):
             msg['video'] = msg['reply_to_message']['video']
         if 'voice' in msg['reply_to_message']:
             msg['voice'] = msg['reply_to_message']['voice']
+
     if get_command(msg['text']) == 'who':
         message = '#GREETING!\n'
         if msg['from']['id'] != bot['id']:
@@ -60,7 +61,7 @@ def run(msg):
             message += 'I couldn\'t get the file id.'
     elif get_command(msg['text']) == 'msgid':
         message = '#GREETING!\n'
-        message += '*Text*: ' + str(msg['text']) + '\n'
+        message += '*Text*: ' + str(msg['reply_to_message']['text']) + '\n'
         message += '*Message ID*: ' + str(msg['message_id']) + '\n'
         message += '*Chat ID*: ' + str(msg['chat']['id']) + '\n'
 

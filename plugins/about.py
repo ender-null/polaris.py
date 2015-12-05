@@ -20,13 +20,14 @@ def run(msg):
     header += '\nNice to meet you.'
 
     help = '\nUse ' + config['command_start'] + 'help for a list of commands.'
-    license = '\n*#BOT_NAME* is licensed under the *GPLv2*.'
+    license = '\n*#BOT_FIRSTNAME* uses *Polaris* which is licensed under the *GPLv2*.'
     source = '\n[Source Code on Github](https://github.com/luksireiku/polaris)'
     channel = '\nChannel: @PolarisUpdates'
-    group = '\nJoin [Society of Polaris](https://telegram.me/joinchat/B09roADwf_-EFMjy_9Q1qA)!'
+    group = '\nJoin [Society of Polaris](https://telegram.me/joinchat/B09roADwf_8-9zMfxniOpA)!'
+    stats = '\nUsers: {0}\nGroups: {1}'.format(len(users), len(groups))
 
     if get_command(msg['text']) == 'about':
-        about = header + '\n' + license + channel + group
+        about = header + '\n' + license + source + '\n' + stats + '\n' + channel + group
         about = tag_replace(about, msg)
 
         send_message(msg['chat']['id'], about, disable_web_page_preview=True, parse_mode="Markdown")

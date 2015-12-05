@@ -23,6 +23,9 @@ def bot_init():
 
     global groups
     groups = load_json('data/groups.json')
+    
+    global users
+    users = load_json('data/users.json')
 
     global locale
     locale = OrderedDict()

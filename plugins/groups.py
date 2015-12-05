@@ -10,7 +10,7 @@ admincommands = [
 modcommands = [
     '^modlist',
     '^modhelp',
-    '^groupconfig',
+    '^gc',
     '^promote',
     '^demote',
     '^invite',
@@ -49,17 +49,19 @@ def run(msg):
                 else:
                     message += group['title']
                 message += u'\t{0}'.format(group['realm'])
-                if 'alias' in group:
-                    message += u'\t({0})'.format(group['alias'])
+                if group['alias'] != '':
+                    message += u'\t|{0}|'.format(group['alias'])
     # Allows joining groups.
     elif get_command(msg['text']) == 'join':
         print get_command(msg['text'])
         for gid, group in groups.items():
-            if group['alias'].lower() == input.lower():
+            if (group['alias'].lower() == input.lower() or
+                group['title'].lower() == input.lower() or
+                gid == input):
                 if group['link'] != '':
                     message = u'*{0}*'.format(group['title'])
-                    if group['alias']:
-                        message += u'\t_[{0}]_'.format(group['alias'])
+                    if group['alias'] != '':
+                        message += u'\t|{0}|'.format(group['alias'])
                     message += u'\n_{0}_\n\n[Join Group]({1})'.format(group['description'], group['link'])
                     break
                 else:
@@ -72,7 +74,7 @@ def run(msg):
         if str(cid) in groups:
             message = u'*Info of {0}*'.format(groups[str(cid)]['title'])
             if groups[str(cid)]['alias'] != '':
-                message += u'\t_[{0}]_'.format(groups[str(cid)]['alias'])
+                message += u'\t|{0}|'.format(groups[str(cid)]['alias'])
             message += u'\n{0}'.format(groups[str(cid)]['description'])
             if groups[str(cid)]['rules'] != '':
                 message += u'\n\n*Rules:*\n{0}'.format(groups[str(cid)]['rules'])
@@ -124,7 +126,7 @@ def run(msg):
         else:
             return send_error(msg, 'id')
 
-    elif get_command(msg['text']) == 'groupconfig' and is_mod(msg):
+    elif get_command(msg['text']) == 'gc' and is_mod(msg):
         if first_word(input) == 'link':
             groups[str(cid)]['link'] = all_but_first_word(input)
             message = 'Updated invite link of ' + groups[str(cid)]['title'] + '.'
@@ -220,7 +222,10 @@ def run(msg):
             message = msg['reply_to_message']['from']['first_name'] + ' is now a moderator.'
             save_json('data/groups.json', groups)
         else:
-            return send_message(cid, locale[get_locale(cid)]['errors']['id'])
+            groups[str(cid)]['mods'][str(msg['from']['id'])] = str(
+                msg['from']['first_name'])
+            message = msg['from']['first_name'] + ' is now a moderator.'
+            save_json('data/groups.json', groups)
 
     elif is_mod(msg) and get_command(msg['text']) == 'demote':
         if 'reply_to_message' in msg:
@@ -231,31 +236,10 @@ def run(msg):
             return send_message(cid, locale[get_locale(cid)]['errors']['id'])
 
     elif get_command(msg['text']) == 'add' and is_mod(msg):
-        if msg['chat']['type'] == 'group':
-            if not str(cid) in groups:
-                if len(first_word(msg['chat']['title'])) == 1:
-                    realm = first_word(msg['chat']['title'])
-                    title = all_but_first_word(msg['chat']['title'])
-                else:
-                    realm = ''
-                    title = msg['chat']['title']
-
-                groups[str(cid)] = OrderedDict()
-                groups[str(cid)]['link'] = ''
-                groups[str(cid)]['realm'] = realm
-                groups[str(cid)]['title'] = title
-                groups[str(cid)]['description'] = 'Group added by ' + msg['from']['first_name']
-                groups[str(cid)]['rules'] = ''
-                groups[str(cid)]['locale'] = 'default'
-                groups[str(cid)]['special'] = None
-                groups[str(cid)]['alias'] = ''
+        if msg['chat']['id'] < 0:
+            if groups[str(cid)]['hide'] == True:
                 groups[str(cid)]['hide'] = False
-                groups[str(cid)]['mods'] = {}
-                groups[str(cid)]['mods'][msg['from']['id']] = msg['from']['first_name']
-                groups[str(cid)]['mods'] = {}
-
                 save_json('data/groups.json', groups)
-
                 message = 'Group added.'
             else:
                 message = 'Already added.'
@@ -263,8 +247,15 @@ def run(msg):
             message = 'You can only add chat groups.'
 
     elif get_command(msg['text']) == 'remove' and is_mod(msg):
-        del groups[str(cid)]
-        message = 'Group removed.'
+        if msg['chat']['id'] < 0:
+            if groups[str(cid)]['hide'] == False:
+                groups[str(cid)]['hide'] = True
+                save_json('data/groups.json', groups)
+                message = 'Group removed.'
+            else:
+                message = 'Already added.'
+        else:
+            message = 'You can only add chat groups.'
     else:
         return send_message(cid, locale[get_locale(cid)]['errors']['permission'])
 
@@ -273,7 +264,7 @@ def run(msg):
 
 def process(msg):
     # Updates group title in the database.
-    cid = msg['chat']['id']
+    cid = str(msg['chat']['id'])
     if ('new_chat_title' in msg and
         cid in groups):
         if len(first_word(msg['new_chat_title'])) == 1:
@@ -283,10 +274,34 @@ def process(msg):
             realm = ''
             title = msg['new_chat_title']
 
-        groups[str(cid)]['realm'] = realm
-        groups[str(cid)]['title'] = title
+        groups[cid]['realm'] = realm
+        groups[cid]['title'] = title
         save_json('data/groups.json', groups)
+    
+    if not cid in groups and int(cid) < 0:
+        print 'not in groups'
+        if (len(first_word(msg['chat']['title'])) == 1 and
+            first_word(msg['chat']['title'][0]).isalnum()):
+            realm = first_word(msg['chat']['title'])
+            title = all_but_first_word(msg['chat']['title'])
+        else:
+            realm = ''
+            title = msg['chat']['title']
 
+        groups[cid] = OrderedDict()
+        groups[cid]['link'] = ''
+        groups[cid]['realm'] = realm
+        groups[cid]['title'] = title
+        groups[cid]['description'] = 'Group automaticaly added.'
+        groups[cid]['rules'] = ''
+        groups[cid]['locale'] = 'default'
+        groups[cid]['special'] = None
+        groups[cid]['alias'] = ''
+        groups[cid]['hide'] = True
+        groups[cid]['mods'] = {}
+        groups[cid]['mods'][msg['from']['id']] = msg['from']['first_name']
+
+        save_json('data/groups.json', groups)
 
 def cron():
     groups = load_json('data/groups.json', True)
