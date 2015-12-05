@@ -24,8 +24,8 @@ def run(msg):
     if not input:
         doc = get_doc(commands, parameters, description)
         return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
-
-    url = 'http://www.zaragoza.es/api/recurso/urbanismo-infraestructuras/transporte-urbano/poste/tuzsa-' + input + '.json'
+    
+    url = 'http://www.zaragoza.es/api/recurso/urbanismo-infraestructuras/transporte-urbano/poste/tuzsa-' + input.lstrip('0') + '.json'
 
     jdat = send_request(url)
 
