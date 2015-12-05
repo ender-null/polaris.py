@@ -363,9 +363,9 @@ def get_size(number):
 
 def line(alt=False):
     if alt:
-        return u'\n———————————————————\n'
+        return u'\n—————————————————————————\n'
     else:
-        return u'\n`———————————————————`\n'
+        return u'\n`—————————————————————————`\n'
 
 def send_error(msg, error_type, status_code=200):
     loc = get_locale(msg['chat']['id'])
@@ -383,12 +383,11 @@ def send_alert(message):
 
 def send_exception(exception):
     exc_type, exc_obj, exc_tb = sys.exc_info()
-    tb = traceback.extract_tb(exc_tb, 3)
-    message = 'Exception Found:'
+    tb = traceback.extract_tb(exc_tb, 4)
+    message = '\n`' + str(exc_type) + '`'
+    message += '\n\n`' + str(exc_obj) + '`'
     for row in tb:
         message += line()
         for val in row:
-            message += '`' + str(val) + ', \t`'
-
-    print(message)
+            message += '`' + str(val) + '`\n'
     send_alert(message)

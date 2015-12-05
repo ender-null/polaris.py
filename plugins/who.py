@@ -2,7 +2,7 @@
 from utilies import *
 
 
-commands = ['^who', '^fileid']
+commands = ['^who', '^fileid', '^msgid']
 
 description = 'Gets user info.'
 action = 'typing'
@@ -10,8 +10,10 @@ action = 'typing'
 
 def run(msg):
     if 'reply_to_message' in msg:
+        msg['message_id'] = msg['reply_to_message']['message_id']
         msg['from'] = msg['reply_to_message']['from']
         msg['chat'] = msg['reply_to_message']['chat']
+        msg['text'] = msg['reply_to_message']['text']
         if 'audio' in msg['reply_to_message']:
             msg['audio'] = msg['reply_to_message']['audio']
         if 'document' in msg['reply_to_message']:
@@ -34,7 +36,6 @@ def run(msg):
             message += '*Username*: @' + escape_markup(msg['from']['username']) + '\n'
         message += '*User ID*: ' + str(msg['from']['id']) + '\n'
         if msg['chat']['type'] != 'private':
-            #message += '*Group*: ' + escape_markup(msg['chat']['title']) + '\n'
             message += '*Chat ID*: ' + str(msg['chat']['id']) + ''
     elif get_command(msg['text']) == 'fileid':
         message = '#GREETING!\n'
@@ -57,6 +58,11 @@ def run(msg):
             message += 'The _file id_ is:\n *' + file_id + '*'
         else:
             message += 'I couldn\'t get the file id.'
+    elif get_command(msg['text']) == 'msgid':
+        message = '#GREETING!\n'
+        message += '*Text*: ' + str(msg['text']) + '\n'
+        message += '*Message ID*: ' + str(msg['message_id']) + '\n'
+        message += '*Chat ID*: ' + str(msg['chat']['id']) + '\n'
 
     message = tag_replace(message)
 
