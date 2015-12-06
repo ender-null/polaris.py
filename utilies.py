@@ -118,7 +118,7 @@ def load_json(path, hide=False):
         with open(path, 'r') as f:
             if not hide:
                 print('\t[OK] ' + path)
-            return json.load(f)
+            return json.load(f, object_pairs_hook=OrderedDict)
     except:
         print('\t[Failed] ' + path)
         return {}
@@ -339,7 +339,7 @@ def is_admin(msg):
 
 def is_mod(msg):
     if (is_admin(msg) or
-                str(msg['from']['id']) in groups[str(msg['chat']['id'])]['mods']):
+                msg['from']['id'] in groups[str(msg['chat']['id'])]['mods']):
 
         return True
     else:

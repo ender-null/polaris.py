@@ -163,8 +163,14 @@ def run(msg):
 
     elif get_command(msg['text']) == 'modlist':
         message = '*Mods for ' + groups[str(cid)]['title'] + ':*'
-        for mod in groups[str(cid)]['mods'].items():
-            message += '\n\t' + mod[1]
+        for uid in groups[str(cid)]['mods']:
+            uid = str(uid)
+            if 'alias' in users[uid]:
+                message += '\n\t' + users[uid]['alias']
+            elif 'username' in users[uid]:
+                message += '\n\t' + users[uid]['username']
+            else:
+                message += '\n\t' + uid
 
     elif is_mod(msg) and get_command(msg['text']) == 'modhelp':
         message = '*Mod commands:*'
@@ -217,23 +223,35 @@ def run(msg):
 
     elif is_mod(msg) and get_command(msg['text']) == 'promote':
         if 'reply_to_message' in msg:
-            groups[str(cid)]['mods'][str(msg['reply_to_message']['from']['id'])] = str(
-                msg['reply_to_message']['from']['first_name'])
+            if msg['reply_to_message']['from']['id'] in groups[str(cid)]['mods']:
+                message = msg['reply_to_message']['from']['first_name'] + ' is already a mod.'
+                return send_message(cid, message)
+            groups[str(cid)]['mods'].append(msg['reply_to_message']['from']['id'])
             message = msg['reply_to_message']['from']['first_name'] + ' is now a moderator.'
             save_json('data/groups.json', groups)
         else:
-            groups[str(cid)]['mods'][str(msg['from']['id'])] = str(
-                msg['from']['first_name'])
+            if msg['from']['id'] in groups[str(cid)]['mods']:
+                message = msg['from']['first_name'] + ' is already a mod.'
+                return send_message(cid, message)
+            groups[str(cid)]['mods'].append(msg['from']['id'])
             message = msg['from']['first_name'] + ' is now a moderator.'
             save_json('data/groups.json', groups)
 
     elif is_mod(msg) and get_command(msg['text']) == 'demote':
         if 'reply_to_message' in msg:
-            del groups[str(cid)]['mods'][str(msg['reply_to_message']['from']['id'])]
+            if not msg['reply_to_message']['from']['id'] in groups[str(cid)]['mods']:
+                message = msg['reply_to_message']['from']['first_name'] + ' is not a mod.'
+                return send_message(cid, message)
+            groups[str(cid)]['mods'].remove(msg['reply_to_message']['from']['id'])
             message = msg['reply_to_message']['from']['first_name'] + ' is not a moderator.'
             save_json('data/groups.json', groups)
         else:
-            return send_message(cid, locale[get_locale(cid)]['errors']['id'])
+            if not msg['from']['id'] in groups[str(cid)]['mods']:
+                message = msg['from']['first_name'] + ' is not a mod.'
+                return send_message(cid, message)
+            groups[str(cid)]['mods'].remove(msg['from']['id'])
+            message = msg['from']['first_name'] + ' is not a moderator.'
+            save_json('data/groups.json', groups)
 
     elif get_command(msg['text']) == 'add' and is_mod(msg):
         if msg['chat']['id'] < 0:
@@ -267,7 +285,8 @@ def process(msg):
     cid = str(msg['chat']['id'])
     if ('new_chat_title' in msg and
         cid in groups):
-        if len(first_word(msg['new_chat_title'])) == 1:
+        if (len(first_word(msg['chat']['title'])) == 1 and
+            not first_word(msg['chat']['title'][0]).isalnum()):
             realm = first_word(msg['new_chat_title'])
             title = all_but_first_word(msg['new_chat_title'])
         else:
@@ -278,10 +297,10 @@ def process(msg):
         groups[cid]['title'] = title
         save_json('data/groups.json', groups)
     
+    # Adds automaticaly groups to database.
     if not cid in groups and int(cid) < 0:
-        print 'not in groups'
         if (len(first_word(msg['chat']['title'])) == 1 and
-            first_word(msg['chat']['title'][0]).isalnum()):
+            not first_word(msg['chat']['title'][0]).isalnum()):
             realm = first_word(msg['chat']['title'])
             title = all_but_first_word(msg['chat']['title'])
         else:
@@ -289,17 +308,16 @@ def process(msg):
             title = msg['chat']['title']
 
         groups[cid] = OrderedDict()
-        groups[cid]['link'] = ''
-        groups[cid]['realm'] = realm
         groups[cid]['title'] = title
         groups[cid]['description'] = 'Group automaticaly added.'
+        groups[cid]['realm'] = realm
         groups[cid]['rules'] = ''
-        groups[cid]['locale'] = 'default'
-        groups[cid]['special'] = None
+        groups[cid]['mods'] = [msg['from']['id']]
+        groups[cid]['link'] = ''
         groups[cid]['alias'] = ''
+        groups[cid]['locale'] = 'default'
         groups[cid]['hide'] = True
-        groups[cid]['mods'] = {}
-        groups[cid]['mods'][msg['from']['id']] = msg['from']['first_name']
+        groups[cid]['special'] = None
 
         save_json('data/groups.json', groups)
 
