@@ -9,6 +9,11 @@
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "botapi": {
+        "content": "https://core.telegram.org/bots/api", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
     "cancer": {
         "content": "Se que no le dar\u00e1s me gusta porque tengo cancer.", 
         "creator": 14143244, 
@@ -59,6 +64,16 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "echaelfreno": {
+        "content": "Eeeeh eeeeh echa el freno madaleno sin insultar.", 
+        "creator": 37551455, 
+        "type": "text"
+    }, 
+    "edurolp": {
+        "content": "BQADAgADmQAD84thAdApAebf5d5gAg", 
+        "creator": 52033876, 
+        "type": "sticker"
+    }, 
     "excite": {
         "content": "BQADBAADFgIAAgzP1wABKoPHkkdqcq8C", 
         "creator": 14143244, 
@@ -88,6 +103,11 @@
         "content": "AgADBAADxMExGwzP1wABWVub7bAUYtWOKXEwAARgWOdmpYJDxdesAQABAg", 
         "creator": 14143244, 
         "type": "photo"
+    }, 
+    "hijodefruta": {
+        "content": "BQADBAADNwEAApTkewABSYhxyT6hc4AC", 
+        "creator": 52033876, 
+        "type": "sticker"
     }, 
     "icandothis": {
         "content": "AgADBAADxcExGwzP1wABwz3Hf6N6f4gaLoswAAQBKlF9xEt5tLlMAQABAg", 
@@ -149,6 +169,11 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "raina": {
+        "content": "BQADBAADkgADvRxIBRoxRwbV9_OQAg", 
+        "creator": 69503897, 
+        "type": "sticker"
+    }, 
     "rekt": {
         "content": "BQADBAAD-QEAAl_9PAKHeJfbG_Va7QI", 
         "creator": 14143244, 
@@ -164,10 +189,20 @@
         "creator": 14143244, 
         "type": "file"
     }, 
+    "test": {
+        "content": "\u00af\\_(\u30c4)_/\u00af", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
     "throatskills": {
         "content": "BQADBAADEAIAAgzP1wABceMNNXvlt60C", 
         "creator": 14143244, 
         "type": "document"
+    }, 
+    "tranquilo": {
+        "content": "Tranquilo, no me interrumpas, que yo no te he interrumpido.", 
+        "creator": 14143244, 
+        "type": "text"
     }, 
     "troll": {
         "content": "BQADBAADQAEAAnscSQABqWydSKTnASoC", 
@@ -178,5 +213,10 @@
         "content": "*\u00a1Bienvenidos a la Rep\u00fablica de Brovras\u0127g\u0138a!*\nTutorial b\u00e1sico de *Brovras\u0127g\u0138a*:\n\t*1-* _Corre. R\u00e1pido._\n\t*2-* _El que no escribe, reenv\u00eda._\n\t*3-* _Whatsapp da sidita, Telegram lo cura._\n\t*4-* _Amaras y respetaras a Peto-tan sobre todas las cosas._\n\t\t\t\t*4.1-* _A Polaris tambien._\n\t*5-* _Vale, no ser gilipollas, definitivamente._\n\t*6-* _Ey, la igualdad mola._", 
         "creator": 14143244, 
         "type": "text"
+    }, 
+    "yareyare": {
+        "content": "AgADBAAD6MIxGwzP1wABESPv4SX3wadmcHEwAARWAwTU-G_IrKoBAgABAg", 
+        "creator": 14143244, 
+        "type": "photo"
     }
 }

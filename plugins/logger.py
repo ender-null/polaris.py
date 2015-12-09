@@ -42,5 +42,5 @@ def process(msg):
         if 'reply_to_message' in msg and msg['reply_to_message']['from']['id'] == bot['id']:
             message_id = last_word(msg['reply_to_message']['text'].split('\n')[-1])
             chat_id = last_word(msg['reply_to_message']['text'].split('\n')[-2])
-        if message_id and chat_id:
-            send_message(chat_id, msg['text'], reply_to_message_id=message_id, parse_mode="Markdown")
+			if message_id and chat_id:
+				send_message(chat_id, msg['text'], reply_to_message_id=message_id, parse_mode="Markdown")

@@ -43,14 +43,11 @@ def run(msg):
         message = '*Groups:*'
         for gid, group in groups.items():
             if not group['hide']:
-                message += '\n\t'
-                if group['link'] != '':
-                    message += u'[{0}]({1})'.format(group['title'], group['link'])
-                else:
-                    message += group['title']
-                message += u'\t{0}'.format(group['realm'])
+                message += u'\n\t-\t' + group['title']
                 if group['alias'] != '':
-                    message += u'\t|{0}|'.format(group['alias'])
+                    message += u'\t`|{0}|`'.format(group['alias'])
+                if group['realm'] != '':
+                    message += u'\t`{0}`'.format(group['realm'])
     # Allows joining groups.
     elif get_command(msg['text']) == 'join':
         print get_command(msg['text'])
@@ -62,6 +59,8 @@ def run(msg):
                     message = u'*{0}*'.format(group['title'])
                     if group['alias'] != '':
                         message += u'\t|{0}|'.format(group['alias'])
+                    if group['realm'] != '':
+                        message += u'\t{0}'.format(group['realm'])
                     message += u'\n_{0}_\n\n[Join Group]({1})'.format(group['description'], group['link'])
                     break
                 else:
@@ -75,6 +74,8 @@ def run(msg):
             message = u'*Info of {0}*'.format(groups[str(cid)]['title'])
             if groups[str(cid)]['alias'] != '':
                 message += u'\t|{0}|'.format(groups[str(cid)]['alias'])
+            if groups[str(cid)]['realm'] != '':
+                message += u'\t{0}'.format(groups[str(cid)]['realm'])
             message += u'\n{0}'.format(groups[str(cid)]['description'])
             if groups[str(cid)]['rules'] != '':
                 message += u'\n\n*Rules:*\n{0}'.format(groups[str(cid)]['rules'])
