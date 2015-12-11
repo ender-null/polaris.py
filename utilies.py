@@ -295,7 +295,7 @@ def tag_replace(text, msg=False):
 
 
 def escape_markup(text):
-    characters = ['_', '*', '[', ')', '`']
+    characters = ['_', '*', '[']
 
     for character in characters:
         text = text.replace(character, '\\' + character)

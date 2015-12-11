@@ -2,7 +2,7 @@
 from utilies import *
 
 def process(msg):
-    if (config['process']['new_chat_participant'] and
+    if (config['interactions']['new_chat_participant'] and
         'new_chat_participant' in msg):
         if msg['new_chat_participant']['id'] != bot['id']:
             msg['text'] = '!new_chat_participant'
@@ -10,7 +10,7 @@ def process(msg):
         else:
             msg['text'] = '/about'
 
-    if (config['process']['left_chat_participant'] and
+    if (config['interactions']['left_chat_participant'] and
        'left_chat_participant' in msg):
         if msg['left_chat_participant']['id'] != bot['id']:
             msg['text'] = '!left_chat_participant'

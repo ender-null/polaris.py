@@ -112,21 +112,28 @@ def run(msg):
         send_message(msg['chat']['id'], message, parse_mode="Markdown")
     else:
         for tag, data in tags.items():
-            if '#' + tag in msg['text']:
+            if '#' + tag.lower() in msg['text'].lower():
                 if data['type'] == 'text':
-                    send_message(msg['chat']['id'], data['content'], parse_mode="Markdown")
+                    if not send_message(msg['chat']['id'], data['content'], parse_mode="Markdown"):
+                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
                 elif data['type'] == 'audio':
-                    send_audio(msg['chat']['id'], data['content'])
+                    if not send_audio(msg['chat']['id'], data['content']):
+                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
                 elif data['type'] == 'document':
-                    send_document(msg['chat']['id'], data['content'])
+                    if not send_document(msg['chat']['id'], data['content']):
+                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
                 elif data['type'] == 'photo':
-                    send_photo(msg['chat']['id'], data['content'])
+                    if not send_photo(msg['chat']['id'], data['content']):
+                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
                 elif data['type'] == 'sticker':
-                    send_sticker(msg['chat']['id'], data['content'])
+                    if not send_sticker(msg['chat']['id'], data['content']):
+                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
                 elif data['type'] == 'video':
-                    send_video(msg['chat']['id'], data['content'])
+                    if not send_video(msg['chat']['id'], data['content']):
+                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
                 elif data['type'] == 'voice':
-                    send_voice(msg['chat']['id'], data['content'])
+                    if not send_voice(msg['chat']['id'], data['content']):
+                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
 
 
 def process(msg):

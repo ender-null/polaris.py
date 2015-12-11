@@ -49,3 +49,11 @@ def process(msg):
             str(msg['reply_to_message']['from']['id']) == uid):
             msg['reply_to_message']['from']['first_name'] = users[uid]['alias']
             msg['reply_to_message']['from']['last_name'] = ''
+        elif ('new_chat_participant' in msg and
+            str(msg['new_chat_participant']['id']) == uid):
+            msg['new_chat_participant']['first_name'] = users[uid]['alias']
+            msg['new_chat_participant']['last_name'] = ''
+        elif ('left_chat_participant' in msg and
+            str(msg['left_chat_participant']['id']) == uid):
+            msg['left_chat_participant']['first_name'] = users[uid]['alias']
+            msg['left_chat_participant']['last_name'] = ''

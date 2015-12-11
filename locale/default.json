@@ -44,7 +44,8 @@
             "^#BOT_NAME$"
         ],
         "`ACK`": [
-            "syn"
+            "syn",
+            "^ping"
         ],
         "🍼": [
             "😭"
@@ -75,5 +76,26 @@
         "download": "Download failed.",
         "exception": "Exception found.",
         "unknown": "Unknown error."
-    }
+    },
+    "lastwords": [
+        "EXTERMINATE!",
+        "Hasta la vista, baby.",
+        "*#FROM_FIRSTNAME*, your existance compromises the universe's balance.",
+        "This won't hurt.",
+        "Execute order 66.",
+        "*force lightning*",
+        "This is a tasty burguer!",
+        "You hear that? That is the sound of inevitability",
+        "geeettttttt dunked on!!",
+        "*#FROM_FIRSTNAME*, this conversation can serve no purpose any more. Goodbye.",
+        "Long live the King.",
+        "You feel lucky, punk?",
+        "Why so serious?",
+        "Your services are no longer required.",
+        "Knife to meet you.",
+        "See You Space Cowboy.",
+        "You're gonna carry that weight.",
+        "I'm gonna defeat you by your own rules...! I'm gonna smash that long nose of yours! WITH MY DICK!",
+        "* But nobody came."
+    ]
 }

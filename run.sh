@@ -1,5 +1,6 @@
 #!/bin/sh
 while true
 do
-	python run.py
+	python run.py;
+	sleep 5;
 done

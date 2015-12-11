@@ -1,18 +1,121 @@
 {
+    "Bladecito": {
+        "creator": 9622282, 
+        "type": "Que"
+    }, 
+    "CONGRATULATIONS": {
+        "creator": 37551455, 
+        "type": "image"
+    }, 
+    "DealWithIt": {
+        "content": "BQADBAADEgIAAl_9PAIeoPuhhWtNqgI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "EXTERMINATE": {
+        "content": "BQADBAADJAEAAld3bgABmnHGLPhRdQEC", 
+        "creator": 107015891, 
+        "type": "sticker"
+    }, 
+    "Felicidad": {
+        "content": "BQADBAAD_wEAAl_9PALSxqrXD7SqLAI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "GigaDrillBreaker": {
+        "content": "BQADBAADAwIAAl_9PAIxkF8rheukhQI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "IguresaSama": {
+        "content": "BQADBAADIwIAAl_9PAJxlduiLZ1CjwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "JOHNCENA": {
+        "content": "BQADBAADQQIAAl_9PAIf6zviroOooQI", 
+        "creator": 37551455, 
+        "type": "audio"
+    }, 
+    "KICKIT": {
+        "content": "BQADBAADBgIAAl_9PAIzf13erQRi3wI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "LecheAfilada": {
+        "content": "BQADBAADBwIAAl_9PALmkbiQwoBCewI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "Lennys": {
+        "content": "BQADBAADdgADJkm4A4DKE1aO0rUFAg", 
+        "creator": 107015891, 
+        "type": "sticker"
+    }, 
+    "Men\u00e9": {
+        "content": "BQADBAADBQIAAl_9PAIoDVU4I-3JJAI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "NARANJAS": {
+        "content": "BQADBAADHwIAAl_9PAKRhh_daVp1mwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "POLISHING": {
+        "content": "BQADBAADCgIAAl_9PAL0c8bJDn6cnQI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "PabloIglesias": {
+        "content": "BQADBAADIgIAAl_9PAKhZ7RkFvWOgwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "aborto": {
+        "content": "BQADBAADEQIAAl_9PAL-ugu1V559tAI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "alin": {
         "content": "AgADBAADWa0xG6z1UgABVhAt_7qcAAHJiTKLMAAEMNqg3SoF8XAaVQEAAQI", 
         "creator": 5436844, 
         "type": "photo"
+    }, 
+    "amistad": {
+        "content": "BQADBAADFwIAAl_9PAIIEP66G8siYQI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "astroshamanauts": {
+        "content": "BQADBAAD_QEAAl_9PAK7eKran_kseAI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "ayylmao": {
         "content": "AgADAQAD2KcxG5CV8wd1eI823d0YsD3a1i8ABB7nWDF-otnEArcAAgI", 
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "bark": {
+        "content": "BQADBAADZAMAAlT5GQPLC4Xe0MAQvgI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
+    "barking": {
+        "content": "BQADBAADMwIAAl_9PALkVsggGc1LPQI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "botapi": {
         "content": "https://core.telegram.org/bots/api", 
         "creator": 14143244, 
         "type": "text"
+    }, 
+    "bye": {
+        "content": "BQADBAADSAMAAlT5GQOynGiFDOGoNgI", 
+        "creator": 52033876, 
+        "type": "document"
     }, 
     "cancer": {
         "content": "Se que no le dar\u00e1s me gusta porque tengo cancer.", 
@@ -24,10 +127,20 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "comeatmebro": {
+        "content": "BQADBAADKwIAAl_9PAIJJJ6RBTL9awI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "comunism": {
         "content": "que opinan de los comunistas por favor opinen desde el respeto y sin hacer apologia a las apologizaciones\nen mi opinion el comunismo esta ok pero jajaja andeva con el aifon XD", 
         "creator": 14143244, 
         "type": "text"
+    }, 
+    "contrato": {
+        "content": "BQADBAADNAIAAl_9PAKNtPf2jHDufwI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "cries": {
         "content": "BQADBAAD5wADCiedAAF93cyaGE1zkAI", 
@@ -39,10 +152,20 @@
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "dankmaster": {
+        "content": "BQADBAADAgIAAl_9PALk0ycEStJoLwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "dealwithit": {
         "content": "BQADBAADBQIAAhQfeAJ9WnFJ517XJwI", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "deathstare": {
+        "content": "BQADBAADMQIAAl_9PAKo2usRyPxiagI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "dep": {
         "content": "BQADBAADHwADMPKRB8-gEMwC8oeKAg", 
@@ -70,13 +193,23 @@
         "type": "text"
     }, 
     "edurolp": {
-        "content": "BQADAgADmQAD84thAdApAebf5d5gAg", 
+        "content": "AgADBAADj6wxG1T5GQPgbQXqdk1xFQ28pjAABA_39pPIVdk164oAAgI", 
         "creator": 52033876, 
+        "type": "photo"
+    }, 
+    "elcoletas": {
+        "content": "BQADBAADPwAD3EpBAAHrxrV6wmkAAVoC", 
+        "creator": 46565846, 
         "type": "sticker"
     }, 
     "excite": {
         "content": "BQADBAADFgIAAgzP1wABKoPHkkdqcq8C", 
         "creator": 14143244, 
+        "type": "document"
+    }, 
+    "fail": {
+        "content": "BQADBAADXAMAAlT5GQOWYcrlw9nQZgI", 
+        "creator": 52033876, 
         "type": "document"
     }, 
     "felicidad": {
@@ -94,20 +227,45 @@
         "creator": 14143244, 
         "type": "document"
     }, 
+    "galleta": {
+        "content": "BQADBAADBAIAAl_9PAJ8kH3rb5PfJwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "galosengen": {
+        "content": "BQADBAAEAgACX_08Auj-mkgzVXtMAg", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "gamephysics": {
+        "content": "BQADBAADNgIAAl_9PAKmE_16ZkXk8gI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "gay": {
         "content": "BQADAQADeAQAAiMzHAABoarz2B1lOBYC", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "gaysex": {
+        "content": "BQADBAADFgIAAl_9PAItfCrXENXzSwI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "getrekt": {
         "content": "AgADBAADxMExGwzP1wABWVub7bAUYtWOKXEwAARgWOdmpYJDxdesAQABAg", 
         "creator": 14143244, 
         "type": "photo"
     }, 
-    "hijodefruta": {
-        "content": "BQADBAADNwEAApTkewABSYhxyT6hc4AC", 
+    "happy": {
+        "content": "BQADBAADPgIAAl_9PAKwDjZbgt9wcAI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "hijodegruta": {
+        "content": "AgADBAADe6wxG1T5GQPEGSE6KMTftJd0jDAABA43FL1IoBGrEqkBAAEC", 
         "creator": 52033876, 
-        "type": "sticker"
+        "type": "photo"
     }, 
     "icandothis": {
         "content": "AgADBAADxcExGwzP1wABwz3Hf6N6f4gaLoswAAQBKlF9xEt5tLlMAQABAg", 
@@ -119,14 +277,62 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "imsofuckedup": {
+        "creator": 37551455, 
+        "type": "image"
+    }, 
     "inteligensia": {
         "content": "#g sabine tienkamp", 
         "creator": 14143244, 
         "type": "text"
     }, 
+    "johnalmuerzo": {
+        "creator": 37551455, 
+        "type": "pene"
+    }, 
+    "justxehathings": {
+        "content": "BQADAQADcQEAApkBNgRC8eW13C5hjgI", 
+        "creator": 46565846, 
+        "type": "sticker"
+    }, 
+    "kappa": {
+        "content": "BQADAgADGAADjNSBAquvPMOi6t-YAg", 
+        "creator": 52033876, 
+        "type": "sticker"
+    }, 
     "latula": {
         "content": "BQADBAADWgADdzKABKYGqOm-5MQuAg", 
         "creator": 107015891, 
+        "type": "sticker"
+    }, 
+    "lel": {
+        "content": "BQADBAADQAQAAnZY-wI5ZxwPiyWV7wI", 
+        "creator": 52033876, 
+        "type": "sticker"
+    }, 
+    "lenny": {
+        "content": "( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
+    "lifegoals": {
+        "content": "BQADBAADHgIAAl_9PAIBxtm4gBpaHAI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "lmao": {
+        "content": "BQADBAAD_wIAAlT5GQMe1gIVbVDlIAI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
+    "loma": {
+        "content": "BQADBAADOQAD3EpBAAFxy1lVKMYaUgI", 
+        "creator": 52033876, 
+        "type": "sticker"
+    }, 
+    "lomasnape": {
+        "content": "BQADBAADQwAD3EpBAAH-WMCLJU_4DAI", 
+        "creator": 46565846, 
         "type": "sticker"
     }, 
     "love": {
@@ -139,10 +345,30 @@
         "creator": 5436844, 
         "type": "text"
     }, 
+    "me": {
+        "content": "BQADBAADVQMAAlT5GQMPNu8mQmWO2AI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
     "nanisore": {
         "content": "AgADBAADvMExGwzP1wABgS8WWETu7Zk1WoswAATkkkR7tubvqjhIAQABAg", 
         "creator": 14143244, 
         "type": "photo"
+    }, 
+    "naps": {
+        "content": "BQADBAAD_gIAAlT5GQOlaCN0jpoBPAI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
+    "naranjas": {
+        "content": "BQADBAADHQIAAl_9PAJL3TEankQxAQI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "nazirangers": {
+        "content": "BQADBAADDwIAAl_9PAK6bDJwTIWiZgI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "nepeta": {
         "content": "BQADBAADRAADdzKABL5aJzXs-GPsAg", 
@@ -154,20 +380,80 @@
         "creator": 1896312, 
         "type": "document"
     }, 
+    "nigreonstare": {
+        "content": "BQADBAADOQIAAl_9PALM4zrax46Z7wI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "nocilla": {
+        "content": "BQADBAADIAIAAl_9PAKtZCfw0825TgI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "nofucksgiven": {
+        "content": "BQADBAAD6gADOOEaAAF2u9kY9vEfcgI", 
+        "creator": 14143244, 
+        "type": "sticker"
+    }, 
+    "nutella": {
+        "content": "BQADBAADIQIAAl_9PAIoyO6UKv565gI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "ohhh": {
         "content": "BQADBAADnAEAAl_9PAKIXxNYvTStCQI", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "oingfail": {
+        "content": "AgADBAADl6wxG1T5GQN4CKevaYFzqT9rcjAABMbie6AyF_tGUhkCAAEC", 
+        "creator": 52033876, 
+        "type": "photo"
+    }, 
+    "omg": {
+        "content": "BQADBAADJwMAAlT5GQOUKjukpJxXDwI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
+    "parkour": {
+        "content": "BQADBAADJQMAAlT5GQPfffXRRYBveAI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
+    "partyhard": {
+        "content": "BQADBAADGAIAAl_9PALTlHWafujVBAI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "pedroche": {
+        "content": "BQADBAADDQMAAlT5GQNxRIuevibpCAI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
+    "pescado": {
+        "content": "BQADBAADFAIAAl_9PAJLPbGfy54jZgI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "petoisback": {
         "content": "AgADBAAD-cExGwzP1wAB8AIL9XP4wuWVVaYwAAQ5FIrWroVcqroxAAIC", 
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "physics": {
+        "content": "BQADBAADLAIAAl_9PAKhiZTUsx-hXwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "pleaseunderstand": {
         "content": "BQADBAADngADCiedAAGf-wHSqPiCSwI", 
         "creator": 14143244, 
         "type": "sticker"
+    }, 
+    "polish": {
+        "content": "BQADBAADCQIAAl_9PAL6JjlQZTzLhwI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "raina": {
         "content": "BQADBAADkgADvRxIBRoxRwbV9_OQAg", 
@@ -179,15 +465,70 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "royalturkey": {
+        "content": "BQADBAADMgIAAl_9PAJmbpdexKuE4AI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "sentidodelavida": {
+        "content": "BQADBAADHAIAAl_9PAK4dPkXBwGh-AI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "si": {
+        "content": "BQADBAADEgMAAlT5GQM8C9nKS6Ko8wI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
     "sigh": {
         "content": "AgADBAADw8ExGwzP1wABpYIE-gNUbp-_pmkwAASwoJ-xgQbuxfjfAQABAg", 
         "creator": 14143244, 
         "type": "photo"
     }, 
+    "smokeweed": {
+        "content": "BQADBAADMAIAAl_9PAJVS1_EMQoT3AI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "sonochinosadame": {
         "content": "BQADBAADFwIAAgzP1wAB9N9ITrCVOXAC", 
         "creator": 14143244, 
         "type": "file"
+    }, 
+    "spiderfacial": {
+        "content": "BQADBAADEwIAAl_9PAIX3e9qPzRUmwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "spookayylmao": {
+        "content": "BQADBAADAQIAAl_9PAL172cYcN3G1wI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "spookyEVAs": {
+        "content": "BQADBAADCwIAAl_9PAId3Yvz5dhK7QI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "stayinschool": {
+        "content": "BQADBAADNwIAAl_9PAJm2UlY2VpDGwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "suck": {
+        "content": "BQADBAADeQMAAlT5GQNC6M811QQjWAI", 
+        "creator": 52033876, 
+        "type": "document"
+    }, 
+    "swag": {
+        "content": "BQADBAADKAIAAl_9PAJyHfR6u33bbgI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "teletienda": {
+        "content": "BQADBAADGwIAAl_9PAKTybheytcZbgI", 
+        "creator": 37551455, 
+        "type": "document"
     }, 
     "test": {
         "content": "\u00af\\_(\u30c4)_/\u00af", 
@@ -209,14 +550,39 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "tumadreanoche": {
+        "content": "BQADBAADEAIAAl_9PAKSG-_sf-NYWAI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "tutorialbrov": {
         "content": "*\u00a1Bienvenidos a la Rep\u00fablica de Brovras\u0127g\u0138a!*\nTutorial b\u00e1sico de *Brovras\u0127g\u0138a*:\n\t*1-* _Corre. R\u00e1pido._\n\t*2-* _El que no escribe, reenv\u00eda._\n\t*3-* _Whatsapp da sidita, Telegram lo cura._\n\t*4-* _Amaras y respetaras a Peto-tan sobre todas las cosas._\n\t\t\t\t*4.1-* _A Polaris tambien._\n\t*5-* _Vale, no ser gilipollas, definitivamente._\n\t*6-* _Ey, la igualdad mola._", 
         "creator": 14143244, 
         "type": "text"
     }, 
+    "weedomancer": {
+        "content": "BQADBAAD_gEAAl_9PAKoI2yB_A-WwwI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "wombocombo": {
+        "content": "BQADBAADDgIAAl_9PAJWb5Ki0hwH2AI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
     "yareyare": {
         "content": "AgADBAAD6MIxGwzP1wABESPv4SX3wadmcHEwAARWAwTU-G_IrKoBAgABAg", 
         "creator": 14143244, 
         "type": "photo"
+    }, 
+    "yolo": {
+        "content": "BQADBAADGgIAAl_9PAKHkksevN9Q7wI", 
+        "creator": 37551455, 
+        "type": "document"
+    }, 
+    "yoqsetio": {
+        "content": "BQADBAADHwMAAlT5GQM6GdeidT67YwI", 
+        "creator": 52033876, 
+        "type": "document"
     }
 }

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from utilies import *
+import random
 import bindings_cli as cli
 
 admincommands = [
@@ -108,22 +109,10 @@ def run(msg):
 
             if not user_id:
                 return send_error(msg, 'argument')
-
-            message = 'Adding *' + name + '* to *' + msg['chat']['title'] + '*.'
-            send_message(cid, message, parse_mode="Markdown")
-            cli.chat_add_user(cid, user_id)
-
-            for gid, group in groups.items():
-                if group['special'] == 'admin':
-                    message = 'Added *' + name + '* to *' + msg['chat']['title'] + '* by ' + msg['from']['first_name']
-                    send_message(gid, message, parse_mode="Markdown")
-            return
+            return cli.chat_add_user(cid, user_id)
         elif 'reply_to_message' in msg:
             user_id = msg['reply_to_message']['from']['id']
-            name = '@' + msg['reply_to_message']['from']['username']
-            message = 'Adding *' + name + '* to *' + msg['chat']['title'] + '*.'
-            send_message(cid, message, parse_mode="Markdown")
-            cli.chat_add_user(cid, user_id)
+            return cli.chat_add_user(cid, user_id)
         else:
             return send_error(msg, 'id')
 
@@ -182,21 +171,15 @@ def run(msg):
     elif is_mod(msg) and get_command(msg['text']) == 'broadcast':
         message = 'Unsupported action.'
 
-    elif is_mod(msg) and (get_command(msg['text']) == 'kill' or get_command(msg['text']) == 'exterminate'):
+    elif is_mod(msg) and (get_command(msg['text']) == 'kill'):
+        i = random.randint(1, len(locale[get_locale(msg['chat']['id'])]['lastwords']))-1
+        message = '`' + locale[get_locale(msg['chat']['id'])]['lastwords'][i] + '`'
+        message = tag_replace(message, msg)
+        
         if 'reply_to_message' in msg:
             user_id = msg['reply_to_message']['from']['id']
-            name = '@' + msg['reply_to_message']['from']['username']
-
-            message = '`EXTERMINATE!`'
             send_message(cid, message, parse_mode="Markdown")
-            cli.chat_del_user(cid, user_id)
-
-            for group in groups.items():
-                if group[1]['special'] == 'admin':
-                    message = 'Kicked *' + name + '* from *' + msg['chat']['title'] + '* by ' + msg['from'][
-                        'first_name']
-                    send_message(group[0], message, parse_mode="Markdown")
-            return
+            return cli.chat_del_user(cid, user_id)
 
         elif input:
             if input.isdigit():
@@ -209,16 +192,9 @@ def run(msg):
             if not user_id:
                 return send_error(msg, 'argument')
 
-            message = '`EXTERMINATE!`'
             send_message(cid, message, parse_mode="Markdown")
-            cli.chat_del_user(cid, user_id)
-
-            for group in groups.items():
-                if group[1]['special'] == 'admin':
-                    message = 'Kicked *' + name + '* from *' + msg['chat']['title'] + '* by ' + msg['from'][
-                        'first_name']
-                    send_message(group[0], message, parse_mode="Markdown")
-            return
+            return cli.chat_del_user(cid, user_id)
+            
         else:
             return send_error(msg, 'id')
 
