@@ -22,7 +22,7 @@ def run(msg):
         return send_error(msg, 'permission')
 
     if get_command(msg['text']) == 'run':
-        message = subprocess.check_output(input, shell=True)
+        message = '`{0}`'.format(subprocess.check_output(input, shell=True))
 
     elif get_command(msg['text']) == 'reload':
         bot_init()

@@ -2,13 +2,12 @@
 from utilies import *
 
 tags = load_json('data/tags.json')
-
-def get_tags(tags, size):
+def get_tags(tags):
     i = 4
-    commands = [None] * (int(size) + i)
-    commands[0] = '^newtag'
-    commands[1] = '^remtag'
-    commands[2] = '^taglist'
+    commands = [None] * (len(tags) + i)
+    commands[0] = '^taglist'
+    commands[1] = '^newtag'
+    commands[2] = '^remtag'
     commands[3] = '^content'
     for tag, data in tags.items():
         commands[i] = '#' + tag
@@ -16,7 +15,7 @@ def get_tags(tags, size):
     return commands
 
 
-commands = get_tags(tags, len(tags))
+commands = get_tags(tags)
 parameters = {
     ('name', True),
     ('type', True)
@@ -26,12 +25,20 @@ hidden = True
 
 
 def run(msg):
+    types = [
+        'text',
+        'photo',
+        'document',
+        'voice',
+        'audio',
+        'sticker',
+        'video',
+        'alias'
+    ]
     if (get_command(msg['text']) == 'newtag'
         or get_command(msg['text']) == 'content'):
 
         if get_command(msg['text']) == 'newtag':
-            print
-            'first step'
             input = get_input(msg['text'])
             if not input:
                 doc = get_doc(commands, parameters, description)
@@ -39,14 +46,60 @@ def run(msg):
 
             name = first_word(input)
             type = first_word(input, 2)
+            
+            # Check if it's a reply and extract media from it
+            if 'reply_to_message' in msg:
+                if 'audio' in msg['reply_to_message']:
+                    type = 'audio'
+                    content = msg['reply_to_message']['audio']['file_id']
+                elif 'document' in msg['reply_to_message']:
+                    type = 'document'
+                    content = msg['reply_to_message']['document']['file_id']
+                elif 'photo' in msg['reply_to_message']:
+                    type = 'photo'
+                    content = msg['reply_to_message']['photo'][-1]['file_id']
+                elif 'sticker' in msg['reply_to_message']:
+                    type = 'sticker'
+                    content = msg['reply_to_message']['sticker']['file_id']
+                elif 'video' in msg['reply_to_message']:
+                    type = 'video'
+                    content = msg['reply_to_message']['video']['file_id']
+                elif 'voice' in msg['reply_to_message']:
+                    type = 'voice'
+                    content = msg['reply_to_message']['voice']['file_id']
+                elif 'text' in msg['reply_to_message']:
+                    type = 'text'
+                    content = msg['reply_to_message']['text'].replace(first_word(msg['reply_to_message']['text']) + ' ', '')
+                else:
+                    content = None
+            else:
+                content = None
+
             # Check if tag exists
             if name in tags:
                 message = 'The tag *#' + name + '* exists!'
                 if msg['from']['id'] == tags[name]['creator']:
-                    message += '\nBut you can delete it with `#remtag ' + name + '`.'
+                    message += '\nBut you can delete it with `' + config['command_start'] + 'remtag ' + name + '`.'
                 else:
                     message += '\nBut you are not allowed to delete it.'
                 return send_message(msg['chat']['id'], message, parse_mode="Markdown")
+            if not type:
+                return send_error(msg, 'argument')
+            if not type in types:
+                message = 'You need to provide a valid type.'
+                return send_message(msg['chat']['id'], message, parse_mode="Markdown")
+            if content:
+                tag = OrderedDict()
+                tag['creator'] = msg['from']['id']
+                tag['type'] = type
+                tag['content'] = content
+                tags[name] = tag
+                save_json('data/tags.json', tags)
+
+                message = 'Added tag *#' + name + '* for that *' + type + '*.'
+                return send_message(msg['chat']['id'], message,
+                             reply_to_message_id=msg['message_id'],
+                             parse_mode="Markdown")
 
             message = 'Reply with a *' + type + '* for the tag *#' + name + '*'
 
@@ -58,8 +111,6 @@ def run(msg):
                          reply_markup=force_reply,
                          parse_mode="Markdown")
         elif get_command(msg['text']) == 'content':
-            print
-            'second step'
             name = first_word(msg['reply_to_message']['text'], 8).replace('#', '')
             type = first_word(msg['reply_to_message']['text'], 4)
 
@@ -96,7 +147,7 @@ def run(msg):
 
         name = first_word(input)
         if name in tags:
-            if msg['from']['id'] == tags[name]['creator']:
+            if msg['from']['id'] == tags[name]['creator'] or is_admin(msg):
                 del tags[name]
                 save_json('data/tags.json', tags)
                 message = '\nYou removed the tag *#' + name + '*.'
@@ -106,34 +157,55 @@ def run(msg):
             message = 'The tag *' + name + '* is not set.'
         send_message(msg['chat']['id'], message, parse_mode="Markdown")
     elif get_command(msg['text']) == 'taglist':
-        message = '*All tags*:'
-        for tag, data in tags.items():
-            message += '\n\t#' + str(tag) + ' | ' + data['type'] + ' | ' + str(data['creator'])
+        #taglist = [None] * len(tags)
+        #i = 0
+        #for tag, data in tags.items():
+        #    taglist[i] = '\n\t#' + str(tag) + ' | ' + data['type'] + ' | ' + str(data['creator'])
+        #    i += 1
+        #i = 0
+        #while i <= len(taglist):
+        #    message = ''
+        #    while i < 40:
+        #        message += taglist[i]
+        #    send_message(msg['chat']['id'], message, parse_mode="Markdown")
+        #    i += 40
+        message = '`#GiTGuD`'
         send_message(msg['chat']['id'], message, parse_mode="Markdown")
     else:
         for tag, data in tags.items():
             if '#' + tag.lower() in msg['text'].lower():
                 if data['type'] == 'text':
-                    if not send_message(msg['chat']['id'], data['content'], parse_mode="Markdown"):
-                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
+                    if 'markdown' in data and data['markdown']:
+                        if not send_message(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id'], parse_mode="Markdown"):
+                            send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    else:
+                        if not send_message(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id']):
+                            send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    break
                 elif data['type'] == 'audio':
-                    if not send_audio(msg['chat']['id'], data['content']):
-                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
+                    if not send_audio(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id']):
+                        send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    break
                 elif data['type'] == 'document':
-                    if not send_document(msg['chat']['id'], data['content']):
-                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
+                    if not send_document(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id']):
+                        send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    break
                 elif data['type'] == 'photo':
-                    if not send_photo(msg['chat']['id'], data['content']):
-                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
+                    if not send_photo(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id']):
+                        send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    break
                 elif data['type'] == 'sticker':
-                    if not send_sticker(msg['chat']['id'], data['content']):
-                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
+                    if not send_sticker(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id']):
+                        send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    break
                 elif data['type'] == 'video':
-                    if not send_video(msg['chat']['id'], data['content']):
-                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
+                    if not send_video(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id']):
+                        send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    break
                 elif data['type'] == 'voice':
-                    if not send_voice(msg['chat']['id'], data['content']):
-                        send_message(msg['chat']['id'], '`#lolnope`', parse_mode="Markdown")
+                    if not send_voice(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id']):
+                        send_message(msg['chat']['id'], '`#lolnope`', reply_to_message_id=msg['message_id'], parse_mode="Markdown")
+                    break
 
 
 def process(msg):
@@ -145,3 +217,6 @@ def process(msg):
             msg['text'] = config['command_start'] + 'content ' + msg['text']
         else:
             msg['text'] = config['command_start'] + 'content'
+
+def cron():
+    tags = load_json('data/tags.json', True)

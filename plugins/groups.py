@@ -156,11 +156,11 @@ def run(msg):
         for uid in groups[str(cid)]['mods']:
             uid = str(uid)
             if 'alias' in users[uid]:
-                message += '\n\t' + users[uid]['alias']
+                message += '\n\t' + escape_markup(users[uid]['alias'])
             elif 'username' in users[uid]:
-                message += '\n\t' + users[uid]['username']
+                message += '\n\t@' + escape_markup(users[uid]['username'])
             else:
-                message += '\n\t' + uid
+                message += '\n\t`' + uid + '`'
 
     elif is_mod(msg) and get_command(msg['text']) == 'modhelp':
         message = '*Mod commands:*'

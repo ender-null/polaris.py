@@ -1,27 +1,4 @@
 {
-    "Bladecito": {
-        "creator": 9622282, 
-        "type": "Que"
-    }, 
-    "CONGRATULATIONS": {
-        "creator": 37551455, 
-        "type": "image"
-    }, 
-    "DealWithIt": {
-        "content": "BQADBAADEgIAAl_9PAIeoPuhhWtNqgI", 
-        "creator": 37551455, 
-        "type": "document"
-    }, 
-    "EXTERMINATE": {
-        "content": "BQADBAADJAEAAld3bgABmnHGLPhRdQEC", 
-        "creator": 107015891, 
-        "type": "sticker"
-    }, 
-    "Felicidad": {
-        "content": "BQADBAAD_wEAAl_9PALSxqrXD7SqLAI", 
-        "creator": 37551455, 
-        "type": "document"
-    }, 
     "GigaDrillBreaker": {
         "content": "BQADBAADAwIAAl_9PAIxkF8rheukhQI", 
         "creator": 37551455, 
@@ -51,11 +28,6 @@
         "content": "BQADBAADdgADJkm4A4DKE1aO0rUFAg", 
         "creator": 107015891, 
         "type": "sticker"
-    }, 
-    "Men\u00e9": {
-        "content": "BQADBAADBQIAAl_9PAIoDVU4I-3JJAI", 
-        "creator": 37551455, 
-        "type": "document"
     }, 
     "NARANJAS": {
         "content": "BQADBAADHwIAAl_9PAKRhh_daVp1mwI", 
@@ -112,6 +84,11 @@
         "creator": 14143244, 
         "type": "text"
     }, 
+    "breaktheiranus": {
+        "content": "AgADBAADMsMxGwzP1wABzPCYrdqKrGGJLqIwAASht3MTCGstvRCfAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
     "bye": {
         "content": "BQADBAADSAMAAlT5GQOynGiFDOGoNgI", 
         "creator": 52033876, 
@@ -141,6 +118,16 @@
         "content": "BQADBAADNAIAAl_9PAKNtPf2jHDufwI", 
         "creator": 37551455, 
         "type": "document"
+    }, 
+    "cp": {
+        "content": "AgADBAADIsMxGwzP1wABwg8haV4mZBZFOXEwAAR1fRpzJCIltY4fAgABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "creoqno": {
+        "content": "#muerete", 
+        "creator": 52033876, 
+        "type": "text"
     }, 
     "cries": {
         "content": "BQADBAAD5wADCiedAAF93cyaGE1zkAI", 
@@ -187,10 +174,20 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
+    "doubt": {
+        "content": "AgADBAADIcMxGwzP1wAB3lySCdbYGTFYR6YwAAQaNygXAAF0tG8bnQACAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
     "echaelfreno": {
         "content": "Eeeeh eeeeh echa el freno madaleno sin insultar.", 
         "creator": 37551455, 
         "type": "text"
+    }, 
+    "edgy": {
+        "content": "AgADBAADJ8MxGwzP1wABMEU7rozuPOot43IwAARsWhtQLxatuDoiAgABAg", 
+        "creator": 14143244, 
+        "type": "photo"
     }, 
     "edurolp": {
         "content": "AgADBAADj6wxG1T5GQPgbQXqdk1xFQ28pjAABA_39pPIVdk164oAAgI", 
@@ -202,10 +199,20 @@
         "creator": 46565846, 
         "type": "sticker"
     }, 
+    "etiquetainventada": {
+        "content": "rabo", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
     "excite": {
         "content": "BQADBAADFgIAAgzP1wABKoPHkkdqcq8C", 
         "creator": 14143244, 
         "type": "document"
+    }, 
+    "exterminate": {
+        "content": "BQADBAADJAEAAld3bgABmnHGLPhRdQEC", 
+        "creator": 107015891, 
+        "type": "sticker"
     }, 
     "fail": {
         "content": "BQADBAADXAMAAlT5GQOWYcrlw9nQZgI", 
@@ -214,6 +221,11 @@
     }, 
     "felicidad": {
         "content": "_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA \nFELiiCiiDADES EN TU DiiA \n_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA \nFELiiCiiDADES EN TU DiiA \n_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA \nFELiiCiiDADES EN TU DiiA \n_ FELiiCiiDADES EN TU DiiA \n__ FELiiCiiDADES EN TU DiiA \n___ FELiiCiiDADES EN TU DiiA \n____ FELiiCiiDADES EN TU DiiA", 
+        "creator": 14143244, 
+        "type": "text"
+    }, 
+    "flip": {
+        "content": "(\u30ce-_-)\u30ce~\u253b\u2501\u253b", 
         "creator": 14143244, 
         "type": "text"
     }, 
@@ -226,6 +238,11 @@
         "content": "BQADBAADEQIAAgzP1wABZuU65VJz60IC", 
         "creator": 14143244, 
         "type": "document"
+    }, 
+    "funny": {
+        "content": "AgADBAADL8MxGwzP1wABDkY7-t3WkpqCR6YwAATZpwAByx3soTpUngACAg", 
+        "creator": 14143244, 
+        "type": "photo"
     }, 
     "galleta": {
         "content": "BQADBAADBAIAAl_9PAJ8kH3rb5PfJwI", 
@@ -256,6 +273,21 @@
         "content": "AgADBAADxMExGwzP1wABWVub7bAUYtWOKXEwAARgWOdmpYJDxdesAQABAg", 
         "creator": 14143244, 
         "type": "photo"
+    }, 
+    "goforkyourself": {
+        "content": "AgADBAADKsMxGwzP1wABxqw4mOzQ9Db6tY8wAASNLN7QsBlJ4xBDAQABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
+    "grillbys": {
+        "content": "BQADBAADCgEAAnYd1QAB7KLdFv13lZ8C", 
+        "creator": 14143244, 
+        "type": "audio"
+    }, 
+    "haberestudiado": {
+        "content": "Haber estudiado", 
+        "creator": 52033876, 
+        "type": "text"
     }, 
     "happy": {
         "content": "BQADBAADPgIAAl_9PAKwDjZbgt9wcAI", 
@@ -290,6 +322,11 @@
         "creator": 37551455, 
         "type": "pene"
     }, 
+    "justdoit": {
+        "content": "AgADBAADK8MxGwzP1wABPaM-W2U2eOPOW4swAARumuvqIVAaqKXBAQABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
     "justxehathings": {
         "content": "BQADAQADcQEAApkBNgRC8eW13C5hjgI", 
         "creator": 46565846, 
@@ -320,10 +357,20 @@
         "creator": 37551455, 
         "type": "document"
     }, 
+    "like": {
+        "content": "AgADBAADLcMxGwzP1wAB2ZwhPyDmc0FRoaYwAARtvvDfHsnP8-6aAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
     "lmao": {
         "content": "BQADBAAD_wIAAlT5GQMe1gIVbVDlIAI", 
         "creator": 52033876, 
         "type": "document"
+    }, 
+    "lolnope": {
+        "content": "BQADBAADQAEAAnscSQABqWydSKTnASoC", 
+        "creator": 14143244, 
+        "type": "sticker"
     }, 
     "loma": {
         "content": "BQADBAADOQAD3EpBAAFxy1lVKMYaUgI", 
@@ -341,7 +388,7 @@
         "type": "sticker"
     }, 
     "ludo": {
-        "content": "Ludo es un lindo pajero. Reply with text for #ludo", 
+        "content": "Ludo es un lindo pajero.", 
         "creator": 5436844, 
         "type": "text"
     }, 
@@ -349,6 +396,16 @@
         "content": "BQADBAADVQMAAlT5GQMPNu8mQmWO2AI", 
         "creator": 52033876, 
         "type": "document"
+    }, 
+    "megalovania": {
+        "content": "BQADBAADoQEAAqz1UgAB4pKEz1KsVcIC", 
+        "creator": 14143244, 
+        "type": "audio"
+    }, 
+    "muerete": {
+        "content": "#haberestudiado", 
+        "creator": 14143244, 
+        "type": "text"
     }, 
     "nanisore": {
         "content": "AgADBAADvMExGwzP1wABgS8WWETu7Zk1WoswAATkkkR7tubvqjhIAQABAg", 
@@ -385,6 +442,11 @@
         "creator": 37551455, 
         "type": "document"
     }, 
+    "no": {
+        "content": "AgADBAADKMMxGwzP1wABKWdJhc-RkQtVToswAARGDwAB_03yXkHOwwEAAQI", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
     "nocilla": {
         "content": "BQADBAADIAIAAl_9PAKtZCfw0825TgI", 
         "creator": 37551455, 
@@ -405,8 +467,8 @@
         "creator": 14143244, 
         "type": "sticker"
     }, 
-    "oingfail": {
-        "content": "AgADBAADl6wxG1T5GQN4CKevaYFzqT9rcjAABMbie6AyF_tGUhkCAAEC", 
+    "oinggfail": {
+        "content": "AgADBAADmawxG1T5GQO_0DOAkQZbnmGMcjAABDrjwvQj6_0UxBMCAAEC", 
         "creator": 52033876, 
         "type": "photo"
     }, 
@@ -445,6 +507,11 @@
         "creator": 37551455, 
         "type": "document"
     }, 
+    "pizza": {
+        "content": "BQADBAADWQEAAnAPUgYKwy-4CZCTCgI", 
+        "creator": 106041200, 
+        "type": "document"
+    }, 
     "pleaseunderstand": {
         "content": "BQADBAADngADCiedAAGf-wHSqPiCSwI", 
         "creator": 14143244, 
@@ -460,10 +527,15 @@
         "creator": 69503897, 
         "type": "sticker"
     }, 
-    "rekt": {
-        "content": "BQADBAAD-QEAAl_9PAKHeJfbG_Va7QI", 
+    "rapetime": {
+        "content": "AgADBAADJsMxGwzP1wAB2yb1XjAW4Me9vo8wAASaYEcO2LUgMLQ_AQABAg", 
         "creator": 14143244, 
-        "type": "sticker"
+        "type": "photo"
+    }, 
+    "rekt": {
+        "content": "AgADBAADKcMxGwzP1wABbAwu58jQEbtYVKYwAASHOKgC01SwG56cAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
     }, 
     "royalturkey": {
         "content": "BQADBAADMgIAAl_9PAJmbpdexKuE4AI", 
@@ -515,6 +587,11 @@
         "creator": 37551455, 
         "type": "document"
     }, 
+    "stopitboner": {
+        "content": "AgADBAADLMMxGwzP1wABFEt2Z3xF0TC7zHIwAASLdKD_IMPwJPkhAgABAg", 
+        "creator": 14143244, 
+        "type": "photo"
+    }, 
     "suck": {
         "content": "BQADBAADeQMAAlT5GQNC6M811QQjWAI", 
         "creator": 52033876, 
@@ -529,11 +606,6 @@
         "content": "BQADBAADGwIAAl_9PAKTybheytcZbgI", 
         "creator": 37551455, 
         "type": "document"
-    }, 
-    "test": {
-        "content": "\u00af\\_(\u30c4)_/\u00af", 
-        "creator": 14143244, 
-        "type": "text"
     }, 
     "throatskills": {
         "content": "BQADBAADEAIAAgzP1wABceMNNXvlt60C", 
@@ -558,12 +630,23 @@
     "tutorialbrov": {
         "content": "*\u00a1Bienvenidos a la Rep\u00fablica de Brovras\u0127g\u0138a!*\nTutorial b\u00e1sico de *Brovras\u0127g\u0138a*:\n\t*1-* _Corre. R\u00e1pido._\n\t*2-* _El que no escribe, reenv\u00eda._\n\t*3-* _Whatsapp da sidita, Telegram lo cura._\n\t*4-* _Amaras y respetaras a Peto-tan sobre todas las cosas._\n\t\t\t\t*4.1-* _A Polaris tambien._\n\t*5-* _Vale, no ser gilipollas, definitivamente._\n\t*6-* _Ey, la igualdad mola._", 
         "creator": 14143244, 
+        "markdown": true, 
         "type": "text"
+    }, 
+    "wat": {
+        "content": "AgADBAADJcMxGwzP1wABaYlZqI_6ak7xVaYwAASN-viPfRysyPaeAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
     }, 
     "weedomancer": {
         "content": "BQADBAAD_gEAAl_9PAKoI2yB_A-WwwI", 
         "creator": 37551455, 
         "type": "document"
+    }, 
+    "whatihavedone": {
+        "content": "AgADBAADLsMxGwzP1wABu0LBxlFjBTA1n6YwAATquvjIZC0NbXmaAAIC", 
+        "creator": 14143244, 
+        "type": "photo"
     }, 
     "wombocombo": {
         "content": "BQADBAADDgIAAl_9PAJWb5Ki0hwH2AI", 

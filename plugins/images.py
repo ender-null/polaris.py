@@ -64,7 +64,7 @@ def run(msg):
 
         result_url = jdat['items'][i]['link']
         #caption = jdat['items'][i]['snippet']
-        caption = '"' + input + '"'
+        caption = u'"{0}"\t\t🌐 {1}'.format(input, get_short_url(result_url).lstrip('https://'))
 
         for v in exts:
             if re.compile(v).search(result_url):
