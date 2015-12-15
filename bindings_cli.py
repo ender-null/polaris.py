@@ -48,8 +48,8 @@ def send_audio(chat_id, audio, reply_to_message_id=None):
         return sender.send_audio(cid, audio.name)
 
 def send_document(chat_id, document, reply_to_message_id=None):
-	pass
-	
+    pass
+    
 def send_sticker(chat_id, sticker, reply_to_message_id=None):
     pass
 
@@ -65,7 +65,7 @@ def send_location(chat_id, latitude, longitude, reply_to_message_id=None):
 # chats
 def chat_info(chat_id):
     cid = peer(chat_id)
-    print sender.chat_info(cid)
+    print(sender.chat_info(cid))
     #return sender.chat_info(cid)
 
 def chat_set_photo(chat_id, photo):

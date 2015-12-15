@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 
 tags = load_json('data/tags.json')
 def get_tags(tags):

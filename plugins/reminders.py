@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 
 commands = [
     '^remindme',
@@ -22,11 +22,11 @@ reminders = load_json('data/reminders.json')
 def to_seconds(time, unit):
     if unit == 's':
         return float(time)
-    if unit == 'm':
+    elif unit == 'm':
         return float(time) * 60
-    if unit == 'h':
+    elif unit == 'h':
         return float(time) * 60 * 60
-    if unit == 'd':
+    elif unit == 'd':
         return float(time) * 60 * 60 * 24
 
 def run(msg):

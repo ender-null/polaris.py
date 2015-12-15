@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 import random
 import bindings_cli as cli
 
@@ -51,7 +51,6 @@ def run(msg):
                     message += u'\t`{0}`'.format(group['realm'])
     # Allows joining groups.
     elif get_command(msg['text']) == 'join':
-        print get_command(msg['text'])
         for gid, group in groups.items():
             if (group['alias'].lower() == input.lower() or
                 group['title'].lower() == input.lower() or

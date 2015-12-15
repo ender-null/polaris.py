@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 
 
 commands = ['^echo']

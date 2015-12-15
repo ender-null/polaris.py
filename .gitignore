@@ -65,3 +65,5 @@ data/config.json
 data/groups.json
 data/users.json
 data/reminders.json
+data/tags.json
+plugins/logger.py

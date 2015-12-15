@@ -73,9 +73,9 @@ def on_message_receive(msg):
                 # trigger = tag_replace(trigger, msg)
                 if re.compile(trigger).search(msg['text'].lower()):
                     try:
-						if hasattr(plugin, 'action'):
-							send_chat_action(msg['chat']['id'], plugin.action)
-						plugin.run(msg)
+                        if hasattr(plugin, 'action'):
+                            send_chat_action(msg['chat']['id'], plugin.action)
+                        plugin.run(msg)
                     except Exception as e:
                         send_error(msg, 'exception')
                         send_exception(e)
@@ -226,7 +226,7 @@ def download(url, params=None, headers=None):
         for chunk in jstr.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
-    except IOError, e:
+    except IOError as e:
         return None
     f.seek(0)
     if not ext:
@@ -239,7 +239,6 @@ def fix_extension(file_path):
     url = urllib.pathname2url(file_path)
     type = magic.from_file(file_path, mime=True)
     extension = mimetypes.guess_extension(type, strict=False)
-    print type
     if extension is not None:
         # I hate to have to use this s***, f*** jpe
         if '.jpe' in extension:

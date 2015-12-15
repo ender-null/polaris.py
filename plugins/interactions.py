@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 
 def process(msg):
     if (config['interactions']['new_chat_participant'] and

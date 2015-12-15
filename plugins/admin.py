@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 import subprocess
 import sys
 
@@ -22,7 +22,7 @@ def run(msg):
         return send_error(msg, 'permission')
 
     if get_command(msg['text']) == 'run':
-        message = '`{0}`'.format(subprocess.check_output(input, shell=True))
+        message = '`{0}`'.format(subprocess.getoutput(input))
 
     elif get_command(msg['text']) == 'reload':
         bot_init()

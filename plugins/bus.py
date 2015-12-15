@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 
 
 commands = [
@@ -47,9 +47,6 @@ def run(msg):
     lat = float(lat) / 1000000
     lon = float(lon) / 1000000
     
-    print lat
-    print lon
-    
     photo_url = 'https://maps.googleapis.com/maps/api/streetview'
     photo_params = {
         'size': '640x320',
@@ -58,7 +55,6 @@ def run(msg):
         'key': config['api']['googledev']
     }
     jstr = requests.get(photo_url, params=photo_params)
-    print jstr.url
     
     photo = download(photo_url, params=photo_params)
     #send_photo(msg['chat']['id'], photo, caption=text):

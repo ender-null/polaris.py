@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 
 def process(msg):
     if ((str(msg['chat']['id']) in groups and groups[str(msg['chat']['id'])]['special'] == 'admin') or

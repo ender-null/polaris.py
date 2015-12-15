@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from utilies import *
+from utils import *
 import platform
 import subprocess
+import psutil
 
 
 commands = [
@@ -34,12 +35,12 @@ def run(msg):
 
     elif get_command(msg['text']) == 'system':
         running = '\n*Running on*:\n'
-        running += '\t*System*: ' + subprocess.check_output('head -n1 /etc/issue | cut -d " " -f -3', shell=True)
-        running += '\t*Kernel*: ' + subprocess.check_output('uname -rs', shell=True)
-        running += '\t*Processor*: ' + subprocess.check_output('cat /proc/cpuinfo | grep "model name" | tr -s " " | cut -d " " -f 3-', shell=True)
-        running += '\t*RAM*: ' + subprocess.check_output('dmidecode | grep "Range Size" | head -n 1 | cut -d " " -f 3-', shell=True)
-        running += '\t*Python*: ' + str(platform.python_version()) + ' (' + str(platform.python_compiler()) + ')' + '\n'
-        running += '\t*Uptime*: ' + subprocess.check_output('uptime -p', shell=True)
+        running += '\t*System*: {0}\n'.format(subprocess.getoutput('head -n1 /etc/issue | cut -d " " -f -3'))
+        running += '\t*Kernel*: {0}\n'.format(subprocess.getoutput('uname -rs'))
+        running += '\t*Processor*: {0}\n'.format(subprocess.getoutput('cat /proc/cpuinfo | grep "model name" | tr -s " " | cut -d " " -f 3-'))
+        running += '\t*RAM*: {0}MB ({1}% used)\n'.format(int(psutil.virtual_memory()[0] / 1000 / 1000), psutil.virtual_memory()[2])
+        running += '\t*Python*: {0} ({1})\n'.format(str(platform.python_version()), str(platform.python_compiler()))
+        running += '\t*Uptime*: {0}\n'.format(subprocess.getoutput('uptime -p'))
 
         send_message(msg['chat']['id'], running, parse_mode="Markdown")
 
