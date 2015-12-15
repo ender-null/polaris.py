@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from utils import *
-import cleverbot
+from cleverbot import Cleverbot
 from HTMLParser import HTMLParser
 
 # If someone mentions the bot's username, it replies
@@ -9,11 +9,10 @@ commands = [('@' + bot['username'].lower())]
 action = 'typing'
 hidden = True
 
-
 def run(msg):
     input = msg['text'].replace(bot['first_name'] + ' ', '')
 
-    cb = cleverbot.Cleverbot()
+    cb = Cleverbot()
     unescape = HTMLParser().unescape
 
     try:

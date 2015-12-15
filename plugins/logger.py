@@ -19,17 +19,13 @@ def process(msg):
             message += line()
 
             if 'username' in msg['from']:
-                message += '*Name*: [' + escape_markup(msg['from']['first_name']) + '](http://telegram.me/' + \
-                           msg['from']['username'] + ')\n'
+                message += '👤 @' + msg['from']['username'] + ' (' + str(msg['from']['id']) + ')\n'
             else:
-                message += '*Name*: ' + escape_markup(msg['from']['first_name']) + '\n'
+                message += '👤 ' + str(msg['from']['id']) + '\n'
 
-            message += '*User ID*: ' + str(msg['from']['id']) + '\n'
-
-            if msg['chat']['type'] == 'group':
-                message += '*Group*: ' + msg['chat']['title'] + '\n'
-                message += '*Group ID*: ' + str(msg['chat']['id']) + '\n'
-            message += '*Message ID*: ' + str(msg['message_id'])
+            if msg['chat']['type'] != 'private':
+                message += '👥 ' + msg['chat']['title'] + ' (' + str(msg['chat']['id']) + ')\n'
+            message += '✉ ' + str(msg['message_id'])
 
             for group in groups.items():
                 if group[1]['special'] == 'log':
@@ -41,6 +37,7 @@ def process(msg):
     else:
         if 'reply_to_message' in msg and msg['reply_to_message']['from']['id'] == bot['id']:
             message_id = last_word(msg['reply_to_message']['text'].split('\n')[-1])
-            chat_id = last_word(msg['reply_to_message']['text'].split('\n')[-2])
+            chat_id = last_word(msg['reply_to_message']['text'].split('\n')[-2]).replace('(', '').replace(')', '')
+
             if message_id and chat_id:
                 send_message(chat_id, msg['text'], reply_to_message_id=message_id, parse_mode="Markdown")

@@ -62,6 +62,9 @@ def on_message_receive(msg):
     if 'text' not in msg:
         msg['text'] = ''
 
+    # Adds the locale to the message
+    #msg['locale'] = get_locale(msg['chat']['id']
+
     for i, plugin in plugins.items():
         more = True
         if hasattr(plugin, 'process'):

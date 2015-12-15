@@ -23,8 +23,8 @@ def process(msg):
             sender = msg['from']['first_name']
         
         if 'photo' in msg:
-            send_alert('Forwarded \n`{0}`\nfrom {1} to @porndb.'.format(msg['photo'][0]['file_id'], sender))
+            # send_alert('Forwarded \n`{0}`\nfrom {1} to @porndb.'.format(msg['photo'][0]['file_id'], sender))
             send_photo('@porndb',  msg['photo'][0]['file_id'])
         elif 'document' in msg:
-            send_alert('Forwarded \n`{0}`\nfrom {1} to @porndb.'.format(msg['document']['file_id'], sender))
+            # send_alert('Forwarded \n`{0}`\nfrom {1} to @porndb.'.format(msg['document']['file_id'], sender))
             send_document('@porndb', msg['document']['file_id'])
