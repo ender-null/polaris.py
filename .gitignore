@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+.# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 
@@ -67,3 +67,4 @@ data/users.json
 data/reminders.json
 data/tags.json
 plugins/logger.py
+plugins/logbot.py

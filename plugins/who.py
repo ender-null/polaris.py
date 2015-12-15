@@ -34,11 +34,11 @@ def run(msg):
         message += 'I\'m *#BOT_FIRSTNAME*.\n'
         message += 'Nice to meet you.\n\n'
         if 'username' in msg['from']:
-            message += '👤 @' + escape_markup(msg['from']['username']) + ' (' + str(msg['from']['id']) + ')\n'
+            message += '👤 @{0} ({1})\n'.format(escape_markup(msg['from']['username']), str(msg['from']['id']))
         else:
-            message += '👤 ' + str(msg['from']['id']) + '\n'
+            message += '👤 {0}\n'.format(str(msg['from']['id']))
         if msg['chat']['type'] != 'private':
-            message += '👥 ' + str(msg['chat']['id']) + ''
+            message += '👥 {0} ({1})'.format(msg['chat']['title'], str(msg['chat']['id']))
     elif get_command(msg['text']) == 'fileid':
         message = '#GREETING!\n'
         if 'audio' in msg:

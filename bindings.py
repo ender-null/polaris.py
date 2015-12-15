@@ -9,7 +9,6 @@ def get_token():
 
 api_url = 'https://api.telegram.org/bot' + get_token() + '/'
 
-
 def send_request(url, params=None, headers=None, files=None, data=None):
     jstr = requests.get(url, params=params, headers=headers, files=files, data=data)
 
