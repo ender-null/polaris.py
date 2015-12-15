@@ -54,9 +54,9 @@ def run(msg):
         'pitch': 16,
         'key': config['api']['googledev']
     }
-    jstr = requests.get(photo_url, params=photo_params)
+    #jstr = requests.get(photo_url, params=photo_params)
     
-    photo = download(photo_url, params=photo_params)
+    #photo = download(photo_url, params=photo_params)
     #send_photo(msg['chat']['id'], photo, caption=text):
 
     send_message(msg['chat']['id'], text, parse_mode="Markdown")
