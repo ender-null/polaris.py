@@ -65,6 +65,11 @@ def on_message_receive(msg):
     # Adds the locale to the message
     #msg['locale'] = get_locale(msg['chat']['id']
 
+    # Uses the text from a reply as parameter
+    if('reply_to_message' in msg and
+        'text' in msg['reply_to_message']):
+        msg['text'] += ' ' + msg['reply_to_message']['text']
+
     for i, plugin in plugins.items():
         more = True
         if hasattr(plugin, 'process'):
@@ -239,9 +244,8 @@ def download(url, params=None, headers=None):
 
 
 def fix_extension(file_path):
-    url = urllib.pathname2url(file_path)
-    type = magic.from_file(file_path, mime=True)
-    extension = mimetypes.guess_extension(type, strict=False)
+    type = magic.from_file(file_path, mime=True).decode("utf-8")
+    extension = str(mimetypes.guess_extension(type, strict=False))
     if extension is not None:
         # I hate to have to use this s***, f*** jpe
         if '.jpe' in extension:
@@ -364,7 +368,7 @@ def get_size(number):
         number = number / 1024
         unit = unit + 1
 
-    return str(number), units[unit]
+    return '%3.f'% number, units[unit]
 
 def line(alt=False):
     if alt:
@@ -374,10 +378,11 @@ def line(alt=False):
 
 def send_error(msg, error_type, status_code=200):
     loc = get_locale(msg['chat']['id'])
-    message = locale[loc]['errors'][error_type]
+    message = '*{}*'.format(locale[loc]['errors'][error_type])
     if status_code != 200:
-        message += '\n\t_Status code: ' + status_code + '_'
-    send_message(msg['chat']['id'], message)
+        print(status_code)
+        message += '\n\tStatus code: ' + str(status_code)
+    send_message(msg['chat']['id'], message, parse_mode="Markdown")
 
 
 def send_alert(message):

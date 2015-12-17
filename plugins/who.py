@@ -27,18 +27,24 @@ def run(msg):
         if 'voice' in msg['reply_to_message']:
             msg['voice'] = msg['reply_to_message']['voice']
 
+    uid = str(msg['from']['id'])
+
     if get_command(msg['text']) == 'who':
         message = '#GREETING!\n'
         if msg['from']['id'] != bot['id']:
             message += 'You\'re *' + escape_markup(msg['from']['first_name']) + '*! '
         message += 'I\'m *#BOT_FIRSTNAME*.\n'
-        message += 'Nice to meet you.\n\n'
+        message += 'Nice to meet you.\n'
         if 'username' in msg['from']:
-            message += '👤 @{0} ({1})\n'.format(escape_markup(msg['from']['username']), str(msg['from']['id']))
+            message += '\n👤 @{0} ({1})'.format(escape_markup(msg['from']['username']), str(msg['from']['id']))
         else:
-            message += '👤 {0}\n'.format(str(msg['from']['id']))
+            message += '\n👤 {0}'.format(str(msg['from']['id']))
         if msg['chat']['type'] != 'private':
-            message += '👥 {0} ({1})'.format(msg['chat']['title'], str(msg['chat']['id']))
+            message += '\n👥 {0} ({1})'.format(msg['chat']['title'], str(msg['chat']['id']))
+        if (uid in users and
+            'tags' in users[uid]):
+            message += '\n🏷 {0}'.format(users[uid]['tags'])
+
     elif get_command(msg['text']) == 'fileid':
         message = '#GREETING!\n'
         if 'audio' in msg:

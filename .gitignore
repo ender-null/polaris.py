@@ -66,5 +66,6 @@ data/groups.json
 data/users.json
 data/reminders.json
 data/tags.json
+data/pins.json
 plugins/logger.py
 plugins/logbot.py

@@ -50,6 +50,6 @@ def run(msg):
     for i in range(0, len(jdat['responseData']['results'])):
         result_url = jdat['responseData']['results'][i]['unescapedUrl']
         result_title = jdat['responseData']['results'][i]['titleNoFormatting']
-        text += u'🌐 [' + delete_markup(result_title) + '](' + get_short_url(result_url) + ')\n\n'
+        text += u'🌐 [' + escape_markup(result_title) + '](' + get_short_url(result_url) + ')\n\n'
 
     send_message(msg['chat']['id'], text, disable_web_page_preview=True, parse_mode="Markdown")

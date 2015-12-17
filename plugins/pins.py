@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 from utils import *
 
-tags = load_json('data/tags.json')
-def get_tags(tags):
-    i = 4
-    commands = [None] * (len(tags) + i)
-    commands[0] = '^taglist'
-    commands[1] = '^newtag'
-    commands[2] = '^remtag'
-    commands[3] = '^content'
-    for tag, data in tags.items():
-        commands[i] = '#' + tag
-        i = i + 1
+pins = load_json('data/pins.json')
+def get_pins(pins):
+    commands = [
+        '^pin',
+        '^unpin',
+        '^pins',
+        '^content'
+    ]
+    for pin, data in pins.items():
+        commands.append('#' + pin)
     return commands
 
 
-commands = get_tags(tags)
+commands = get_pins(pins)
 parameters = {
     ('name', True),
     ('type', True)
@@ -35,10 +34,10 @@ def run(msg):
         'video',
         'alias'
     ]
-    if (get_command(msg['text']) == 'newtag'
+    if (get_command(msg['text']) == 'pin'
         or get_command(msg['text']) == 'content'):
 
-        if get_command(msg['text']) == 'newtag':
+        if get_command(msg['text']) == 'pin':
             input = get_input(msg['text'])
             if not input:
                 doc = get_doc(commands, parameters, description)
@@ -69,17 +68,17 @@ def run(msg):
                     content = msg['reply_to_message']['voice']['file_id']
                 elif 'text' in msg['reply_to_message']:
                     type = 'text'
-                    content = msg['reply_to_message']['text'].replace(first_word(msg['reply_to_message']['text']) + ' ', '')
+                    content = msg['reply_to_message']['text']
                 else:
                     content = None
             else:
                 content = None
 
             # Check if tag exists
-            if name in tags:
-                message = 'The tag *#' + name + '* exists!'
-                if msg['from']['id'] == tags[name]['creator']:
-                    message += '\nBut you can delete it with `' + config['command_start'] + 'remtag ' + name + '`.'
+            if name in pins:
+                message = 'The pin *#' + name + '* exists!'
+                if msg['from']['id'] == pins[name]['creator']:
+                    message += '\nBut you can delete it with `' + config['command_start'] + 'unpin ' + name + '`.'
                 else:
                     message += '\nBut you are not allowed to delete it.'
                 return send_message(msg['chat']['id'], message, parse_mode="Markdown")
@@ -89,19 +88,19 @@ def run(msg):
                 message = 'You need to provide a valid type.'
                 return send_message(msg['chat']['id'], message, parse_mode="Markdown")
             if content:
-                tag = OrderedDict()
-                tag['creator'] = msg['from']['id']
-                tag['type'] = type
-                tag['content'] = content
-                tags[name] = tag
-                save_json('data/tags.json', tags)
+                pin = OrderedDict()
+                pin['creator'] = msg['from']['id']
+                pin['type'] = type
+                pin['content'] = content
+                pins[name] = pin
+                save_json('data/pins.json', pins)
 
-                message = 'Added tag *#' + name + '* for that *' + type + '*.'
+                message = 'Added pin *#' + name + '* for that *' + type + '*.'
                 return send_message(msg['chat']['id'], message,
                              reply_to_message_id=msg['message_id'],
                              parse_mode="Markdown")
 
-            message = 'Reply with a *' + type + '* for the tag *#' + name + '*'
+            message = 'Reply with a *' + type + '* for the pin *#' + name + '*'
 
             force_reply_json = {'force_reply': True, 'selective': True}
             force_reply = json.dumps(force_reply_json)
@@ -114,66 +113,66 @@ def run(msg):
             name = first_word(msg['reply_to_message']['text'], 8).replace('#', '')
             type = first_word(msg['reply_to_message']['text'], 4)
 
-            tag = OrderedDict()
-            tag['creator'] = msg['from']['id']
-            tag['type'] = type
+            pin = OrderedDict()
+            pin['creator'] = msg['from']['id']
+            pin['type'] = type
             if type == 'text':
-                tag['content'] = msg['text'].replace(first_word(msg['text']) + ' ', '')
+                pin['content'] = msg['text'].replace(first_word(msg['text']) + ' ', '')
             elif type == 'audio':
-                tag['content'] = msg['audio']['file_id']
+                pin['content'] = msg['audio']['file_id']
             elif type == 'document':
-                tag['content'] = msg['document']['file_id']
+                pin['content'] = msg['document']['file_id']
             elif type == 'photo':
-                tag['content'] = msg['photo'][-1]['file_id']
+                pin['content'] = msg['photo'][-1]['file_id']
             elif type == 'sticker':
-                tag['content'] = msg['sticker']['file_id']
+                pin['content'] = msg['sticker']['file_id']
             elif type == 'video':
-                tag['content'] = msg['video']['file_id']
+                pin['content'] = msg['video']['file_id']
             elif type == 'voice':
-                tag['content'] = msg['voice']['file_id']
+                pin['content'] = msg['voice']['file_id']
 
-            tags[name] = tag
-            save_json('data/tags.json', tags)
+            pin[name] = pin
+            save_json('data/pins.json', pins)
 
-            message = 'Added tag *#' + name + '* for that *' + type + '*.'
+            message = 'Added pin *#' + name + '* for that *' + type + '*.'
             send_message(msg['chat']['id'], message,
                          reply_to_message_id=msg['message_id'],
                          parse_mode="Markdown")
-    elif get_command(msg['text']) == 'remtag':
+    elif get_command(msg['text']) == 'unpin':
         input = get_input(msg['text'])
         if not input:
             doc = get_doc(commands, parameters, description)
             return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 
         name = first_word(input)
-        if name in tags:
-            if msg['from']['id'] == tags[name]['creator'] or is_admin(msg):
-                del tags[name]
-                save_json('data/tags.json', tags)
-                message = '\nYou removed the tag *#' + name + '*.'
+        if name in pins:
+            if msg['from']['id'] == pins[name]['creator'] or is_admin(msg):
+                del pins[name]
+                save_json('data/pins.json', pins)
+                message = '\nYou removed the pin *#' + name + '*.'
             else:
                 return send_error(msg, 'permission')
         else:
-            message = 'The tag *' + name + '* is not set.'
+            message = 'The pin *' + name + '* is not set.'
         send_message(msg['chat']['id'], message, parse_mode="Markdown")
-    elif get_command(msg['text']) == 'taglist':
-        #taglist = [None] * len(tags)
+    elif get_command(msg['text']) == 'pins':
+        #taglist = [None] * len(pins)
         #i = 0
-        #for tag, data in tags.items():
-        #    taglist[i] = '\n\t#' + str(tag) + ' | ' + data['type'] + ' | ' + str(data['creator'])
+        #for pins, data in pins.items():
+        #    pins[i] = '\n\t#' + str(pin) + ' | ' + data['type'] + ' | ' + str(data['creator'])
         #    i += 1
         #i = 0
-        #while i <= len(taglist):
+        #while i <= len(pins):
         #    message = ''
         #    while i < 40:
-        #        message += taglist[i]
+        #        message += pins[i]
         #    send_message(msg['chat']['id'], message, parse_mode="Markdown")
         #    i += 40
         message = '`#GiTGuD`'
         send_message(msg['chat']['id'], message, parse_mode="Markdown")
     else:
-        for tag, data in tags.items():
-            if '#' + tag.lower() in msg['text'].lower():
+        for pin, data in pins.items():
+            if '#' + pin.lower() in msg['text'].lower():
                 if data['type'] == 'text':
                     if 'markdown' in data and data['markdown']:
                         if not send_message(msg['chat']['id'], data['content'], reply_to_message_id=msg['message_id'], parse_mode="Markdown"):
@@ -219,4 +218,4 @@ def process(msg):
             msg['text'] = config['command_start'] + 'content'
 
 def cron():
-    tags = load_json('data/tags.json', True)
+    pins = load_json('data/pins.json', True)

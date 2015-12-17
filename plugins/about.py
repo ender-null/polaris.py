@@ -35,13 +35,13 @@ def run(msg):
 
     elif get_command(msg['text']) == 'system':
         running = '\n*Running on*:\n'
-        running += '\t🖥 {0}\n'.format(subprocess.getoutput('head -n1 /etc/issue | cut -d " " -f -3'))
-        running += '\t💾 {0}\n'.format(subprocess.getoutput('uname -rs'))
-        running += '\t💡 {0}\n'.format(subprocess.getoutput('cat /proc/cpuinfo | grep "model name" | tr -s " " | cut -d " " -f 3-'))
-        running += '\t🗃 {0}MB ({1}% used)\n'.format(int(psutil.virtual_memory()[0] / 1000 / 1000), psutil.virtual_memory()[2])
-        running += '\t🐍 Python {0} ({1})\n'.format(str(platform.python_version()), str(platform.python_compiler()))
-        running += '\t⌚️ {0}\n'.format(time.strftime("%c"))
-        running += '\t⏱ {0}\n'.format(subprocess.getoutput('uptime -p'))
+        running += '\t*System*: {0}\n'.format(subprocess.getoutput('head -n1 /etc/issue | cut -d " " -f -3'))
+        running += '\t*Kernel*: {0}\n'.format(subprocess.getoutput('uname -rs'))
+        running += '\t*CPU*: {0}\n'.format(subprocess.getoutput('cat /proc/cpuinfo | grep "model name" | tr -s " " | cut -d " " -f 3-'))
+        running += '\t*RAM*: {0}MB ({1}% used)\n'.format(int(psutil.virtual_memory()[0] / 1000 / 1000), psutil.virtual_memory()[2])
+        running += '\t*Python*: {0} ({1})\n'.format(str(platform.python_version()), str(platform.python_compiler()))
+        running += '\t*Time*: {0}\n'.format(time.strftime("%c"))
+        running += '\t*Uptime*: {0}\n'.format(subprocess.getoutput('uptime -p'))
 
         send_message(msg['chat']['id'], running, parse_mode="Markdown")
 

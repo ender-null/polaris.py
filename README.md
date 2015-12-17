@@ -10,11 +10,14 @@ Multi-purpose telegram bot written in Python. I made this for personal use so I 
 * Change settings and locales without restarting.
 * Move all plugin documentation to locales.
 * ~~Use requests instead of pyTelegramBotAPI.~~
-* Add group management stuff. (In progress)
-* Add user config.
-* Add channel managemens stuff.
+* ~~Add group management stuff.~~
+* ~~Add user config.~~
+* Add channel management stuff.
 * ~~Add Reminders plugin.~~
-* ~~Add Tags plugin.~~
+* ~~Add Pins plugin.~~
+* Add Tags plugin.
 * Add Polls plugin.
 * Add YouTube plugin.
 * Add RSS plugin.
+* Add LastFM plugin.
+* Add Reddit plugin.
