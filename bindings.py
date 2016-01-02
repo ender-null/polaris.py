@@ -234,3 +234,17 @@ def get_file(file_id):
         'file_id': file_id
     }
     return api_request('getFile', params)
+
+def answer_inline_query(inline_query_id, results, cache_time = None, is_personal = None, next_offset = None):
+    params = {
+        'inline_query_id': inline_query_id,
+        'results': results
+    }
+    if cache_time:
+        params['cache_time'] = cache_time
+    if is_personal:
+        params['is_personal'] = is_personal
+    if next_offset:
+        params['url'] = next_offset
+
+    return api_request('answerInlineQuery', params)

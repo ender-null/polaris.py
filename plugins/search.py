@@ -43,7 +43,7 @@ def run(msg):
 
     jdat = json.loads(jstr.text)
 
-    if jdat['responseData']['results'] < 1:
+    if len(jdat['responseData']['results']) < 1:
         return send_error(msg, 'results')
 
     text = '*Google Search*: "_' + input + '_"\n\n'

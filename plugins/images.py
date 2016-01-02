@@ -64,7 +64,7 @@ def run(msg):
 
         result_url = jdat['items'][i]['link']
         #caption = jdat['items'][i]['snippet']
-        caption = u'"{0}"\t\t🌐 {1}'.format(input, get_short_url(result_url).lstrip('https://'))
+        caption = u'"{0}"  {1}'.format(input, get_short_url(result_url).lstrip('https://'))
 
         for v in exts:
             if re.compile(v).search(result_url):
@@ -76,3 +76,38 @@ def run(msg):
         send_photo(msg['chat']['id'], photo, caption=caption)
     else:
         send_error(msg, 'download')
+
+def inline(qry):
+    input = get_input(qry['query'])
+
+    url = 'https://www.googleapis.com/customsearch/v1'
+    params = {
+        'searchType': 'image',
+        'safe': 'medium',
+        'key': config['api']['googledev'],
+        'cx': '011243947282844107040:nwg-q67c7wa',
+        'q': input
+    }
+
+    if get_command(qry['query']) == 'insfw':
+        params['safe'] = 'off'
+
+    jstr = requests.get(url, params=params)
+    jdat = json.loads(jstr.text)
+    
+    # print(jdat)
+
+    results_json = []
+    for item in jdat['items']:
+        result = {
+            'type': 'photo',
+            'id': item['link'],
+            'title': item['snippet'],
+            'photo_url': item['link'],
+            'thumb_url': item['image']['thumbnailLink']
+        }
+        results_json.append(result)
+
+    results = json.dumps(results_json)
+    answer_inline_query(qry['id'], results)
+

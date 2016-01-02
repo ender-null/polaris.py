@@ -61,6 +61,7 @@ def on_message_receive(msg):
 
     if 'text' not in msg:
         msg['text'] = ''
+    print(msg)
 
     # Adds the locale to the message
     #msg['locale'] = get_locale(msg['chat']['id']
@@ -94,6 +95,20 @@ def on_message_receive(msg):
         if hasattr(plugin, 'stop') and plugin.stop:
             more = False
 
+        if not more:
+            break
+
+def on_query_receive(query):
+    for i, plugin in plugins.items():
+        more = True
+
+        if hasattr(plugin, 'inline'):
+            for command in plugin.commands:
+                trigger = command.replace("^", "")
+                if re.compile(trigger).search(query['query'].lower()):
+                    plugin.inline(query)
+                    more = False
+                    break
         if not more:
             break
 

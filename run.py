@@ -12,7 +12,10 @@ while utils.is_started:
         for update in result:
             if update['update_id'] > last_update:
                 last_update = update['update_id']
-                utils.on_message_receive(update['message'])
+                if 'message' in update:
+                    utils.on_message_receive(update['message'])
+                else:
+                    utils.on_query_receive(update['inline_query'])
 
     if last_cron < utils.now() - 5:
         for i, plugin in utils.plugins.items():
