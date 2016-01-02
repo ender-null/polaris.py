@@ -89,7 +89,7 @@ def inline(qry):
     }
     auth = HTTPBasicAuth(config['api']['azurekey'], config['api']['azurekey'])
 
-    if first_word(input) == 'insfw':
+    if first_word(qry['query']) == 'insfw':
         params['Adult'] = "'Off'"
 
     jstr = requests.get(url, params=params, auth=auth)
