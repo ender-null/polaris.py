@@ -61,7 +61,6 @@ def on_message_receive(msg):
 
     if 'text' not in msg:
         msg['text'] = ''
-    print(msg)
 
     # Adds the locale to the message
     #msg['locale'] = get_locale(msg['chat']['id']

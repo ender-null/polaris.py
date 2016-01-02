@@ -39,3 +39,31 @@ def run(msg):
         text += '\nExample:\n_' + jdat['list'][i]['example'] + '_'
 
     send_message(msg['chat']['id'], text, parse_mode="Markdown")
+
+def inline(qry):
+    input = get_input(qry['query'])
+
+    url = 'http://api.urbandictionary.com/v0/define'
+    params = {'term': input}
+
+    jdat = send_request(url, params)
+
+    results_json = []
+    for item in jdat['list']:
+        text = '*' + item['word'] + '*\n'
+        text += item['permalink']
+
+        result = {
+            'type': 'article',
+            'id': str(item['defid']),
+            'title': item['word'] + ' (' + item['author'] + ')',
+            'message_text': text,
+            'description': item['definition'],
+            'url': item['permalink'],
+            'parse_mode': 'Markdown'
+        }
+        print(result)
+        results_json.append(result)
+
+    results = json.dumps(results_json)
+    answer_inline_query(qry['id'], results)

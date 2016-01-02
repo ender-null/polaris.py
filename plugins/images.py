@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from utils import *
 import random
+from requests.auth import HTTPBasicAuth
 
 commands = [
     '^image',
@@ -31,39 +32,38 @@ def run(msg):
         doc = get_doc(commands, parameters, description)
         return send_message(msg['chat']['id'], doc, parse_mode="Markdown")
 
-    url = 'https://www.googleapis.com/customsearch/v1'
+    url = 'https://api.datamarket.azure.com/Data.ashx/Bing/Search/Image'
     params = {
-        'searchType': 'image',
-        'safe': 'medium',
-        'key': config['api']['googledev'],
-        'cx': '011243947282844107040:nwg-q67c7wa',
-        'q': input
+        'Query': "'" + input + "'",
+        'Adult': "'Moderate'",
+        '$format': 'json',
+        '$top': '8'
     }
+    auth = HTTPBasicAuth(config['api']['azurekey'], config['api']['azurekey'])
 
     if get_command(msg['text']) == 'insfw':
-        params['safe'] = 'off'
+        params['Adult'] = "'Off'"
 
-    jstr = requests.get(url, params=params)
+    jstr = requests.get(url, params=params, auth=auth)
 
     if jstr.status_code != 200:
         return send_error(msg, 'connection', jstr.status_code)
 
     jdat = json.loads(jstr.text)
 
-    if jdat['searchInformation']['totalResults'] == '0':
+    if not len(jdat['d']['results']) != 0:
         return send_error(msg, 'results')
 
     is_real = False
     counter = 0
     while not is_real:
         counter = counter + 1
-        if counter > 5 or jdat['searchInformation']['totalResults'] == '0':
+        if counter > 5 or jdat['d']['results'] == '0':
             return send_error(msg, 'results')
 
-        i = random.randint(1, len(jdat['items']))-1
+        i = random.randint(1, len(jdat['d']['results']))-1
 
-        result_url = jdat['items'][i]['link']
-        #caption = jdat['items'][i]['snippet']
+        result_url = jdat['d']['results'][i]['MediaUrl']
         caption = u'"{0}"  {1}'.format(input, get_short_url(result_url).lstrip('https://'))
 
         for v in exts:
@@ -80,31 +80,30 @@ def run(msg):
 def inline(qry):
     input = get_input(qry['query'])
 
-    url = 'https://www.googleapis.com/customsearch/v1'
+    url = 'https://api.datamarket.azure.com/Data.ashx/Bing/Search/Image'
     params = {
-        'searchType': 'image',
-        'safe': 'medium',
-        'key': config['api']['googledev'],
-        'cx': '011243947282844107040:nwg-q67c7wa',
-        'q': input
+        'Query': "'" + str(input) + "'",
+        'Adult': "'Moderate'",
+        '$format': 'json',
+        '$top': '8'
     }
+    auth = HTTPBasicAuth(config['api']['azurekey'], config['api']['azurekey'])
 
-    if get_command(qry['query']) == 'insfw':
-        params['safe'] = 'off'
+    if first_word(input) == 'insfw':
+        params['Adult'] = "'Off'"
 
-    jstr = requests.get(url, params=params)
+    jstr = requests.get(url, params=params, auth=auth)
     jdat = json.loads(jstr.text)
-    
-    # print(jdat)
 
     results_json = []
-    for item in jdat['items']:
+    for item in jdat['d']['results']:
         result = {
             'type': 'photo',
-            'id': item['link'],
-            'title': item['snippet'],
-            'photo_url': item['link'],
-            'thumb_url': item['image']['thumbnailLink']
+            'id': item['ID'],
+            'photo_url': item['MediaUrl'],
+            'photo_width': int(item['Width']),
+            'photo_height': int(item['Height']),
+            'thumb_url': item['Thumbnail']['MediaUrl']
         }
         results_json.append(result)
 
