@@ -55,3 +55,35 @@ def run(msg):
         send_photo(msg['chat']['id'], photo, caption=caption)
     else:
         send_error(msg, 'download')
+
+
+def inline(qry):
+    input = get_input(qry['query'])
+
+    tags = input
+    if not first_word(qry['query']) == 'knsfw':
+        tags += ' rating:s'
+
+    url = 'http://konachan.com/post.json'
+    params = {
+        'limit': 16,
+        'tags': tags
+    }
+
+    jstr = requests.get(url, params=params)
+    jdat = json.loads(jstr.text)
+
+    results_json = []
+    for item in jdat:
+        result = {
+            'type': 'photo',
+            'id': str(item['id']),
+            'photo_url': item['file_url'],
+            'photo_width': int(item['width']),
+            'photo_height': int(item['height']),
+            'thumb_url': item['preview_url'],
+        }
+        results_json.append(result)
+
+    results = json.dumps(results_json)
+    answer_inline_query(qry['id'], results)

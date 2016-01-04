@@ -51,3 +51,38 @@ def run(msg):
         send_document(msg['chat']['id'], photo)
     else:
         send_error(msg, 'download')
+
+
+def inline(qry):
+    input = get_input(qry['query'])
+
+    url = 'http://api.giphy.com/v1/gifs/search?limit=10&api_key='
+    params = {
+        'api_key': config['api']['giphy'],
+        'limit': 16,
+        'rating': 'pg-13',
+        'q': input
+    }
+
+    if first_word(qry['query']) == 'gifnsfw':
+        params['rating'] = 'r'
+
+    jstr = requests.get(url, params=params)
+    jdat = json.loads(jstr.text)
+
+    results_json = []
+    for item in jdat['data']:
+        result = {
+            'type': 'gif',
+            'id': item['id'],
+            'gif_url': item['images']['original']['url'],
+            'gif_width': int(item['images']['original']['width']),
+            'gif_height': int(item['images']['original']['height']),
+            'thumb_url': item['images']['fixed_width_small']['url'],
+            'thumb_width': int(item['images']['fixed_width_small']['width']),
+            'thumb_height': int(item['images']['fixed_width_small']['height'])
+        }
+        results_json.append(result)
+
+    results = json.dumps(results_json)
+    answer_inline_query(qry['id'], results)

@@ -85,7 +85,7 @@ def inline(qry):
         'Query': "'" + str(input) + "'",
         'Adult': "'Moderate'",
         '$format': 'json',
-        '$top': '8'
+        '$top': '16'
     }
     auth = HTTPBasicAuth(config['api']['azurekey'], config['api']['azurekey'])
 

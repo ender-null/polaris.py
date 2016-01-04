@@ -51,7 +51,13 @@ def inline(qry):
     results_json = []
     for item in jdat['list']:
         text = '*' + item['word'] + '*\n'
-        text += item['permalink']
+        if len(item['definition']) > 400:
+            text += item['definition'][:400] + '...\n'
+        else:
+            text += item['definition'] + '\n'
+        if item['example'] and len(item['example']) < 80:
+            text += '\nExample:\n_' + item['example'] + '_'
+        text += '\n' + item['permalink'][:400]
 
         result = {
             'type': 'article',
@@ -60,10 +66,14 @@ def inline(qry):
             'message_text': text,
             'description': item['definition'],
             'url': item['permalink'],
-            'parse_mode': 'Markdown'
+            'thumb_url': 'http://fa2png.io/media/icons/fa-book/96/16/673ab7_ffffff.png',
+            'thumb_width': 128,
+            'thumb_height': 128,
+            'parse_mode': 'Markdown',
+            'disable_web_page_preview': True
         }
-        print(result)
-        results_json.append(result)
+        if len(text) <= 512:
+            results_json.append(result)
 
     results = json.dumps(results_json)
     answer_inline_query(qry['id'], results)
