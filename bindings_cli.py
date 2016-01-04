@@ -6,7 +6,8 @@ receiver = Receiver(host="localhost", port=4458)
 sender = Sender(host="localhost", port=4458)
 
 def peer(chat_id):
-    if chat_id > 0:
+    print(chat_id)
+    if int(chat_id) > 0:
         peer = 'user#id' + str(chat_id)
     else:
         peer = 'chat#id' + str(chat_id)[1:]

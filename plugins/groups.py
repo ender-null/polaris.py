@@ -103,7 +103,7 @@ def run(msg):
                 user_id = input
                 name = input
             else:
-                user_id = cli.user_id(input[1:])
+                user_id = int(cli.user_id(input[1:]))
                 name = input
 
             if not user_id:
@@ -185,7 +185,7 @@ def run(msg):
                 user_id = input
                 name = input
             else:
-                user_id = cli.user_id(input[1:])
+                user_id = int(cli.user_id(input[1:]))
                 name = input
 
             if not user_id:
