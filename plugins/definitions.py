@@ -66,7 +66,7 @@ def inline(qry):
             'message_text': text,
             'description': item['definition'],
             'url': item['permalink'],
-            'thumb_url': 'http://fa2png.io/media/icons/fa-book/96/16/673ab7_ffffff.png',
+            'thumb_url': 'http://fa2png.io/media/icons/fa-quote-left/96/16/673ab7_ffffff.png',
             'thumb_width': 128,
             'thumb_height': 128,
             'parse_mode': 'Markdown',

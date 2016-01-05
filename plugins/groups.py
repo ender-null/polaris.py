@@ -101,10 +101,8 @@ def run(msg):
         if input:
             if input.isdigit():
                 user_id = input
-                name = input
             else:
                 user_id = int(cli.user_id(input[1:]))
-                name = input
 
             if not user_id:
                 return send_error(msg, 'argument')

@@ -6,8 +6,7 @@ receiver = Receiver(host="localhost", port=4458)
 sender = Sender(host="localhost", port=4458)
 
 def peer(chat_id):
-    print(chat_id)
-    if int(chat_id) > 0:
+    if chat_id > 0:
         peer = 'user#id' + str(chat_id)
     else:
         peer = 'chat#id' + str(chat_id)[1:]
@@ -17,8 +16,8 @@ def user_id(username):
     command = 'resolve_username ' + username
     resolve = sender.raw(command)
     dict = json.loads(resolve)
-    if 'id' in dict:
-        return dict['id']
+    if 'peer_id' in dict:
+        return dict['peer_id']
     else:
         return False
 

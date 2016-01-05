@@ -83,7 +83,7 @@ def inline(qry):
             'message_text': item['unescapedUrl'],
             'description': BeautifulSoup(item['content'], 'lxml').text,
             'url': item['unescapedUrl'],
-            'thumb_url': 'http://fa2png.io/media/icons/fa-google/96/16/673ab7_ffffff.png',
+            'thumb_url': 'http://fa2png.io/media/icons/fa-globe/96/16/673ab7_ffffff.png',
             'thumb_width': 128,
             'thumb_height': 128
         }
