@@ -54,21 +54,7 @@ def bot_init():
 
 
 def on_message_receive(msg):
-    if config['ignore']['old_messages'] and msg['date'] < now() - 10:
-        return
-    if config['ignore']['media'] and 'text' not in msg:
-        return
-
-    if 'text' not in msg:
-        msg['text'] = ''
-
-    # Adds the locale to the message
-    #msg['locale'] = get_locale(msg['chat']['id']
-
-    # Uses the text from a reply as parameter
-    if('reply_to_message' in msg and
-        'text' in msg['reply_to_message']):
-        msg['text'] += ' ' + msg['reply_to_message']['text']
+    process_message(msg)
 
     for i, plugin in plugins.items():
         more = True
@@ -111,6 +97,27 @@ def on_query_receive(query):
         if not more:
             break
 
+def process_message(msg):
+    if config['ignore']['old_messages'] and msg['date'] < now() - 10:
+        return
+    if config['ignore']['media'] and 'text' not in msg:
+        return
+
+    if 'text' not in msg:
+        msg['text'] = ''
+
+    process_tags(msg)
+
+    # Uses the text from a reply as parameter
+    if('reply_to_message' in msg and
+        'text' in msg['reply_to_message']):
+        msg['text'] += ' ' + msg['reply_to_message']['text']
+
+def process_tags(msg):
+    uid = msg['from']['id']
+
+    if 'muted' in users[uid]:
+        return
 
 def load_plugins():
     for plugin in config['plugins']:

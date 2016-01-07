@@ -74,5 +74,37 @@ def run(msg):
                     message += tag + ' '
                     users[uid]['tags'].append(tag)
         save_json('data/users.json', users)
+    elif get_command(msg['text']) == 'remtag':
+        if not input:
+            return send_error(msg, 'argument')
+        tags = first_word(input).split('+')
+        uid = all_but_first_word(input)
+        if uid:
+            uid = uid.split()
+
+        if 'reply_to_message' in msg:
+            uid = str(msg['reply_to_message']['from']['id'])
+
+        if 'alias' in users[uid]:
+            name = users[uid]['alias']
+        elif 'username' in users[uid]:
+            name = users[uid]['username']
+        else:
+            name = uid
+
+
+        message = '👤 *' + name + '*\n🏷 '
+        if 'tags' in users[uid]:
+            for tag in tags:
+                if tag in users[uid]:
+                    message += tag + ' '
+                    users[uid]['tags'].remove(tag)
+        else:
+            users[uid]['tags'] = []
+            for tag in tags:
+                if tag in users[uid]:
+                    message += tag + ' '
+                    users[uid]['tags'].remove(tag)
+        save_json('data/users.json', users)
 
     send_message(msg['chat']['id'], message, parse_mode="Markdown")
