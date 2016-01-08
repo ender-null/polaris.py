@@ -54,7 +54,24 @@ def bot_init():
 
 
 def on_message_receive(msg):
-    process_message(msg)
+    if config['ignore']['old_messages'] and msg['date'] < now() - 10:
+        return
+    if config['ignore']['media'] and 'text' not in msg:
+        return
+
+    if 'text' not in msg:
+        msg['text'] = ''
+
+    # process tags
+    uid = str(msg['from']['id'])
+    if uid in users and 'tags' in users[uid]:
+        if 'muted' in users[uid]['tags']:
+            return
+
+    # Uses the text from a reply as parameter
+    if('reply_to_message' in msg and
+        'text' in msg['reply_to_message']):
+        msg['text'] += ' ' + msg['reply_to_message']['text']
 
     for i, plugin in plugins.items():
         more = True
@@ -96,28 +113,6 @@ def on_query_receive(query):
                     break
         if not more:
             break
-
-def process_message(msg):
-    if config['ignore']['old_messages'] and msg['date'] < now() - 10:
-        return
-    if config['ignore']['media'] and 'text' not in msg:
-        return
-
-    if 'text' not in msg:
-        msg['text'] = ''
-
-    process_tags(msg)
-
-    # Uses the text from a reply as parameter
-    if('reply_to_message' in msg and
-        'text' in msg['reply_to_message']):
-        msg['text'] += ' ' + msg['reply_to_message']['text']
-
-def process_tags(msg):
-    uid = msg['from']['id']
-
-    if 'muted' in users[uid]:
-        return
 
 def load_plugins():
     for plugin in config['plugins']:
@@ -322,6 +317,8 @@ def tag_replace(text, msg=False):
 
 
 def escape_markup(text):
+    if not isinstance(text, str):
+        return text
     characters = ['_', '*', '[']
 
     for character in characters:

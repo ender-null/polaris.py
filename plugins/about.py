@@ -23,7 +23,7 @@ def run(msg):
     help = '\nUse ' + config['command_start'] + 'help for a list of commands.'
     license = '\n*#BOT_FIRSTNAME* uses *Polaris* which is licensed under the *GPLv2*.'
     source = '\n[Source Code on Github](https://github.com/luksireiku/polaris)'
-    channel = '\nChannel: @PolarisUpdates'
+    channel = '\nChannel: @PolarisChannel'
     group = '\nJoin [Society of Polaris](https://telegram.me/joinchat/B09roADwf_8-9zMfxniOpA)!'
     stats = '\nUsers: {0}\nGroups: {1}'.format(len(users), len(groups))
 

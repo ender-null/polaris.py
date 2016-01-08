@@ -14,7 +14,7 @@ def run(msg):
     if get_command(msg['text']) == 'settings':
         message = '*Settings:*'
         for key in users[uid]:
-            message += u'\n\t*{0}*: {1}'.format(key.title(), users[uid][key])
+            message += u'\n\t*{0}*: {1}'.format(key.title(), escape_markup(users[uid][key]))
     
     elif get_command(msg['text']) == 'nick':
         input = get_input(msg['text'])
@@ -38,6 +38,15 @@ def process(msg):
         users[uid]['messages'] = 1
         save_json('data/users.json', users)
     else:
+        if 'username' in msg['from']:
+            if not 'username' in users[uid]:
+                users[uid]['username'] = msg['from']['username']
+
+            if msg['from']['username'] != users[uid]['username']:
+                users[uid]['username'] = msg['from']['username']
+        else:
+            if 'username' in users[uid]:
+                del users[uid]['username']
         users[uid]['messages'] += 1
 
     # Replaces user's name with the nick
