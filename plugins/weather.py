@@ -72,6 +72,6 @@ def run(msg):
     photo = download(photo_url, params=photo_params)
     if photo:
         if not send_photo(msg['chat']['id'], photo, caption=message):
-            send_error(msg, 'unknown')
+            send_message(msg['chat']['id'], message)
     else:
         send_error(msg, 'download')
