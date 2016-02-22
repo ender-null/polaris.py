@@ -38,7 +38,7 @@ def run(msg):
     result_type = escape_markup(jdat['Type'])
     result_runtime = escape_markup(jdat['Runtime'])
     if result_type == 'series':
-         result_runtime += + ' per chapter.'
+         result_runtime += ' per chapter.'
     result_genre = escape_markup(jdat['Genre'])
     result_imdbRating = escape_markup(jdat['imdbRating'])
     result_imdbVotes = escape_markup(jdat['imdbVotes'])
