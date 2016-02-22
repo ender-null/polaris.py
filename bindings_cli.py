@@ -75,11 +75,14 @@ def chat_set_photo(chat_id, photo):
 def chat_add_user(chat_id, user, msgs_to_forward=100):
     cid = peer(chat_id)
     uid = peer(user)
-    return sender.chat_add_user(cid, uid, msgs_to_forward)
+    print('add ' + uid + ' from ' + cid)
+    # return sender.chat_add_user(cid, uid, msgs_to_forward)
+    return sender.raw('chat_add_user {0} {1}'.format(cid, uid))
 
 def chat_del_user(chat_id, user):
     cid = peer(chat_id)
     uid = peer(user)
+    print('kick ' + uid + ' from ' + cid)
     return sender.chat_del_user(cid, uid)
 
 def chat_rename(chat_id, name):

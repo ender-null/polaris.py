@@ -16,6 +16,7 @@ modcommands = [
     '^demote',
     '^invite',
     '^kill',
+    '^suicide',
     '^exterminate'
 ]
 commands = [
@@ -100,7 +101,7 @@ def run(msg):
     elif get_command(msg['text']) == 'invite' and is_mod(msg):
         if input:
             if input.isdigit():
-                user_id = input
+                user_id = int(input)
             else:
                 user_id = int(cli.user_id(input[1:]))
 
@@ -180,11 +181,13 @@ def run(msg):
 
         elif input:
             if input.isdigit():
-                user_id = input
+                user_id = int(input)
                 name = input
+                print('is digit')
             else:
                 user_id = int(cli.user_id(input[1:]))
                 name = input
+                print('is not digit')
 
             if not user_id:
                 return send_error(msg, 'argument')
@@ -194,6 +197,15 @@ def run(msg):
             
         else:
             return send_error(msg, 'id')
+
+    elif get_command(msg['text']) == 'suicide':
+        i = random.randint(1, len(locale[get_locale(msg['chat']['id'])]['lastwords']))-1
+        message = '`' + locale[get_locale(msg['chat']['id'])]['lastwords'][i] + '`'
+        message = tag_replace(message, msg)
+        
+        user_id = msg['from']['id']
+        send_message(cid, message, parse_mode="Markdown")
+        return cli.chat_del_user(cid, user_id)
 
     elif is_mod(msg) and get_command(msg['text']) == 'promote':
         if 'reply_to_message' in msg:
