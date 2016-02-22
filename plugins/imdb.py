@@ -35,14 +35,16 @@ def run(msg):
 
     result_title = escape_markup(jdat['Title'])
     result_released = escape_markup(jdat['Released'])
+    result_type = escape_markup(jdat['Type'])
     result_runtime = escape_markup(jdat['Runtime'])
+    if result_type == 'series':
+         result_runtime += + ' per chapter.'
     result_genre = escape_markup(jdat['Genre'])
     result_imdbRating = escape_markup(jdat['imdbRating'])
     result_imdbVotes = escape_markup(jdat['imdbVotes'])
     result_imdbID = escape_markup(jdat['imdbID'])
     result_poster = escape_markup(jdat['Poster'])
     result_plot = escape_markup(jdat['Plot'])
-    result_type = escape_markup(jdat['Type'])
     result_awards = escape_markup(jdat['Awards'])
     text = "[⁣]({})*Title*: {}\n*Rating*: {}/10 (_{}_)\n*Date*: {}\n*Duration*: {}\n\
 *Genre*: {}\n\n*Plot*: {}\n\n*Type*: {}\n*Awards*: {}\n\n*Click* \
