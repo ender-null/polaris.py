@@ -34,18 +34,17 @@ def setup():
     users.load(users)
     groups.load(groups)
 
-    load_plugins()
-
     if not config.keys.bot_api_token and not config.keys.tg_cli_port:
-        print('\nFrontend not configured!')
-        print('\tSelect the Frontend to use:\n\t\t0. Telegram Bot API\n\t\t1. Telegram-CLI')
-        frontend = input('\tFrontend: ')
+        print('\nBindings not configured!')
+        print('\tSelect the bindings to use:\n\t\t0. Telegram Bot API\n\t\t1. Telegram-CLI')
+        frontend = input('\tBindings: ')
         if frontend == '1':
             config.keys.tg_cli_port = input('\tTelegram-CLI port: ')
             config.bindings = 'tg'
         else:
             config.keys.bot_api_token = input('\tTelegram Bot API token: ')
             config.bindings = 'api'
+        config.plugins = list_plugins()
         config.save(config)
     else:
         if config.keys.bot_api_token:
@@ -53,11 +52,21 @@ def setup():
         elif config.keys.tg_cli_port:
             print('\nUsing Telegram-CLI port: {}'.format(config.keys.tg_cli_port))
 
+    load_plugins()
+
     bot.set_bindings(config.bindings)
 
 
+def list_plugins():
+    list = []
+    for file in os.listdir('plugins'):
+        if file.endswith('.py'):
+            list.append(file.rstrip('.py'))
+    return list
+
+
 def load_plugins():
-    print('Loading plugins...')
+    print('\nLoading plugins...')
     for plugin in config.plugins:
         try:
             plugins.append(importlib.import_module('plugins.' + plugin))
@@ -65,5 +74,5 @@ def load_plugins():
         except Exception as e:
             print('\t[Failed] ' + plugin + ': ' + str(e))
 
-    print('\n\tLoaded: ' + str(len(plugins)) + '/' + str(len(config.plugins)))
+    print('\tLoaded: ' + str(len(plugins)) + '/' + str(len(config.plugins)))
     return plugins

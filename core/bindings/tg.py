@@ -80,7 +80,7 @@ outbox_listener = Thread(target=outbox_listen, name='Outbox Listener')
 
 
 def init():
-    print('Initializing Telegram-CLI...')
+    print('\nInitializing Telegram-CLI...')
     get_me()
     print('\tUsing: {0} (@{1})'.format(bot.first_name, bot.username))
 

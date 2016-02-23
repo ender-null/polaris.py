@@ -67,7 +67,7 @@ def inbox_listen():
                     last_update = update['update_id']
                     msg = update['message']
 
-                    if not 'inline_query' in update:
+                    if (not 'inline_query' in update and hasattr(msg, 'text')):
                         # Generates a Message object and sends it to the inbox queue.
                         id = msg['message_id']
                         if msg['chat']['id'] > 0:
@@ -105,7 +105,7 @@ outbox_listener = Thread(target=outbox_listen, name='Outbox Listener')
 
 
 def init():
-    print('Initializing Telegram Bot API...')
+    print('\nInitializing Telegram Bot API...')
     get_me()
     print('\tUsing: {0} (@{1})'.format(bot.first_name, bot.username))
 
