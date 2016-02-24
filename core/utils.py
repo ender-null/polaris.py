@@ -32,6 +32,9 @@ def get_input(message):
     if message.reply and message.reply.type == 'text':
         text += ' ' + message.reply.content
 
+    if not ' ' in text:
+        return None
+
     return text[text.find(" ") + 1:]
 
 

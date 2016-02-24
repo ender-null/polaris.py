@@ -26,9 +26,7 @@ def run(m):
     jstr = requests.get(url, params=params, auth=auth)
 
     if jstr.status_code != 200:
-        print(input)
-        print(jstr.text)
-        return send_msg(m, 'Connection Error!')
+        return send_msg(m, 'Connection Error!\n' + jstr.text)
 
     jdat = json.loads(jstr.text)
 

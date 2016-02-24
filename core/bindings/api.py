@@ -238,7 +238,10 @@ def inbox_listen():
 def outbox_listen():
     while (True):
         message = outbox.get()
-        print('OUTBOX: ' + message.content)
+        if message.type == 'text':
+            print('OUTBOX: ' + message.content)
+        else:
+            print('OUTBOX: [{0}]'.format(message.type))
         send_message(message)
 
 
