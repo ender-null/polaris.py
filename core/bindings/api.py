@@ -67,13 +67,13 @@ def inbox_listen():
                     last_update = update['update_id']
                     msg = update['message']
 
-                    if (not 'inline_query' in update and hasattr(msg, 'text')):
+                    if (not 'inline_query' in update and 'text' in msg):
                         # Generates a Message object and sends it to the inbox queue.
                         id = msg['message_id']
                         if msg['chat']['id'] > 0:
                             receiver = User
                             receiver.first_name = msg['chat']['first_name']
-                            if hasattr(msg['chat'], 'last_name'):
+                            if 'last_name' in msg['from']:
                                 receiver.last_name = msg['chat']['last_name']
                             receiver.username = msg['chat']['username']
                         else:
