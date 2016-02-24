@@ -46,9 +46,9 @@ def setup():
         config.plugins = list_plugins()
         config.save(config)
     else:
-        if config.keys.bot_api_token:
+        if config.bindings == 'api' and config.keys.bot_api_token:
             print('\nUsing Telegram Bot API token: {}'.format(config.keys.bot_api_token))
-        elif config.keys.tg_cli_port:
+        elif config.bindings == 'tg' and config.keys.tg_cli_port:
             print('\nUsing Telegram-CLI port: {}'.format(config.keys.tg_cli_port))
 
     load_plugins()
