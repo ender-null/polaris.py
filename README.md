@@ -1,23 +1,40 @@
 # Polaris
-Multi-purpose telegram bot written in Python. I made this for personal use so I won't provide any support or install instructions.
+A Python bot using plugins!
+It's still in development right now, so you may get crashes and features may not be fully implemented or can suddenly dissapear, if you find a bug or have any cool idea feel free to open an Issue.
 
-# WARNING
-<b>THIS PROGRAM IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND</b>
+**Polaris** which is licensed under the [GPLv2](LICENSE).
+
+**THIS PROGRAM IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND**
 
 # TODO
-* ~~Use JSON to store settings and data.~~
-* ~~Implement locales.~~
-* Change settings and locales without restarting.
-* Move all plugin documentation to locales.
-* ~~Use requests instead of pyTelegramBotAPI.~~
-* ~~Add group management stuff.~~
-* ~~Add user config.~~
-* Add channel management stuff.
-* ~~Add Reminders plugin.~~
-* ~~Add Pins plugin.~~
-* Add Tags plugin.
-* Add Polls plugin.
-* Add YouTube plugin.
-* Add RSS plugin.
-* Add LastFM plugin.
-* Add Reddit plugin.
+* ~~Use queues for message inbox and outbox.~~
+* ~~Use objects.~~
+* ~~Add setup for first run to create config files.~~
+* ~~Run with both Telegram Bot API and Telegram-CLI.~~
+ * Run both at the same time.
+ * Allow media messages.
+ * Allow replies.
+ * Allow markdown. (for Bot API)
+ * Allow inline mode (for Bot API)
+* Change settings and language without restarting.
+* Implement languages.
+* Rewrite Groups plugin.
+ * Implement group creation.
+ * Supergroup compatibility.
+ * Bans and temporal bans.
+ * Message of the Day.
+ * Anti-spam.
+ * Kick by name, id, username and reply.
+* Rewrite Reminders plugin.
+ * PM to notify.
+* Rewrite Pins plugin.
+ * Improve performance
+ * Fix pin overlapping.
+* Rewrite Tags plugin.
+ * Store id and tag only.
+ * Set permissions with tags.
+ * Set tags to groups.
+ * Ignore by tag.
+ * Ban by tag.
+ * Tag multiple id.
+* Add Channels plugin.
