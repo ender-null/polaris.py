@@ -47,13 +47,13 @@ def inbox_listen():
                     if hasattr(msg['receiver'], 'last_name'):
                         receiver.last_name = msg['receiver']['last_name']
                     receiver.username = msg['receiver']['username']
-                    receiver.id = msg['receiver']['id']
+                    receiver.id = int(msg['receiver']['id'])
                 else:
                     receiver = Group
                     receiver.title = msg['receiver']['title']
-                    receiver.id = - msg['receiver']['id']
+                    receiver.id = - int(msg['receiver']['id'])
                 sender = User
-                sender.id = msg['sender']['id']
+                sender.id = int(msg['sender']['id'])
                 sender.first_name = msg['sender']['first_name']
                 if hasattr(msg['sender'], 'last_name'):
                     sender.last_name = msg['sender']['last_name']
