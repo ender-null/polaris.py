@@ -61,7 +61,20 @@ def inbox_listen():
                 content = msg['text']
                 date = msg['date']
 
-                message = Message(None, sender, receiver, content, date)
+                # Gets the type of the message
+                if 'text' in msg:
+                    type = 'text'
+                else:
+                    type = None
+
+                # Generates another message object for the original message if the reply.
+                print(msg)
+                if 'reply_to_message' in msg:
+                    pass
+                else:
+                    reply = None
+
+                message = Message(id, sender, receiver, content, type, date, reply)
                 inbox.put(message)
 
     receiver.start()

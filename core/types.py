@@ -188,8 +188,9 @@ class Message:
     date = None
     reply = None
     markup = None
+    extra = None
 
-    def __init__(self, id, sender, receiver, content, type='text', date=None, reply=None, markup=None):
+    def __init__(self, id, sender, receiver, content, type='text', date=None, reply=None, markup=None, extra=None):
         self.id = id
         self.sender = sender
         self.receiver = receiver
@@ -198,3 +199,4 @@ class Message:
         self.date = date
         self.reply = reply
         self.markup = markup
+        self.extra = extra

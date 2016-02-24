@@ -2,11 +2,19 @@ from core.shared import *
 import requests, magic, mimetypes, tempfile, os
 
 
-def send_msg(m, content, type='text'):
+def send_msg(m, text, preview=False):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, content, type)
+        message = Message(None, m.receiver, m.sender, text, 'text', extra=preview)
     else:
-        message = Message(None, bot, m.receiver, content, type)
+        message = Message(None, bot, m.receiver, text, 'text', extra=preview)
+    outbox.put(message)
+
+
+def send_pic(m, photo, caption):
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, photo, 'photo', extra=caption)
+    else:
+        message = Message(None, bot, m.receiver, photo, 'photo', extra=caption)
     outbox.put(message)
 
 
@@ -15,9 +23,15 @@ def send_exc(m, exception):
     outbox.put(message)
 
 
-def get_input(text):
-    if ' ' not in text:
-        return False
+def get_input(message):
+    if message.type != 'text':
+        return None
+    else:
+        text = message.content
+
+    if message.reply and message.reply.type == 'text':
+        text += ' ' + message.reply.content
+
     return text[text.find(" ") + 1:]
 
 

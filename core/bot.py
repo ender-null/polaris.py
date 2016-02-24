@@ -1,4 +1,3 @@
-from core.shared import *
 from core.utils import *
 from threading import Thread
 import re
