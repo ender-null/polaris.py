@@ -44,15 +44,23 @@ def convert_message(msg):
         sender.last_name = msg['sender']['last_name']
     if 'username' in msg['sender']:
         sender.username = msg['sender']['username']
-    if 'text' in msg:
-        content = msg['text']
     date = msg['date']
 
     # Gets the type of the message
     if 'text' in msg:
         type = 'text'
+        content = msg['text']
+        extra = None
+    elif 'media' in msg:
+        print(msg['media'])
+        if 'photo' in msg['media']:
+            type = 'photo'
+            content = None
+            extra = msg['media']['caption']
     else:
         type = None
+        content = None
+        extra = None
 
     # Generates another message object for the original message if the reply.
     if 'reply_id' in msg:
@@ -61,7 +69,7 @@ def convert_message(msg):
     else:
         reply = None
 
-    return Message(id, sender, receiver, content, type, date, reply)
+    return Message(id, sender, receiver, content, type, date, reply, extra)
 
 def send_message(message):
     if message.type == 'text':
@@ -92,14 +100,14 @@ def outbox_listen():
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('\nOUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content))
             else:
-                print('\nOUTBOX: [{0}] {1}'.format(message.receiver.title, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.title, message.content))
         else:
             if message.receiver.id > 0:
-                print('\nOUTBOX: [{0}] <{1}>'.format(message.receiver.first_name, message.type))
+                print('OUTBOX: [{0}] <{1}>'.format(message.receiver.first_name, message.type))
             else:
-                print('\nOUTBOX: [{0}] <{1}>'.format(message.receiver.title, message.type))
+                print('OUTBOX: [{0}] <{1}>'.format(message.receiver.title, message.type))
         send_message(message)
 
 

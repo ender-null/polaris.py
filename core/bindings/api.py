@@ -81,6 +81,127 @@ def api_send_photo(chat_id, photo, caption=None,
 
     return api_request('sendPhoto', params, files=files)
 
+    
+def api_send_audio(chat_id, audio, title=None, duration=None, performer=None,
+               reply_to_message_id=None, reply_markup=None):
+    params = {'chat_id': chat_id}
+
+    files = None
+    if not isinstance(audio, string_types):
+        files = {'audio': audio}
+    else:
+        params['audio'] = audio
+    if duration:
+        params['duration'] = duration
+    if performer:
+        params['performer'] = performer
+    if title:
+        params['title'] = title
+    if reply_to_message_id:
+        params['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        params['reply_markup'] = reply_markup
+
+    return api_request('sendAudio', params, files=files)
+
+
+def api_send_document(chat_id, document, reply_to_message_id=None,
+                  reply_markup=None):
+    params = {'chat_id': chat_id}
+
+    files = None
+    if not isinstance(document, string_types):
+        files = {'document': document}
+    else:
+        params['document'] = document
+    if reply_to_message_id:
+        params['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        params['reply_markup'] = reply_markup
+
+    return api_request('sendDocument', params, files=files)
+
+
+def api_send_sticker(chat_id, sticker, reply_to_message_id=None,
+                 reply_markup=None):
+    params = {'chat_id': chat_id}
+
+    files = None
+    if not isinstance(sticker, string_types):
+        files = {'sticker': sticker}
+    else:
+        params['sticker'] = sticker
+    if reply_to_message_id:
+        params['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        params['reply_markup'] = reply_markup
+
+    return api_request('sendSticker', params, files=files)
+
+
+def api_send_video(chat_id, video, caption=None, duration=None,
+               reply_to_message_id=None, reply_markup=None):
+    params = {'chat_id': chat_id}
+
+    files = None
+    if not isinstance(video, string_types):
+        files = {'video': video}
+    else:
+        params['video'] = video
+    if duration:
+        params['duration'] = duration
+    if caption:
+        params['caption'] = caption
+    if reply_to_message_id:
+        params['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        params['reply_markup'] = reply_markup
+
+    return api_request('sendVideo', params, files=files)
+
+
+def api_send_voice(chat_id, voice, duration=None, reply_to_message_id=None,
+               reply_markup=None):
+    params = {'chat_id': chat_id}
+
+    files = None
+    if not isinstance(voice, string_types):
+        files = {'voice': voice}
+    else:
+        params['voice'] = voice
+    if duration:
+        params['duration'] = duration
+    if reply_to_message_id:
+        params['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        params['reply_markup'] = reply_markup
+
+    return api_request('sendVoice', params, files=files)
+
+
+def api_send_location(chat_id, latitude, longitude, reply_to_message_id=None,
+                  reply_markup=None):
+    params = {
+        'chat_id': chat_id,
+        'latitude': latitude,
+        'longitude': longitude
+    }
+
+    if reply_to_message_id:
+        params['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        params['reply_markup'] = reply_markup
+
+    return api_request('sendLocation', params)
+
+
+def api_send_chat_action(chat_id, action):
+    params = {
+        'chat_id': chat_id,
+        'action': action
+    }
+    return api_request('sendChatAction', params)
+
 
 # Standard methods for bindings
 def get_me():
@@ -109,28 +230,45 @@ def convert_message(msg):
         sender.last_name = msg['from']['last_name']
     if 'username' in msg['from']:
         sender.username = msg['from']['username']
-    content = msg['text']
     date = msg['date']
 
     # Gets the type of the message
     if 'text' in msg:
         type = 'text'
+        content = msg['text']
+        extra = None
     elif 'audio' in msg:
         type = 'audio'
+        content = msg['audio']['file_id']
+        extra = msg['audio']['title']
     elif 'document' in msg:
         type = 'document'
+        content = msg['document']['file_id']
+        extra = msg['document']['file_name']
     elif 'photo' in msg:
         type = 'photo'
+        content = msg['photo'][-1]['file_id']
+        extra = msg['caption']
     elif 'sticker' in msg:
         type = 'sticker'
+        content = msg['sticker']['file_id']
+        extra = None
     elif 'video' in msg:
         type = 'video'
+        content = msg['video']['file_id']
+        extra = msg['caption']
     elif 'voice' in msg:
         type = 'voice'
+        content = msg['voice']['file_id']
+        extra = None
     elif 'contact' in msg:
         type = 'contact'
+        content = msg['contact']['user_id']
+        extra = msg['contact']['phone_number']
     elif 'location' in msg:
         type = 'location'
+        content = msg['location']['latitude']
+        extra = msg['location']['longitude']
     elif ('new_chat_participant' in msg
           or 'left_chat_participant' in msg
           or 'new_chat_title' in msg
@@ -142,22 +280,39 @@ def convert_message(msg):
           or 'migrate_to_chat_id'
           or 'migrate_from_chat_id' in msg):
         type = 'status'
+        content = None
+        extra = None
     else:
         type = None
+        content = None
+        extra = None
 
     if 'reply_to_message' in msg:
         reply = convert_message(msg['reply_to_message'])
     else:
         reply = None
 
-    return Message(id, sender, receiver, content, type, date, reply)
+    return Message(id, sender, receiver, content, type, date, reply, extra)
 
 
 def send_message(message):
     if message.type == 'text':
-        api_send_message(message.receiver.id, message.content, message.extra, parse_mode=message.markup)
+        print(message.markup)
+        api_send_message(message.receiver.id, message.content, not message.extra, parse_mode=message.markup)
     elif message.type == 'photo':
         api_send_photo(message.receiver.id, message.content, message.extra)
+    elif message.type == 'audio':
+        api_send_audio(message.receiver.id, message.content, message.extra)
+    elif message.type == 'document':
+        api_send_document(message.receiver.id, message.content, message.extra)
+    elif message.type == 'sticker':
+        api_send_sticker(message.receiver.id, message.content, message.extra)
+    elif message.type == 'video':
+        api_send_video(message.receiver.id, message.content, message.extra)
+    elif message.type == 'voice':
+        api_send_voice(message.receiver.id, message.content, message.extra)
+    elif message.type == 'location':
+        api_send_location(message.receiver.id, message.content, message.extra)
 
 
 def inbox_listen():
@@ -185,14 +340,14 @@ def outbox_listen():
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('\nOUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content))
             else:
-                print('\nOUTBOX: [{0}] {1}'.format(message.receiver.title, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.title, message.content))
         else:
             if message.receiver.id > 0:
-                print('\nOUTBOX: [{0}] <{1}>'.format(message.receiver.first_name, message.type))
+                print('OUTBOX: [{0}] <{1}>'.format(message.receiver.first_name, message.type))
             else:
-                print('\nOUTBOX: [{0}] <{1}>'.format(message.receiver.title, message.type))
+                print('OUTBOX: [{0}] <{1}>'.format(message.receiver.title, message.type))
         send_message(message)
 
 
@@ -201,6 +356,8 @@ def init():
     get_me()
     print('\tUsing: {0} (@{1})'.format(bot.first_name, bot.username))
 
-    Thread(target=inbox_listen, name='Inbox Listener').start()
-    Thread(target=outbox_listen, name='Outbox Listener').start()
+    inbox_listener = Thread(target=inbox_listen, name='Inbox Listener')
+    inbox_listener.start()
+    outbox_listener = Thread(target=outbox_listen, name='Outbox Listener')
+    outbox_listener.start()
 

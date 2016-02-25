@@ -36,11 +36,10 @@ def run(m):
     i = random.randint(1, len(jdat['d']['results'])) - 1
 
     result_url = jdat['d']['results'][i]['MediaUrl']
-    caption = '"{0}"'.format(input)
 
     photo = download(result_url)
 
     if photo:
-        send_pic(m, photo, caption)
+        send_pic(m, photo, input)
     else:
         send_msg(m, 'Error Downloading!')

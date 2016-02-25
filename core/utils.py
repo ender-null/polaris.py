@@ -1,12 +1,12 @@
 from core.shared import *
-import requests, magic, mimetypes, tempfile, os
+import requests, magic, mimetypes, tempfile, os, traceback, sys
 
 
-def send_msg(m, text, preview=False):
+def send_msg(m, text, preview=False, markup=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, text, 'text', extra=preview)
+        message = Message(None, m.receiver, m.sender, text, 'text', markup=markup, extra=preview)
     else:
-        message = Message(None, bot, m.receiver, text, 'text', extra=preview)
+        message = Message(None, bot, m.receiver, text, 'text', markup=markup, extra=preview)
     outbox.put(message)
 
 
@@ -59,7 +59,19 @@ def send_stk(m, sticker):
 
 
 def send_exc(m, exception):
-    message = Message(None, m.receiver, m.sender, 'Exception found!')
+    exc_type, exc_obj, exc_tb = sys.exc_info()
+    tb = traceback.extract_tb(exc_tb, 4)
+    message = '\n`' + str(exc_type) + '`'
+    message += '\n\n`' + str(exc_obj) + '`'
+    for row in tb:
+        message += '\n'
+        for val in row:
+            message += '`' + str(val) + '`\n'
+
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, message, markup='Markdown')
+    else:
+        message = Message(None, bot, m.receiver, message, markup='Markdown')
     outbox.put(message)
 
 
@@ -76,6 +88,15 @@ def get_input(message):
         return None
 
     return text[text.find(" ") + 1:]
+
+
+def get_command(message):
+    if message.content.startswith(config.start):
+        command = message.content.split(' ')[0].lstrip(config.start)
+        command = command.replace('@' + bot.username, '')
+        return command
+    else:
+        return None
 
 
 def first_word(text, i=1):
@@ -143,3 +164,9 @@ def escape_markup(text):
         text = text.replace(character, '\\' + character)
 
     return text
+
+def is_admin(id):
+    if id == config.owner:
+        return True
+    else:
+        return False
