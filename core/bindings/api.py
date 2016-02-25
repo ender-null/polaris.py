@@ -194,34 +194,34 @@ def inbox_listen():
                             reply_date = msg['reply_to_message']['date']
 
                             # Gets the type of the message
-                            if 'text' in msg:
+                            if 'text' in msg['reply_to_message']:
                                 reply_type = 'text'
-                            elif 'audio' in msg:
+                            elif 'audio' in msg['reply_to_message']:
                                 reply_type = 'audio'
-                            elif 'document' in msg:
+                            elif 'document' in msg['reply_to_message']:
                                 reply_type = 'document'
-                            elif 'photo' in msg:
+                            elif 'photo' in msg['reply_to_message']:
                                 reply_type = 'photo'
-                            elif 'sticker' in msg:
+                            elif 'sticker' in msg['reply_to_message']:
                                 reply_type = 'sticker'
-                            elif 'video' in msg:
+                            elif 'video' in msg['reply_to_message']:
                                 reply_type = 'video'
-                            elif 'voice' in msg:
+                            elif 'voice' in msg['reply_to_message']:
                                 reply_type = 'voice'
-                            elif 'contact' in msg:
+                            elif 'contact' in msg['reply_to_message']:
                                 reply_type = 'contact'
-                            elif 'location' in msg:
+                            elif 'location' in msg['reply_to_message']:
                                 reply_type = 'location'
-                            elif ('new_chat_participant' in msg
-                                  or 'left_chat_participant' in msg
-                                  or 'new_chat_title' in msg
-                                  or 'new_chat_photo' in msg
-                                  or 'delete_chat_photo' in msg
-                                  or 'group_chat_created' in msg
-                                  or 'supergroup_chat_created' in msg
-                                  or 'channel_chat_created' in msg
+                            elif ('new_chat_participant' in msg['reply_to_message']
+                                  or 'left_chat_participant' in msg['reply_to_message']
+                                  or 'new_chat_title' in msg['reply_to_message']
+                                  or 'new_chat_photo' in msg['reply_to_message']
+                                  or 'delete_chat_photo' in msg['reply_to_message']
+                                  or 'group_chat_created' in msg['reply_to_message']
+                                  or 'supergroup_chat_created' in msg['reply_to_message']
+                                  or 'channel_chat_created' in msg['reply_to_message']
                                   or 'migrate_to_chat_id'
-                                  or 'migrate_from_chat_id' in msg):
+                                  or 'migrate_from_chat_id' in msg['reply_to_message']):
                                 reply_type = 'status'
                             else:
                                 reply_type = None
@@ -256,3 +256,4 @@ def init():
 
     inbox_listener.start()
     outbox_listener.start()
+
