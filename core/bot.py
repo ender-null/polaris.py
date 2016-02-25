@@ -2,11 +2,25 @@ from core.utils import *
 from threading import Thread
 import re
 
+def start():
+    setup()
 
-def listen():
-    while (True):
+    bot.bindings.init()
+
+    while (started):
         message = inbox.get()
-        print('GOT MESSAGE: ' + message.content)
+
+        if message.type == 'text':
+            if message.receiver.id > 0:
+                print('\nGOT MESSAGE: [{0}] {1}'.format(message.receiver.first_name, message.content))
+            else:
+                print('\nGOT MESSAGE: [{0}] {1}'.format(message.receiver.title, message.content))
+        else:
+            if message.receiver.id > 0:
+                print('\nGOT MESSAGE: [{0}] <{1}>'.format(message.receiver.first_name, message.type))
+            else:
+                print('\nGOT MESSAGE: [{0}] <{1}>'.format(message.receiver.title, message.type))
+
         for plugin in plugins:
             for command in plugin.commands:
                 trigger = command.replace("/", config.start)
@@ -16,15 +30,6 @@ def listen():
                         plugin.run(message)
                     except Exception as e:
                         send_exc(message, e)
-
-
-def start():
-    setup()
-
-    bot.bindings.init()
-
-    listener = Thread(target=listen, name='Listener')
-    listener.start()
 
 
 def setup():

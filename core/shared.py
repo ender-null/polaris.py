@@ -12,3 +12,5 @@ plugins = list()
 
 inbox = Queue()
 outbox = Queue()
+
+started = True

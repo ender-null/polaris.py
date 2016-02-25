@@ -10,11 +10,51 @@ def send_msg(m, text, preview=False):
     outbox.put(message)
 
 
-def send_pic(m, photo, caption):
+def send_pic(m, photo, caption=None):
     if m.receiver.id > 0:
         message = Message(None, m.receiver, m.sender, photo, 'photo', extra=caption)
     else:
         message = Message(None, bot, m.receiver, photo, 'photo', extra=caption)
+    outbox.put(message)
+
+
+def send_doc(m, document):
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, document, 'document')
+    else:
+        message = Message(None, bot, m.receiver, document, 'document')
+    outbox.put(message)
+
+
+def send_vid(m, video, caption=None):
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, video, 'video', extra=caption)
+    else:
+        message = Message(None, bot, m.receiver, video, 'video', extra=caption)
+    outbox.put(message)
+
+
+def send_aud(m, audio, title=None):
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, audio, 'audio', extra=title)
+    else:
+        message = Message(None, bot, m.receiver, audio, 'audio', extra=title)
+    outbox.put(message)
+
+
+def send_vce(m, voice):
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, voice, 'voice')
+    else:
+        message = Message(None, bot, m.receiver, voice, 'voice')
+    outbox.put(message)
+
+
+def send_stk(m, sticker):
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, sticker, 'sticker')
+    else:
+        message = Message(None, bot, m.receiver, sticker, 'sticker')
     outbox.put(message)
 
 
