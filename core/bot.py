@@ -1,5 +1,6 @@
 from core.utils import *
 from threading import Thread
+from time import time
 import re
 
 def start():
@@ -9,6 +10,10 @@ def start():
 
     while (started):
         message = inbox.get()
+        
+        # Ignores old messages
+        if message.date < time() - 10:
+            return
 
         if message.type == 'text':
             if message.receiver.id > 0:

@@ -1,4 +1,5 @@
 from core.shared import *
+from core.types import Colors
 from threading import Thread
 from six import string_types
 import requests
@@ -306,7 +307,6 @@ def convert_message(msg):
 
 def send_message(message):
     if message.type == 'text':
-        print(message.markup)
         api_send_message(message.receiver.id, message.content, not message.extra, parse_mode=message.markup)
     elif message.type == 'photo':
         api_send_photo(message.receiver.id, message.content, message.extra)
@@ -322,7 +322,8 @@ def send_message(message):
         api_send_voice(message.receiver.id, message.content, message.extra)
     elif message.type == 'location':
         api_send_location(message.receiver.id, message.content, message.extra)
-
+    else:
+        print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
 def inbox_listen():
     print('\tStarting inbox daemon...')
@@ -363,7 +364,7 @@ def outbox_listen():
 def init():
     print('\nInitializing Telegram Bot API...')
     get_me()
-    print('\tUsing: {0} (@{1})'.format(bot.first_name, bot.username))
+    print('\tUsing: [{2}] {0} (@{1})'.format(bot.first_name, bot.username, bot.id))
 
     inbox_listener = Thread(target=inbox_listen, name='Inbox Listener')
     inbox_listener.start()

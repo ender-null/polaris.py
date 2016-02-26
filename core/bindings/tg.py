@@ -22,21 +22,22 @@ def get_me():
     msg = tgsender.get_self()
     bot.first_name = msg['first_name']
     bot.username = msg['username']
-    bot.id = msg['id']
+    bot.id = msg['peer_id']
 
 def convert_message(msg):
     id = msg['id']
     if msg['receiver']['type'] == 'user':
         receiver = User
-        receiver.first_name = msg['receiver']['first_name']
-        if hasattr(msg['receiver'], 'last_name'):
-            receiver.last_name = msg['receiver']['last_name']
-        receiver.username = msg['receiver']['username']
         receiver.id = int(msg['receiver']['peer_id'])
+        receiver.first_name = msg['receiver']['first_name']
+        if 'last_name' in msg['receiver']:
+            receiver.last_name = msg['receiver']['last_name']
+        if 'username' in msg['receiver']:
+            receiver.username = msg['receiver']['username']
     else:
         receiver = Group
-        receiver.title = msg['receiver']['title']
         receiver.id = - int(msg['receiver']['peer_id'])
+        receiver.title = msg['receiver']['title']
     sender = User
     sender.id = int(msg['sender']['peer_id'])
     sender.first_name = msg['sender']['first_name']
@@ -54,7 +55,10 @@ def convert_message(msg):
     elif 'media' in msg:
         type = msg['media']['type']
         content = msg['id']
-        extra = msg['media']['caption']
+        if 'caption' in msg['media']:
+            extra = msg['media']['caption']
+        else:
+            extra = None
     else:
         type = None
         content = None
@@ -74,8 +78,20 @@ def send_message(message):
         tgsender.send_msg(peer(message.receiver.id), message.content)
     elif message.type == 'photo':
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
+    elif message.type == 'audio':
+        tgsender.send_audio(peer(message.receiver.id), message.content.name)
+    elif message.type == 'document':
+        tgsender.send_document(peer(message.receiver.id), message.content.name)
+    elif message.type == 'sticker':
+        tgsender.send_file(peer(message.receiver.id), message.content.name)
+    elif message.type == 'video':
+        tgsender.send_video(peer(message.receiver.id), message.content.name, message.extra)
     elif message.type == 'voice':
         tgsender.send_audio(peer(message.receiver.id), message.content.name)
+    elif message.type == 'location':
+        tgsender.send_location(peer(message.receiver.id), message.content, message.extra)
+    else:
+        print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
 def inbox_listen():
     print('\tStarting inbox daemon...')
@@ -85,7 +101,6 @@ def inbox_listen():
     def listener():
         while (started):
             msg = (yield)
-
             if (msg['event'] == 'message' and msg['own'] == False):
                 message = convert_message(msg)
                 inbox.put(message)
@@ -113,7 +128,7 @@ def outbox_listen():
 def init():
     print('\nInitializing Telegram-CLI...')
     get_me()
-    print('\tUsing: {0} (@{1})'.format(bot.first_name, bot.username))
+    print('\tUsing: [{2}] {0} (@{1})'.format(bot.first_name, bot.username, bot.id))
 
     Thread(target=inbox_listen, name='Inbox Listener').start()
     Thread(target=outbox_listen, name='Outbox Listener').start()

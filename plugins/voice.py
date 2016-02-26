@@ -30,7 +30,7 @@ def run(m):
             text = input
 
 
-        url = 'http://translate.google.com/translate_tts'
+    url = 'http://translate.google.com/translate_tts'
     params = {
         'tl': lang,
         'q': text,
@@ -54,8 +54,7 @@ def run(m):
         return send_msg(m, 'Connection Error!\n' + jstr.text)
 
     result_url = jstr.url
-
-    voice = download(result_url, headers=headers, params=params)
+    voice = mp3_to_ogg(download(result_url, headers=headers, params=params))
 
     if voice:
         send_vce(m, voice)

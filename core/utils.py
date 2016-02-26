@@ -1,5 +1,5 @@
 from core.shared import *
-import requests, magic, mimetypes, tempfile, os, traceback, sys
+import requests, magic, mimetypes, tempfile, os, traceback, sys, subprocess
 
 
 def send_msg(m, text, preview=False, markup=None):
@@ -101,16 +101,15 @@ def get_command(message):
 
 def first_word(text, i=1):
     try:
-        word = text.split()[i - 1]
+        return text.split()[i - 1]
     except:
         return False
-    return word
 
 
 def all_but_first_word(text):
     if ' ' not in text:
         return False
-    return text.replace(first_word(text) + ' ', '')
+    return text.lstrip(first_word(text))
 
 
 def last_word(text):
@@ -140,8 +139,7 @@ def download(url, params=None, headers=None):
     f.seek(0)
     if not ext:
         f.name = fix_extension(f.name)
-    file = open(f.name, 'rb')
-    return file
+    return open(f.name, 'rb')
 
 
 def fix_extension(file_path):
@@ -155,6 +153,18 @@ def fix_extension(file_path):
         return file_path + extension
     else:
         return file_path
+
+def mp3_to_ogg(original):
+    converted = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg')
+    conv = subprocess.Popen(['avconv', '-i', original.name, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', converted.name], stdout=subprocess.PIPE)
+    
+    while True:
+        data = conv.stdout.read(1024 * 100)
+        if not data:
+            break
+        converted.write(data)
+
+    return open(converted.name, 'rb')
 
 
 def escape_markup(text):

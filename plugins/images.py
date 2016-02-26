@@ -1,12 +1,20 @@
 from core.utils import *
-import random
 from requests.auth import HTTPBasicAuth
+import random, re
 
 commands = {
     '/image': {('query', True)}
 }
 description = 'This command performs a Google Images search for the given query.'
 
+exts = {
+    '.jpg$',
+    '.jpeg$',
+    '.gif$',
+    '.png$',
+    '.tif$',
+    '.bmp$'
+}
 
 def run(m):
     input = get_input(m)
@@ -33,13 +41,25 @@ def run(m):
     if not len(jdat['d']['results']) != 0:
         return send_msg(m, 'No Results!')
 
-    i = random.randint(1, len(jdat['d']['results'])) - 1
+    is_real = False
+    counter = 0
+    while not is_real:
+        counter = counter + 1
+        if counter > 5 or jdat['d']['results'] == '0':
+            return send_msg(m, 'No Results!')
 
-    result_url = jdat['d']['results'][i]['MediaUrl']
+        i = random.randint(1, len(jdat['d']['results']))-1
+        result_url = jdat['d']['results'][i]['MediaUrl']
+        caption = jdat['d']['results'][i]['DisplayUrl']
+        # caption = jdat['d']['results'][i]['Title']  
+
+        for v in exts:
+            if re.compile(v).search(result_url):
+                is_real = True  
 
     photo = download(result_url)
 
     if photo:
-        send_pic(m, photo, input)
+        send_pic(m, photo, caption)
     else:
         send_msg(m, 'Error Downloading!')
