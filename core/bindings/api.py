@@ -240,7 +240,10 @@ def convert_message(msg):
     elif 'audio' in msg:
         type = 'audio'
         content = msg['audio']['file_id']
-        extra = msg['audio']['title']
+        if 'title' in msg['audio']:
+            extra = msg['audio']['title']
+        else:
+            extra = None
     elif 'document' in msg:
         type = 'document'
         content = msg['document']['file_id']
@@ -248,7 +251,10 @@ def convert_message(msg):
     elif 'photo' in msg:
         type = 'photo'
         content = msg['photo'][-1]['file_id']
-        extra = msg['caption']
+        if 'caption' in msg:
+            extra = msg['caption']
+        else:
+            extra = None
     elif 'sticker' in msg:
         type = 'sticker'
         content = msg['sticker']['file_id']
@@ -256,7 +262,10 @@ def convert_message(msg):
     elif 'video' in msg:
         type = 'video'
         content = msg['video']['file_id']
-        extra = msg['caption']
+        if 'caption' in msg:
+            extra = msg['caption']
+        else:
+            extra = None
     elif 'voice' in msg:
         type = 'voice'
         content = msg['voice']['file_id']

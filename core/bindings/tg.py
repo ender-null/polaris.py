@@ -52,11 +52,9 @@ def convert_message(msg):
         content = msg['text']
         extra = None
     elif 'media' in msg:
-        print(msg['media'])
-        if 'photo' in msg['media']:
-            type = 'photo'
-            content = None
-            extra = msg['media']['caption']
+        type = msg['media']['type']
+        content = msg['id']
+        extra = msg['media']['caption']
     else:
         type = None
         content = None
@@ -76,7 +74,8 @@ def send_message(message):
         tgsender.send_msg(peer(message.receiver.id), message.content)
     elif message.type == 'photo':
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
-
+    elif message.type == 'voice':
+        tgsender.send_audio(peer(message.receiver.id), message.content.name)
 
 def inbox_listen():
     print('\tStarting inbox daemon...')
