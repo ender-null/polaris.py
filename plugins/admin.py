@@ -1,13 +1,13 @@
 from core.utils import *
 from core import bot
 
-commands = {
-    '/run': {},
-    '/msg': {},
-    '/reload': {},
-    '/refreshplugins': {},
-    '/shutdown': {}
-}
+commands = [
+    ('/run', ['command']),
+    ('/msg', ['chat id', 'message']),
+    ('/reload', []),
+    ('/refreshplugins', []),
+    ('/shutdown', [])
+]
 
 def run(m):
     if not is_admin(m.sender.id):

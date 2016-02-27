@@ -27,7 +27,7 @@ def start():
                 print('\nGOT MESSAGE: [{0}] <{1}>'.format(message.receiver.title, message.type))
 
         for plugin in plugins:
-            for command in plugin.commands:
+            for command, parameters in plugin.commands:
                 trigger = command.replace("/", config.start)
 
                 if re.compile(trigger).search(message.content.lower()):

@@ -1,8 +1,8 @@
 from core.utils import *
 
-commands = {
-    '/echo': {('text', True)}
-}
+commands = [
+    (/echo', ['text'])
+]
 description = 'Repeat a string.'
 
 

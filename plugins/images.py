@@ -2,9 +2,9 @@ from core.utils import *
 from requests.auth import HTTPBasicAuth
 import random, re
 
-commands = {
-    '/image': {('query', True)}
-}
+commands = [
+    ('/image', ['query'])
+]
 description = 'This command performs a Google Images search for the given query.'
 
 exts = {

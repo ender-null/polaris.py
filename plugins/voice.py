@@ -1,8 +1,8 @@
 from core.utils import *
 
-commands = {
-    '/voice': {('language', False),('text', True)}
-}
+commands = [
+    ('/voice', ['language', 'text'])
+]
 description = 'Generates an audio file using Google Text-To-Speech API.'
 
 langs = [
