@@ -350,9 +350,9 @@ def outbox_listen():
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('OUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content[:10]))
             else:
-                print('OUTBOX: [{0}] {1}'.format(message.receiver.title, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.title, message.content[:10]))
         else:
             if message.receiver.id > 0:
                 print('OUTBOX: [{0}] <{1}>'.format(message.receiver.first_name, message.type))

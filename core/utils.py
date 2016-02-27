@@ -167,13 +167,23 @@ def mp3_to_ogg(original):
     return open(converted.name, 'rb')
 
 
-def escape_markup(text):
+def escape_markdown(text):
     characters = ['_', '*', '[']
 
     for character in characters:
         text = text.replace(character, '\\' + character)
 
     return text
+
+
+def remove_markdown(text):
+    characters = ['_', '*', '[', ']', '`', '(', ')', '\\']
+
+    for character in characters:
+        text = text.replace(character, '')
+
+    return text
+
 
 def is_admin(id):
     if id == config.owner:

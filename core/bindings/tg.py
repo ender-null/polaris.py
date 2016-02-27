@@ -1,4 +1,4 @@
-from core.shared import *
+from core.utils import *
 from threading import Thread
 from pytg.receiver import Receiver
 from pytg.sender import Sender
@@ -75,6 +75,8 @@ def convert_message(msg):
 
 def send_message(message):
     if message.type == 'text':
+        if message.markup == 'Markdown':
+            message.content = remove_markdown(message.content)
         tgsender.send_msg(peer(message.receiver.id), message.content)
     elif message.type == 'photo':
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
@@ -114,9 +116,9 @@ def outbox_listen():
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('OUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.first_name, message.content[:10]))
             else:
-                print('OUTBOX: [{0}] {1}'.format(message.receiver.title, message.content))
+                print('OUTBOX: [{0}] {1}'.format(message.receiver.title, message.content[:10]))
         else:
             if message.receiver.id > 0:
                 print('OUTBOX: [{0}] <{1}>'.format(message.receiver.first_name, message.type))

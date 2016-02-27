@@ -9,6 +9,8 @@ commands = [
     ('/shutdown', [])
 ]
 
+hidden = True
+
 def run(m):
     if not is_admin(m.sender.id):
         return send_msg(m, 'No, shit isn\'t going that way.')
@@ -42,3 +44,5 @@ def run(m):
     elif get_command(m) == 'shutdown':
         started = False
         message = 'Bot shutdown!'
+
+    send_msg(m, message)
