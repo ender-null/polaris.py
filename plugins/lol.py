@@ -57,7 +57,11 @@ def get_summoner(server, input):
 
 
 def get_summoner_icon(server, summoner, summoner_name):
-    url = 'http://ddragon.leagueoflegends.com/cdn/5.19.1/img/profileicon/'
+    versions_url = 'https://global.api.pvp.net/api/lol/static-data/euw/v1.2/versions'
+    params = {
+        'api_key': config['api']['league_of_legends']
+    }
+    url = 'http://ddragon.leagueoflegends.com/cdn/{}/img/profileicon/'.format(send_request(versions_url,params)[0])
     return url + str(summoner[summoner_name]['profileIconId']) + '.png'
 
 
