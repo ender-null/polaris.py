@@ -17,14 +17,14 @@ def start():
 
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('\nGOT MESSAGE: [{0}] {1}'.format(message.receiver.first_name, message.content))
+                print('\n[{0} << {2}] {1}'.format(message.receiver.first_name, message.content, message.sender.first_name))
             else:
-                print('\nGOT MESSAGE: [{0}] {1}'.format(message.receiver.title, message.content))
+                print('\n[{0} << {2}] {1}'.format(message.receiver.title, message.content, message.sender.first_name))
         else:
             if message.receiver.id > 0:
-                print('\nGOT MESSAGE: [{0}] <{1}>'.format(message.receiver.first_name, message.type))
+                print('\n[{0} << {2}] <{1}>'.format(message.receiver.first_name, message.type, message.sender.first_name))
             else:
-                print('\nGOT MESSAGE: [{0}] <{1}>'.format(message.receiver.title, message.type))
+                print('\n[{0} << {2}] <{1}>'.format(message.receiver.title, message.type, message.sender.first_name))
 
         for plugin in plugins:
             for command, parameters in plugin.commands:

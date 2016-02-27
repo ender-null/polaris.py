@@ -50,8 +50,9 @@ def run(m):
 
         i = random.randint(1, len(jdat['d']['results']))-1
         result_url = jdat['d']['results'][i]['MediaUrl']
-        caption = jdat['d']['results'][i]['DisplayUrl']
-        # caption = jdat['d']['results'][i]['Title']  
+        # caption = jdat['d']['results'][i]['DisplayUrl']
+        # caption = jdat['d']['results'][i]['Title']
+        caption = '"' + input + '"'
 
         for v in exts:
             if re.compile(v).search(result_url):
