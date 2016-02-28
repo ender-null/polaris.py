@@ -10,9 +10,9 @@ commands = [
     ('/remgroup', [])
 ]
 
+
 def run(m):
     if not is_admin(m.sender.id):
-        send_message(m, m.sender.first_name + ' tried to use an admin command.')
         return send_message(m, 'No, shit isn\'t going that way.')
 
     input = get_input(m)
@@ -25,13 +25,11 @@ def run(m):
 
     elif get_command(m) == 'invite':
         if m.reply:
-            send_message(m, 'Inviting user ' + m.reply.sender.id)
             return invite_user(m, m.reply.sender.id)
         message = 'Unsupported action!'
 
     elif get_command(m) == 'kill':
         if m.reply:
-            send_message(m, 'Killing user ' + m.reply.sender.id)
             return kick_user(m, m.reply.sender.id)
         message = 'Unsupported action!'
 

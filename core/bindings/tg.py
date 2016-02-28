@@ -65,19 +65,14 @@ def convert_message(msg):
         content = None
         extra = None
 
-    reply = None
-
-    message = Message(id, sender, receiver, content, type, date, reply, extra)
-
-    del sender
-    del receiver
-
     # Generates another message object for the original message if the reply.
     if 'reply_id' in msg:
         reply_msg = tgsender.message_get(msg['reply_id'])
-        message.reply = convert_message(reply_msg)
+        reply = convert_message(reply_msg)
+    else:
+        reply = None
 
-    return message
+    return Message(id, sender, receiver, content, type, date, reply, extra)
 
 
 def send_message(message):
