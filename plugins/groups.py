@@ -12,6 +12,7 @@ commands = [
 
 def run(m):
     if not is_admin(m.sender.id):
+        send_message(m, m.sender.first_name + ' tried to use and admin command. ')
         return send_message(m, 'No, shit isn\'t going that way.')
 
     input = get_input(m)
