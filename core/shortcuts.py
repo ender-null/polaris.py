@@ -73,14 +73,20 @@ def show_message(m):
     text += 'sender.id: ' + str(m.sender.id) + '\n'
     text += 'sender.first_name: ' + m.sender.first_name + '\n'
     text += 'receiver.id: ' + str(m.receiver.id) + '\n'
-    text += 'receiver.first_name: ' + m.receiver.first_name + '\n'
+    if m.receiver.id > 0:
+        text += 'receiver.first_name: ' + m.receiver.first_name + '\n'
+    else:
+        text += 'receiver.title: ' + m.receiver.title + '\n'
     text += 'type: ' + str(m.type) + '\n'
     text += 'extra: ' + str(m.extra) + '\n'
     if m.reply:
         text += 'reply.sender.id: ' + str(m.reply.sender.id) + '\n'
         text += 'reply.sender.first_name: ' + m.reply.sender.first_name + '\n'
         text += 'reply.receiver.id: ' + str(m.reply.receiver.id) + '\n'
-        text += 'reply.receiver.first_name: ' + m.reply.receiver.first_name + '\n'
+        if m.reply.receiver.id > 0:
+            text += 'reply.receiver.first_name: ' + m.reply.receiver.first_name + '\n'
+        else:
+            text += 'reply.receiver.title: ' + m.reply.receiver.title + '\n'
         text += 'reply.type: ' + str(m.reply.type) + '\n'
         text += 'reply.extra: ' + str(m.reply.extra) + '\n'
 
