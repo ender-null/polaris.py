@@ -37,7 +37,7 @@ def run(m):
         'lat': lat,
         'lon': lon,
         'units': 'metric',
-        'appid': config['api']['openweathermap']
+        'appid': config.keys.openweathermap
     }
 
     jstr = requests.get(url, params=params)
@@ -51,7 +51,7 @@ def run(m):
         return send_message(m, 'No results.')
 
 
-    message = locality + ' (' + country + ')'
+    message = 'Weather for ' + locality + ' (' + country + '):'
     message += '\n' + str(int(weather['main']['temp'])) + u'ºC - ' + str(weather['weather'][0]['description']).title() + ' ' + get_icon(weather['weather'][0]['icon'])
     message += u'\n💧 ' + str(weather['main']['humidity']) + u'% | 🌬 ' + str(int(weather['wind']['speed'] * 3.6)) + ' km/h'
 
