@@ -33,7 +33,7 @@ def start():
                 if re.compile(trigger).search(message.content.lower()):
                     try:
                         plugin.run(message)
-                    except Exception as e:
+                    except:
                         send_exception(message)
 
 

@@ -120,6 +120,7 @@ def get_short_url(long_url):
     jstr = requests.post(url, data=json.dumps(params), headers=headers)
 
     if jstr.status_code != 200:
+        print(jstr.text)
         return False
 
     jdat = json.loads(jstr.text)
