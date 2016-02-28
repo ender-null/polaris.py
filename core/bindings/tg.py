@@ -73,6 +73,7 @@ def convert_message(msg):
 
     return Message(id, sender, receiver, content, type, date, reply, extra)
 
+
 def send_message(message):
     if message.type == 'text':
         if message.markup == 'Markdown':
