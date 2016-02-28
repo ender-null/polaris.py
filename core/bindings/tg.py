@@ -92,6 +92,11 @@ def send_message(message):
         tgsender.send_audio(peer(message.receiver.id), message.content.name)
     elif message.type == 'location':
         tgsender.send_location(peer(message.receiver.id), message.content, message.extra)
+    elif message.type == 'status':
+        if message.content == 'invite_user':
+            tgsender.chat_add_user(peer(message.receiver.id), peer(message.extra))
+        elif message.content == 'kick_user':
+            tgsender.chat_del_user(peer(message.receiver.id), peer(message.extra))
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 

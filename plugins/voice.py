@@ -18,7 +18,7 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_msg(m, 'No input')
+        return send_message(m, 'No input')
         
     for v in langs:
         if first_word(input) == v:
@@ -51,12 +51,12 @@ def run(m):
     )
 
     if jstr.status_code != 200:
-        return send_msg(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, 'Connection Error!\n' + jstr.text)
 
     result_url = jstr.url
     voice = mp3_to_ogg(download(result_url, headers=headers, params=params))
 
     if voice:
-        send_vce(m, voice)
+        send_voice(m, voice)
     else:
-        send_msg(m, 'Error Downloading!')
+        send_message(m, 'Error Downloading!')

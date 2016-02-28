@@ -20,4 +20,4 @@ def run(m):
     if m.receiver.id < 0:
         message += '\n👥 {0} ({1})'.format(m.receiver.title, m.receiver.id)
 
-    send_msg(m, message)
+    send_message(m, message)

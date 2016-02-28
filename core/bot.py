@@ -34,7 +34,7 @@ def start():
                     try:
                         plugin.run(message)
                     except Exception as e:
-                        send_exc(message, e)
+                        send_exception(message)
 
 
 def setup():

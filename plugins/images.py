@@ -20,7 +20,7 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_msg(m, 'No input')
+        return send_message(m, 'No input')
 
     url = 'https://api.datamarket.azure.com/Data.ashx/Bing/Search/Image'
     params = {
@@ -34,19 +34,19 @@ def run(m):
     jstr = requests.get(url, params=params, auth=auth)
 
     if jstr.status_code != 200:
-        return send_msg(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, 'Connection Error!\n' + jstr.text)
 
     jdat = json.loads(jstr.text)
 
     if not len(jdat['d']['results']) != 0:
-        return send_msg(m, 'No Results!')
+        return send_message(m, 'No Results!')
 
     is_real = False
     counter = 0
     while not is_real:
         counter = counter + 1
         if counter > 5 or jdat['d']['results'] == '0':
-            return send_msg(m, 'No Results!')
+            return send_message(m, 'No Results!')
 
         i = random.randint(1, len(jdat['d']['results']))-1
         result_url = jdat['d']['results'][i]['MediaUrl']
@@ -61,6 +61,6 @@ def run(m):
     photo = download(result_url)
 
     if photo:
-        send_pic(m, photo, caption)
+        send_photo(m, photo, caption)
     else:
-        send_msg(m, 'Error Downloading!')
+        send_message(m, 'Error Downloading!')

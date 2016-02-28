@@ -10,6 +10,6 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_msg(m, 'No input')
+        return send_message(m, 'No input')
 
-    send_msg(m, input, markup = 'Markdown', preview = False)
+    send_message(m, input, markup ='Markdown', preview = False)

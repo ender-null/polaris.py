@@ -28,4 +28,4 @@ def run(m):
                     message += ' *<' + parameter + '>*'
                 message += '\n'
 
-    send_msg(m, message, markup = 'Markdown')
+    send_message(m, message, markup ='Markdown')

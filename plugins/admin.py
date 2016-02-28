@@ -13,23 +13,23 @@ hidden = True
 
 def run(m):
     if not is_admin(m.sender.id):
-        return send_msg(m, 'No, shit isn\'t going that way.')
+        return send_message(m, 'No, shit isn\'t going that way.')
 
     input = get_input(m)
 
     if get_command(m) == 'run':
         if not input:
-            return send_msg(m, 'Invalid argument.')
+            return send_message(m, 'Invalid argument.')
         message = '`{0}`'.format(subprocess.getoutput(input))
 
     elif get_command(m) == 'msg':
         if not input:
-            return send_msg(m, 'Invalid argument.')
+            return send_message(m, 'Invalid argument.')
         chat_id = first_word(input)
         text = get_input(input)
 
-        if not send_msg(chat_id, text):
-            return send_msg(m, 'Invalid argument.')
+        if not send_message(chat_id, text):
+            return send_message(m, 'Invalid argument.')
         return
 
     elif get_command(m) == 'reload':
@@ -45,4 +45,4 @@ def run(m):
         started = False
         message = 'Bot shutdown!'
 
-    send_msg(m, message)
+    send_message(m, message)
