@@ -28,7 +28,7 @@ def get_me():
 def convert_message(msg):
     id = msg['id']
     if msg['receiver']['type'] == 'user':
-        receiver = User
+        receiver = User()
         receiver.id = int(msg['receiver']['peer_id'])
         receiver.first_name = msg['receiver']['first_name']
         if 'last_name' in msg['receiver']:
@@ -36,10 +36,10 @@ def convert_message(msg):
         if 'username' in msg['receiver']:
             receiver.username = msg['receiver']['username']
     else:
-        receiver = Group
+        receiver = Group()
         receiver.id = - int(msg['receiver']['peer_id'])
         receiver.title = msg['receiver']['title']
-    sender = User
+    sender = User()
     sender.id = int(msg['sender']['peer_id'])
     sender.first_name = msg['sender']['first_name']
     if 'last_name' in msg['sender']:

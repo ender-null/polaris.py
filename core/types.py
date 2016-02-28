@@ -23,7 +23,7 @@ class User:
     last_name = None
     username = None
 
-    def __init__(self, id, first_name, last_name, username):
+    def __init__(self, id=None, first_name=None, last_name=None, username=None):
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
@@ -35,7 +35,7 @@ class Group:
     id = None
     title = None
 
-    def __init__(self, id, title):
+    def __init__(self, id=None, title=None):
         self.id = id
         self.title = title
 
