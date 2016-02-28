@@ -7,7 +7,9 @@ commands = [
     ('/kill', ['username | user id']),
     ('/ban', ['username | user id']),
     ('/addgroup', []),
-    ('/remgroup', [])
+    ('/remgroup', []),
+    ('/addmod', ['username | user id']),
+    ('/demod', ['username | user id'])
 ]
 
 
@@ -26,12 +28,16 @@ def run(m):
     elif get_command(m) == 'invite':
         if m.reply:
             return invite_user(m, m.reply.sender.id)
-        message = 'Unsupported action!'
+        elif input:
+                return invite_user(m, input)
 
     elif get_command(m) == 'kill':
         if m.reply:
             return kick_user(m, m.reply.sender.id)
-        message = 'Unsupported action!'
+        elif input:
+                return kick_user(m, input)
+        else:
+            return kick_user(m, m.sender.id)
 
     elif get_command(m) == 'ban':
         message = 'Unsupported action!'
@@ -40,6 +46,12 @@ def run(m):
         message = 'Unsupported action!'
 
     elif get_command(m) == 'remgroup':
+        message = 'Unsupported action!'
+
+    elif get_command(m) == 'addmod':
+        message = 'Unsupported action!'
+
+    elif get_command(m) == 'demod':
         message = 'Unsupported action!'
 
     send_message(m, message)

@@ -18,6 +18,30 @@ def peer(chat_id):
     return peer
 
 
+def user_id(username):
+    if username.startswith('@'):
+        command = 'resolve_username ' + username
+        resolve = tgsender.raw(command)
+        dict = json.loads(resolve)
+    else:
+        dict = tgsender.user_info(username)
+    if 'peer_id' in dict:
+        return dict['peer_id']
+    else:
+        return False
+
+
+def get_id(user):
+    if user.isdigit():
+        id = user
+    else:
+        id = int(user_id(user))
+
+    if not user_id:
+        return None
+    return id
+
+# Standard methods for bindings
 def get_me():
     msg = tgsender.get_self()
     bot.first_name = msg['first_name']
@@ -96,9 +120,9 @@ def send_message(message):
         tgsender.send_location(peer(message.receiver.id), message.content, message.extra)
     elif message.type == 'status':
         if message.content == 'invite_user':
-            tgsender.chat_add_user(peer(message.receiver.id), peer(message.extra))
+            tgsender.chat_add_user(peer(message.receiver.id), peer(get_id(message.extra)))
         elif message.content == 'kick_user':
-            tgsender.chat_del_user(peer(message.receiver.id), peer(message.extra))
+            tgsender.chat_del_user(peer(message.receiver.id), peer(get_id(message.extra)))
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
@@ -111,9 +135,10 @@ def inbox_listen():
     def listener():
         while (started):
             msg = (yield)
-            if (msg['event'] == 'message' and msg['own'] == False):
+            if msg['event'] == 'message' and msg['own'] == False:
                 message = convert_message(msg)
                 inbox.put(message)
+                tgsender.mark_read(msg['sender']['peer_id'])
 
     tgreceiver.start()
     tgreceiver.message(listener())
