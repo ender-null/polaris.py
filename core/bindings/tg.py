@@ -105,7 +105,7 @@ def send_message(message):
     if message.type == 'text':
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
-        tgsender.send_msg(peer(message.receiver.id), message.content)
+        tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
     elif message.type == 'photo':
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
     elif message.type == 'audio':
@@ -131,7 +131,6 @@ def send_message(message):
 
 def inbox_listen():
     print('\tStarting inbox daemon...')
-    last_update = 0
 
     @coroutine
     def listener():

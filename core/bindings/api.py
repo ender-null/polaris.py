@@ -13,7 +13,12 @@ def send_request(url, params=None, headers=None, files=None, data=None):
 
     if result.status_code != 200:
         print(result.text)
-        return False
+
+        if result.status_code != 429:
+            return False
+
+        while result.status_code == 429:
+            result = requests.get(url, params=params, headers=headers, files=files, data=data)
 
     return json.loads(result.text)
 

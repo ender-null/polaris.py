@@ -16,6 +16,7 @@ exts = {
     '.bmp$'
 }
 
+
 def run(m):
     input = get_input(m)
 
@@ -48,15 +49,15 @@ def run(m):
         if counter > 5 or jdat['d']['results'] == '0':
             return send_message(m, 'No Results!')
 
-        i = random.randint(1, len(jdat['d']['results']))-1
+        i = random.randint(1, len(jdat['d']['results'])) - 1
         result_url = jdat['d']['results'][i]['MediaUrl']
         # caption = jdat['d']['results'][i]['DisplayUrl']
         # caption = jdat['d']['results'][i]['Title']
-        caption = '"' + input + '"'
+        caption = '"{0}"  {1}'.format(input, get_short_url(result_url).lstrip('https://'))
 
         for v in exts:
             if re.compile(v).search(result_url):
-                is_real = True  
+                is_real = True
 
     photo = download(result_url)
 
