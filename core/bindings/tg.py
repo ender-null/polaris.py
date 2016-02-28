@@ -20,11 +20,13 @@ def peer(chat_id):
 
 def user_id(username):
     if username.startswith('@'):
-        command = 'resolve_username ' + username
+        command = 'resolve_username ' + username[1:]
         resolve = tgsender.raw(command)
         dict = json.loads(resolve)
     else:
         dict = tgsender.user_info(username)
+
+    print(dict)
     if 'peer_id' in dict:
         return dict['peer_id']
     else:
@@ -32,13 +34,15 @@ def user_id(username):
 
 
 def get_id(user):
+    if isinstance(user, int):
+        return user
+    
     if user.isdigit():
-        id = user
+        id = int(user)
     else:
         id = int(user_id(user))
-
-    if not user_id:
-        return None
+    
+    print('\t ' + (user) + ' ID: ' + str(id))
     return id
 
 # Standard methods for bindings
@@ -138,7 +142,7 @@ def inbox_listen():
             if msg['event'] == 'message' and msg['own'] == False:
                 message = convert_message(msg)
                 inbox.put(message)
-                tgsender.mark_read(msg['sender']['peer_id'])
+                tgsender.mark_read(peer(msg['sender']['peer_id']))
 
     tgreceiver.start()
     tgreceiver.message(listener())

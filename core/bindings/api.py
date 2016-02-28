@@ -323,7 +323,7 @@ def send_message(message):
     elif message.type == 'location':
         api_send_location(message.receiver.id, message.content, message.extra)
     elif message.type == 'status':
-        api_send_message(message.receiver.id, '`Not Yet Implemented!`', not message.extra, parse_mode=message.markup)
+        api_send_message(message.receiver.id, '`Not Yet Implemented!`', parse_mode='Markdown')
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
