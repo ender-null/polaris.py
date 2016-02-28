@@ -68,6 +68,30 @@ def kick_user(m, user):
     outbox.put(message)
 
 
+def show_message(m):
+    text = 'Message info:\n'
+    text += 'sender.id: ' + m.sender.id + '\n'
+    text += 'sender.first_name: ' + m.sender.first_name + '\n'
+    text += 'receiver.id: ' + m.receiver.id + '\n'
+    text += 'receiver.first_name: ' + m.receiver.first_name + '\n'
+    text += 'type: ' + m.type + '\n'
+    text += 'extra: ' + m.extra + '\n'
+    if m.reply:
+        text += 'reply.sender.id: ' + m.reply.sender.id + '\n'
+        text += 'reply.sender.first_name: ' + m.reply.sender.first_name + '\n'
+        text += 'reply.receiver.id: ' + m.reply.receiver.id + '\n'
+        text += 'reply.receiver.first_name: ' + m.reply.receiver.first_name + '\n'
+        text += 'reply.type: ' + m.reply.type + '\n'
+        text += 'reply.extra: ' + m.reply.extra + '\n'
+
+
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, text, 'text')
+    else:
+        message = Message(None, bot, m.receiver, text, 'text')
+    outbox.put(message)
+
+
 def send_exception(m):
     exc_type, exc_obj, exc_tb = sys.exc_info()
     tb = traceback.extract_tb(exc_tb, 4)
