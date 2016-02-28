@@ -26,7 +26,6 @@ def user_id(username):
     else:
         dict = tgsender.user_info(username)
 
-    print(dict)
     if 'peer_id' in dict:
         return dict['peer_id']
     else:
@@ -41,8 +40,7 @@ def get_id(user):
         id = int(user)
     else:
         id = int(user_id(user))
-    
-    print('\t ' + (user) + ' ID: ' + str(id))
+
     return id
 
 # Standard methods for bindings
@@ -142,7 +140,10 @@ def inbox_listen():
             if msg['event'] == 'message' and msg['own'] == False:
                 message = convert_message(msg)
                 inbox.put(message)
-                tgsender.mark_read(peer(msg['sender']['peer_id']))
+                if message.receiver.id > 0:
+                    tgsender.mark_read(peer(message.receiver.id))
+                else:
+                    tgsender.mark_read(peer(message.sender.id))
 
     tgreceiver.start()
     tgreceiver.message(listener())
@@ -160,7 +161,7 @@ def outbox_listen():
                                                    message.sender.first_name))
         else:
             if message.receiver.id > 0:
-                print('>> [{0} << {2}] <{1}>'.format(message.receiver.first_name, message.type,
+                print('>> [{0} << {2}] <{1}> '.format(message.receiver.first_name, message.type,
                                                      message.sender.first_name))
             else:
                 print('>> [{0} << {2}] <{1}>'.format(message.receiver.title, message.type, message.sender.first_name))
