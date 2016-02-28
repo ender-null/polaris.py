@@ -113,8 +113,8 @@ def get_coords(input):
 
 
 def get_short_url(long_url):
-    url = 'https://www.googleapis.com/urlshortener/v1/url?longUrl=' + long_url + '&key=' + config['api']['googledev']
-    params = {'longUrl': long_url, 'key': config['api']['googledev']}
+    url = 'https://www.googleapis.com/urlshortener/v1/url'
+    params = {'longUrl': long_url, 'key': config.keys.google_developer_console}
     headers = {'content-type': 'application/json'}
 
     jstr = requests.post(url, data=json.dumps(params), headers=headers)
@@ -129,8 +129,10 @@ def get_short_url(long_url):
 
 def mp3_to_ogg(original):
     converted = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg')
-    conv = subprocess.Popen(['avconv', '-i', original.name, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', converted.name], stdout=subprocess.PIPE)
-    
+    conv = subprocess.Popen(
+        ['avconv', '-i', original.name, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', converted.name],
+        stdout=subprocess.PIPE)
+
     while True:
         data = conv.stdout.read(1024 * 100)
         if not data:
@@ -151,11 +153,13 @@ def escape_markdown(text):
 
 def remove_markdown(text):
     characters = ['_', '*', '[', ']', '`', '(', ')', '\\']
-
-    for character in characters:
-        text = text.replace(character, '')
-
-    return text
+    aux = list()
+    for x in range(len(text)):
+        if x > 0 and text[x] in characters and text[x - 1] != '\\':
+            pass
+        else:
+            aux.append(text[x])
+    return ''.join(aux)
 
 
 def is_admin(id):

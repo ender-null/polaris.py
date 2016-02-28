@@ -20,7 +20,7 @@ def send_request(url, params=None, headers=None, files=None, data=None):
         while result.status_code == 429:
             result = requests.get(url, params=params, headers=headers, files=files, data=data)
 
-    return json.loads(result.text)
+    return json.loads(result.text)#youtube
 
 
 def api_request(api_method, params=None, headers=None, files=None):
