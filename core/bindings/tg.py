@@ -69,6 +69,9 @@ def convert_message(msg):
 
     message = Message(id, sender, receiver, content, type, date, reply, extra)
 
+    del sender
+    del receiver
+    
     # Generates another message object for the original message if the reply.
     if 'reply_id' in msg:
         reply_msg = tgsender.message_get(msg['reply_id'])

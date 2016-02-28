@@ -301,6 +301,9 @@ def convert_message(msg):
 
     message = Message(id, sender, receiver, content, type, date, reply, extra)
 
+    del sender
+    del receiver
+
     if 'reply_to_message' in msg:
         message.reply = convert_message(msg['reply_to_message'])
 
