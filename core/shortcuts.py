@@ -70,19 +70,19 @@ def kick_user(m, user):
 
 def show_message(m):
     text = 'Message info:\n'
-    text += 'sender.id: ' + m.sender.id + '\n'
+    text += 'sender.id: ' + str(m.sender.id) + '\n'
     text += 'sender.first_name: ' + m.sender.first_name + '\n'
-    text += 'receiver.id: ' + m.receiver.id + '\n'
+    text += 'receiver.id: ' + str(m.receiver.id) + '\n'
     text += 'receiver.first_name: ' + m.receiver.first_name + '\n'
-    text += 'type: ' + m.type + '\n'
-    text += 'extra: ' + m.extra + '\n'
+    text += 'type: ' + str(m.type) + '\n'
+    text += 'extra: ' + str(m.extra) + '\n'
     if m.reply:
-        text += 'reply.sender.id: ' + m.reply.sender.id + '\n'
+        text += 'reply.sender.id: ' + str(m.reply.sender.id) + '\n'
         text += 'reply.sender.first_name: ' + m.reply.sender.first_name + '\n'
-        text += 'reply.receiver.id: ' + m.reply.receiver.id + '\n'
+        text += 'reply.receiver.id: ' + str(m.reply.receiver.id) + '\n'
         text += 'reply.receiver.first_name: ' + m.reply.receiver.first_name + '\n'
-        text += 'reply.type: ' + m.reply.type + '\n'
-        text += 'reply.extra: ' + m.reply.extra + '\n'
+        text += 'reply.type: ' + str(m.reply.type) + '\n'
+        text += 'reply.extra: ' + str(m.reply.extra) + '\n'
 
 
     if m.receiver.id > 0:
