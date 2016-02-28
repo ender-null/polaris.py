@@ -28,7 +28,7 @@ def run(m):
 
     jdat = json.loads(jstr.text)
 
-    if not len(jdat['d']['results']) != 0:
+    if len(jdat['data']) == 0:
         return send_message(m, 'No Results!')
 
     i = random.randint(1, len(jdat['data']))-1

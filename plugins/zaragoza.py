@@ -25,7 +25,7 @@ def run(m):
 
     jdat = json.loads(jstr.text)
 
-    text = '*{}*\n'.format(jdat['title'])
+    text = '*{}*\n\n'.format(jdat['title'])
     for destino in jdat['destinos']:
         text += destino['linea'] + ' ' + destino['destino']
         text += '\n - ' + destino['primero']
@@ -33,4 +33,4 @@ def run(m):
         text += '\n'
     text = text.rstrip('\n')
 
-    send_message(m, text)
+    send_message(m, text, markup='Markdown')

@@ -32,4 +32,4 @@ def run(m):
         jdat['items'][0]['snippet']['title'],
         jdat['items'][0]['id']['videoId'])
 
-    send_message(m, text)
+    send_message(m, text, preview=True)
