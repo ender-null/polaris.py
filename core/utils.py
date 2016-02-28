@@ -113,14 +113,13 @@ def get_coords(input):
 
 
 def get_short_url(long_url):
-    url = 'https://www.googleapis.com/urlshortener/v1/url'
+    url = 'https://www.googleapis.com/urlshortener/v1/url?longUrl=' + long_url + '&key=' + config.keys.google_developer_console
     params = {'longUrl': long_url, 'key': config.keys.google_developer_console}
     headers = {'content-type': 'application/json'}
 
     jstr = requests.post(url, data=json.dumps(params), headers=headers)
 
     if jstr.status_code != 200:
-        print(jstr.text)
         return False
 
     jdat = json.loads(jstr.text)

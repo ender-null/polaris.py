@@ -9,6 +9,9 @@ description = 'Executes python code.'
 
 
 def run(m):
+    if not is_admin(m.sender.id):
+        return send_message(m, 'No, shit isn\'t going that way.')
+
     input = get_input(m)
 
     if not input:
