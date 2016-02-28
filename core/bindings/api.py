@@ -215,16 +215,16 @@ def get_me():
 def convert_message(msg):
     id = msg['message_id']
     if msg['chat']['id'] > 0:
-        receiver = User
+        receiver = User()
         receiver.first_name = msg['chat']['first_name']
         if 'last_name' in msg['from']:
             receiver.last_name = msg['chat']['last_name']
         receiver.username = msg['chat']['username']
     else:
-        receiver = Group
+        receiver = Group()
         receiver.title = msg['chat']['title']
     receiver.id = msg['chat']['id']
-    sender = User
+    sender = User()
     sender.id = msg['from']['id']
     sender.first_name = msg['from']['first_name']
     if 'last_name' in msg['from']:

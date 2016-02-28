@@ -71,7 +71,7 @@ def convert_message(msg):
 
     del sender
     del receiver
-    
+
     # Generates another message object for the original message if the reply.
     if 'reply_id' in msg:
         reply_msg = tgsender.message_get(msg['reply_id'])
