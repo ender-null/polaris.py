@@ -24,6 +24,7 @@ def get_me():
     bot.username = msg['username']
     bot.id = msg['peer_id']
 
+
 def convert_message(msg):
     id = msg['id']
     if msg['receiver']['type'] == 'user':
@@ -64,14 +65,16 @@ def convert_message(msg):
         content = None
         extra = None
 
+    reply = None
+
+    message = Message(id, sender, receiver, content, type, date, reply, extra)
+
     # Generates another message object for the original message if the reply.
     if 'reply_id' in msg:
         reply_msg = tgsender.message_get(msg['reply_id'])
-        reply = convert_message(reply_msg)
-    else:
-        reply = None
+        message.reply = convert_message(reply_msg)
 
-    return Message(id, sender, receiver, content, type, date, reply, extra)
+    return message
 
 
 def send_message(message):
@@ -101,6 +104,7 @@ def send_message(message):
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
+
 def inbox_listen():
     print('\tStarting inbox daemon...')
     last_update = 0
@@ -122,12 +126,15 @@ def outbox_listen():
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('>> [{0} << {2}] {1}'.format(message.receiver.first_name, message.content[:10], message.sender.first_name))
+                print('>> [{0} << {2}] {1}'.format(message.receiver.first_name, message.content[:10],
+                                                   message.sender.first_name))
             else:
-                print('>> [{0} << {2}] {1}'.format(message.receiver.title, message.content[:10], message.sender.first_name))
+                print('>> [{0} << {2}] {1}'.format(message.receiver.title, message.content[:10],
+                                                   message.sender.first_name))
         else:
             if message.receiver.id > 0:
-                print('>> [{0} << {2}] <{1}>'.format(message.receiver.first_name, message.type, message.sender.first_name))
+                print('>> [{0} << {2}] <{1}>'.format(message.receiver.first_name, message.type,
+                                                     message.sender.first_name))
             else:
                 print('>> [{0} << {2}] <{1}>'.format(message.receiver.title, message.type, message.sender.first_name))
         send_message(message)

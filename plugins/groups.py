@@ -2,7 +2,7 @@ from core.utils import *
 
 commands = [
     ('/groups', []),
-    ('/join', ['alias | chat id', '']),
+    ('/join', ['alias | chat id']),
     ('/invite', ['username | user id']),
     ('/kill', ['username | user id']),
     ('/ban', ['username | user id']),
@@ -12,7 +12,7 @@ commands = [
 
 def run(m):
     if not is_admin(m.sender.id):
-        send_message(m, m.sender.first_name + ' tried to use and admin command. ')
+        send_message(m, m.sender.first_name + ' tried to use an admin command.')
         return send_message(m, 'No, shit isn\'t going that way.')
 
     input = get_input(m)

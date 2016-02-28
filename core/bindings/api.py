@@ -297,12 +297,14 @@ def convert_message(msg):
         content = None
         extra = None
 
-    if 'reply_to_message' in msg:
-        reply = convert_message(msg['reply_to_message'])
-    else:
-        reply = None
+    reply = None
 
-    return Message(id, sender, receiver, content, type, date, reply, extra)
+    message = Message(id, sender, receiver, content, type, date, reply, extra)
+
+    if 'reply_to_message' in msg:
+        message.reply = convert_message(msg['reply_to_message'])
+
+    return message
 
 
 def send_message(message):
