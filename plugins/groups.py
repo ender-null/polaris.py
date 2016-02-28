@@ -3,13 +3,13 @@ from core.utils import *
 commands = [
     ('/groups', []),
     ('/join', ['alias | chat id']),
-    ('/invite', ['username | user id']),
-    ('/kill', ['username | user id']),
-    ('/ban', ['username | user id']),
+    ('/invite', ['user']),
+    ('/kill', ['user']),
+    ('/ban', ['user']),
     ('/addgroup', []),
     ('/remgroup', []),
-    ('/addmod', ['username | user id']),
-    ('/demod', ['username | user id'])
+    ('/addmod', ['user']),
+    ('/demod', ['user'])
 ]
 
 

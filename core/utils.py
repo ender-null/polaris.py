@@ -82,6 +82,51 @@ def fix_extension(file_path):
     else:
         return file_path
 
+
+def send_request(url, params=None, headers=None, files=None, data=None):
+    jstr = requests.get(url, params=params, headers=headers, files=files, data=data)
+
+    if jstr.status_code != 200:
+        print(jstr.text)
+        return False
+
+    return json.loads(jstr.text)
+
+
+def get_coords(input):
+    url = 'http://maps.googleapis.com/maps/api/geocode/json'
+    params = {'address': input}
+
+    jdat = send_request(url, params=params)
+
+    if not jdat or jdat['status'] == 'ZERO_RESULTS':
+        return False, False, False, False
+
+    locality = jdat['results'][0]['address_components'][0]['long_name']
+    for address in jdat['results'][0]['address_components']:
+        if 'country' in address['types']:
+            country = address['long_name']
+
+    return (jdat['results'][0]['geometry']['location']['lat'],
+            jdat['results'][0]['geometry']['location']['lng'],
+            locality, country)
+
+
+def get_short_url(long_url):
+    url = 'https://www.googleapis.com/urlshortener/v1/url?longUrl=' + long_url + '&key=' + config['api']['googledev']
+    params = {'longUrl': long_url, 'key': config['api']['googledev']}
+    headers = {'content-type': 'application/json'}
+
+    jstr = requests.post(url, data=json.dumps(params), headers=headers)
+
+    if jstr.status_code != 200:
+        return False
+
+    jdat = json.loads(jstr.text)
+
+    return (jdat['id'])
+
+
 def mp3_to_ogg(original):
     converted = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg')
     conv = subprocess.Popen(['avconv', '-i', original.name, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', converted.name], stdout=subprocess.PIPE)
