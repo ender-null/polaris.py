@@ -28,7 +28,7 @@ def start():
 
         for plugin in plugins:
             for command, parameters in plugin.commands:
-                trigger = command.replace('/', config.start)
+                trigger = command.replace('/', '^' + config.start)
 
                 if re.compile(trigger).search(message.content.lower()):
                     try:
