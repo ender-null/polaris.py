@@ -155,7 +155,7 @@ def remove_markdown(text):
     characters = ['_', '*', '[', ']', '`', '(', ')', '\\']
     aux = list()
     for x in range(len(text)):
-        if x > 0 and text[x] in characters and text[x - 1] != '\\':
+        if x >= 0 and text[x] in characters and text[x - 1] != '\\':
             pass
         else:
             aux.append(text[x])
