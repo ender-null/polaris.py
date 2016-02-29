@@ -57,7 +57,7 @@ def is_int(number):
 def download(url, params=None, headers=None):
     try:
         jstr = requests.get(url, params=params, headers=headers, stream=True)
-        ext = os.path.splitext(url)[1]
+        ext = os.path.splitext(url)[1].split('?')[0]
         f = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
         for chunk in jstr.iter_content(chunk_size=1024):
             if chunk:
@@ -67,6 +67,7 @@ def download(url, params=None, headers=None):
     f.seek(0)
     if not ext:
         f.name = fix_extension(f.name)
+    print(f.name)
     return open(f.name, 'rb')
 
 
@@ -152,7 +153,7 @@ def escape_markdown(text):
 
 
 def remove_markdown(text):
-    characters = ['_', '*', '[', ']', '`', '(', ')', '\\']
+    characters = ['_', '*', '[', '`', '(', '\\']
     aux = list()
     for x in range(len(text)):
         if x >= 0 and text[x] in characters and text[x - 1] != '\\':

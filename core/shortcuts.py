@@ -111,5 +111,5 @@ def send_exception(m):
     if m.receiver.id > 0:
         message = Message(None, m.receiver, m.sender, message, markup='Markdown')
     else:
-        message = Message(None, bot, m.receiver, message, markup='Markdown')
+        message = Message(None, bot, m.receiver, message)
     outbox.put(message)

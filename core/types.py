@@ -52,6 +52,7 @@ class Config:
             giphy = None
             league_of_legends = None
             openweathermap = None
+            weather = None
             google_developer_console = None
             azure_key = None
 
@@ -72,6 +73,7 @@ class Config:
                     keys.giphy = config_json['keys']['giphy']
                     keys.league_of_legends = config_json['keys']['league_of_legends']
                     keys.openweathermap = config_json['keys']['openweathermap']
+                    keys.weather = config_json['keys']['weather']
                     keys.google_developer_console = config_json['keys']['google_developer_console']
                     keys.azure_key = config_json['keys']['azure_key']
 
@@ -89,6 +91,7 @@ class Config:
                 keys.giphy = None
                 keys.league_of_legends = None
                 keys.openweathermap = None
+                keys.weather = None
                 keys.google_developer_console = None
                 keys.azure_key = None
                 self.keys = keys
@@ -104,6 +107,7 @@ class Config:
                         ('giphy', self.keys.giphy),
                         ('league_of_legends', self.keys.league_of_legends),
                         ('openweathermap', self.keys.openweathermap),
+                        ('weather', self.keys.weather),
                         ('google_developer_console', self.keys.google_developer_console),
                         ('azure_key', self.keys.azure_key)
                     )
