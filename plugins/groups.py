@@ -11,6 +11,7 @@ commands = [
     ('/addmod', ['user']),
     ('/demod', ['user'])
 ]
+description = 'Group management features. Currently very experimental and unstable.'
 
 
 def run(m):
