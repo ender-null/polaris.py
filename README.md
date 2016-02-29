@@ -12,9 +12,9 @@ It's still in development right now, so you may get crashes and features may not
 * ~~Add setup for first run to create config files.~~
 * ~~Run with both Telegram Bot API and Telegram-CLI.~~
  * Run both at the same time.
- * Allow media messages.
- * Allow replies.
- * Allow markdown. (for Bot API)
+ * ~~Allow media messages.~~
+ * ~~Allow replies.~~
+ * ~~Allow markdown. (for Bot API)~~
  * Allow inline mode (for Bot API)
 * Change settings and language without restarting.
 * Implement languages.
@@ -24,7 +24,7 @@ It's still in development right now, so you may get crashes and features may not
  * Bans and temporal bans.
  * Message of the Day.
  * Anti-spam.
- * Kick by name, id, username and reply.
+ * ~~Kick by name, id, username and reply.~~
 * Rewrite Reminders plugin.
  * PM to notify.
 * Rewrite Pins plugin.
