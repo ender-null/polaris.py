@@ -27,7 +27,8 @@ def run(m):
         send_exception(m)
 
     if cout.getvalue():
-        send_message(m, str(cout.getvalue()))
+        message = '<code>{}</code>'.format(str(cout.getvalue())).rstrip('\n')
+        send_message(m, message)
 
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__

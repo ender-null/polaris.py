@@ -106,22 +106,29 @@ def send_message(message):
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1')
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
+        #if message.extra:
         tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
+        #else:
+        #    tgsender.raw('[html] msg {0} {1}'.format(peer(message.receiver.id), message.content.replace('\n', '<br>').replace('<br></code>', '</code>')))
     elif message.type == 'photo':
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 7
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
     elif message.type == 'audio':
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 6
         tgsender.send_audio(peer(message.receiver.id), message.content.name)
     elif message.type == 'document':
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 8
         tgsender.send_document(peer(message.receiver.id), message.content.name)
     elif message.type == 'sticker':
         tgsender.send_file(peer(message.receiver.id), message.content.name)
     elif message.type == 'video':
-        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 3')
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 4
         tgsender.send_video(peer(message.receiver.id), message.content.name, message.extra)
     elif message.type == 'voice':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 5')
         tgsender.send_audio(peer(message.receiver.id), message.content.name)
     elif message.type == 'location':
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 9
         tgsender.send_location(peer(message.receiver.id), message.content, message.extra)
     elif message.type == 'status':
         if message.content == 'invite_user':
