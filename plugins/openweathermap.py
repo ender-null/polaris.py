@@ -1,9 +1,9 @@
 from core.utils import *
 
 commands = [
-    ('/openweather', ['location'])
+    ('/openweathermap', ['location'])
 ]
-description = 'Returns the current temperature and weather conditions for a specified location.'
+description = 'Returns the current temperature and weather conditions for a specified location. Uses Open Weather Map.'
 
 
 def get_icon(weather_icon):

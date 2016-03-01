@@ -67,7 +67,6 @@ def download(url, params=None, headers=None):
     f.seek(0)
     if not ext:
         f.name = fix_extension(f.name)
-    print(f.name)
     return open(f.name, 'rb')
 
 
