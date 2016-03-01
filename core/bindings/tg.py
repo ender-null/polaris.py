@@ -103,6 +103,7 @@ def convert_message(msg):
 
 def send_message(message):
     if message.type == 'text':
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1')
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
         tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
@@ -115,8 +116,10 @@ def send_message(message):
     elif message.type == 'sticker':
         tgsender.send_file(peer(message.receiver.id), message.content.name)
     elif message.type == 'video':
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 3')
         tgsender.send_video(peer(message.receiver.id), message.content.name, message.extra)
     elif message.type == 'voice':
+        tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 5')
         tgsender.send_audio(peer(message.receiver.id), message.content.name)
     elif message.type == 'location':
         tgsender.send_location(peer(message.receiver.id), message.content, message.extra)
@@ -140,30 +143,31 @@ def inbox_listen():
                 message = convert_message(msg)
                 inbox.put(message)
                 if message.receiver.id > 0:
-                    tgsender.mark_read(peer(message.receiver.id))
-                else:
                     tgsender.mark_read(peer(message.sender.id))
+                else:
+                    tgsender.mark_read(peer(message.receiver.id))
 
     tgreceiver.start()
     tgreceiver.message(listener())
 
 
 def outbox_listen():
+    color = Colors()
     while (started):
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('>> [{0} << {2}] {1}'.format(message.receiver.first_name, message.content[:10],
-                                                   message.sender.first_name))
+                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
+                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
             else:
-                print('>> [{0} << {2}] {1}'.format(message.receiver.title, message.content[:10],
-                                                   message.sender.first_name))
+                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
+                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
         else:
             if message.receiver.id > 0:
-                print('>> [{0} << {2}] <{1}> '.format(message.receiver.first_name, message.type,
-                                                     message.sender.first_name))
+                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
+                                                     message.sender.first_name, color.OKBLUE, color.ENDC))
             else:
-                print('>> [{0} << {2}] <{1}>'.format(message.receiver.title, message.type, message.sender.first_name))
+                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type, message.sender.first_name, color.OKBLUE, color.ENDC))
         send_message(message)
 
 

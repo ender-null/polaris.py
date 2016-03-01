@@ -12,7 +12,7 @@ commands = [
     ('/demod', ['user'])
 ]
 description = 'Group management features. Currently very experimental and unstable.'
-
+hidden = True
 
 def run(m):
     if not is_admin(m.sender.id):

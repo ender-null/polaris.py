@@ -101,15 +101,16 @@ def show_message(m):
 def send_exception(m):
     exc_type, exc_obj, exc_tb = sys.exc_info()
     tb = traceback.extract_tb(exc_tb, 4)
-    message = '\n`' + str(exc_type) + '`'
-    message += '\n\n`' + str(exc_obj) + '`'
+    message = '\n<code>' + str(exc_type.__name__) + '</code>'
+    message += '\n\n<code>' + str(exc_obj) + '</code>'
     for row in tb:
         message += '\n'
         for val in row:
-            message += '`' + str(val) + '`, '
+            message += '<code>' + str(val) + '</code>, '
+        message += '\n'
 
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, message, markup='Markdown')
+        message = Message(None, m.receiver, m.sender, message, markup='HTML')
     else:
-        message = Message(None, bot, m.receiver, message)
+        message = Message(None, bot, m.receiver, message, markup='HTML')
     outbox.put(message)

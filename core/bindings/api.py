@@ -312,20 +312,27 @@ def convert_message(msg):
 
 def send_message(message):
     if message.type == 'text':
+        api_send_chat_action(message.receiver.id, 'typing')
         api_send_message(message.receiver.id, message.content, not message.extra, parse_mode=message.markup)
     elif message.type == 'photo':
+        api_send_chat_action(message.receiver.id, 'upload_photo')
         api_send_photo(message.receiver.id, message.content, message.extra)
     elif message.type == 'audio':
+        api_send_chat_action(message.receiver.id, 'upload_audio')
         api_send_audio(message.receiver.id, message.content, message.extra)
     elif message.type == 'document':
+        api_send_chat_action(message.receiver.id, 'upload_document')
         api_send_document(message.receiver.id, message.content, message.extra)
     elif message.type == 'sticker':
         api_send_sticker(message.receiver.id, message.content, message.extra)
     elif message.type == 'video':
+        api_send_chat_action(message.receiver.id, 'upload_video')
         api_send_video(message.receiver.id, message.content, message.extra)
     elif message.type == 'voice':
+        api_send_chat_action(message.receiver.id, 'record_audio')
         api_send_voice(message.receiver.id, message.content, message.extra)
     elif message.type == 'location':
+        api_send_chat_action(message.receiver.id, 'find_location')
         api_send_location(message.receiver.id, message.content, message.extra)
     elif message.type == 'status':
         api_send_message(message.receiver.id, '`Not Yet Implemented!`', parse_mode='Markdown')
@@ -353,18 +360,22 @@ def inbox_listen():
 
 
 def outbox_listen():
+    color = Colors()
     while (started):
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('>> [{0} << {2}] {1}'.format(message.receiver.first_name, message.content[:10], message.sender.first_name))
+                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
+                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
             else:
-                print('>> [{0} << {2}] {1}'.format(message.receiver.title, message.content[:10], message.sender.first_name))
+                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
+                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
         else:
             if message.receiver.id > 0:
-                print('>> [{0} << {2}] <{1}>'.format(message.receiver.first_name, message.type, message.sender.first_name))
+                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
+                                                     message.sender.first_name, color.OKBLUE, color.ENDC))
             else:
-                print('>> [{0} << {2}] <{1}>'.format(message.receiver.title, message.type, message.sender.first_name))
+                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type, message.sender.first_name, color.OKBLUE, color.ENDC))
         send_message(message)
 
 

@@ -8,6 +8,7 @@ def start():
 
     bot.bindings.init()
 
+    color = Colors()
     while (started):
         message = inbox.get()
         
@@ -17,14 +18,14 @@ def start():
 
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('\n[{0} << {2}] {1}'.format(message.receiver.first_name, message.content, message.sender.first_name))
+                print('{3}[{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content, message.sender.first_name, color.OKGREEN, color.ENDC))
             else:
-                print('\n[{0} << {2}] {1}'.format(message.receiver.title, message.content, message.sender.first_name))
+                print('{3}[{0} << {2}] {1}{4}'.format(message.receiver.title, message.content, message.sender.first_name, color.OKGREEN, color.ENDC))
         else:
             if message.receiver.id > 0:
-                print('\n[{0} << {2}] <{1}>'.format(message.receiver.first_name, message.type, message.sender.first_name))
+                print('{3}[{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type, message.sender.first_name, color.OKGREEN, color.ENDC))
             else:
-                print('\n[{0} << {2}] <{1}>'.format(message.receiver.title, message.type, message.sender.first_name))
+                print('{3}[{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type, message.sender.first_name, color.OKGREEN, color.ENDC))
 
         for plugin in plugins:
             for command, parameters in plugin.commands:

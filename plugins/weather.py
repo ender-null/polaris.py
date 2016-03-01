@@ -53,7 +53,9 @@ def run(m):
     forecast = json.loads(jstr.text)['forecast']['simpleforecast']['forecastday']
     webcams = json.loads(jstr.text)['webcams']
 
-    message = '*Weather for ' + locality + ' \(' + country + '):*'
+    title = '*Weather for '
+    
+    message = locality + ' \(' + country + '):*'
     message += '\n' + str(weather['temp_c']) + u'ºC '
     if (float(weather['feelslike_c']) - float(weather['temp_c'])) > 0.001:
         message += '\(feels like ' + str(weather['feelslike_c']) + 'ºC)'
@@ -65,11 +67,16 @@ def run(m):
         simpleforecast += '\t*{0}*: {1}-{2}ºC - {4}\n'.format(day['date']['weekday'], day['low']['celsius'], day['high']['celsius'], day['conditions'], get_icon(day['icon']))
     
     if get_command(m) == 'weather':
-        photo_url = webcams[0]['CURRENTIMAGEURL']
-        photo = download(photo_url)
+        if 'CURRENTIMAGEURL' in webcams[0]:
+            photo_url = webcams[0]['CURRENTIMAGEURL']
+            photo = download(photo_url)
+        else:
+            photo = None
+            
         if photo:
             send_photo(m, photo, remove_markdown(message))
         else:
-            send_message(m, message, markup = 'Markdown')
+            send_message(m, title + message, markup = 'Markdown')
+            
     elif get_command(m) == 'forecast':
-        send_message(m, message + simpleforecast, markup = 'Markdown')
+        send_message(m, title + message + simpleforecast, markup = 'Markdown')
