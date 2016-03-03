@@ -1,7 +1,7 @@
 from core.utils import *
 
 commands = [
-    ('/help', [])
+    ('/help', ['command'])
 ]
 description = 'Prints help.'
 

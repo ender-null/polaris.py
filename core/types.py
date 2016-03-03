@@ -61,6 +61,7 @@ class Config:
         owner = None
         keys = Keys
         plugins = []
+        chats = []
         start = '/'
 
         def load(self):
@@ -83,6 +84,7 @@ class Config:
                     self.owner = config_json['owner']
                     self.keys = keys
                     self.plugins = config_json['plugins']
+                    self.chats = config_json['chats']
                     self.start = config_json['start']
                     print('\t[OK] ' + 'config.json loaded.')
             except:
@@ -121,6 +123,7 @@ class Config:
                         ('owner', self.owner),
                         ('keys', OrderedDict(keys_tuples)),
                         ('plugins', self.plugins),
+                        ('chats', self.chats),
                         ('start', self.start)
                     )
 

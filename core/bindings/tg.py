@@ -14,7 +14,10 @@ def peer(chat_id):
     if chat_id > 0:
         peer = 'user#id' + str(chat_id)
     else:
-        peer = 'chat#id' + str(chat_id)[1:]
+        if str(chat_id)[1:].startswith('100'):
+            peer = 'channel#id' + str(chat_id)[4:]
+        else:
+            peer = 'chat#id' + str(chat_id)[1:]
     return peer
 
 
@@ -42,6 +45,14 @@ def get_id(user):
         id = int(user_id(user))
 
     return id
+    
+def escape(string):
+    CHARS_UNESCAPED = ["\\", "\n", "\r", "\t", "\b", "\a", "'"]
+    CHARS_ESCAPED = ["\\\\", "\\n", "\\r", "\\t", "\\b", "\\a", "\\'"]
+    
+    for i in range(0, 7):
+        string = string.replace(CHARS_UNESCAPED[i], CHARS_ESCAPED[i])
+    return string.join(["'", "'"])  # wrap with single quotes.
 
 # Standard methods for bindings
 def get_me():
@@ -57,6 +68,8 @@ def convert_message(msg):
         receiver = User()
         receiver.id = int(msg['receiver']['peer_id'])
         receiver.first_name = msg['receiver']['first_name']
+        if 'first_name' in msg['receiver']:
+            receiver.first_name = msg['receiver']['first_name']
         if 'last_name' in msg['receiver']:
             receiver.last_name = msg['receiver']['last_name']
         if 'username' in msg['receiver']:
@@ -67,7 +80,8 @@ def convert_message(msg):
         receiver.title = msg['receiver']['title']
     sender = User()
     sender.id = int(msg['sender']['peer_id'])
-    sender.first_name = msg['sender']['first_name']
+    if 'first_name' in msg['sender']:
+        sender.first_name = msg['sender']['first_name']
     if 'last_name' in msg['sender']:
         sender.last_name = msg['sender']['last_name']
     if 'username' in msg['sender']:
@@ -107,7 +121,8 @@ def send_message(message):
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
         #if message.extra:
-        tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
+        tgsender.raw('post ' + peer(message.receiver.id) + ' ' + escape(message.content))
+        # tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
         #else:
         #    tgsender.raw('[html] msg {0} {1}'.format(peer(message.receiver.id), message.content.replace('\n', '<br>').replace('<br></code>', '</code>')))
     elif message.type == 'photo':
