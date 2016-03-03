@@ -50,9 +50,9 @@ class Config:
             tg_cli_port = None
             cat_api = None
             giphy = None
+            github_token = None
             league_of_legends = None
             openweathermap = None
-            accuweather = None
             weather = None
             google_developer_console = None
             azure_key = None
@@ -73,9 +73,9 @@ class Config:
                     keys.tg_cli_port = config_json['keys']['tg_cli_port']
                     keys.cat_api = config_json['keys']['cat_api']
                     keys.giphy = config_json['keys']['giphy']
+                    keys.github_token = config_json['keys']['github_token']
                     keys.league_of_legends = config_json['keys']['league_of_legends']
                     keys.openweathermap = config_json['keys']['openweathermap']
-                    keys.accuweather = config_json['keys']['accuweather']
                     keys.weather = config_json['keys']['weather']
                     keys.google_developer_console = config_json['keys']['google_developer_console']
                     keys.azure_key = config_json['keys']['azure_key']
@@ -93,9 +93,9 @@ class Config:
                 keys.tg_cli_port = None
                 keys.cat_api = None
                 keys.giphy = None
+                keys.github_token = None
                 keys.league_of_legends = None
                 keys.openweathermap = None
-                keys.accuweather = None
                 keys.weather = None
                 keys.google_developer_console = None
                 keys.azure_key = None
@@ -110,9 +110,9 @@ class Config:
                         ('tg_cli_port', self.keys.tg_cli_port),
                         ('cat_api', self.keys.cat_api),
                         ('giphy', self.keys.giphy),
+                        ('github_token', self.keys.github_token),
                         ('league_of_legends', self.keys.league_of_legends),
                         ('openweathermap', self.keys.openweathermap),
-                        ('accuweather', self.keys.accuweather),
                         ('weather', self.keys.weather),
                         ('google_developer_console', self.keys.google_developer_console),
                         ('azure_key', self.keys.azure_key)

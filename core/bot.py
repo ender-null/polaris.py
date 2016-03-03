@@ -6,7 +6,11 @@ import re
 def start():
     setup()
 
-    bot.bindings.init()
+    bot.bindings.get_me()
+    print('Account: [%s] %s (@%s)' % (bot.id, bot.first_name, bot.username))
+
+    Thread(target=bot.bindings.inbox_listener, name='Inbox Listener').start()
+    Thread(target=outbox_listener, name='Outbox Listener').start()
 
     color = Colors()
     while (started):
@@ -18,22 +22,25 @@ def start():
 
         if message.type == 'text':
             if message.receiver.id > 0:
-                print('{3}[{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content, message.sender.first_name, color.OKGREEN, color.ENDC))
+                print('%s[%s << %s] %s%s' % (color.OKGREEN, message.receiver.first_name, message.sender.first_name, message.content, color.ENDC))
             else:
-                print('{3}[{0} << {2}] {1}{4}'.format(message.receiver.title, message.content, message.sender.first_name, color.OKGREEN, color.ENDC))
+                print('%s[%s << %s] %s%s' % (color.OKGREEN, message.receiver.title, message.sender.first_name, message.content, color.ENDC))
         else:
             if message.receiver.id > 0:
-                print('{3}[{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type, message.sender.first_name, color.OKGREEN, color.ENDC))
+                print('%s[%s << %s] <%s>%s' % (color.OKGREEN, message.receiver.first_name, message.sender.first_name, message.type, color.ENDC))
             else:
-                print('{3}[{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type, message.sender.first_name, color.OKGREEN, color.ENDC))
-
+                print('%s[%s << %s] <%s>%s' % (color.OKGREEN, message.receiver.title, message.sender.first_name, message.type, color.ENDC))
+        
         for plugin in plugins:
             for command, parameters in plugin.commands:
                 trigger = command.replace('/', '^' + config.start)
 
                 if re.compile(trigger).search(message.content.lower()):
                     try:
-                        plugin.run(message)
+                        if hasattr(plugin, 'inline') and message.type == 'inline_query':
+                            plugin.inline(message)
+                        else:
+                            plugin.run(message)
                     except:
                         send_exception(message)
 
@@ -86,3 +93,23 @@ def load_plugins():
 
     print('\tLoaded: ' + str(len(plugins)) + '/' + str(len(config.plugins)))
     return plugins
+
+
+def outbox_listener():
+    color = Colors()
+    while (started):
+        message = outbox.get()
+        if message.type == 'text':
+            if message.receiver.id > 0:
+                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
+                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
+            else:
+                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
+                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
+        else:
+            if message.receiver.id > 0:
+                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
+                                                     message.sender.first_name, color.OKBLUE, color.ENDC))
+            else:
+                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type, message.sender.first_name, color.OKBLUE, color.ENDC))
+        bot.bindings.send_message(message)

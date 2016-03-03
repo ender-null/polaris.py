@@ -57,6 +57,10 @@ def send_sticker(m, sticker):
         message = Message(None, bot, m.receiver, sticker, 'sticker')
     outbox.put(message)
 
+    
+def answer_inline_query(m, results, offset=None):
+    message = Message(m.id, bot, m.receiver, results, 'inline_results', extra=offset)
+    outbox.put(message)
 
 def invite_user(m, user):
     message = Message(None, bot, m.receiver, 'invite_user', 'status', extra=user)
@@ -65,36 +69,6 @@ def invite_user(m, user):
 
 def kick_user(m, user):
     message = Message(None, bot, m.receiver, 'kick_user', 'status', extra=user)
-    outbox.put(message)
-
-
-def show_message(m):
-    text = 'Message info:\n'
-    text += 'sender.id: ' + str(m.sender.id) + '\n'
-    text += 'sender.first_name: ' + m.sender.first_name + '\n'
-    text += 'receiver.id: ' + str(m.receiver.id) + '\n'
-    if m.receiver.id > 0:
-        text += 'receiver.first_name: ' + m.receiver.first_name + '\n'
-    else:
-        text += 'receiver.title: ' + m.receiver.title + '\n'
-    text += 'type: ' + str(m.type) + '\n'
-    text += 'extra: ' + str(m.extra) + '\n'
-    if m.reply:
-        text += 'reply.sender.id: ' + str(m.reply.sender.id) + '\n'
-        text += 'reply.sender.first_name: ' + m.reply.sender.first_name + '\n'
-        text += 'reply.receiver.id: ' + str(m.reply.receiver.id) + '\n'
-        if m.reply.receiver.id > 0:
-            text += 'reply.receiver.first_name: ' + m.reply.receiver.first_name + '\n'
-        else:
-            text += 'reply.receiver.title: ' + m.reply.receiver.title + '\n'
-        text += 'reply.type: ' + str(m.reply.type) + '\n'
-        text += 'reply.extra: ' + str(m.reply.extra) + '\n'
-
-
-    if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, text, 'text')
-    else:
-        message = Message(None, bot, m.receiver, text, 'text')
     outbox.put(message)
 
 

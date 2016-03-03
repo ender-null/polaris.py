@@ -2,6 +2,7 @@ from core.shared import *
 from core.types import Colors
 from threading import Thread
 from six import string_types
+from time import time
 import requests
 
 # Telegram Bot API methods
@@ -20,7 +21,7 @@ def send_request(url, params=None, headers=None, files=None, data=None):
         while result.status_code == 429:
             result = requests.get(url, params=params, headers=headers, files=files, data=data)
 
-    return json.loads(result.text)#youtube
+    return json.loads(result.text)
 
 
 def api_request(api_method, params=None, headers=None, files=None):
@@ -207,7 +208,38 @@ def api_send_chat_action(chat_id, action):
         'action': action
     }
     return api_request('sendChatAction', params)
+    
+def api_answer_inline_query(inline_query_id, results, cache_time = None, is_personal = None, next_offset = None):
+    params = {
+        'inline_query_id': inline_query_id,
+        'results': results
+    }
+    if cache_time:
+        params['cache_time'] = cache_time
+    if is_personal:
+        params['is_personal'] = is_personal
+    if next_offset:
+        params['url'] = next_offset
 
+    return api_request('answerInlineQuery', params)
+
+
+def convert_inline(qry):
+    id = qry['id']
+    sender = User()
+    sender.id = qry['from']['id']
+    sender.first_name = qry['from']['first_name']
+    if 'last_name' in qry['from']:
+        sender.last_name = qry['from']['last_name']
+    if 'username' in qry['from']:
+        sender.username = qry['from']['username']
+
+    type = 'inline_query'
+    content = qry['query']
+    extra = qry['offset']
+    date = time()
+
+    return Message(id, sender, bot, content, type, date, extra=extra)
 
 # Standard methods for bindings
 def get_me():
@@ -334,13 +366,14 @@ def send_message(message):
     elif message.type == 'location':
         api_send_chat_action(message.receiver.id, 'find_location')
         api_send_location(message.receiver.id, message.content, message.extra)
+    elif message.type == 'inline_results':
+        api_answer_inline_query(message.id, message.content, next_offset=message.extra)
     elif message.type == 'status':
         api_send_message(message.receiver.id, '`Not Yet Implemented!`', parse_mode='Markdown')
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
-def inbox_listen():
-    print('\tStarting inbox daemon...')
+def inbox_listener():
     last_update = 0
 
     while (started):
@@ -351,41 +384,11 @@ def inbox_listen():
             for update in result:
                 if update['update_id'] > last_update:
                     last_update = update['update_id']
-                    msg = update['message']
-
-                    if (not 'inline_query' in update and 'text' in msg):
-                        # Generates another message object for the original message if the reply.
-                        message = convert_message(msg)
+                    
+                    if 'inline_query' in update:
+                        message = convert_inline(update['inline_query'])
                         inbox.put(message)
-
-
-def outbox_listen():
-    color = Colors()
-    while (started):
-        message = outbox.get()
-        if message.type == 'text':
-            if message.receiver.id > 0:
-                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
-                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
-            else:
-                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
-                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
-        else:
-            if message.receiver.id > 0:
-                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
-                                                     message.sender.first_name, color.OKBLUE, color.ENDC))
-            else:
-                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type, message.sender.first_name, color.OKBLUE, color.ENDC))
-        send_message(message)
-
-
-def init():
-    print('\nInitializing Telegram Bot API...')
-    get_me()
-    print('\tUsing: [{2}] {0} (@{1})'.format(bot.first_name, bot.username, bot.id))
-
-    inbox_listener = Thread(target=inbox_listen, name='Inbox Listener')
-    inbox_listener.start()
-    outbox_listener = Thread(target=outbox_listen, name='Outbox Listener')
-    outbox_listener.start()
-
+                        
+                    elif 'message' in update:
+                        message = convert_message(update['message'])
+                        inbox.put(message)

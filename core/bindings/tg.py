@@ -154,9 +154,7 @@ def send_message(message):
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
 
-def inbox_listen():
-    print('\tStarting inbox daemon...')
-
+def inbox_listener():
     @coroutine
     def listener():
         while (started):
@@ -171,32 +169,3 @@ def inbox_listen():
 
     tgreceiver.start()
     tgreceiver.message(listener())
-
-
-def outbox_listen():
-    color = Colors()
-    while (started):
-        message = outbox.get()
-        if message.type == 'text':
-            if message.receiver.id > 0:
-                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
-                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
-            else:
-                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
-                                                   message.sender.first_name, color.OKBLUE, color.ENDC))
-        else:
-            if message.receiver.id > 0:
-                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
-                                                     message.sender.first_name, color.OKBLUE, color.ENDC))
-            else:
-                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type, message.sender.first_name, color.OKBLUE, color.ENDC))
-        send_message(message)
-
-
-def init():
-    print('\nInitializing Telegram-CLI...')
-    get_me()
-    print('\tUsing: [{2}] {0} (@{1})'.format(bot.first_name, bot.username, bot.id))
-
-    Thread(target=inbox_listen, name='Inbox Listener').start()
-    Thread(target=outbox_listen, name='Outbox Listener').start()

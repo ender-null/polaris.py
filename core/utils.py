@@ -4,7 +4,7 @@ import requests, magic, mimetypes, tempfile, os, subprocess
 
 
 def get_input(message):
-    if message.type != 'text':
+    if message.type != 'text' and message.type != 'inline_query':
         return None
     else:
         text = message.content

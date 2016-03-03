@@ -32,6 +32,9 @@ def run(m):
     }
     auth = HTTPBasicAuth(config.keys.azure_key, config.keys.azure_key)
 
+    if get_command(m) == 'insfw':
+        params['Adult'] = "'Off'"
+        
     jstr = requests.get(url, params=params, auth=auth)
 
     if jstr.status_code != 200:
@@ -51,8 +54,6 @@ def run(m):
 
         i = random.randint(1, len(jdat['d']['results'])) - 1
         result_url = jdat['d']['results'][i]['MediaUrl']
-        # caption = jdat['d']['results'][i]['DisplayUrl']
-        # caption = jdat['d']['results'][i]['Title']
         caption = '"{0}"  {1}'.format(input, get_short_url(result_url).lstrip('https://'))
 
         for v in exts:
@@ -65,3 +66,47 @@ def run(m):
         send_photo(m, photo, caption)
     else:
         send_message(m, 'Error Downloading!')
+
+def inline(m):
+    input = get_input(m)
+
+    url = 'https://api.datamarket.azure.com/Data.ashx/Bing/Search/Image'
+    params = {
+        'Query': "'" + str(input) + "'",
+        'Adult': "'Moderate'",
+        '$format': 'json',
+        '$top': '16'
+    }
+    auth = HTTPBasicAuth(config.keys.azure_key, config.keys.azure_key)
+
+    if get_command(m) == 'insfw':
+        params['Adult'] = "'Off'"
+
+    jstr = requests.get(url, params=params, auth=auth)
+    jdat = json.loads(jstr.text)
+
+    results_json = []
+    for item in jdat['d']['results']:
+        ext = os.path.splitext(item['MediaUrl'])[1].split('?')[0]
+        if ext != '.gif':
+            result = {
+                'type': 'photo',
+                'id': item['ID'],
+                'photo_url': item['MediaUrl'],
+                'photo_width': int(item['Width']),
+                'photo_height': int(item['Height']),
+                'thumb_url': item['Thumbnail']['MediaUrl']
+            }
+        else:
+            result = {
+                'type': 'gif',
+                'id': item['ID'],
+                'gif_url': item['MediaUrl'],
+                'gif_width': int(item['Width']),
+                'gif_height': int(item['Height']),
+                'thumb_url': item['Thumbnail']['MediaUrl']
+            }
+        results_json.append(result)
+
+    results = json.dumps(results_json)
+    answer_inline_query(m, results)
