@@ -11,9 +11,17 @@ class Bot:
     first_name = None
     last_name = None
     username = None
+    inbox_listener = None
+    outbox_listener = None
+    started = None
 
     def set_bindings(self, bindings='api'):
         self.bindings = importlib.import_module('core.bindings.' + bindings)
+        
+    def start(self):
+        self.started = True
+        self.inbox_listener.start()
+        self.outbox_listener.start()
 
 
 # Defines the structure of the User objects.

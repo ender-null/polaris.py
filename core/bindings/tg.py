@@ -76,7 +76,10 @@ def convert_message(msg):
             receiver.username = msg['receiver']['username']
     else:
         receiver = Group()
-        receiver.id = - int(msg['receiver']['peer_id'])
+        if msg['receiver']['type'] == 'channel':
+            receiver.id = - int( '100' + str(msg['receiver']['peer_id']))
+        else:
+            receiver.id = - int(msg['receiver']['peer_id'])
         receiver.title = msg['receiver']['title']
     sender = User()
     sender.id = int(msg['sender']['peer_id'])
@@ -109,6 +112,7 @@ def convert_message(msg):
     if 'reply_id' in msg:
         reply_msg = tgsender.message_get(msg['reply_id'])
         reply = convert_message(reply_msg)
+        
     else:
         reply = None
 
@@ -118,38 +122,48 @@ def convert_message(msg):
 def send_message(message):
     if message.type == 'text':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1')
+        
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
-        #if message.extra:
-        tgsender.raw('post ' + peer(message.receiver.id) + ' ' + escape(message.content))
-        # tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
-        #else:
-        #    tgsender.raw('[html] msg {0} {1}'.format(peer(message.receiver.id), message.content.replace('\n', '<br>').replace('<br></code>', '</code>')))
+        
+        if peer(message.receiver.id).startswith('channel'):
+            tgsender.raw('post ' + peer(message.receiver.id) + ' ' + escape(message.content), enable_preview=message.extra)
+        tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
+        
     elif message.type == 'photo':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 7
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
+        
     elif message.type == 'audio':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 6
         tgsender.send_audio(peer(message.receiver.id), message.content.name)
+        
     elif message.type == 'document':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 8
         tgsender.send_document(peer(message.receiver.id), message.content.name)
+        
     elif message.type == 'sticker':
         tgsender.send_file(peer(message.receiver.id), message.content.name)
+        
     elif message.type == 'video':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 4
         tgsender.send_video(peer(message.receiver.id), message.content.name, message.extra)
+        
     elif message.type == 'voice':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 5')
         tgsender.send_audio(peer(message.receiver.id), message.content.name)
+        
     elif message.type == 'location':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 9
         tgsender.send_location(peer(message.receiver.id), message.content, message.extra)
+        
     elif message.type == 'status':
         if message.content == 'invite_user':
             tgsender.chat_add_user(peer(message.receiver.id), peer(get_id(message.extra)))
+            
         elif message.content == 'kick_user':
             tgsender.chat_del_user(peer(message.receiver.id), peer(get_id(message.extra)))
+            
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
@@ -157,7 +171,7 @@ def send_message(message):
 def inbox_listener():
     @coroutine
     def listener():
-        while (started):
+        while (bot.started):
             msg = (yield)
             if msg['event'] == 'message' and msg['own'] == False:
                 message = convert_message(msg)

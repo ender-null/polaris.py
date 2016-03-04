@@ -9,11 +9,12 @@ def start():
     bot.bindings.get_me()
     print('Account: [%s] %s (@%s)' % (bot.id, bot.first_name, bot.username))
 
-    Thread(target=bot.bindings.inbox_listener, name='Inbox Listener').start()
-    Thread(target=outbox_listener, name='Outbox Listener').start()
+    bot.inbox_listener = Thread(target=bot.bindings.inbox_listener, name='Inbox Listener')
+    bot.outbox_listener = Thread(target=outbox_listener, name='Outbox Listener')
+    bot.start()
 
     color = Colors()
-    while (started):
+    while (bot.started):
         message = inbox.get()
         
         # Ignores old messages
@@ -84,6 +85,7 @@ def list_plugins():
 
 def load_plugins():
     print('\nLoading plugins...')
+    del plugins[:]
     for plugin in config.plugins:
         try:
             plugins.append(importlib.import_module('plugins.' + plugin))
@@ -97,7 +99,7 @@ def load_plugins():
 
 def outbox_listener():
     color = Colors()
-    while (started):
+    while (bot.started):
         message = outbox.get()
         if message.type == 'text':
             if message.receiver.id > 0:

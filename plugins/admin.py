@@ -1,8 +1,8 @@
 from core.utils import *
-from core import bot
+from core.bot import start
 
 commands = [
-    ('/run', ['command']),
+    ('/sh', ['command']),
     ('/msg', ['chat id', 'message']),
     ('/reload', []),
     ('/refreshplugins', []),
@@ -17,7 +17,7 @@ def run(m):
 
     input = get_input(m)
 
-    if get_command(m) == 'run':
+    if get_command(m) == 'sh':
         if not input:
             return send_message(m, 'Invalid argument.')
         message = '`{0}`'.format(subprocess.getoutput(input))
@@ -33,16 +33,16 @@ def run(m):
         return
 
     elif get_command(m) == 'reload':
-        bot.start()
+        start()
         message = 'Bot reloaded!'
     
     elif get_command(m) == 'refreshplugins':
-        bot.list_plugins()
+        list_plugins()
         config.save()
         message = 'Bot reloaded!'
 
     elif get_command(m) == 'shutdown':
-        started = False
+        bot.started = False
         message = 'Bot shutdown!'
 
     send_message(m, message)

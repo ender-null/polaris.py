@@ -376,7 +376,7 @@ def send_message(message):
 def inbox_listener():
     last_update = 0
 
-    while (started):
+    while (bot.started):
         updates = get_updates(last_update + 1)
         result = updates['result']
 
