@@ -72,7 +72,7 @@ class ConfigStore:
                     self.chats = config_json['chats']
                     self.start = config_json['start']
                     self.language = config_json['language']
-                    print('\t[OK] config.json loaded.')
+                    print('\t%s[OK] config.json loaded.%s' % (Colors.OKGREEN, Colors.ENDC))
             except:
                 self.keys = DictObject()
                 print('\t%s[Failed] config.json NOT loaded.%s' % (Colors.FAIL, Colors.ENDC))
@@ -94,7 +94,7 @@ class ConfigStore:
                     config = OrderedDict(config_tuples)
 
                     json.dump(config, f, sort_keys=True, indent=4)
-                    print('\t[OK] config.json saved.')
+                    print('\t%s[OK] config.json saved.%s' % (Colors.OKGREEN, Colors.ENDC))
             except:
                 print('\t%s[Failed] config.json NOT saved.%s' % (Colors.FAIL, Colors.ENDC))
 
@@ -116,7 +116,7 @@ class ConfigStore:
                     self.messages = DictObject(config_json['messages'])
                     self.errors = DictObject(config_json['errors'])
                     self.interactions = DictObject(config_json['interactions'])
-                    print('\t[OK] %s.json loaded.' % f.name)
+                    print('\t%s[OK] %s.json loaded.%s' % (Colors.OKGREEN, file, Colors.ENDC))
             except:
                 self.messages = DictObject()
                 self.errors = DictObject()
@@ -141,7 +141,7 @@ class ConfigStore:
                     config = OrderedDict(config_tuples)
 
                     json.dump(config, f, sort_keys=True, indent=4)
-                    print('\t[OK] %s.json saved.' % f.name)
+                    print('\t%s[OK] %s.json saved.%s' % (Colors.OKGREEN, file, Colors.ENDC))
             except:
                 print('\t%s[Failed] %s.json NOT saved.%s' % (Colors.FAIL, file, Colors.ENDC))
 
@@ -186,7 +186,7 @@ class ConfigStore:
                     config_json = json.load(f, object_pairs_hook=OrderedDict)
                     self.list = DictObject(config_json)
 
-                    print('\t[OK] tags.json loaded.')
+                    print('\t%s[OK] tags.json loaded.%s' % (Colors.OKGREEN, Colors.ENDC))
             except:
                 self.list = DictObject()
                 print('\t%s[Failed] tags.json NOT loaded.%s' % (Colors.FAIL, Colors.ENDC))
@@ -195,9 +195,9 @@ class ConfigStore:
             try:
                 with open('data/tags.json', 'w') as f:
                     json.dump(self.list, f, sort_keys=True, indent=4)
-                    print('\t[OK] tags.json saved.')
+                    print('\t%s[OK] tags.json saved.%s' % (Colors.OKGREEN, Colors.ENDC))
             except:
-                print('\t%s[Failed] %s.json NOT saved.%s' % (Colors.FAIL, config.language, Colors.ENDC))
+                print('\t%s[Failed] tags.json NOT saved.%s' % (Colors.FAIL, Colors.ENDC))
 
 
 # Defines the structure of the Messages objects.

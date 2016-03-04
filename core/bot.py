@@ -77,9 +77,9 @@ def load_plugins():
     for plugin in config.plugins:
         try:
             plugins.append(importlib.import_module('plugins.' + plugin))
-            print('\t[OK] ' + plugin)
+            print('\t%s[OK] %s %s' % (Colors.OKGREEN, plugin, Colors.ENDC))
         except Exception as e:
-            print('\t[Failed] ' + plugin + ': ' + str(e))
+            print('\t%s[Failed] %s: %s %s' % (Colors.FAIL, plugin, str(e), Colors.ENDC))
 
     print('\tLoaded: ' + str(len(plugins)) + '/' + str(len(config.plugins)))
     return plugins
@@ -91,11 +91,11 @@ def handle_message(message):
 
     if message.receiver.id > 0:
         print('%s[%s << %s <%s>] %s%s' % (
-            Colors.OKGREEN, message.receiver.first_name, message.sender.first_name, message.type, message.content,
+            Colors.WARNING, message.receiver.first_name, message.sender.first_name, message.type, message.content,
             Colors.ENDC))
     else:
         print('%s[%s << %s <%s>] %s%s' % (
-            Colors.OKGREEN, message.receiver.title, message.sender.first_name, message.type, message.content,
+            Colors.WARNING, message.receiver.title, message.sender.first_name, message.type, message.content,
             Colors.ENDC))
 
     for plugin in plugins:

@@ -2,13 +2,13 @@ from core.bindings import *
 import requests, magic, mimetypes, tempfile, os, subprocess
 
 
-def get_input(message):
-    if message.type != 'text' and message.type != 'inline_query':
-        return None
-    else:
+def get_input(message, ignore_reply=False):
+    if message.type == 'text' or message.type == 'inline_query':
         text = message.content
+    else:
+        return None
 
-    if message.reply and message.reply.type == 'text':
+    if not ignore_reply and message.reply and message.reply.type == 'text':
         text += ' ' + message.reply.content
 
     if not ' ' in text:
@@ -184,7 +184,7 @@ def remove_markdown(text):
 
 
 def is_admin(id):
-    if id == config.owner:
+    if id == config.owner or 'trusted' in tags.list[str(id)]:
         return True
     else:
         return False

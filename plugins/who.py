@@ -10,18 +10,22 @@ def run(m):
     if m.reply:
         m.receiver = m.reply.receiver
         m.sender = m.reply.sender
+    uid = str(m.sender.id)
 
     if m.sender.last_name:
-        message = 'Info of {0} {1}:'.format(escape_markdown(m.sender.first_name), escape_markdown(m.sender.last_name))
+        message = 'Info of %s %s:' % (escape_markdown(m.sender.first_name), escape_markdown(m.sender.last_name))
     else:
-        message = 'Info of {0}:'.format(escape_markdown(m.sender.first_name))
+        message = 'Info of %s:' % (escape_markdown(m.sender.first_name))
 
     if m.sender.username:
-        message += '\n👤 @{1} ({0})'.format(m.sender.id, m.sender.username)
+        message += '\n👤 @%s (%s)' % (m.sender.username, m.sender.id)
     else:
-        message += '\n👤 ({0})'.format(m.sender.id)
+        message += '\n👤 (%s)' % (m.sender.id)
 
     if m.receiver.id < 0:
-        message += '\n👥 {0} ({1})'.format(m.receiver.title, m.receiver.id)
+        message += '\n👥 %s (%s)' % (m.receiver.title, m.receiver.id)
+
+    if uid in tags.list:
+        message += '\n🏷 %s' % (tags.list[uid])
 
     send_message(m, message)
