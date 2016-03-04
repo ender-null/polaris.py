@@ -62,7 +62,7 @@ def run(m):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
-        set_tag(id, 'mod:%s' % gid[1:])
+        set_tag(id, 'mod:%s' % str(gid)[1:])
         if m.reply:
             name = m.reply.sender.first_name
         else:
@@ -73,7 +73,7 @@ def run(m):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
-        rem_tag(id, 'mod:%s' % gid[1:])
+        rem_tag(id, 'mod:%s' % str(gid)[1:])
         if m.reply:
             name = m.reply.sender.first_name
         else:
