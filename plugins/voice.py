@@ -14,12 +14,13 @@ langs = [
     'es-us', 'sw', 'sv', 'ta', 'th', 'tr', 'vi', 'cy'
 ]
 
+
 def run(m):
     input = get_input(m)
 
     if not input:
         return send_message(m, 'No input')
-        
+
     for v in langs:
         if first_word(input) == v:
             lang = v
@@ -28,7 +29,6 @@ def run(m):
         else:
             lang = 'en'
             text = input
-
 
     url = 'http://translate.google.com/translate_tts'
     params = {

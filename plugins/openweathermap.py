@@ -50,9 +50,10 @@ def run(m):
     if weather['cod'] == '404':
         return send_message(m, 'No results.')
 
-
     message = 'Weather for ' + locality + ' (' + country + '):'
-    message += '\n' + str(int(weather['main']['temp'])) + u'ºC - ' + str(weather['weather'][0]['description']).title() + ' ' + get_icon(weather['weather'][0]['icon'])
-    message += u'\n💧 ' + str(weather['main']['humidity']) + u'% | 🌬 ' + str(int(weather['wind']['speed'] * 3.6)) + ' km/h'
+    message += '\n' + str(int(weather['main']['temp'])) + u'ºC - ' + str(
+        weather['weather'][0]['description']).title() + ' ' + get_icon(weather['weather'][0]['icon'])
+    message += u'\n💧 ' + str(weather['main']['humidity']) + u'% | 🌬 ' + str(
+        int(weather['wind']['speed'] * 3.6)) + ' km/h'
 
     send_message(m, message)

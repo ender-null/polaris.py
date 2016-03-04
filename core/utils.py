@@ -1,5 +1,4 @@
-from core.shared import *
-from core.shortcuts import *
+from core.bindings import *
 import requests, magic, mimetypes, tempfile, os, subprocess
 
 
@@ -52,6 +51,28 @@ def is_int(number):
         return True
     except ValueError:
         return False
+
+
+def save_json(path, data, hide=False):
+    try:
+        with open(path, 'w') as f:
+            if not hide:
+                print('\t[OK] ' + path)
+            json.dump(data, f, sort_keys=True, indent=4)
+    except:
+        print('\t%s[Failed] %s%s' % (Colors.FAIL, path, Colors.ENDC))
+        pass
+
+
+def load_json(path, hide=False):
+    try:
+        with open(path, 'r') as f:
+            if not hide:
+                print('\t[OK] ' + path)
+            return json.load(f, object_pairs_hook=OrderedDict)
+    except:
+        print('\t[Failed] ' + path)
+        return {}
 
 
 def download(url, params=None, headers=None):

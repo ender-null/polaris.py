@@ -120,11 +120,10 @@ def send_message(message):
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1')
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
-        #if message.extra:
-        tgsender.raw('post ' + peer(message.receiver.id) + ' ' + escape(message.content))
-        # tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
-        #else:
-        #    tgsender.raw('[html] msg {0} {1}'.format(peer(message.receiver.id), message.content.replace('\n', '<br>').replace('<br></code>', '</code>')))
+        if peer(message.receiver.id).startswith('channel'):
+            tgsender.raw('post ' + peer(message.receiver.id) + ' ' + escape(message.content), enable_preview=message.extra)
+        tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
+
     elif message.type == 'photo':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 7
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
@@ -157,7 +156,7 @@ def send_message(message):
 def inbox_listener():
     @coroutine
     def listener():
-        while (started):
+        while (bot.started):
             msg = (yield)
             if msg['event'] == 'message' and msg['own'] == False:
                 message = convert_message(msg)

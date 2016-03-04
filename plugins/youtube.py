@@ -29,10 +29,11 @@ def run(m):
     jdat = json.loads(jstr.text)
 
     text = 'Watch "%s" on YouTube\nhttp://youtu.be/%s' % (
-            item['snippet']['title'],
-            item['id']['videoId'])
+        item['snippet']['title'],
+        item['id']['videoId'])
 
     send_message(m, text, preview=True)
+
 
 def inline(m):
     input = get_input(m)
@@ -51,9 +52,9 @@ def inline(m):
     results_json = []
     for item in jdat['items']:
         text = 'Watch "%s" on YouTube\nhttp://youtu.be/%s' % (
-                item['snippet']['title'],
-                item['id']['videoId'])
-                
+            item['snippet']['title'],
+            item['id']['videoId'])
+
         url = 'https://www.googleapis.com/youtube/v3/videos'
         params = {
             'part': 'contentDetails',
@@ -62,12 +63,12 @@ def inline(m):
         }
 
         duration_iso = send_request(url, params)['items'][0]['contentDetails']['duration'].lower()
-        
+
         week = 0
-        day  = 0
+        day = 0
         hour = 0
-        min  = 0
-        sec  = 0
+        min = 0
+        sec = 0
 
         value = ''
         for c in duration_iso:
@@ -82,11 +83,11 @@ def inline(m):
             elif c == 'w':
                 week = int(value) * 604800
             elif c == 'd':
-                day = int(value)  * 86400
+                day = int(value) * 86400
             elif c == 'h':
                 hour = int(value) * 3600
             elif c == 'm':
-                min = int(value)  * 60
+                min = int(value) * 60
             elif c == 's':
                 sec = int(value)
 

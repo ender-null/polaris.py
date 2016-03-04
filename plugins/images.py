@@ -34,7 +34,7 @@ def run(m):
 
     if get_command(m) == 'insfw':
         params['Adult'] = "'Off'"
-        
+
     jstr = requests.get(url, params=params, auth=auth)
 
     if jstr.status_code != 200:
@@ -66,6 +66,7 @@ def run(m):
         send_photo(m, photo, caption)
     else:
         send_message(m, 'Error Downloading!')
+
 
 def inline(m):
     input = get_input(m)

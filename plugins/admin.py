@@ -11,6 +11,7 @@ commands = [
 
 hidden = True
 
+
 def run(m):
     if not is_admin(m.sender.id):
         return send_message(m, 'No, shit isn\'t going that way.')
@@ -35,7 +36,7 @@ def run(m):
     elif get_command(m) == 'reload':
         bot.start()
         message = 'Bot reloaded!'
-    
+
     elif get_command(m) == 'refreshplugins':
         bot.list_plugins()
         config.save()

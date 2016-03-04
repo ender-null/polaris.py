@@ -1,6 +1,4 @@
 from core.shared import *
-from core.types import Colors
-from threading import Thread
 from six import string_types
 from time import time
 import requests
@@ -88,9 +86,9 @@ def api_send_photo(chat_id, photo, caption=None,
 
     return api_request('sendPhoto', params, files=files)
 
-    
+
 def api_send_audio(chat_id, audio, title=None, duration=None, performer=None,
-               reply_to_message_id=None, reply_markup=None):
+                   reply_to_message_id=None, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -113,7 +111,7 @@ def api_send_audio(chat_id, audio, title=None, duration=None, performer=None,
 
 
 def api_send_document(chat_id, document, reply_to_message_id=None,
-                  reply_markup=None):
+                      reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -130,7 +128,7 @@ def api_send_document(chat_id, document, reply_to_message_id=None,
 
 
 def api_send_sticker(chat_id, sticker, reply_to_message_id=None,
-                 reply_markup=None):
+                     reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -147,7 +145,7 @@ def api_send_sticker(chat_id, sticker, reply_to_message_id=None,
 
 
 def api_send_video(chat_id, video, caption=None, duration=None,
-               reply_to_message_id=None, reply_markup=None):
+                   reply_to_message_id=None, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -168,7 +166,7 @@ def api_send_video(chat_id, video, caption=None, duration=None,
 
 
 def api_send_voice(chat_id, voice, duration=None, reply_to_message_id=None,
-               reply_markup=None):
+                   reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -187,7 +185,7 @@ def api_send_voice(chat_id, voice, duration=None, reply_to_message_id=None,
 
 
 def api_send_location(chat_id, latitude, longitude, reply_to_message_id=None,
-                  reply_markup=None):
+                      reply_markup=None):
     params = {
         'chat_id': chat_id,
         'latitude': latitude,
@@ -208,8 +206,9 @@ def api_send_chat_action(chat_id, action):
         'action': action
     }
     return api_request('sendChatAction', params)
-    
-def api_answer_inline_query(inline_query_id, results, cache_time = None, is_personal = None, next_offset = None):
+
+
+def api_answer_inline_query(inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
     params = {
         'inline_query_id': inline_query_id,
         'results': results
@@ -240,6 +239,7 @@ def convert_inline(qry):
     date = time()
 
     return Message(id, sender, bot, content, type, date, extra=extra)
+
 
 # Standard methods for bindings
 def get_me():
@@ -373,10 +373,11 @@ def send_message(message):
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)
 
+
 def inbox_listener():
     last_update = 0
 
-    while (started):
+    while (bot.started):
         updates = get_updates(last_update + 1)
         result = updates['result']
 
@@ -384,11 +385,11 @@ def inbox_listener():
             for update in result:
                 if update['update_id'] > last_update:
                     last_update = update['update_id']
-                    
+
                     if 'inline_query' in update:
                         message = convert_inline(update['inline_query'])
                         inbox.put(message)
-                        
+
                     elif 'message' in update:
                         message = convert_message(update['message'])
                         inbox.put(message)

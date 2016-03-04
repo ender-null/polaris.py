@@ -28,7 +28,7 @@ def run(m):
     street = jdat['title'].split(')')[-1].split('Lí')[0].strip()
     poste = jdat['title'].split(')')[0]
     line = jdat['title'].split(street)[-1].strip()
-    
+
     text = '*{0}*\n\tPoste: {1}\n\t{2}\n\n'.format(street.title(), poste, line)
     for destino in jdat['destinos']:
         text += destino['linea'] + ' ' + destino['destino']

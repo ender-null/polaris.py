@@ -1,19 +1,19 @@
-from core.shared import *
-import json
 from collections import OrderedDict
-import importlib
+from DictObject import DictObject
+import json, importlib
 
 
 # Used to store the bindings module and the User data of the bot.
 class Bot:
-    bindings = None
+    wrapper = None
     id = None
     first_name = None
     last_name = None
     username = None
+    started = False
 
-    def set_bindings(self, bindings='api'):
-        self.bindings = importlib.import_module('core.bindings.' + bindings)
+    def set_wrapper(self, wrapper='api'):
+        self.wrapper = importlib.import_module('core.wrapper.' + wrapper)
 
 
 # Defines the structure of the User objects.
@@ -44,22 +44,9 @@ class Group:
 class Config:
     # Main configuration file.
     class Config:
-        # Keys store the API keys.
-        class Keys:
-            bot_api_token = None
-            tg_cli_port = None
-            cat_api = None
-            giphy = None
-            github_token = None
-            league_of_legends = None
-            openweathermap = None
-            weather = None
-            google_developer_console = None
-            azure_key = None
-
-        bindings = None
+        wrapper = None
         owner = None
-        keys = Keys
+        keys = None
         plugins = []
         chats = []
         start = '/'
@@ -68,60 +55,26 @@ class Config:
             try:
                 with open('data/config.json', 'r') as f:
                     config_json = json.load(f, object_pairs_hook=OrderedDict)
-                    keys = Config.Config.Keys
-                    keys.bot_api_token = config_json['keys']['bot_api_token']
-                    keys.tg_cli_port = config_json['keys']['tg_cli_port']
-                    keys.cat_api = config_json['keys']['cat_api']
-                    keys.giphy = config_json['keys']['giphy']
-                    keys.github_token = config_json['keys']['github_token']
-                    keys.league_of_legends = config_json['keys']['league_of_legends']
-                    keys.openweathermap = config_json['keys']['openweathermap']
-                    keys.weather = config_json['keys']['weather']
-                    keys.google_developer_console = config_json['keys']['google_developer_console']
-                    keys.azure_key = config_json['keys']['azure_key']
 
-                    self.bindings = config_json['bindings']
+                    self.wrapper = config_json['wrapper']
                     self.owner = config_json['owner']
-                    self.keys = keys
+                    self.keys = DictObject(config_json['keys'])
                     self.plugins = config_json['plugins']
                     self.chats = config_json['chats']
                     self.start = config_json['start']
-                    print('\t[OK] ' + 'config.json loaded.')
+                    print('\t[OK] config.json loaded.')
             except:
-                keys = Config.Config.Keys
-                keys.bot_api_token = None
-                keys.tg_cli_port = None
-                keys.cat_api = None
-                keys.giphy = None
-                keys.github_token = None
-                keys.league_of_legends = None
-                keys.openweathermap = None
-                keys.weather = None
-                keys.google_developer_console = None
-                keys.azure_key = None
-                self.keys = keys
-                print('\t[Failed] ' + 'config.json NOT loaded.')
+                self.keys = DictObject()
+                print('\t%s[Failed] config.json NOT loaded.%s' % (Colors.FAIL, Colors.ENDC))
 
         def save(self):
             try:
                 with open('data/config.json', 'w') as f:
-                    keys_tuples = (
-                        ('bot_api_token', self.keys.bot_api_token),
-                        ('tg_cli_port', self.keys.tg_cli_port),
-                        ('cat_api', self.keys.cat_api),
-                        ('giphy', self.keys.giphy),
-                        ('github_token', self.keys.github_token),
-                        ('league_of_legends', self.keys.league_of_legends),
-                        ('openweathermap', self.keys.openweathermap),
-                        ('weather', self.keys.weather),
-                        ('google_developer_console', self.keys.google_developer_console),
-                        ('azure_key', self.keys.azure_key)
-                    )
 
                     config_tuples = (
-                        ('bindings', self.bindings),
+                        ('wrapper', self.wrapper),
                         ('owner', self.owner),
-                        ('keys', OrderedDict(keys_tuples)),
+                        ('keys', self.keys),
                         ('plugins', self.plugins),
                         ('chats', self.chats),
                         ('start', self.start)
@@ -132,13 +85,13 @@ class Config:
                     json.dump(config, f, sort_keys=True, indent=4)
                     print('\t[OK] config.json saved.')
             except:
-                print('\t[Failed] ' + 'config.json NOT saved.')
+                print('\t%s[Failed] config.json NOT saved.%s' % (Colors.FAIL, Colors.ENDC))
 
     # Defines a language for the messages.
     class Language:
-        message = OrderedDict
-        error = OrderedDict
-        plugins = OrderedDict
+        message = DictObject()
+        error = DictObject()
+        plugins = DictObject()
 
     # Stores a list of data of users.
     class Users:
@@ -211,6 +164,7 @@ class Message:
         self.reply = reply
         self.markup = markup
         self.extra = extra
+
 
 class Colors:
     HEADER = '\033[95m'

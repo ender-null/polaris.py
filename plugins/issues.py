@@ -38,7 +38,7 @@ def run(m):
             message = '#{} *{}*\n_{}_\n\n{}'.format(issues['number'], issues['title'], issues['body'], issues['url'])
         else:
             message = '#{} *{}*\n\n{}'.format(issues['number'], issues['title'], issues['url'])
-            
+
     elif get_command(m) == 'issues':
         jstr = requests.get(url)
 
@@ -46,9 +46,9 @@ def run(m):
             return send_message(m, 'Connection Error!\n' + jstr.text)
 
         issues = json.loads(jstr.text)
-        
+
         message = '*Open Issues:*\n'
         for issue in issues:
             message += '#{} *{}*\n_{}_\n\n'.format(issue['number'], issue['title'], issue['body'])
-    
+
     send_message(m, message, markup='Markdown')
