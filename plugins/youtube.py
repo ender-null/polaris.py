@@ -10,7 +10,7 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_message(m, 'No input')
+        return send_message(m, lang.errors.input)
 
     url = 'https://www.googleapis.com/youtube/v3/search'
     params = {
@@ -24,13 +24,13 @@ def run(m):
     jstr = requests.get(url, params=params)
 
     if jstr.status_code != 200:
-        return send_message(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
 
     jdat = json.loads(jstr.text)
 
     text = 'Watch "%s" on YouTube\nhttp://youtu.be/%s' % (
-        item['snippet']['title'],
-        item['id']['videoId'])
+        jdat['snippet']['title'],
+        jdat['id']['videoId'])
 
     send_message(m, text, preview=True)
 

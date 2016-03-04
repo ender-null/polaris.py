@@ -17,6 +17,7 @@ commands = [
 description = 'Gets stats from League of Legends summoner.'
 hidden = True
 
+
 def get_server(m):
     if not server:
         if get_command(m) == 'br':
@@ -56,7 +57,7 @@ def get_summoner_icon(server, summoner, summoner_name):
     params = {
         'api_key': config.keys.league_of_legends
     }
-    url = 'http://ddragon.leagueoflegends.com/cdn/%s/img/profileicon/' % (send_request(versions_url,params)[0])
+    url = 'http://ddragon.leagueoflegends.com/cdn/%s/img/profileicon/' % (send_request(versions_url, params)[0])
     return url + str(summoner[summoner_name]['profileIconId']) + '.png'
 
 
@@ -75,29 +76,33 @@ def get_stats_ranked(server, summoner_id):
         'api_key': config.keys.league_of_legends
     }
     return send_request(url, params)
-    
+
+
 def run(m):
     input = get_input(m)
+    if not input:
+        return send_message(m, lang.errors.input)
+
     global server
     server = None
 
     if not input:
-        return send_message(m, 'No Results!')
+        return send_message(m, lang.errors.results)
 
     server = get_server(m)
     if not server:
-        return send_message(m, 'No Results!')
+        return send_message(m, lang.errors.results)
     summoner = get_summoner(server, input)
     if not summoner:
-        return send_message(m, 'No Results!')
-        
+        return send_message(m, lang.errors.results)
+
     stats = get_stats(server, str(summoner[input]['id']))
-    
+
     if not stats:
-        return send_error(m, 'results')
+        return send_message(m, 'results')
     summoner_icon = get_summoner_icon(server, summoner, input)
     if not summoner_icon:
-        return send_message(m, 'Unknown Error!')
+        return send_message(m, lang.errors.unknown)
 
     try:
         ranked = get_stats_ranked(server, str(summoner[input]['id']))
@@ -113,7 +118,7 @@ def run(m):
             text += '\n\t3vs3 Wins: ' + str(summary['wins'])
         elif summary['playerStatSummaryType'] == 'AramUnranked5x5':
             text += '\n\tARAM Wins: ' + str(summary['wins'])
-    
+
     if '30' in str(summoner[input]['summonerLevel']):
         if not ranked:
             text += '\n\nUnranked'
@@ -122,15 +127,19 @@ def run(m):
                 i = 0
                 found = False
                 while not found:
-                    if str(ranked[str(summoner[input]['id'])][0]['entries'][i]['playerOrTeamId']) != str(summoner[input]['id']):
+                    if str(ranked[str(summoner[input]['id'])][0]['entries'][i]['playerOrTeamId']) != str(
+                            summoner[input]['id']):
                         i += 1
                     else:
                         info = ranked[str(summoner[input]['id'])][0]['entries'][i]
                         found = True
 
                 text += '\n\nRanked games:'
-                text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info['division'] + ' (' + str(info['leaguePoints']) + 'LP)'
-                text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(int(( float(info['wins']) / (float(info['wins']) + float(info['losses']))) * 100)).replace('.', '\'') + '%)'
+                text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info[
+                    'division'] + ' (' + str(info['leaguePoints']) + 'LP)'
+                text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(
+                    int((float(info['wins']) / (float(info['wins']) + float(info['losses']))) * 100)).replace('.',
+                                                                                                              '\'') + '%)'
 
     photo = download(summoner_icon)
 

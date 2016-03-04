@@ -3,10 +3,11 @@ from queue import Queue
 
 bot = Bot()
 
-config = Config.Config
-users = Config.Users
-groups = Config.Groups
-lang = Config.Language
+config = ConfigStore.Config
+users = ConfigStore.Users
+groups = ConfigStore.Groups
+lang = ConfigStore.Language
+tags = ConfigStore.Tags
 
 plugins = list()
 

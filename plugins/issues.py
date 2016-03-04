@@ -18,7 +18,7 @@ def run(m):
         input = get_input(m)
 
         if not input:
-            return send_message(m, 'No input')
+            return send_message(m, lang.errors.input)
         title = input.split('\n')[0]
         body = input.split('\n')[1]
         print(title + '/' + body)
@@ -31,7 +31,7 @@ def run(m):
         print(jstr.url)
 
         if jstr.status_code != 200:
-            return send_message(m, 'Connection Error!\n' + jstr.text)
+            return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
 
         issues = json.loads(jstr.text)[-1]
         if issues['body']:
@@ -43,7 +43,7 @@ def run(m):
         jstr = requests.get(url)
 
         if jstr.status_code != 200:
-            return send_message(m, 'Connection Error!\n' + jstr.text)
+            return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
 
         issues = json.loads(jstr.text)
 

@@ -17,15 +17,15 @@ hidden = True
 
 def run(m):
     if not is_admin(m.sender.id):
-        return send_message(m, 'No, shit isn\'t going that way.')
+        return send_message(m, lang.errors.permission)
 
     input = get_input(m)
 
     if get_command(m) == 'groups':
-        message = 'Unsupported action!'
+        message = lang.errors.unsupported
 
     elif get_command(m) == 'join':
-        message = 'Unsupported action!'
+        message = lang.errors.unsupported
 
     elif get_command(m) == 'invite':
         if m.reply:
@@ -42,18 +42,18 @@ def run(m):
             return kick_user(m, m.sender.id)
 
     elif get_command(m) == 'ban':
-        message = 'Unsupported action!'
+        message = lang.errors.unsupported
 
     elif get_command(m) == 'addgroup':
-        message = 'Unsupported action!'
+        message = lang.errors.unsupported
 
     elif get_command(m) == 'remgroup':
-        message = 'Unsupported action!'
+        message = lang.errors.unsupported
 
     elif get_command(m) == 'addmod':
-        message = 'Unsupported action!'
+        message = lang.errors.unsupported
 
     elif get_command(m) == 'demod':
-        message = 'Unsupported action!'
+        message = lang.errors.unsupported
 
     send_message(m, message)

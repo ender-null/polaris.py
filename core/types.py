@@ -1,3 +1,4 @@
+from core.shared import *
 from collections import OrderedDict
 from DictObject import DictObject
 import json, importlib
@@ -13,7 +14,7 @@ class Bot:
     inbox_listener = None
     outbox_listener = None
     started = None
-        
+
     def start(self):
         self.started = True
         self.inbox_listener.start()
@@ -48,7 +49,7 @@ class Group:
 
 
 # This classes define and manage configuration files and stored data.
-class Config:
+class ConfigStore:
     # Main configuration file.
     class Config:
         wrapper = None
@@ -57,6 +58,7 @@ class Config:
         plugins = []
         chats = []
         start = '/'
+        language = '/'
 
         def load(self):
             try:
@@ -69,6 +71,7 @@ class Config:
                     self.plugins = config_json['plugins']
                     self.chats = config_json['chats']
                     self.start = config_json['start']
+                    self.language = config_json['language']
                     print('\t[OK] config.json loaded.')
             except:
                 self.keys = DictObject()
@@ -85,6 +88,7 @@ class Config:
                         ('plugins', self.plugins),
                         ('chats', self.chats),
                         ('start', self.start)
+                        ('language', self.language)
                     )
 
                     config = OrderedDict(config_tuples)
@@ -96,9 +100,50 @@ class Config:
 
     # Defines a language for the messages.
     class Language:
-        message = DictObject()
-        error = DictObject()
-        plugins = DictObject()
+        messages = None
+        errors = None
+        interactions = None
+
+        def load(self):
+            try:
+                file = config.language
+            except NameError:
+                file = 'default'
+
+            try:
+                with open('lang/%s.json' % file, 'r') as f:
+                    config_json = json.load(f, object_pairs_hook=OrderedDict)
+                    self.messages = DictObject(config_json['messages'])
+                    self.errors = DictObject(config_json['errors'])
+                    self.interactions = DictObject(config_json['interactions'])
+                    print('\t[OK] %s.json loaded.' % f.name)
+            except:
+                self.messages = DictObject()
+                self.errors = DictObject()
+                self.interactions = DictObject()
+                print('\t%s[Failed] %s.json NOT loaded.%s' % (Colors.FAIL, file, Colors.ENDC))
+
+        def save(self):
+            try:
+                file = config.language
+            except NameError:
+                file = 'default'
+
+            try:
+                with open('lang/%s.json' % file, 'w') as f:
+
+                    config_tuples = (
+                        ('messages', self.messages),
+                        ('errors', self.errors),
+                        ('interactions', self.interactions)
+                    )
+
+                    config = OrderedDict(config_tuples)
+
+                    json.dump(config, f, sort_keys=True, indent=4)
+                    print('\t[OK] %s.json saved.' % f.name)
+            except:
+                print('\t%s[Failed] %s.json NOT saved.%s' % (Colors.FAIL, file, Colors.ENDC))
 
     # Stores a list of data of users.
     class Users:
@@ -108,15 +153,7 @@ class Config:
             first_name = None
             last_name = None
             username = None
-            tags = None
             settings = None
-
-            def __init__(self, first_name, last_name=None, username=None, tags=None, settings=None):
-                self.first_name = first_name
-                self.last_name = last_name
-                self.username = username
-                self.tags = tags
-                self.settings = settings
 
         def load(self):
             pass
@@ -133,20 +170,34 @@ class Config:
             description = None
             realm = None
             rules = None
-            tags = None
-
-            def __init__(self, title, description=None, realm=None, rules=None, tags=None):
-                self.title = title
-                self.description = description
-                self.realm = realm
-                self.rules = rules
-                self.tags = tags
 
         def load(self):
             pass
 
         def save(self):
             pass
+
+    class Tags:
+        list = None
+
+        def load(self):
+            try:
+                with open('data/tags.json', 'r') as f:
+                    config_json = json.load(f, object_pairs_hook=OrderedDict)
+                    self.list = DictObject(config_json)
+
+                    print('\t[OK] tags.json loaded.')
+            except:
+                self.list = DictObject()
+                print('\t%s[Failed] tags.json NOT loaded.%s' % (Colors.FAIL, Colors.ENDC))
+
+        def save(self):
+            try:
+                with open('data/tags.json', 'w') as f:
+                    json.dump(self.list, f, sort_keys=True, indent=4)
+                    print('\t[OK] tags.json saved.')
+            except:
+                print('\t%s[Failed] %s.json NOT saved.%s' % (Colors.FAIL, config.language, Colors.ENDC))
 
 
 # Defines the structure of the Messages objects.

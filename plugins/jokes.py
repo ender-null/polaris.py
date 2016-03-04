@@ -13,7 +13,7 @@ def run(m):
     jstr = requests.get(url)
     
     if jstr.status_code != 200:
-        return send_message(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
         
     soup = BeautifulSoup(jstr.text, 'lxml')
 

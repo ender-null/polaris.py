@@ -28,7 +28,7 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_message(m, 'No input')
+        return send_message(m, lang.errors.input)
 
     lat, lon, locality, country = get_coords(input)
 
@@ -43,12 +43,12 @@ def run(m):
     jstr = requests.get(url, params=params)
 
     if jstr.status_code != 200:
-        return send_message(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
 
     weather = json.loads(jstr.text)
 
     if weather['cod'] == '404':
-        return send_message(m, 'No results.')
+        return send_message(m, lang.errors.results)
 
     message = 'Weather for ' + locality + ' (' + country + '):'
     message += '\n' + str(int(weather['main']['temp'])) + u'ºC - ' + str(

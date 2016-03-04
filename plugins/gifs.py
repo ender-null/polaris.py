@@ -11,7 +11,7 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_message(m, 'No input')
+        return send_message(m, lang.errors.input)
 
     url = 'http://api.giphy.com/v1/gifs/search?limit=10&api_key='
     params = {
@@ -27,12 +27,12 @@ def run(m):
     jstr = requests.get(url, params=params)
 
     if jstr.status_code != 200:
-        return send_message(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
 
     jdat = json.loads(jstr.text)
 
     if len(jdat['data']) == 0:
-        return send_message(m, 'No Results!')
+        return send_message(m, lang.errors.results)
 
     i = random.randint(1, len(jdat['data'])) - 1
     result_url = jdat['data'][i]['images']['original']['url']
@@ -42,7 +42,7 @@ def run(m):
     if photo:
         send_document(m, photo)
     else:
-        send_message(m, 'Error Downloading!')
+        send_message(m, lang.errors.download)
 
 def inline(m):
     input = get_input(m)

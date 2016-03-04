@@ -42,7 +42,7 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_message(m, 'No input')
+        return send_message(m, lang.errors.input)
 
     lat, lon, locality, country = get_coords(input)
 
@@ -51,7 +51,8 @@ def run(m):
     jstr = requests.get(url)
 
     if jstr.status_code != 200:
-        return send_message(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+
     weather = json.loads(jstr.text)['current_observation']
     forecast = json.loads(jstr.text)['forecast']['simpleforecast']['forecastday']
     webcams = json.loads(jstr.text)['webcams']

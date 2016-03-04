@@ -9,6 +9,8 @@ description = 'Prints help.'
 def run(m):
     input = get_input(m)
 
+    message = lang.errors.results
+
     if input:
         for plugin in plugins:
             for command, parameters in plugin.commands:

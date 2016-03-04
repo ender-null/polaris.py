@@ -35,8 +35,10 @@ def start():
 def setup():
     print('Loading configuration...')
     config.load(config)
+    lang.load(lang)
     users.load(users)
     groups.load(groups)
+    tags.load(tags)
 
     if not 'bot_api_token' in config.keys and not 'tg_cli_port' in config.keys:
         print('\nWrapper not configured!')

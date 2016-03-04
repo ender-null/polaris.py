@@ -20,11 +20,11 @@ def run(m):
     )
 
     if jstr.status_code != 200:
-        return send_message(m, 'Connection Error!\n' + jstr.text)
+        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
 
     photo = download(url)
 
     if photo:
         send_photo(m, photo)
     else:
-        send_message(m, 'Error Downloading!')
+        send_message(m, lang.errors.download)

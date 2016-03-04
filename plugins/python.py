@@ -10,12 +10,12 @@ description = 'Executes python code.'
 
 def run(m):
     if not is_admin(m.sender.id):
-        return send_message(m, 'No, shit isn\'t going that way.')
+        return send_message(m, lang.errors.permission)
 
     input = get_input(m)
 
     if not input:
-        return send_message(m, 'No input')
+        return send_message(m, lang.errors.input)
 
     cout = StringIO()
     sys.stdout = cout

@@ -1,4 +1,5 @@
 from core.utils import *
+from time import time
 
 commands = [
     ('/remindme', ['delay', 'message'])
@@ -22,7 +23,7 @@ def run(m):
     input = get_input(m)
 
     if not input:
-        return send_message(m, 'No input')
+        return send_message(m, lang.errors.input)
 
     delay = first_word(input)
     if delay:
@@ -32,23 +33,23 @@ def run(m):
             message = 'The delay must be in this format: "(integer)(s|m|h|d)".\nExample: "2h" for 2 hours.'
             return send_message(m, message)
     try:
-        alarm = now() + to_seconds(time, unit)
+        alarm = time() + to_seconds(time, unit)
     except:
-        return send_message(msg['chat']['id'], message, parse_mode="Markdown")
+        return send_message(m, lang.errors.unknown, markup='Markdown')
 
     text = all_but_first_word(input)
     if not text:
         send_message(m, 'Please include a reminder.')
 
-    if 'username' in msg['from']:
-        text += '\n@' + msg['from']['username']
+    if 'username' in m.sender:
+        text += '\n@' + m.sender.username
 
     reminder = OrderedDict()
     reminder['alarm'] = alarm
-    reminder['chat_id'] = msg['chat']['id']
+    reminder['chat_id'] = m.receiver,id
     reminder['text'] = text
 
-    reminders[int(now())] = reminder
+    reminders[int(time())] = reminder
     save_json('data/reminders.json', reminders)
 
     if unit == 's':
@@ -65,10 +66,11 @@ def run(m):
 
 
 def cron():
-
     for id, reminder in reminders.items():
-        if now() > reminder['alarm']:
+        if time() > reminder['alarm']:
             # send_message(reminder['chat_id'], reminder['text'])
+            m = Message()
+            m.sender.id = reminder['chat_id']
             send_message(m, reminder['text'], markup='Markdown')
             del reminders[id]
             save_json('data/reminders.json', reminders)

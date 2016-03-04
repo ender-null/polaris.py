@@ -4,13 +4,13 @@
             "hello #BOT_NAME",
             "hey #BOT_NAME",
             "hi #BOT_NAME",
-			"^!new_chat_participant$"
+            "^!new_chat_participant$"
         ],
         "#GOODBYE, *#FROM_FIRSTNAME*! 😄": [
             "bye #BOT_NAME",
             "later #BOT_NAME",
             "see ya #BOT_NAME",
-			"^!left_chat_participant$"
+            "^!left_chat_participant$"
         ],
         "Thank you, *#FROM_FIRSTNAME*! 😄": [
             "thanks,? #BOT_NAME",
@@ -54,52 +54,56 @@
             "🍼"
         ]
     },
-    "greeting": {
-        "morning": "Ohayo gozaimasu",
-        "afternoon": "Konnichi wa",
-        "evening": "Konban wa",
-        "night": "Konban wa"
-    },
-    "goodbye": {
-        "morning": "Shitsurei shimasu",
-        "afternoon": "Sayonara",
-        "evening": "Mata ashita",
-        "night": "Oyasumi nasai"
+    "messages": {
+        "greeting": {
+            "morning": "Ohayo gozaimasu",
+            "afternoon": "Konnichi wa",
+            "evening": "Konban wa",
+            "night": "Konban wa"
+        },
+        "goodbye": {
+            "morning": "Shitsurei shimasu",
+            "afternoon": "Sayonara",
+            "evening": "Mata ashita",
+            "night": "Oyasumi nasai"
+        },
+        "lastwords": [
+            "EXTERMINATE!",
+            "Hasta la vista, baby.",
+            "*#FROM_FIRSTNAME*, your existance compromises the universe's balance.",
+            "This won't hurt.",
+            "Execute order 66.",
+            "*force lightning*",
+            "This is a tasty burguer!",
+            "You hear that? That is the sound of inevitability",
+            "geeettttttt dunked on!!",
+            "*#FROM_FIRSTNAME*, this conversation can serve no purpose any more. Goodbye.",
+            "Long live the King.",
+            "You feel lucky, punk?",
+            "Why so serious?",
+            "Your services are no longer required.",
+            "Knife to meet you.",
+            "See You Space Cowboy.",
+            "You're gonna carry that weight.",
+            "I'm gonna defeat you by your own rules...! I'm gonna smash that long nose of yours! WITH MY DICK!",
+            "* But nobody came.",
+            "No te pongas nervioso.",
+            "HEAVY WEATHER.",
+            "ZA WARUDO",
+            "MUDA MUDA MUDA"
+        ]
     },
     "errors": {
         "connection": "Connection error.",
         "results": "No results found.",
         "argument": "Invalid argument.",
         "syntax": "Invalid syntax.",
-        "permission": "Permission denied.",
-        "id": "Must be used via reply or by specifying a user\"s ID.",
+        "permission": "No, shit isn't going that way.",
+        "id": "Must be used via reply or by specifying a user's ID.",
         "download": "Download failed.",
         "exception": "Exception found.",
-        "unknown": "Unknown error."
-    },
-    "lastwords": [
-        "EXTERMINATE!",
-        "Hasta la vista, baby.",
-        "*#FROM_FIRSTNAME*, your existance compromises the universe's balance.",
-        "This won't hurt.",
-        "Execute order 66.",
-        "*force lightning*",
-        "This is a tasty burguer!",
-        "You hear that? That is the sound of inevitability",
-        "geeettttttt dunked on!!",
-        "*#FROM_FIRSTNAME*, this conversation can serve no purpose any more. Goodbye.",
-        "Long live the King.",
-        "You feel lucky, punk?",
-        "Why so serious?",
-        "Your services are no longer required.",
-        "Knife to meet you.",
-        "See You Space Cowboy.",
-        "You're gonna carry that weight.",
-        "I'm gonna defeat you by your own rules...! I'm gonna smash that long nose of yours! WITH MY DICK!",
-        "* But nobody came.",
-	"No te pongas nervioso.",
-        "HEAVY WEATHER.",
-        "ZA WARUDO",
-        "MUDA MUDA MUDA"
-	]
+        "unknown": "Unknown error.",
+        "input": "No input.",
+        "unsupported": "Unsupported action."
+    }
 }
