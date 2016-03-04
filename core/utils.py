@@ -198,7 +198,7 @@ def is_trusted(id):
 
 
 def is_mod(id, gid):
-    if is_admin(id) or has_tag(id, 'globalmod') or has_tag(id, 'mod:%s' % gid):
+    if is_admin(id) or has_tag(id, 'globalmod') or has_tag(id, 'mod:%s' % gid[1:]):
         return True
     else:
         return False
@@ -215,7 +215,6 @@ def set_tag(id, tag):
         message += '\'%s\' ' % tag
 
     return message
-
 
 
 def rem_tag(id, tag):
