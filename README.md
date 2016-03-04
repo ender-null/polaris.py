@@ -15,8 +15,8 @@ It's still in development right now, so you may get crashes and features may not
  * ~~Allow media messages.~~
  * ~~Allow replies.~~
  * ~~Allow markdown. (for Bot API)~~
- * Allow inline mode (for Bot API)
-* Change settings and language without restarting.
+ * ~~Allow inline mode (for Bot API)~~
+* ~~Change settings and language without restarting.~~
 * Implement languages.
 * Rewrite Groups plugin.
  * Implement group creation.
@@ -30,9 +30,9 @@ It's still in development right now, so you may get crashes and features may not
 * Rewrite Pins plugin.
  * Improve performance
  * Fix pin overlapping.
-* Rewrite Tags plugin.
- * Store id and tag only.
- * Set permissions with tags.
+* ~~Rewrite Tags plugin.~~
+ * ~~Store id and tag only.~~
+ * ~~Set permissions with tags.~~
  * Set tags to groups.
  * Ignore by tag.
  * Ban by tag.

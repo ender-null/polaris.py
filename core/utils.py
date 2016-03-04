@@ -184,7 +184,13 @@ def remove_markdown(text):
 
 
 def is_admin(id):
-    if id == config.owner or 'trusted' in tags.list[str(id)]:
+    if id == config.owner or 'admin' in tags.list[str(id)]:
+        return True
+    else:
+        return False
+
+def is_trusted(id):
+    if is_admin(id) or 'trusted' in tags.list[str(id)]:
         return True
     else:
         return False

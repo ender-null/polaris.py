@@ -16,7 +16,7 @@ hidden = True
 
 
 def run(m):
-    if not is_admin(m.sender.id):
+    if not is_trusted(m.sender.id):
         return send_message(m, lang.errors.permission)
 
     input = get_input(m)

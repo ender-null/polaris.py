@@ -9,7 +9,7 @@ hidden = True
 
 
 def run(m):
-    if not is_admin(m.sender.id):
+    if not is_trusted(m.sender.id):
         return send_message(m, 'No, shit isn\'t going that way.')
 
     url = 'https://api.github.com/repos/luksireiku/polaris/issues'
