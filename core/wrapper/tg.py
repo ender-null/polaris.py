@@ -125,11 +125,11 @@ def send_message(message):
         
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
-        
+
         if peer(message.receiver.id).startswith('channel'):
             tgsender.raw('post ' + peer(message.receiver.id) + ' ' + escape(message.content), enable_preview=message.extra)
         tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
-        
+
     elif message.type == 'photo':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 7
         tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)

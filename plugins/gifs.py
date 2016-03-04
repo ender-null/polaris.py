@@ -20,7 +20,7 @@ def run(m):
         'rating': 'pg-13',
         'q': input
     }
-    
+
     if get_command(m) == 'gifnsfw':
         params['rating'] = 'r'
 
@@ -34,7 +34,7 @@ def run(m):
     if len(jdat['data']) == 0:
         return send_message(m, 'No Results!')
 
-    i = random.randint(1, len(jdat['data']))-1
+    i = random.randint(1, len(jdat['data'])) - 1
     result_url = jdat['data'][i]['images']['original']['url']
 
     photo = download(result_url)

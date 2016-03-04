@@ -20,7 +20,7 @@ It's still in development right now, so you may get crashes and features may not
 * Implement languages.
 * Rewrite Groups plugin.
  * Implement group creation.
- * Supergroup compatibility.
+ * ~~Supergroup compatibility.~~
  * Bans and temporal bans.
  * Message of the Day.
  * Anti-spam.

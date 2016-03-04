@@ -14,6 +14,7 @@ commands = [
 description = 'Group management features. Currently very experimental and unstable.'
 hidden = True
 
+
 def run(m):
     if not is_admin(m.sender.id):
         return send_message(m, 'No, shit isn\'t going that way.')
@@ -30,13 +31,13 @@ def run(m):
         if m.reply:
             return invite_user(m, m.reply.sender.id)
         elif input:
-                return invite_user(m, input)
+            return invite_user(m, input)
 
     elif get_command(m) == 'kill':
         if m.reply:
             return kick_user(m, m.reply.sender.id)
         elif input:
-                return kick_user(m, input)
+            return kick_user(m, input)
         else:
             return kick_user(m, m.sender.id)
 

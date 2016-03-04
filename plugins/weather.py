@@ -6,6 +6,7 @@ commands = [
 ]
 description = 'Returns the current temperature and weather conditions for a specified location.'
 
+
 def get_icon(icon):
     weather_emoji = {}
     if icon[:4] == 'nt_':
@@ -36,6 +37,7 @@ def get_icon(icon):
 
     return weather_emoji[icon]
 
+
 def run(m):
     input = get_input(m)
 
@@ -44,7 +46,8 @@ def run(m):
 
     lat, lon, locality, country = get_coords(input)
 
-    url = 'http://api.wunderground.com/api/{0}/webcams/conditions/forecast/q/{1},{2}.json'.format(config.keys.weather, lat, lon)
+    url = 'http://api.wunderground.com/api/{0}/webcams/conditions/forecast/q/{1},{2}.json'.format(config.keys.weather,
+                                                                                                  lat, lon)
     jstr = requests.get(url)
 
     if jstr.status_code != 200:
@@ -54,29 +57,31 @@ def run(m):
     webcams = json.loads(jstr.text)['webcams']
 
     title = '*Weather for '
-    
+
     message = locality + ' \(' + country + '):*'
     message += '\n' + str(weather['temp_c']) + u'ºC '
     if (float(weather['feelslike_c']) - float(weather['temp_c'])) > 0.001:
         message += '\(feels like ' + str(weather['feelslike_c']) + 'ºC)'
     message += ' - ' + str(weather['weather']).title() + ' ' + get_icon(weather['icon'])
     message += u'\n💧 ' + str(weather['relative_humidity']) + u' | 🌬 ' + str(weather['wind_kph']) + ' km/h'
-    
+
     simpleforecast = '\n\n*Forecast: *\n'
     for day in forecast:
-        simpleforecast += '\t*{0}*: {1}-{2}ºC - {4}\n'.format(day['date']['weekday'], day['low']['celsius'], day['high']['celsius'], day['conditions'], get_icon(day['icon']))
-    
+        simpleforecast += '\t*{0}*: {1}-{2}ºC - {4}\n'.format(day['date']['weekday'], day['low']['celsius'],
+                                                              day['high']['celsius'], day['conditions'],
+                                                              get_icon(day['icon']))
+
     if get_command(m) == 'weather':
         if 'CURRENTIMAGEURL' in webcams[0]:
             photo_url = webcams[0]['CURRENTIMAGEURL']
             photo = download(photo_url)
         else:
             photo = None
-            
+
         if photo:
             send_photo(m, photo, remove_markdown(message))
         else:
-            send_message(m, title + message, markup = 'Markdown')
-            
+            send_message(m, title + message, markup='Markdown')
+
     elif get_command(m) == 'forecast':
-        send_message(m, title + message + simpleforecast, markup = 'Markdown')
+        send_message(m, title + message + simpleforecast, markup='Markdown')

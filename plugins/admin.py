@@ -11,6 +11,7 @@ commands = [
 
 hidden = True
 
+
 def run(m):
     if not is_admin(m.sender.id):
         return send_message(m, 'No, shit isn\'t going that way.')
@@ -20,7 +21,7 @@ def run(m):
     if get_command(m) == 'sh':
         if not input:
             return send_message(m, 'Invalid argument.')
-        message = '`{0}`'.format(subprocess.getoutput(input))
+        message = '<code>%s</code>' % (subprocess.getoutput(input))
 
     elif get_command(m) == 'msg':
         if not input:
@@ -35,7 +36,7 @@ def run(m):
     elif get_command(m) == 'reload':
         start()
         message = 'Bot reloaded!'
-    
+
     elif get_command(m) == 'refreshplugins':
         list_plugins()
         config.save()
@@ -45,4 +46,4 @@ def run(m):
         bot.started = False
         message = 'Bot shutdown!'
 
-    send_message(m, message)
+    send_message(m, message, markup='HTML')

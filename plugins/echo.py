@@ -12,7 +12,8 @@ def run(m):
     if not input:
         return send_message(m, 'No input')
 
-    send_message(m, input, markup ='Markdown', preview = False)
+    send_message(m, input, markup='Markdown', preview=False)
+
 
 def inline(m):
     input = get_input(m)

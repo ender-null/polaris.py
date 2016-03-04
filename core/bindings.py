@@ -1,6 +1,6 @@
+from core.shared import *
 import sys, traceback
 
-from core.shared import *
 
 def send_message(m, text, preview=False, markup=None):
     if m.receiver.id > 0:
@@ -57,10 +57,11 @@ def send_sticker(m, sticker):
         message = Message(None, bot, m.receiver, sticker, 'sticker')
     outbox.put(message)
 
-    
+
 def answer_inline_query(m, results, offset=None):
     message = Message(m.id, bot, m.receiver, results, 'inline_results', extra=offset)
     outbox.put(message)
+
 
 def invite_user(m, user):
     message = Message(None, bot, m.receiver, 'invite_user', 'status', extra=user)

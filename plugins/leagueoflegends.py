@@ -15,6 +15,7 @@ commands = [
     ('/tr ', ['summoner'])
 ]
 description = 'Gets stats from League of Legends summoner.'
+hidden = True
 
 def get_server(m):
     if not server:
@@ -28,7 +29,7 @@ def get_server(m):
             return 'lan'
         elif get_command(m) == 'las':
             return 'las'
-        elif get_command(m]) == 'na':
+        elif get_command(m) == 'na':
             return 'na'
         elif get_command(m) == 'oce':
             return 'oce'
@@ -51,12 +52,16 @@ def get_summoner(server, input):
 
 
 def get_summoner_icon(server, summoner, summoner_name):
-    url = 'http://ddragon.leagueoflegends.com/cdn/6.2.1/img/profileicon/'
+    versions_url = 'https://global.api.pvp.net/api/lol/static-data/euw/v1.2/versions'
+    params = {
+        'api_key': config.keys.league_of_legends
+    }
+    url = 'http://ddragon.leagueoflegends.com/cdn/%s/img/profileicon/' % (send_request(versions_url,params)[0])
     return url + str(summoner[summoner_name]['profileIconId']) + '.png'
 
 
 def get_stats(server, summoner_id):
-    url = 'https://' + server + '.api.pvp.net//api/lol/' + server + '/v1.3/stats/by-summoner/' + summoner_id + '/summary'
+    url = 'https://%s.api.pvp.net//api/lol/%s/v1.3/stats/by-summoner/%s/summary' % (server, server, summoner_id)
     params = {
         'api_key': config.keys.league_of_legends
     }
@@ -87,8 +92,6 @@ def run(m):
         return send_message(m, 'No Results!')
         
     stats = get_stats(server, str(summoner[input]['id']))
-    
-    print(stats)
     
     if not stats:
         return send_error(m, 'results')

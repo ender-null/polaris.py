@@ -12,7 +12,3 @@ plugins = list()
 
 inbox = Queue()
 outbox = Queue()
-
-global started
-
-started = True
