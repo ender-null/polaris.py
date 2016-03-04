@@ -16,9 +16,6 @@ hidden = True
 
 
 def run(m):
-    if not is_trusted(m.sender.id):
-        return send_message(m, lang.errors.permission)
-
     input = get_input(m)
 
     if get_command(m) == 'groups':
@@ -27,13 +24,13 @@ def run(m):
     elif get_command(m) == 'join':
         message = lang.errors.unsupported
 
-    elif get_command(m) == 'invite':
+    elif get_command(m) == 'invite' and (is_admin(m.sender.id) or is_mod(m.sender.id, m.receiver.id)):
         if m.reply:
             return invite_user(m, m.reply.sender.id)
         elif input:
             return invite_user(m, input)
 
-    elif get_command(m) == 'kill':
+    elif get_command(m) == 'kill' and (is_admin(m.sender.id) or is_mod(m.sender.id, m.receiver.id)):
         if m.reply:
             return kick_user(m, m.reply.sender.id)
         elif input:
@@ -51,9 +48,14 @@ def run(m):
         message = lang.errors.unsupported
 
     elif get_command(m) == 'addmod':
-        message = lang.errors.unsupported
+        set_tag(m.sender.id, 'mod:%s' % m.receiver.id)
+        message = '%s has been promoted to moderator for chat %s.' % (m.sender.first_name, m.receiver.title)
 
     elif get_command(m) == 'demod':
-        message = lang.errors.unsupported
+        rem_tag(m.sender.id, 'mod:%s' % m.receiver.id)
+        message = '%s has been demoted to member for chat %s.' % (m.sender.first_name, m.receiver.title)
+
+    else:
+        message = lang.errors.permission
 
     send_message(m, message)

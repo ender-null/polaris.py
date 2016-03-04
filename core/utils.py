@@ -184,13 +184,56 @@ def remove_markdown(text):
 
 
 def is_admin(id):
-    if id == config.owner or 'admin' in tags.list[str(id)]:
+    if id == config.owner or has_tag(id, 'admin'):
         return True
     else:
         return False
 
+
 def is_trusted(id):
-    if is_admin(id) or 'trusted' in tags.list[str(id)]:
+    if is_admin(id) or has_tag(id, 'trusted'):
+        return True
+    else:
+        return False
+
+
+def is_mod(id, gid):
+    if is_admin(id) or has_tag(id, 'globalmod') or has_tag(id, 'mod:%s' % gid):
+        return True
+    else:
+        return False
+
+
+def set_tag(id, tag):
+    uid = str(id)
+    message = ''
+    if not uid in tags.list:
+        tags.list[uid] = []
+
+    if not tag in tags.list[uid]:
+        tags.list[uid].append(tag)
+        message += '\'%s\' ' % tag
+
+    return message
+
+
+
+def rem_tag(id, tag):
+    uid = str(id)
+    message = ''
+    if not uid in tags.list:
+        return message
+
+    if tag in tags.list[uid]:
+        tags.list[uid].remove(tag)
+        message += '-\'%s\' ' % tag
+
+    return message
+
+
+def has_tag(id, tag):
+    uid = str(id)
+    if uid in tags.list or tag in tags.list[uid]:
         return True
     else:
         return False

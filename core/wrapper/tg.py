@@ -1,5 +1,4 @@
 from core.utils import *
-from threading import Thread
 from pytg.receiver import Receiver
 from pytg.sender import Sender
 from pytg.utils import coroutine
