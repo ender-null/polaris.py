@@ -5,6 +5,7 @@ commands = [
     ('/joke', [])
 ]
 description = 'Returns a random Hot Sick, Rude, Offensive & Politically Incorrect joke from Sickipedia.'
+hidden = True
 
 
 def run(m):
