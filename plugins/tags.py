@@ -31,8 +31,6 @@ def run(m):
             for tag in taglist:
                 message += set_tag(uid, tag)
 
-            tags.save(tags)
-
 
     elif get_command(m) == 'remtag':
         taglist = input.split()
@@ -41,7 +39,5 @@ def run(m):
             uid = str(m.reply.sender.id)
             for tag in taglist:
                 message += rem_tag(uid, tag)
-
-            tags.save(tags)
 
     send_message(m, message, markup='HTML')

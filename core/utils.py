@@ -213,7 +213,8 @@ def set_tag(id, tag):
     if not tag in tags.list[uid]:
         tags.list[uid].append(tag)
         message += '\'%s\' ' % tag
-
+    
+    tags.save(tags)
     return message
 
 
@@ -227,12 +228,13 @@ def rem_tag(id, tag):
         tags.list[uid].remove(tag)
         message += '-\'%s\' ' % tag
 
+    tags.save(tags)
     return message
 
 
 def has_tag(id, tag):
     uid = str(id)
-    if uid in tags.list or tag in tags.list[uid]:
+    if uid in tags.list and tag in tags.list[uid]:
         return True
     else:
         return False

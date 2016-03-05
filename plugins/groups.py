@@ -21,6 +21,7 @@ def run(m):
         id = m.reply.sender.id
     else:
         id = m.sender.id
+    uid = m.sender.id
     gid = m.receiver.id
 
     if get_command(m) == 'groups':
@@ -29,7 +30,7 @@ def run(m):
     elif get_command(m) == 'join':
         message = lang.errors.unsupported
 
-    elif get_command(m) == 'invite' and (is_admin(id) or is_mod(id, gid)):
+    elif get_command(m) == 'invite' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
@@ -38,7 +39,7 @@ def run(m):
         elif input:
             return invite_user(m, input)
 
-    elif get_command(m) == 'kill' and (is_admin(id) or is_mod(id, gid)):
+    elif get_command(m) == 'kill' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
@@ -47,7 +48,7 @@ def run(m):
         elif input:
             return kick_user(m, input)
         else:
-            return kick_user(m, id)
+            return kick_user(m, uid)
 
     elif get_command(m) == 'ban':
         message = lang.errors.unsupported
@@ -58,7 +59,7 @@ def run(m):
     elif get_command(m) == 'remgroup':
         message = lang.errors.unsupported
 
-    elif get_command(m) == 'addmod':
+    elif get_command(m) == 'addmod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
@@ -69,7 +70,7 @@ def run(m):
             name = m.sender.first_name
         message = '%s has been promoted to moderator for chat %s.' % (name, m.receiver.title)
 
-    elif get_command(m) == 'demod':
+    elif get_command(m) == 'demod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
