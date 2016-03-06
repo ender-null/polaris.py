@@ -52,20 +52,20 @@ def run(m):
 
     result = ''
     if nowplaying:
-        result += '`%s` is now playing:\n🎵 _%s_\n💽 _%s_' % (username, track, artist)
+        result += '`%s` is now playing:\n🎵 _%s_\n🗣 _%s_' % (username, track, artist)
         if album:
-            result += ' - _%s_' % (album)
+            result += '\n💽 _%s_' % (album)
     else:
-        result += '`%s` last played \(%s):\n🎵 _%s_\n💽 _%s_' % (username, date, track, artist)
+        result += '`%s` last played \(%s):\n🎵 _%s_\n🗣 _%s_' % (username, date, track, artist)
         if album:
-            result += ' - _%s_' % (album)
+            result += '\n💽 _%s_' % (album)
 
     url_yt = 'https://www.googleapis.com/youtube/v3/search'
     params_yt = {
         'type': 'video',
         'part': 'snippet',
         'maxResults': '1',
-        'q': '%s - %s - %s' % (track, album, artist),
+        'q': '%s - %s - %s' % (track, artist, album),
         'key': config.keys.google_developer_console
     }
 
@@ -76,8 +76,9 @@ def run(m):
 
     youtube = json.loads(res_yt.text)
 
-    result += '\n\n🎞 This might be it on YouTube:\n"%s"\nhttp://youtu.be/%s' % (
-        youtube['items'][0]['snippet']['title'],
-        youtube['items'][0]['id']['videoId'])
+    if len(youtube['items']) > 0:
+        result += '\n\n🎞 "%s"\nhttp://youtu.be/%s' % (
+            youtube['items'][0]['snippet']['title'].replace('(','\('),
+            youtube['items'][0]['id']['videoId'])
 
     send_message(m, result, markup='Markdown', preview=False)
