@@ -29,8 +29,8 @@ def run(m):
     jdat = json.loads(jstr.text)
 
     text = 'Watch "%s" on YouTube\nhttp://youtu.be/%s' % (
-        jdat['snippet']['title'],
-        jdat['id']['videoId'])
+        jdat['items'][0]['snippet']['title'],
+        jdat['items'][0]['id']['videoId'])
 
     send_message(m, text, preview=True)
 

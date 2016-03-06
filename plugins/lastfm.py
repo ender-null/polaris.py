@@ -1,3 +1,4 @@
+# Made by zhantyzgz and fixed by me (luksireiku)
 from core.utils import *
 
 commands = [
@@ -7,10 +8,13 @@ description = 'Returns what you are or were last listening to. If you specify a 
 
 
 def run(m):
-    input = get_input(m)
+    username = get_input(m)
 
-    if not input:
-        return send_message(m, lang.errors.input)
+    if not username:
+        if m.sender.username:
+            username = m.sender.username
+        else:
+            return send_message(m, lang.errors.input)
 
     url = 'http://ws.audioscrobbler.com/2.0/'
     params = {
@@ -21,13 +25,16 @@ def run(m):
         'user': username
     }
 
-    jstr = requests.get(url, params=params)
+    res = requests.get(url, params=params)
 
-    if jstr.status_code != 200:
-        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+    if res.status_code != 200:
+        return send_message(m, '%s\n%s' % (lang.errors.connection, res.text))
 
-    lastfm = json.loads(jstr.text)
-
+    lastfm = json.loads(res.text)
+    
+    if len(lastfm['recenttracks']['track']) < 1:
+        return send_message(m, lang.errors.results)
+    
     artist = lastfm['recenttracks']['track'][0]['artist']['#text']
     track = lastfm['recenttracks']['track'][0]['name']
     album = lastfm['recenttracks']['track'][0]['album']['#text']
@@ -45,17 +52,16 @@ def run(m):
 
     result = ''
     if nowplaying:
-        result += '`%s` is now playing:\n*Song*:_ %s_\n*Artist*:_ %s_' % (username, track, artist)
+        result += '`%s` is now playing:\n🎵 _%s_\n💽 _%s_' % (username, track, artist)
         if album:
-            result += '\n*Album*:_ %s_' % (album)
+            result += ' - _%s_' % (album)
     else:
-        result += '`%s` last played (%s):\n*Song*:_ %s_\n*Artist*:_ %s_' % (username, date, track, artist)
+        result += '`%s` last played \(%s):\n🎵 _%s_\n💽 _%s_' % (username, date, track, artist)
         if album:
-            result += '\n*Album*:_ %s_' % (album)
+            result += ' - _%s_' % (album)
 
-    # youtube
-    url = 'https://www.googleapis.com/youtube/v3/search'
-    params = {
+    url_yt = 'https://www.googleapis.com/youtube/v3/search'
+    params_yt = {
         'type': 'video',
         'part': 'snippet',
         'maxResults': '1',
@@ -63,15 +69,15 @@ def run(m):
         'key': config.keys.google_developer_console
     }
 
-    jstr = requests.get(url, params=params)
+    res_yt = requests.get(url_yt, params=params_yt)
 
-    if jstr.status_code != 200:
-        return send_message(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+    if res_yt.status_code != 200:
+        return send_message(m, '%s\n%s' % (lang.errors.connection, res_yt.text))
 
-    youtube = json.loads(jstr.text)
+    youtube = json.loads(res_yt.text)
 
-    result = '\n\nMight be this on YouTube\nhttp://youtu.be/%s' % (
-        youtube['snippet']['title'],
-        youtube['id']['videoId'])
+    result += '\n\n🎞 This might be it on YouTube:\n"%s"\nhttp://youtu.be/%s' % (
+        youtube['items'][0]['snippet']['title'],
+        youtube['items'][0]['id']['videoId'])
 
-    send_message(m, result, preview=False)
+    send_message(m, result, markup='Markdown', preview=False)
