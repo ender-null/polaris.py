@@ -287,7 +287,10 @@ def convert_message(msg):
     elif 'document' in msg:
         type = 'document'
         content = msg['document']['file_id']
-        extra = msg['document']['file_name']
+        if 'file_name' in msg:
+            extra = msg['document']['file_name']
+        else:
+            extra = None
     elif 'photo' in msg:
         type = 'photo'
         content = msg['photo'][-1]['file_id']
