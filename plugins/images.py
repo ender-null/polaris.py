@@ -3,9 +3,11 @@ from requests.auth import HTTPBasicAuth
 import random, re
 
 commands = [
-    ('/image', ['query'])
+    ('/image', ['query']),
+    ('/insfw', ['query'])
 ]
-description = 'This command performs a Google Images search for the given query.'
+description = 'This command performs a Bing Images search for the given query.'
+shortcut = '/i'
 
 exts = {
     '.jpg$',

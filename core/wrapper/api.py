@@ -110,7 +110,7 @@ def api_send_audio(chat_id, audio, title=None, duration=None, performer=None,
     return api_request('sendAudio', params, files=files)
 
 
-def api_send_document(chat_id, document, reply_to_message_id=None,
+def api_send_document(chat_id, document, caption=None, reply_to_message_id=None,
                       reply_markup=None):
     params = {'chat_id': chat_id}
 
@@ -119,6 +119,8 @@ def api_send_document(chat_id, document, reply_to_message_id=None,
         files = {'document': document}
     else:
         params['document'] = document
+    if caption:
+        params['caption'] = caption
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
     if reply_markup:

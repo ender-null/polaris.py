@@ -18,11 +18,11 @@ def send_photo(m, photo, caption=None):
     outbox.put(message)
 
 
-def send_document(m, document):
+def send_document(m, document, caption=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, document, 'document')
+        message = Message(None, m.receiver, m.sender, document, 'document', extra=caption)
     else:
-        message = Message(None, bot, m.receiver, document, 'document')
+        message = Message(None, bot, m.receiver, document, 'document', extra=caption)
     outbox.put(message)
 
 

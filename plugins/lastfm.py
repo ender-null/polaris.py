@@ -5,6 +5,7 @@ commands = [
     ('/nowplaying', ['username'])
 ]
 description = 'Returns what you are or were last listening to. If you specify a username, info will be returned for that username.'
+shortcut = '/np'
 
 
 def run(m):
@@ -32,13 +33,13 @@ def run(m):
 
     lastfm = json.loads(res.text)
     
-    if len(lastfm['recenttracks']['track']) < 1:
+    if not 'recenttracks' in lastfm:
         return send_message(m, lang.errors.results)
     
-    artist = lastfm['recenttracks']['track'][0]['artist']['#text']
-    track = lastfm['recenttracks']['track'][0]['name']
-    album = lastfm['recenttracks']['track'][0]['album']['#text']
-    track_url = lastfm['recenttracks']['track'][0]['url']
+    artist = lastfm['recenttracks']['track'][0]['artist']['#text'].title()
+    track = lastfm['recenttracks']['track'][0]['name'].title()
+    album = lastfm['recenttracks']['track'][0]['album']['#text'].title()
+    track_url = lastfm['recenttracks']['track'][0]['url'].title()
 
     try:
         nowplaying = lastfm['recenttracks']['track'][0]['@attr']['nowplaying']
@@ -77,7 +78,7 @@ def run(m):
     youtube = json.loads(res_yt.text)
 
     if len(youtube['items']) > 0:
-        result += '\n\n🎞 "%s"\nhttp://youtu.be/%s' % (
+        result += '\n\n🎞 %s\nhttp://youtu.be/%s' % (
             youtube['items'][0]['snippet']['title'].replace('(','\('),
             youtube['items'][0]['id']['videoId'])
 

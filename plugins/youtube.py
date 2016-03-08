@@ -4,6 +4,7 @@ commands = [
     ('/youtube', ['query'])
 ]
 description = 'Returns the top results from YouTube.'
+shortcut = '/yt'
 
 
 def run(m):

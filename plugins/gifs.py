@@ -2,7 +2,8 @@ from core.utils import *
 import random
 
 commands = [
-    ('/gif', ['query'])
+    ('/gif', ['query']),
+    ('/gifnsfw', ['query'])
 ]
 description = 'Returns a random or search-resulted GIF from giphy.com. Results are limited to PG-13 by default.'
 
@@ -36,11 +37,12 @@ def run(m):
 
     i = random.randint(1, len(jdat['data'])) - 1
     result_url = jdat['data'][i]['images']['original']['url']
-
+    caption = '"{0}"  {1}'.format(input, get_short_url(result_url).lstrip('https://'))
+    
     photo = download(result_url)
 
     if photo:
-        send_document(m, photo)
+        send_document(m, photo, caption)
     else:
         send_message(m, lang.errors.download)
 

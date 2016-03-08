@@ -6,6 +6,7 @@ commands = [
     ('/remtag', ['tags'])
 ]
 description = 'Well... you may guess it\'s used to tag stuff.'
+hidden = True
 
 
 def run(m):

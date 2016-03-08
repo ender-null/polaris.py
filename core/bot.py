@@ -7,8 +7,11 @@ import re
 def start():
     setup()
 
-    bot.started = True
     bot.wrapper.get_me()
+    bot.started = True
+    
+    load_plugins()
+    
     print('Account: [%s] %s (@%s)' % (bot.id, bot.first_name, bot.username))
 
     bot.inbox_listener = Thread(target=bot.wrapper.inbox_listener, name='Inbox Listener')
@@ -57,9 +60,7 @@ def setup():
             print('\nUsing Telegram Bot API token: {}'.format(config.keys.bot_api_token))
         elif config.wrapper == 'tg' and config.keys.tg_cli_port:
             print('\nUsing Telegram-CLI port: {}'.format(config.keys.tg_cli_port))
-
-    load_plugins()
-
+            
     bot.set_wrapper(config.wrapper)
 
 
@@ -101,19 +102,28 @@ def handle_message(message):
     for plugin in plugins:
         if hasattr(plugin, 'process'):
             plugin.process(message)
+            
+        if hasattr(plugin, 'shortcut'):
+            if check_trigger(plugin.shortcut, plugin, message):
+                break
 
         if hasattr(plugin, 'commands'):
             for command, parameters in plugin.commands:
-                trigger = command.replace('/', '^' + config.start)
+                if check_trigger(command, plugin, message):
+                    break
 
-                if re.compile(trigger).search(message.content.lower()):
-                    try:
-                        if hasattr(plugin, 'inline') and message.type == 'inline_query':
-                            plugin.inline(message)
-                        else:
-                            plugin.run(message)
-                    except:
-                        send_exception(message)
+
+def check_trigger(command, plugin, message):
+    trigger = command.replace('/', '^' + config.start)
+
+    if re.compile(trigger).search(message.content.lower()):
+        try:
+            if hasattr(plugin, 'inline') and message.type == 'inline_query':
+                return plugin.inline(message)
+            else:
+                return plugin.run(message)
+        except:
+            return send_exception(message)
 
 def outbox_listener():
     color = Colors()

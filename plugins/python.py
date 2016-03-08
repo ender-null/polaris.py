@@ -6,6 +6,7 @@ commands = [
     ('/python', ['command'])
 ]
 description = 'Executes python code.'
+shortcut = '/py'
 
 
 def run(m):

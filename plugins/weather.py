@@ -5,7 +5,7 @@ commands = [
     ('/forecast', ['location'])
 ]
 description = 'Returns the current temperature and weather conditions for a specified location.'
-
+shortcut = '/w'
 
 def get_icon(icon):
     weather_emoji = {}
@@ -72,7 +72,7 @@ def run(m):
                                                               day['high']['celsius'], day['conditions'],
                                                               get_icon(day['icon']))
 
-    if get_command(m) == 'weather':
+    if get_command(m) == 'weather' or get_command(m) == 'w':
         if 'CURRENTIMAGEURL' in webcams[0]:
             photo_url = webcams[0]['CURRENTIMAGEURL']
             photo = download(photo_url)
