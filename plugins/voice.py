@@ -4,7 +4,7 @@ commands = [
     ('/voice', ['language', 'text'])
 ]
 description = 'Generates an audio file using Google Text-To-Speech API.'
-shortcut = '/v'
+shortcut = '/v '
 
 langs = [
     'af', 'aq', 'ar', 'hy', 'ca', 'zh', 'zh-cn', 'zh-tw', 'zh-yue',

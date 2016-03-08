@@ -7,7 +7,7 @@ commands = [
     ('/insfw', ['query'])
 ]
 description = 'This command performs a Bing Images search for the given query.'
-shortcut = '/i'
+shortcut = '/i '
 
 exts = {
     '.jpg$',

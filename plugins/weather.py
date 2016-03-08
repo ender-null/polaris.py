@@ -5,7 +5,7 @@ commands = [
     ('/forecast', ['location'])
 ]
 description = 'Returns the current temperature and weather conditions for a specified location.'
-shortcut = '/w'
+shortcut = '/w '
 
 def get_icon(icon):
     weather_emoji = {}

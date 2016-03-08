@@ -6,7 +6,7 @@ commands = [
     ('/python', ['command'])
 ]
 description = 'Executes python code.'
-shortcut = '/py'
+shortcut = '/py '
 
 
 def run(m):
@@ -29,7 +29,7 @@ def run(m):
 
     if cout.getvalue():
         message = '<code>{}</code>'.format(str(cout.getvalue())).rstrip('\n')
-        send_message(m, message)
+        send_message(m, message, markup='HTML')
 
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__

@@ -5,7 +5,7 @@ commands = [
     ('/nowplaying', ['username'])
 ]
 description = 'Returns what you are or were last listening to. If you specify a username, info will be returned for that username.'
-shortcut = '/np'
+shortcut = '/np '
 
 
 def run(m):
