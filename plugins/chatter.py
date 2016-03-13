@@ -15,7 +15,7 @@ def run(m):
     try:
         message = cb.ask(input)
     except:
-        message = '...'
+        message = None
 
     send_message(m, message)
 

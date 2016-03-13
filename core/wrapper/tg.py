@@ -139,8 +139,9 @@ def send_message(message):
         
     elif message.type == 'document':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 8
-        tgsender.send_document(peer(message.receiver.id), message.content.name)
-        
+        # tgsender.send_document(peer(message.receiver.id), message.content.name)
+        tgsender.raw('send_document %s %s %s' % (peer(message.receiver.id), message.content.name, escape(message.extra)))
+
     elif message.type == 'sticker':
         tgsender.send_file(peer(message.receiver.id), message.content.name)
         
@@ -155,13 +156,6 @@ def send_message(message):
     elif message.type == 'location':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 9
         tgsender.send_location(peer(message.receiver.id), message.content, message.extra)
-        
-    elif message.type == 'status':
-        if message.content == 'invite_user':
-            tgsender.chat_add_user(peer(message.receiver.id), peer(get_id(message.extra)))
-            
-        elif message.content == 'kick_user':
-            tgsender.chat_del_user(peer(message.receiver.id), peer(get_id(message.extra)))
             
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)

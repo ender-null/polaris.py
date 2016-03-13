@@ -95,15 +95,17 @@
     },
     "errors": {
         "connection": "Connection error.",
-        "results": "No results found.",
+        "results": "＊  ｂｕｔ  ｎｏｂｏｄｙ  ｃａｍｅ．．．",
         "argument": "Invalid argument.",
         "syntax": "Invalid syntax.",
-        "permission": "No. shit ain't going down like that.",
+        "permission": "Ｎｏ．  ｓｈｉｔ  ａｉｎ＇ｔ  ｇｏｉｎｇ  ｄｏｗｎ  ｌｉｋｅ  ｔｈａｔ．",
         "id": "Must be used via reply or by specifying a user's ID.",
-        "download": "Download failed.",
+        "download": "＊  ｂｕｔ  ｎｏｂｏｄｙ  ｃａｍｅ．．．",
         "exception": "Exception found.",
         "unknown": "Unknown error.",
         "input": "No input.",
-        "unsupported": "Unsupported action."
+        "unsupported": "＊  ｂｕｔ  ｎｏｂｏｄｙ  ｃａｍｅ．．．",
+        "peerflood": "Sorry, I can only send messages to mutual contacts at the moment.",
+        "notchatadmin": "Sorry, but I can't do that if I'm not an admin."
     }
 }

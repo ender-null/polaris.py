@@ -3,6 +3,8 @@ from core.utils import *
 commands = [
     ('/groups', []),
     ('/join', ['alias | chat id']),
+    ('/mods', []),
+    ('/info', []),
     ('/invite', ['user']),
     ('/kill', ['user']),
     ('/ban', ['user']),
@@ -29,26 +31,52 @@ def run(m):
 
     elif get_command(m) == 'join':
         message = lang.errors.unsupported
+    
+    elif get_command(m) == 'mods':
+        mods = ''
+        globalmods = ''
+        admins = ''
+        for uid in tags.list:
+            if 'mod:' + str(m.receiver.id)[1:] in tags.list[uid]:
+                mods += '\t-\t%s\n' % user_info(int(uid))
+            if 'globalmod' in tags.list[uid]:
+                globalmods += '\t-\t%s\n' % user_info(int(uid))
+            if 'admin' in tags.list[uid]:
+                admins += '\t-\t%s\n' % user_info(int(uid))
+        
+        message = 'Mods: \n%s\nGlobalmods: \n%s\nAdmins:\n%s\n' % (mods, globalmods, admins)
+        
+    elif get_command(m) == 'info':
+        message = lang.errors.unsupported
 
     elif get_command(m) == 'invite' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
         if m.reply:
-            return invite_user(m, id)
+            if not invite_user(m, id):
+                return send_message(m, lang.errors.peerflood)
         elif input:
-            return invite_user(m, input)
+            if not invite_user(m, input):
+                return send_message(m, lang.errors.peerflood)
+        
+        message = 'User added.'
 
     elif get_command(m) == 'kill' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
 
         if m.reply:
-            return kick_user(m, id)
+            if not kick_user(m, id):
+                return send_message(m, lang.errors.notchatadmin)
         elif input:
-            return kick_user(m, input)
+            if not kick_user(m, input):
+                return send_message(m, lang.errors.notchatadmin)
         else:
-            return kick_user(m, uid)
+            if not kick_user(m, uid):
+                return send_message(m, lang.errors.notchatadmin)
+        
+        message = 'User kicked.'
 
     elif get_command(m) == 'ban':
         message = lang.errors.unsupported
