@@ -2,7 +2,7 @@ from core.utils import *
 from cleverbot import Cleverbot
 
 commands = [
-    (bot.username, [])
+    ('^' + bot.username, [])
 ]
 description = 'Repeat a string.'
 hidden = True

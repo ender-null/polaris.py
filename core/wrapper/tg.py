@@ -126,21 +126,32 @@ def send_message(message):
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
 
-        if peer(message.receiver.id).startswith('channel'):
+        try:
+            tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
+        except:
             tgsender.raw('post ' + peer(message.receiver.id) + ' ' + escape(message.content), enable_preview=message.extra)
-        tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
 
     elif message.type == 'photo':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 7
-        tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
+        try:
+            tgsender.send_photo(peer(message.receiver.id), message.content.name, message.extra)
+        except:
+            tgsender.raw('post_photo %s %s %s' % (peer(message.receiver.id), message.content.name, escape(message.extra)))
         
     elif message.type == 'audio':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 6
-        tgsender.send_audio(peer(message.receiver.id), message.content.name)
+        try:
+            tgsender.send_audio(peer(message.receiver.id), message.content.name)
+        except:
+            tgsender.raw('post_audio %s %s %s' % (peer(message.receiver.id), message.content.name, escape(message.extra)))
         
     elif message.type == 'document':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 8
-        tgsender.send_document(peer(message.receiver.id), message.content.name, message.extra)
+        try:
+            # tgsender.send_document(peer(message.receiver.id), message.content.name, message.extra)
+            tgsender.raw('send_document %s %s %s' % (peer(message.receiver.id), message.content.name, escape(message.extra)))
+        except:
+            tgsender.raw('post_document %s %s %s' % (peer(message.receiver.id), message.content.name, escape(message.extra)))
 
     elif message.type == 'sticker':
         tgsender.send_file(peer(message.receiver.id), message.content.name)
@@ -151,7 +162,10 @@ def send_message(message):
         
     elif message.type == 'voice':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 5')
-        tgsender.send_audio(peer(message.receiver.id), message.content.name, message.extra)
+        try:
+            tgsender.send_audio(peer(message.receiver.id), message.content.name)
+        except:
+            tgsender.raw('post_audio %s %s' % (peer(message.receiver.id), message.content.name))
         
     elif message.type == 'location':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 9
