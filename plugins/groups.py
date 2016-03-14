@@ -54,11 +54,14 @@ def run(m):
             return send_message(m, lang.errors.unsupported)
 
         if m.reply:
-            if not invite_user(m, id):
-                return send_message(m, lang.errors.peerflood)
+            target = id
         elif input:
-            if not invite_user(m, input):
-                return send_message(m, lang.errors.peerflood)
+            target = input
+
+        if invite_user(m, target) is None:
+            return send_message(m, lang.errors.peerflood)
+        elif not invite_user(m, input):
+            return send_message(m, lang.errors.failed)
         
         message = 'User added.'
 
@@ -67,14 +70,16 @@ def run(m):
             return send_message(m, lang.errors.unsupported)
 
         if m.reply:
-            if not kick_user(m, id):
-                return send_message(m, lang.errors.notchatadmin)
+            target = id
         elif input:
-            if not kick_user(m, input):
-                return send_message(m, lang.errors.notchatadmin)
+            target = input
         else:
-            if not kick_user(m, uid):
-                return send_message(m, lang.errors.notchatadmin)
+            target = uid
+            
+        if kick_user(m, target) is None:
+            return send_message(m, lang.errors.notchatadmin)
+        elif not kick_user(m, target):
+            return send_message(m, lang.errors.failed)
         
         message = 'User kicked.'
 

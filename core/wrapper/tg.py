@@ -35,6 +35,7 @@ def user_id(username):
 
 
 def get_id(user):
+    print ('user')
     if isinstance(user, int):
         return user
     
@@ -139,8 +140,7 @@ def send_message(message):
         
     elif message.type == 'document':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 8
-        # tgsender.send_document(peer(message.receiver.id), message.content.name)
-        tgsender.raw('send_document %s %s %s' % (peer(message.receiver.id), message.content.name, escape(message.extra)))
+        tgsender.send_document(peer(message.receiver.id), message.content.name, message.extra)
 
     elif message.type == 'sticker':
         tgsender.send_file(peer(message.receiver.id), message.content.name)
@@ -151,7 +151,7 @@ def send_message(message):
         
     elif message.type == 'voice':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 5')
-        tgsender.send_audio(peer(message.receiver.id), message.content.name)
+        tgsender.send_audio(peer(message.receiver.id), message.content.name, message.extra)
         
     elif message.type == 'location':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1') # 9
