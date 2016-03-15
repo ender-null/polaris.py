@@ -137,9 +137,18 @@ def send_exception(m):
                 message += '\n'
             message += '</code>'
             
-            receiver = Group()
-            receiver.id = - int('100' + id)
-            receiver.title = role
+            if type == 'user':
+                receiver = User()
+                receiver.id = id
+                receiver.first_name = role
+            elif type == 'channel':
+                receiver = Group()
+                receiver.id = - int('100' + id)
+                receiver.title = role
+            else:
+                receiver = Group()
+                receiver.id = - id
+                receiver.title = role
 
             if m.receiver.id > 0:
                 message = Message(None, receiver, m.sender, message, markup='HTML')

@@ -58,7 +58,7 @@ class ConfigStore:
         plugins = []
         chats = []
         start = '/'
-        language = '/'
+        language = 'default'
 
         def load(self):
             try:
@@ -81,16 +81,16 @@ class ConfigStore:
             try:
                 with open('data/config.json', 'w') as f:
 
-                    config_tuples = (
+                    config_tuples = [
                         ('wrapper', self.wrapper),
                         ('owner', self.owner),
                         ('keys', self.keys),
                         ('plugins', self.plugins),
                         ('chats', self.chats),
-                        ('start', self.start)
+                        ('start', self.start),
                         ('language', self.language)
-                    )
-
+                    ]
+                    
                     config = OrderedDict(config_tuples)
 
                     json.dump(config, f, sort_keys=True, indent=4)
@@ -132,11 +132,11 @@ class ConfigStore:
             try:
                 with open('lang/%s.json' % file, 'w') as f:
 
-                    config_tuples = (
+                    config_tuples = [
                         ('messages', self.messages),
                         ('errors', self.errors),
                         ('interactions', self.interactions)
-                    )
+                    ]
 
                     config = OrderedDict(config_tuples)
 
