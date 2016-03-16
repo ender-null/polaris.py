@@ -5,7 +5,7 @@ commands = [
     ('/nowplaying', ['username'])
 ]
 description = 'Returns what you are or were last listening to. If you specify a username, info will be returned for that username.'
-shortcut = '/np '
+shortcut = '/np'
 
 
 def run(m):
@@ -28,8 +28,8 @@ def run(m):
 
     res = requests.get(url, params=params)
 
-    if jstr.status_code != 200:
-        send_exception(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+    if res.status_code != 200:
+        send_exception(m, '%s\n%s' % (lang.errors.connection, res.text))
         return send_message(m, lang.errors.connection)
 
     lastfm = json.loads(res.text)

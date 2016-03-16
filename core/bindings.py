@@ -106,58 +106,38 @@ def user_info(user):
     else:
         return user
 
-def send_alert(m, text):
-    for chat in config.chats:
-        type, id, role = chat.split('/')
-        if m.type == 'text' and role == 'alerts' and m.sender.id != int(id):
-            message = '<code>%s</code>' % text
+def send_alert(text):
+    for id in tags.list:
+        if 'type:alerts' in tags.list[id]:
+            text = '<code>%s</code>' % text
             
-            receiver = Group()
-            receiver.id = - int('100' + id)
-            receiver.title = role
-
-            if m.receiver.id > 0:
-                message = Message(None, receiver, m.sender, message, markup='HTML')
+            if int(id) > 0:
+                receiver = User()
+                receiver.id = int(id)
+                receiver.first_name = id
+                message = Message(None, bot, receiver, text, markup='HTML')
             else:
-                message = Message(None, m.sender, receiver, message, markup='HTML')
+                receiver = Group()
+                receiver.id = int(id)
+                receiver.title = id
+                
+            message = Message(None, bot, receiver, text, markup='HTML')
             outbox.put(message)
     
 def send_exception(m):
-    for chat in config.chats:
-        type, id, role = chat.split('/')
-        if m.type == 'text' and role == 'alerts' and m.sender.id != int(id):
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            tb = traceback.extract_tb(exc_tb, 4)
-            message = '<code>' + str(exc_type.__name__)
-            message += '\n\n' + str(exc_obj)
-            for row in tb:
-                message += '\n'
-                for val in row:
-                    message += str(val) + ', '
-                message += '\n'
-            message += '</code>'
-            
-            if type == 'user':
-                receiver = User()
-                receiver.id = id
-                receiver.first_name = role
-            elif type == 'channel':
-                receiver = Group()
-                receiver.id = - int('100' + id)
-                receiver.title = role
-            else:
-                receiver = Group()
-                receiver.id = - id
-                receiver.title = role
-
-            if m.receiver.id > 0:
-                message = Message(None, receiver, m.sender, message, markup='HTML')
-            else:
-                message = Message(None, m.sender, receiver, message, markup='HTML')
-            outbox.put(message)
+    exc_type, exc_obj, exc_tb = sys.exc_info()
+    tb = traceback.extract_tb(exc_tb, 4)
+    text = 'Traceback (most recent call last)'
+    for row in tb:
+        text += '\n\tFile "%s", line %s, in %s\n\t\t%s' % (row)
+    if exc_type:
+        text += '\n%s: %s' % (exc_type.__name__, exc_obj)
+        
+    print('%s%s%s' % (Colors.FAIL, text, Colors.ENDC))
 
     if m.receiver.id > 0:
         message = Message(None, m.receiver, m.sender, '<code>%s</code>' % lang.errors.exception, 'text', markup='HTML', extra=False)
     else:
         message = Message(None, bot, m.receiver, '<code>%s</code>' % lang.errors.exception, 'text', markup='HTML', extra=False)
     outbox.put(message)
+    send_alert(text)

@@ -16,29 +16,30 @@ def run(m):
     input = get_input(m, ignore_reply=True)
     if not input:
         return send_message(m, lang.errors.input)
-
-    if first_word(input).isdigit():
-        uid = first_word(input)
-        taglist = all_but_first_word(input).split()
+        
+    if m.reply:
+        id = str(m.reply.sender.id)
+    elif first_word(input) == '-g':
+        id = str(m.receiver.id)
+        input = all_but_first_word(input)
+        print('tag for group: %s %s' % (id, input))
+    elif first_word(input).isdigit():
+        id = first_word(input)
+        input = all_but_first_word(input)
     else:
-        uid = str(m.reply.sender.id)
-        taglist = input.split()
+        # id = str(m.sender.id)
+        return send_message(m, lang.errors.id, markup='HTML')
 
-    message = lang.errors.id
+    taglist = input.split()
+    message = '👤 %s\n🏷 ' % id
 
     if get_command(m) == 'tag':
-        if m.reply:
-            message = '👤 %s\n🏷 ' % m.reply.sender.id
-            for tag in taglist:
-                message += set_tag(uid, tag)
+        for tag in taglist:
+            message += set_tag(id, tag)
 
 
     elif get_command(m) == 'remtag':
-        taglist = input.split()
-        if m.reply:
-            message = '👤 %s\n🏷 ' % m.reply.sender.id
-            uid = str(m.reply.sender.id)
-            for tag in taglist:
-                message += rem_tag(uid, tag)
+        for tag in taglist:
+            message += rem_tag(id, tag)
 
     send_message(m, message, markup='HTML')

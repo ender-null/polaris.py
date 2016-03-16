@@ -47,6 +47,9 @@ def get_id(user):
     return id
     
 def escape(string):
+    if string is None:
+        return None
+        
     CHARS_UNESCAPED = ["\\", "\n", "\r", "\t", "\b", "\a", "'"]
     CHARS_ESCAPED = ["\\\\", "\\n", "\\r", "\\t", "\\b", "\\a", "\\'"]
     

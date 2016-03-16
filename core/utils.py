@@ -75,12 +75,15 @@ def load_json(path, hide=False):
         return {}
 
 
-def download(url, params=None, headers=None):
+def download(url, params=None, headers=None, method='get'):
     try:
-        jstr = requests.get(url, params=params, headers=headers, stream=True)
+        if method == 'post':
+            res = requests.post(url, params=params, headers=headers, stream=True)
+        else:
+            res = requests.get(url, params=params, headers=headers, stream=True)
         ext = os.path.splitext(url)[1].split('?')[0]
         f = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
-        for chunk in jstr.iter_content(chunk_size=1024):
+        for chunk in res.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
     except IOError as e:
@@ -105,31 +108,31 @@ def fix_extension(file_path):
 
 
 def send_request(url, params=None, headers=None, files=None, data=None):
-    jstr = requests.get(url, params=params, headers=headers, files=files, data=data)
+    res = requests.get(url, params=params, headers=headers, files=files, data=data)
 
-    if jstr.status_code != 200:
-        print(jstr.text)
+    if res.status_code != 200:
+        print(res.text)
         return False
 
-    return json.loads(jstr.text)
+    return json.loads(res.text)
 
 
 def get_coords(input):
     url = 'http://maps.googleapis.com/maps/api/geocode/json'
     params = {'address': input}
 
-    jdat = send_request(url, params=params)
+    data = send_request(url, params=params)
 
-    if not jdat or jdat['status'] == 'ZERO_RESULTS':
+    if not data or data['status'] == 'ZERO_RESULTS':
         return False, False, False, False
 
-    locality = jdat['results'][0]['address_components'][0]['long_name']
-    for address in jdat['results'][0]['address_components']:
+    locality = data['results'][0]['address_components'][0]['long_name']
+    for address in data['results'][0]['address_components']:
         if 'country' in address['types']:
             country = address['long_name']
 
-    return (jdat['results'][0]['geometry']['location']['lat'],
-            jdat['results'][0]['geometry']['location']['lng'],
+    return (data['results'][0]['geometry']['location']['lat'],
+            data['results'][0]['geometry']['location']['lng'],
             locality, country)
 
 
@@ -138,14 +141,14 @@ def get_short_url(long_url):
     params = {'longUrl': long_url, 'key': config.keys.google_developer_console}
     headers = {'content-type': 'application/json'}
 
-    jstr = requests.post(url, data=json.dumps(params), headers=headers)
+    res = requests.post(url, data=json.dumps(params), headers=headers)
 
-    if jstr.status_code != 200:
+    if res.status_code != 200:
         return False
 
-    jdat = json.loads(jstr.text)
+    data = json.loads(res.text)
 
-    return (jdat['id'])
+    return (data['id'])
 
 
 def mp3_to_ogg(original):

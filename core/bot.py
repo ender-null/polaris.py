@@ -89,6 +89,20 @@ def load_plugins():
 def handle_message(message):
     if message.date < time() - 10:
             return
+    
+    if not is_trusted(message.sender.id):
+        if message.receiver.id > 0:
+            chat = message.sender.id
+        else:
+            chat = message.receiver.id
+        
+        # checks if the chat is special
+        if (has_tag(chat, 'type:log') or has_tag(chat, 'type:alerts')):
+            return
+
+        # if chat or user is muted ignores the message
+        if has_tag(message.sender.id, 'muted') or has_tag(message.receiver.id, 'muted'):
+            return
 
     if message.receiver.id > 0:
         print('%s[%s << %s <%s>] %s%s' % (
@@ -129,18 +143,21 @@ def outbox_listener():
     color = Colors()
     while (bot.started):
         message = outbox.get()
-        if message.type == 'text':
-            if message.receiver.id > 0:
-                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
-                                                         message.sender.first_name, color.OKBLUE, color.ENDC))
+        try:
+            if message.type == 'text':
+                if message.receiver.id > 0:
+                    print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
+                                                             message.sender.first_name, color.OKBLUE, color.ENDC))
+                else:
+                    print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
+                                                             message.sender.first_name, color.OKBLUE, color.ENDC))
             else:
-                print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
-                                                         message.sender.first_name, color.OKBLUE, color.ENDC))
-        else:
-            if message.receiver.id > 0:
-                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
-                                                           message.sender.first_name, color.OKBLUE, color.ENDC))
-            else:
-                print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type,
-                                                           message.sender.first_name, color.OKBLUE, color.ENDC))
-        bot.wrapper.send_message(message)
+                if message.receiver.id > 0:
+                    print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
+                                                               message.sender.first_name, color.OKBLUE, color.ENDC))
+                else:
+                    print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type,
+                                                               message.sender.first_name, color.OKBLUE, color.ENDC))
+            bot.wrapper.send_message(message)
+        except:
+            return send_exception(message)
