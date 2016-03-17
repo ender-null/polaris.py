@@ -58,12 +58,13 @@ def run(m):
         elif input:
             target = input
 
-        if invite_user(m, target) is None:
+        res = invite_user(m, target)
+        if res is None:
             return send_message(m, lang.errors.peerflood)
-        elif not invite_user(m, input):
+        elif not res:
             return send_message(m, lang.errors.failed)
-        
-        message = 'User added.'
+        else:
+            return
 
     elif get_command(m) == 'kill' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
@@ -76,12 +77,13 @@ def run(m):
         else:
             target = uid
             
-        if kick_user(m, target) is None:
+        res = kick_user(m, target)
+        if res is None:
             return send_message(m, lang.errors.notchatadmin)
-        elif not kick_user(m, target):
+        elif not res:
             return send_message(m, lang.errors.failed)
-        
-        message = 'User kicked.'
+        else:
+            return
 
     elif get_command(m) == 'ban':
         message = lang.errors.unsupported
@@ -95,25 +97,28 @@ def run(m):
     elif get_command(m) == 'addmod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
-
-        set_tag(id, 'mod:%s' % str(gid)[1:])
-        if m.reply:
-            name = m.reply.sender.first_name
+        if has_tag(id, 'mod:%s' % str(gid)[1:]):
+            set_tag(id, 'mod:%s' % str(gid)[1:])
+            if m.reply:
+                name = m.reply.sender.first_name
+            else:
+                name = m.sender.first_name
+            message = '%s has been promoted to moderator for chat %s.' % (name, m.receiver.title)
         else:
-            name = m.sender.first_name
-        message = '%s has been promoted to moderator for chat %s.' % (name, m.receiver.title)
+            message = '%s is already a moderator for chat %s.' % (name, m.receiver.title)
 
     elif get_command(m) == 'demod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
-
-        rem_tag(id, 'mod:%s' % str(gid)[1:])
-        if m.reply:
-            name = m.reply.sender.first_name
+        if has_tag(id, 'mod:%s' % str(gid)[1:]):
+            rem_tag(id, 'mod:%s' % str(gid)[1:])
+            if m.reply:
+                name = m.reply.sender.first_name
+            else:
+                name = m.sender.first_name
+            message = '%s has been demoted to member for chat %s.' % (name, m.receiver.title)
         else:
-            name = m.sender.first_name
-
-        message = '%s has been demoted to member for chat %s.' % (name, m.receiver.title)
+            message = '%s is not a moderator for %s.' % (name, m.receiver.title)
 
     else:
         message = lang.errors.permission

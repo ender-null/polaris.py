@@ -105,8 +105,8 @@
         "unknown": "Unknown error.",
         "input": "No input.",
         "unsupported": "＊  ｂｕｔ  ｎｏｂｏｄｙ  ｃａｍｅ．．．",
-        "peerflood": "Sorry, I can only send messages to mutual contacts at the moment.",
+        "peerflood": "Sorry, I can only interact with mutual contacts at the moment.",
         "notchatadmin": "Sorry, but I can't do that if I'm not an admin.",
-        "failed": "＊  Ｍｉｓｓ"
+        "failed": "Ｍｉｓｓ"
     }
 }

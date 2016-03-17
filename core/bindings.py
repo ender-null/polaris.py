@@ -64,36 +64,43 @@ def answer_inline_query(m, results, offset=None):
 
 
 def invite_user(m, user):
-    if str(m.receiver.id)[1:].startswith('100'):
-        result = bot.wrapper.tgsender.channel_invite(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
+    try:
+        if str(m.receiver.id).startswith('-100'):
+            result = bot.wrapper.tgsender.channel_invite(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
+        else:
+            result = bot.wrapper.tgsender.chat_add_user(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
+    except:
+        error = str(sys.exc_info()[1]).split()[4].rstrip("'")
     else:
-        result = bot.wrapper.tgsender.chat_add_user(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
-    print(result)
-    if hasattr(result, 'result') and result.result == 'FAIL':
-        if result.error.split()[-1] == 'PEER_FLOOD':
-            return None
+        if hasattr(result, 'result') and result.result == 'FAIL':
+            error = result.error.split()[-1]
+        else:
+            return True
+        
+    if error == 'PEER_FLOOD':
+        return None
+    else:
         return False
-    else:
-        return True
 
 
 def kick_user(m, user):
-    print(bot.wrapper.peer(m.receiver.id) + '/' + bot.wrapper.peer(bot.wrapper.get_id(user)))
-    if str(m.receiver.id)[1:].startswith('100'):
-        result = bot.wrapper.tgsender.channel_kick(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
+    try:
+        if str(m.receiver.id).startswith('-100'):
+            result = bot.wrapper.tgsender.channel_kick(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
+        else:
+            result = bot.wrapper.tgsender.chat_del_user(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
+    except:
+        error = str(sys.exc_info()[1]).split()[4].rstrip("'")
     else:
-        result = bot.wrapper.tgsender.chat_del_user(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
+        if hasattr(result, 'result') and result.result == 'FAIL':
+            error = result.error.split()[-1]
+        else:
+            return True
         
-    print(result)
-    
-    if hasattr(result, 'result') and result.result == 'FAIL':
-        if result.error.split()[-1] == 'CHAT_ADMIN_REQUIRED':
-            print('return None')
-            return None
-        print('return False')
-        return False
+    if error == 'CHAT_ADMIN_REQUIRED':
+        return None
     else:
-        return True
+        return False
     
     
 def user_info(user):

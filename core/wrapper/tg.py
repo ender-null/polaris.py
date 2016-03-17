@@ -4,8 +4,8 @@ from pytg.sender import Sender
 from pytg.utils import coroutine
 import json
 
-tgreceiver = Receiver(host="localhost", port=4458)
-tgsender = Sender(host="localhost", port=4458)
+tgreceiver = Receiver(host="localhost", port=config.keys.tg_cli_port)
+tgsender = Sender(host="localhost", port=config.keys.tg_cli_port)
 
 
 # Telegram-CLI bindings
@@ -24,18 +24,17 @@ def user_id(username):
     if username.startswith('@'):
         command = 'resolve_username ' + username[1:]
         resolve = tgsender.raw(command)
-        dict = json.loads(resolve)
+        dict = DictObject(json.loads(resolve))
     else:
         dict = tgsender.user_info(username)
 
     if 'peer_id' in dict:
-        return dict['peer_id']
+        return dict.peer_id
     else:
         return False
 
 
 def get_id(user):
-    print ('user')
     if isinstance(user, int):
         return user
     
@@ -60,52 +59,63 @@ def escape(string):
 # Standard methods for bindings
 def get_me():
     msg = tgsender.get_self()
-    bot.first_name = msg['first_name']
-    bot.username = msg['username']
-    bot.id = msg['peer_id']
+    bot.first_name = msg.first_name
+    bot.username = msg.username
+    bot.id = msg.peer_id
 
 
 def convert_message(msg):
     id = msg['id']
-    if msg['receiver']['type'] == 'user':
+    if msg.receiver.type == 'user':
         receiver = User()
-        receiver.id = int(msg['receiver']['peer_id'])
-        receiver.first_name = msg['receiver']['first_name']
-        if 'first_name' in msg['receiver']:
-            receiver.first_name = msg['receiver']['first_name']
-        if 'last_name' in msg['receiver']:
-            receiver.last_name = msg['receiver']['last_name']
-        if 'username' in msg['receiver']:
-            receiver.username = msg['receiver']['username']
+        receiver.id = int(msg.receiver.peer_id)
+        receiver.first_name = msg.receiver.first_name
+        if 'first_name' in msg.receiver:
+            receiver.first_name = msg.receiver.first_name
+        if 'last_name' in msg.receiver:
+            receiver.last_name = msg.receiver.last_name
+        if 'username' in msg.receiver:
+            receiver.username = msg.receiver.username
     else:
         receiver = Group()
-        if msg['receiver']['type'] == 'channel':
-            receiver.id = - int( '100' + str(msg['receiver']['peer_id']))
+        if msg.receiver.type == 'channel':
+            receiver.id = - int('100' + str(msg.receiver.peer_id))
         else:
-            receiver.id = - int(msg['receiver']['peer_id'])
-        receiver.title = msg['receiver']['title']
+            receiver.id = - int(msg.receiver.peer_id)
+        receiver.title = msg.receiver.title
     sender = User()
-    sender.id = int(msg['sender']['peer_id'])
-    if 'first_name' in msg['sender']:
-        sender.first_name = msg['sender']['first_name']
-    if 'last_name' in msg['sender']:
-        sender.last_name = msg['sender']['last_name']
-    if 'username' in msg['sender']:
-        sender.username = msg['sender']['username']
-    date = msg['date']
+    sender.id = int(msg.sender.peer_id)
+    if 'first_name' in msg.sender:
+        sender.first_name = msg.sender.first_name
+    if 'last_name' in msg.sender:
+        sender.last_name = msg.sender.last_name
+    if 'username' in msg.sender:
+        sender.username = msg.sender.username
+    date = msg.date
 
     # Gets the type of the message
     if 'text' in msg:
         type = 'text'
-        content = msg['text']
+        content = msg.text
         extra = None
     elif 'media' in msg:
-        type = msg['media']['type']
-        content = msg['id']
-        if 'caption' in msg['media']:
-            extra = msg['media']['caption']
+        type = msg.media.type
+        content = msg.id
+        if 'caption' in msg.media:
+            extra = msg.media.caption
         else:
             extra = None
+    elif msg.event == 'service':
+        type = 'service'
+        if msg.action.type == 'chat_del_user':
+            content = 'left_user'
+            extra = msg.action.user.peer_id
+        elif msg.action.type == 'chat_add_user':
+            content = 'join_user'
+            extra = msg.action.user.peer_id
+        elif msg.action.type == 'chat_add_user_link':
+            content = 'join_user'
+            extra = msg.sender.peer_id
     else:
         type = None
         content = None
@@ -113,7 +123,7 @@ def convert_message(msg):
 
     # Generates another message object for the original message if the reply.
     if 'reply_id' in msg:
-        reply_msg = tgsender.message_get(msg['reply_id'])
+        reply_msg = tgsender.message_get(msg.reply_id)
         reply = convert_message(reply_msg)
         
     else:
@@ -183,9 +193,10 @@ def inbox_listener():
     def listener():
         while (bot.started):
             msg = (yield)
-            if msg['event'] == 'message' and msg['own'] == False:
+            if (msg.event == 'message' or msg.event == 'service') and msg.own == False:
                 message = convert_message(msg)
                 inbox.put(message)
+                
                 if message.receiver.id > 0:
                     tgsender.mark_read(peer(message.sender.id))
                 else:
