@@ -141,10 +141,15 @@ def send_exception(m):
         text += '\n%s: %s' % (exc_type.__name__, exc_obj)
         
     print('%s%s%s' % (Colors.FAIL, text, Colors.ENDC))
-
-    if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, '<code>%s</code>' % lang.errors.exception, 'text', markup='HTML', extra=False)
+    
+    if exc_type.__name__ == 'ReadTimeout':
+        error = lang.errors.connection
     else:
-        message = Message(None, bot, m.receiver, '<code>%s</code>' % lang.errors.exception, 'text', markup='HTML', extra=False)
+        error = lang.errors.exception
+        
+    if m.receiver.id > 0:
+        message = Message(None, m.receiver, m.sender, '%s' % error, 'text', extra=False)
+    else:
+        message = Message(None, bot, m.receiver, '%s' % error, 'text', extra=False)
     outbox.put(message)
     send_alert(text)

@@ -20,7 +20,7 @@ def run(m):
         params = {
             'srsname': 'wgs84'
         }
-        jstr = requests.get(url, params=params, timeout=10)
+        jstr = requests.get(url, params=params, timeout=config.timeout)
 
         if jstr.status_code != 200:
             send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
@@ -47,7 +47,7 @@ def run(m):
         params = {
             'srsname': 'wgs84'
         }
-        jstr = requests.get(url, params=params, timeout=10)
+        jstr = requests.get(url, params=params, timeout=config.timeout)
 
         if jstr.status_code != 200:
             send_alert('%s\n%s' % (lang.errors.connection, jstr.text))

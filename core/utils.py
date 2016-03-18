@@ -108,7 +108,7 @@ def fix_extension(file_path):
 
 
 def send_request(url, params=None, headers=None, files=None, data=None):
-    res = requests.get(url, params=params, headers=headers, files=files, data=data)
+    res = requests.get(url, params=params, headers=headers, files=files, data=data, timeout=config.timeout)
 
     if res.status_code != 200:
         print(res.text)

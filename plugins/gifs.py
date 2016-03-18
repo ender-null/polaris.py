@@ -28,7 +28,7 @@ def run(m):
     jstr = requests.get(url, params=params)
 
     if jstr.status_code != 200:
-        send_alert(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+        send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
         return send_message(m, lang.errors.connection)
 
     jdat = json.loads(jstr.text)

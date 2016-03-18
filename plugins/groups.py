@@ -33,18 +33,24 @@ def run(m):
         message = lang.errors.unsupported
     
     elif get_command(m) == 'mods':
+        message = ''
         mods = ''
         globalmods = ''
         admins = ''
+        
         for uid in tags.list:
             if 'mod:' + str(m.receiver.id)[1:] in tags.list[uid]:
-                mods += '\t-\t%s\n' % user_info(int(uid))
+                mods += '\t%s\n' % user_info(int(uid))
             if 'globalmod' in tags.list[uid]:
-                globalmods += '\t-\t%s\n' % user_info(int(uid))
+                globalmods += '\t%s\n' % user_info(int(uid))
             if 'admin' in tags.list[uid]:
-                admins += '\t-\t%s\n' % user_info(int(uid))
-        
-        message = 'Mods: \n%s\nGlobalmods: \n%s\nAdmins:\n%s\n' % (mods, globalmods, admins)
+                admins += '\t%s\n' % user_info(int(uid))
+        if len(mods) > 0:
+            message += 'Group mods: \n%s\n' % mods
+        if len(globalmods) > 0:
+            message += 'Globalmods: \n%s\n' % globalmods
+        if len(admins) > 0:
+            message += 'Admins: \n%s\n' % admins
         
     elif get_command(m) == 'info':
         message = lang.errors.unsupported
@@ -97,12 +103,14 @@ def run(m):
     elif get_command(m) == 'addmod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
-        if has_tag(id, 'mod:%s' % str(gid)[1:]):
+            
+        if m.reply:
+            name = m.reply.sender.first_name
+        else:
+            name = m.sender.first_name
+                
+        if not has_tag(id, 'mod:%s' % str(gid)[1:]):
             set_tag(id, 'mod:%s' % str(gid)[1:])
-            if m.reply:
-                name = m.reply.sender.first_name
-            else:
-                name = m.sender.first_name
             message = '%s has been promoted to moderator for chat %s.' % (name, m.receiver.title)
         else:
             message = '%s is already a moderator for chat %s.' % (name, m.receiver.title)
@@ -110,12 +118,14 @@ def run(m):
     elif get_command(m) == 'demod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
             return send_message(m, lang.errors.unsupported)
+            
+        if m.reply:
+            name = m.reply.sender.first_name
+        else:
+            name = m.sender.first_name
+            
         if has_tag(id, 'mod:%s' % str(gid)[1:]):
             rem_tag(id, 'mod:%s' % str(gid)[1:])
-            if m.reply:
-                name = m.reply.sender.first_name
-            else:
-                name = m.sender.first_name
             message = '%s has been demoted to member for chat %s.' % (name, m.receiver.title)
         else:
             message = '%s is not a moderator for %s.' % (name, m.receiver.title)

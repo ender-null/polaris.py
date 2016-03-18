@@ -26,10 +26,10 @@ def run(m):
         'user': username
     }
 
-    res = requests.get(url, params=params)
+    res = requests.get(url, params=params, timeout=config.timeout)
 
     if res.status_code != 200:
-        send_exception(m, '%s\n%s' % (lang.errors.connection, res.text))
+        send_alert('%s\n%s' % (lang.errors.connection, res.text))
         return send_message(m, lang.errors.connection)
 
     lastfm = json.loads(res.text)
@@ -74,7 +74,7 @@ def run(m):
     res_yt = requests.get(url_yt, params=params_yt)
 
     if res_yt.status_code != 200:
-        send_exception(m, '%s\n%s' % (lang.errors.connection, res_yt.text))
+        send_alert('%s\n%s' % (lang.errors.connection, res_yt.text))
         return send_message(m, lang.errors.connection)
 
     youtube = json.loads(res_yt.text)

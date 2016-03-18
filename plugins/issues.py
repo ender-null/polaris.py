@@ -31,7 +31,7 @@ def run(m):
         print(jstr.url)
 
         if jstr.status_code != 200:
-            send_exception(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+            send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
             return send_message(m, lang.errors.connection)
 
         issues = json.loads(jstr.text)[-1]
@@ -44,7 +44,7 @@ def run(m):
         jstr = requests.get(url)
 
         if jstr.status_code != 200:
-            send_alert(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+            send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
             return send_message(m, lang.errors.connection)
 
         issues = json.loads(jstr.text)

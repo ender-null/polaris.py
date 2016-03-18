@@ -56,22 +56,22 @@ class ConfigStore:
         owner = None
         keys = None
         plugins = []
-        chats = []
+        timeout = 10
         start = '/'
         language = 'default'
 
         def load(self):
             try:
                 with open('data/config.json', 'r') as f:
-                    config_json = json.load(f, object_pairs_hook=OrderedDict)
-
-                    self.wrapper = config_json['wrapper']
-                    self.owner = config_json['owner']
-                    self.keys = DictObject(config_json['keys'])
-                    self.plugins = config_json['plugins']
-                    self.chats = config_json['chats']
-                    self.start = config_json['start']
-                    self.language = config_json['language']
+                    data = DictObject(json.load(f, object_pairs_hook=OrderedDict))
+                    
+                    self.wrapper = data.wrapper
+                    self.owner = data.owner
+                    self.keys = DictObject(data['keys'])
+                    self.plugins = data.plugins
+                    self.timeout = data.timeout
+                    self.start = data.start
+                    self.language = data.language
                     print('\t%s[OK] config.json loaded.%s' % (Colors.OKGREEN, Colors.ENDC))
             except:
                 self.keys = DictObject()
@@ -85,8 +85,8 @@ class ConfigStore:
                         ('wrapper', self.wrapper),
                         ('owner', self.owner),
                         ('keys', self.keys),
-                        ('plugins', self.plugins),
-                        ('chats', self.chats),
+                        ('plugins', sorted(self.plugins)),
+                        ('timeout', self.timeout),
                         ('start', self.start),
                         ('language', self.language)
                     ]
@@ -112,10 +112,10 @@ class ConfigStore:
 
             try:
                 with open('lang/%s.json' % file, 'r') as f:
-                    config_json = json.load(f, object_pairs_hook=OrderedDict)
-                    self.messages = DictObject(config_json['messages'])
-                    self.errors = DictObject(config_json['errors'])
-                    self.interactions = DictObject(config_json['interactions'])
+                    data = DictObject(json.load(f, object_pairs_hook=OrderedDict))
+                    self.messages = data.messages
+                    self.errors = data.errors
+                    self.interactions = data.interactions
                     print('\t%s[OK] %s.json loaded.%s' % (Colors.OKGREEN, file, Colors.ENDC))
             except:
                 self.messages = DictObject()
@@ -183,8 +183,8 @@ class ConfigStore:
         def load(self):
             try:
                 with open('data/tags.json', 'r') as f:
-                    config_json = json.load(f, object_pairs_hook=OrderedDict)
-                    self.list = DictObject(config_json)
+                    data = json.load(f, object_pairs_hook=OrderedDict)
+                    self.list = DictObject(data)
 
                     print('\t%s[OK] tags.json loaded.%s' % (Colors.OKGREEN, Colors.ENDC))
             except:

@@ -193,14 +193,17 @@ def inbox_listener():
     def listener():
         while (bot.started):
             msg = (yield)
-            if (msg.event == 'message' or msg.event == 'service') and msg.own == False:
+            if (msg.event == 'message' and msg.own == False) or msg.event == 'service':
                 message = convert_message(msg)
                 inbox.put(message)
                 
-                if message.receiver.id > 0:
-                    tgsender.mark_read(peer(message.sender.id))
-                else:
-                    tgsender.mark_read(peer(message.receiver.id))
+                try:
+                    if message.receiver.id > 0:
+                        tgsender.mark_read(peer(message.sender.id))
+                    else:
+                        tgsender.mark_read(peer(message.receiver.id))
+                except:
+                    pass
 
     tgreceiver.start()
     tgreceiver.message(listener())

@@ -69,7 +69,7 @@ def list_plugins():
     for file in os.listdir('plugins'):
         if file.endswith('.py'):
             list.append(file.replace('.py', ''))
-    return list
+    return sorted(list)
 
 
 def load_plugins():

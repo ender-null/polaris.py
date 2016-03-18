@@ -51,7 +51,7 @@ def run(m):
     jstr = requests.get(url)
 
     if jstr.status_code != 200:
-        send_exception(m, '%s\n%s' % (lang.errors.connection, jstr.text))
+        send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
         return send_message(m, lang.errors.connection)
 
     weather = json.loads(jstr.text)['current_observation']
