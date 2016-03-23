@@ -30,6 +30,7 @@ class User:
     first_name = None
     last_name = None
     username = None
+    type = 'private'
 
     def __init__(self, id=None, first_name=None, last_name=None, username=None):
         self.id = id
@@ -42,10 +43,12 @@ class User:
 class Group:
     id = None
     title = None
+    type = None
 
-    def __init__(self, id=None, title=None):
+    def __init__(self, id=None, title=None, type='group'):
         self.id = id
         self.title = title
+        self.type = type
 
 
 # This classes define and manage configuration files and stored data.
