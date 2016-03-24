@@ -215,7 +215,7 @@ class Message:
     markup = None
     extra = None
 
-    def __init__(self, id, sender, receiver, content, type='text', date=None, reply=None, markup=None, extra=None):
+    def __init__(self, id=None, sender=None, receiver=None, content=None, type='text', date=None, reply=None, markup=None, extra=None):
         self.id = id
         self.sender = sender
         self.receiver = receiver

@@ -46,7 +46,7 @@ def run(m):
 
     reminder = DictObject(OrderedDict())
     reminder.alarm = alarm
-    reminder.chat_id = m.receiver,id
+    reminder.chat_id = m.receiver.id
     reminder.text = text
 
     reminders[str(time())] = reminder
@@ -70,7 +70,12 @@ def cron():
         if time() > reminder['alarm']:
             # send_message(reminder['chat_id'], reminder['text'])
             m = Message()
-            m.sender.id = reminder['chat_id']
+            if reminder['chat_id'] > 0:
+                m.sender = User()
+                m.sender.id = reminder['chat_id']
+            else:
+                m.receiver = Group()
+                m.receiver.id = reminder['chat_id']
             send_message(m, reminder['text'], markup='Markdown')
             del reminders[id]
             save_json('data/reminders.json', reminders)
