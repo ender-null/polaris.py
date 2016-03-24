@@ -8,15 +8,15 @@ description = 'Set a reminder for yourself. First argument is delay until you wi
 
 reminders = load_json('data/reminders.json', True)
 
-def to_seconds(time, unit):
+def to_seconds(delaytime, unit):
     if unit == 's':
-        return float(time)
+        return float(delaytime)
     elif unit == 'm':
-        return float(time) * 60
+        return float(delaytime) * 60
     elif unit == 'h':
-        return float(time) * 60 * 60
+        return float(delaytime) * 60 * 60
     elif unit == 'd':
-        return float(time) * 60 * 60 * 24
+        return float(delaytime) * 60 * 60 * 24
 
 
 def run(m):
@@ -27,29 +27,29 @@ def run(m):
 
     delay = first_word(input)
     if delay:
-        time = delay[:-1]
+        delaytime = delay[:-1]
         unit = delay[-1:]
-        if not is_int(time) or is_int(unit):
+        if not is_int(delaytime) or is_int(unit):
             message = 'The delay must be in this format: "(integer)(s|m|h|d)".\nExample: "2h" for 2 hours.'
             return send_message(m, message)
-    try:
-        alarm = time() + to_seconds(time, unit)
-    except:
-        return send_message(m, lang.errors.unknown, markup='Markdown')
+    # try:
+    alarm = time() + to_seconds(delaytime, unit)
+    # except:
+    #     return send_message(m, lang.errors.unknown, markup='Markdown')
 
     text = all_but_first_word(input)
     if not text:
         send_message(m, 'Please include a reminder.')
 
-    if 'username' in m.sender:
+    if m.sender.username:
         text += '\n@' + m.sender.username
 
-    reminder = OrderedDict()
-    reminder['alarm'] = alarm
-    reminder['chat_id'] = m.receiver,id
-    reminder['text'] = text
+    reminder = DictObject(OrderedDict())
+    reminder.alarm = alarm
+    reminder.chat_id = m.receiver,id
+    reminder.text = text
 
-    reminders[int(time())] = reminder
+    reminders[str(time())] = reminder
     save_json('data/reminders.json', reminders)
 
     if unit == 's':
