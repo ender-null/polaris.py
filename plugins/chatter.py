@@ -1,5 +1,4 @@
 from core.utils import *
-# from cleverbot import Cleverbot
 
 commands = [
     ('^' + bot.username, [])
@@ -10,11 +9,6 @@ hidden = True
 def run(m):
     input = m.content.replace(bot.username + ' ', '')
 
-    # cb = Cleverbot()
-    # try:
-    #     message = cb.ask(input)
-    # except:
-    #     message = None
     
     if m.receiver.id < 0:
         chat = m.receiver.id

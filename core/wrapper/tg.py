@@ -135,9 +135,11 @@ def convert_message(msg):
 def send_message(message):
     if message.type == 'text':
         tgsender.raw('send_typing ' + peer(message.receiver.id) + ' 1')
-        
+
         if message.markup == 'Markdown':
             message.content = remove_markdown(message.content)
+        elif message.markup == 'HTML':
+            message.content = remove_html(message.content)
 
         try:
             tgsender.send_msg(peer(message.receiver.id), message.content, enable_preview=message.extra)
@@ -191,7 +193,7 @@ def send_message(message):
 def inbox_listener():
     @coroutine
     def listener():
-        while (bot.started):
+        while (True):
             msg = (yield)
             if (msg.event == 'message' and msg.own == False) or msg.event == 'service':
                 message = convert_message(msg)

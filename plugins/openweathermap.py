@@ -52,10 +52,10 @@ def run(m):
     if weather['cod'] == '404':
         return send_message(m, lang.errors.results)
 
-    message = 'Weather for ' + locality + ' (' + country + '):'
+    message = 'Weather for <b>' + locality + ' (' + country + ')</b>:'
     message += '\n' + str(int(weather['main']['temp'])) + u'ºC - ' + str(
         weather['weather'][0]['description']).title() + ' ' + get_icon(weather['weather'][0]['icon'])
     message += u'\n💧 ' + str(weather['main']['humidity']) + u'% | 🌬 ' + str(
         int(weather['wind']['speed'] * 3.6)) + ' km/h'
 
-    send_message(m, message)
+    send_message(m, message, markup='HTML')

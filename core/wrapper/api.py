@@ -321,9 +321,15 @@ def convert_message(msg):
         type = 'location'
         content = msg['location']['latitude']
         extra = msg['location']['longitude']
-    elif ('new_chat_participant' in msg
-          or 'left_chat_participant' in msg
-          or 'new_chat_title' in msg
+    elif 'new_chat_participant' in msg:
+        type = 'status'
+        content = 'join_user'
+        extra = None
+    elif 'left_chat_participant' in msg:
+        type = 'status'
+        content = 'left_user'
+        extra = None
+    elif ('new_chat_title' in msg
           or 'new_chat_photo' in msg
           or 'delete_chat_photo' in msg
           or 'group_chat_created' in msg
@@ -382,7 +388,7 @@ def send_message(message):
 def inbox_listener():
     last_update = 0
 
-    while (bot.started):
+    while (True):
         updates = get_updates(last_update + 1)
         result = updates['result']
 

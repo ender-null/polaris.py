@@ -1,5 +1,6 @@
 from core.bindings import *
-import requests, magic, mimetypes, tempfile, os, subprocess
+from html.parser import HTMLParser
+import requests, magic, mimetypes, tempfile, os, subprocess, re
 
 
 def get_input(message, ignore_reply=False):
@@ -36,7 +37,7 @@ def first_word(text, i=1):
 def all_but_first_word(text):
     if ' ' not in text:
         return False
-    return text.lstrip(first_word(text))
+    return text.replace(first_word(text) + ' ', '')
 
 
 def last_word(text):
@@ -166,6 +167,40 @@ def mp3_to_ogg(original):
     return open(converted.name, 'rb')
 
 
+def latcyr(text):
+    lc_list = {
+	    'A':'А',
+	    'B':'В',
+	    'C':'С',
+	    'E':'Е',
+	    'I':'І',
+	    'J':'Ј',
+	    'K':'К',
+	    'M':'М',
+	    'H':'Н',
+	    'O':'О',
+	    'P':'Р',
+	    'S':'Ѕ',
+	    'T':'Т',
+	    'X':'Х',
+	    'Y':'Ү',
+	    'a':'а',
+	    'c':'с',
+	    'e':'е',
+	    'i':'і',
+	    'j':'ј',
+	    'o':'о',
+	    's':'ѕ',
+	    'x':'х',
+	    'y':'у',
+	    '!':'ǃ'
+    }
+    
+    for k in lc_list:
+        text = text.replace(k, lc_list[k])
+    return text
+
+
 def escape_markdown(text):
     characters = ['_', '*', '[']
 
@@ -184,6 +219,20 @@ def remove_markdown(text):
         else:
             aux.append(text[x])
     return ''.join(aux)
+
+def remove_html(text):
+    text = re.sub('<[^<]+?>', '', text)
+    text = text.replace('&lt;', '<');
+    text = text.replace('&gt;', '>');
+    return text
+    s = HTMLParser()
+    s.reset()
+    s.reset()
+    s.strict = False
+    s.convert_charrefs= True
+    s.fed = []
+    s.feed(text)
+    return ''.join(s.fed)
 
 
 def is_admin(id):

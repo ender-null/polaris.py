@@ -13,9 +13,9 @@ def run(m):
     uid = str(m.sender.id)
 
     if m.sender.last_name:
-        message = 'Info of %s %s:' % (escape_markdown(m.sender.first_name), escape_markdown(m.sender.last_name))
+        message = 'Info of <b>%s %s</b>:' % (escape_markdown(m.sender.first_name), escape_markdown(m.sender.last_name))
     else:
-        message = 'Info of %s:' % (escape_markdown(m.sender.first_name))
+        message = 'Info of <b>%s</b>:' % (escape_markdown(m.sender.first_name))
 
     if m.sender.username:
         message += '\n👤 @%s (%s)' % (m.sender.username, m.sender.id)
@@ -28,4 +28,6 @@ def run(m):
     if uid in tags.list:
         message += '\n🏷 %s' % (tags.list[uid])
 
-    send_message(m, message)
+    message = latcyr(message)
+
+    send_message(m, message, markup='HTML')

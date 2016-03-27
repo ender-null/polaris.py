@@ -1,6 +1,7 @@
 from core.utils import *
 from threading import Thread
 from time import time
+from time import sleep
 import re
 
 
@@ -14,21 +15,17 @@ def start():
     
     print('Account: [%s] %s (@%s)' % (bot.id, bot.first_name, bot.username))
 
-    bot.inbox_listener = Thread(target=bot.wrapper.inbox_listener, name='Inbox Listener')
-    bot.outbox_listener = Thread(target=outbox_listener, name='Outbox Listener')
+    bot.inbox_listener = Thread(target=bot.wrapper.inbox_listener)
+    bot.inbox_listener.daemon = True
+    bot.outbox_listener = Thread(target=outbox_listener)
+    bot.outbox_listener.daemon = True
     bot.start()
 
-    last_cron = time()
+    cron_handler = Thread(target=handle_cron)
+    cron_handler.daemon = True
+    cron_handler.start()
 
     while (bot.started):
-        if last_cron < time() - 5:
-            for plugin in plugins:
-                if hasattr(plugin, 'cron'):
-                    try:
-                        plugin.cron()
-                    except Exception as e:
-                        send_exception(e)
-
         message = inbox.get()
         handle_message(message)
 
@@ -130,7 +127,7 @@ def handle_message(message):
 def check_trigger(command, plugin, message):
     trigger = command.replace('/', '^' + config.start)
 
-    if re.compile(trigger).search(message.content.lower()):
+    if message.content and re.compile(trigger).search(message.content.lower()):
         try:
             if hasattr(plugin, 'inline') and message.type == 'inline_query':
                 return plugin.inline(message)
@@ -139,9 +136,19 @@ def check_trigger(command, plugin, message):
         except:
             return send_exception(message)
 
+def handle_cron():
+    while (True):
+        for plugin in plugins:
+            if hasattr(plugin, 'cron'):
+                try:
+                    plugin.cron()
+                except Exception as e:
+                    send_exception(e)
+        sleep(5)
+
 def outbox_listener():
     color = Colors()
-    while (bot.started):
+    while (True):
         message = outbox.get()
         try:
             if message.type == 'text':

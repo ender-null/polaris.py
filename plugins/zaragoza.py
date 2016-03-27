@@ -32,7 +32,7 @@ def run(m):
         poste = jdat['title'].split(')')[0]
         line = jdat['title'].split(street)[-1].strip()
 
-        text = '*{0}*\n\tPoste: {1}\n\t{2}\n\n'.format(street.title(), poste, line)
+        text = '<b>{0}</b>\n\tPoste: {1}\n\t{2}\n\n'.format(street.title(), poste, line)
         for destino in jdat['destinos']:
             text += destino['linea'] + ' ' + destino['destino']
             text += '\n - ' + destino['primero']
@@ -40,7 +40,7 @@ def run(m):
             text += '\n'
         text = text.rstrip('\n')
         
-        send_message(m, text, markup='Markdown')
+        send_message(m, text, markup='HTML')
     
     elif get_command(m) == 'bus':
         url = 'https://www.zaragoza.es/api/recurso/urbanismo-infraestructuras/transporte-urbano/linea/' + input + '.json'

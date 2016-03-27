@@ -4,7 +4,7 @@ commands = [
     ('/weather', ['location']),
     ('/forecast', ['location'])
 ]
-description = 'Returns the current temperature and weather conditions for a specified location.'
+description = 'Returns the current temperature and weather conditions for a specified location using WeatherUnderground API.'
 shortcut = '/w '
 
 def get_icon(icon):
@@ -53,23 +53,26 @@ def run(m):
     if jstr.status_code != 200:
         send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
         return send_message(m, lang.errors.connection)
+    data = json.loads(jstr.text)
+    try:
+        weather = data['current_observation']
+        forecast = data['forecast']['simpleforecast']['forecastday']
+        webcams = data['webcams']
+    except:
+        return send_message(m, lang.errors.results)
 
-    weather = json.loads(jstr.text)['current_observation']
-    forecast = json.loads(jstr.text)['forecast']['simpleforecast']['forecastday']
-    webcams = json.loads(jstr.text)['webcams']
+    title = '<b>Weather for '
 
-    title = '*Weather for '
-
-    message = locality + ' \(' + country + '):*'
+    message = locality + ' (' + country + '):</b>'
     message += '\n' + str(weather['temp_c']) + u'ºC '
     if (float(weather['feelslike_c']) - float(weather['temp_c'])) > 0.001:
         message += '\(feels like ' + str(weather['feelslike_c']) + 'ºC)'
     message += ' - ' + str(weather['weather']).title() + ' ' + get_icon(weather['icon'])
     message += u'\n💧 ' + str(weather['relative_humidity']) + u' | 🌬 ' + str(weather['wind_kph']) + ' km/h'
 
-    simpleforecast = '\n\n*Forecast: *\n'
+    simpleforecast = '\n\n<b>Forecast: </b>\n'
     for day in forecast:
-        simpleforecast += '\t*{0}*: {1}-{2}ºC - {4}\n'.format(day['date']['weekday'], day['low']['celsius'],
+        simpleforecast += '\t<b>{0}</b>: {1}-{2}ºC - {4}\n'.format(day['date']['weekday'], day['low']['celsius'],
                                                               day['high']['celsius'], day['conditions'],
                                                               get_icon(day['icon']))
 
@@ -83,7 +86,7 @@ def run(m):
         if photo:
             send_photo(m, photo, remove_markdown(message))
         else:
-            send_message(m, title + message, markup='Markdown')
+            send_message(m, title + message, markup='HTML')
 
     elif get_command(m) == 'forecast':
-        send_message(m, title + message + simpleforecast, markup='Markdown')
+        send_message(m, title + message + simpleforecast, markup='HTML')

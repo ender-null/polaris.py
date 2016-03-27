@@ -32,22 +32,19 @@ def run(m):
         if not is_int(delaytime) or is_int(unit):
             message = 'The delay must be in this format: "(integer)(s|m|h|d)".\nExample: "2h" for 2 hours.'
             return send_message(m, message)
-    # try:
+
     alarm = time() + to_seconds(delaytime, unit)
-    # except:
-    #     return send_message(m, lang.errors.unknown, markup='Markdown')
 
     text = all_but_first_word(input)
     if not text:
         send_message(m, 'Please include a reminder.')
 
-    if m.sender.username:
-        text += '\n@' + m.sender.username
-
     reminder = DictObject(OrderedDict())
     reminder.alarm = alarm
     reminder.chat_id = m.receiver.id
     reminder.text = text
+    reminder.first_name = m.sender.first_name
+    reminder.username = m.sender.username
 
     reminders[str(time())] = reminder
     save_json('data/reminders.json', reminders)
@@ -61,21 +58,27 @@ def run(m):
     if unit == 'd':
         delay = delay.replace('d', ' days')
 
-    message = 'Your reminder has been set for *' + delay + '* from now:\n\n' + text
-    send_message(m, message, markup='Markdown')
+    message = '<b>%s</b>, I\'ll remind you in <b>%s</b> to <i>%s</i>.' % (m.sender.first_name, delay, latcyr(text))
+    send_message(m, message, markup='HTML')
 
 
 def cron():
     for id, reminder in reminders.items():
         if time() > reminder['alarm']:
-            # send_message(reminder['chat_id'], reminder['text'])
+            text = latcyr('<i>%s</i>\n - %s' % (reminder['text'], reminder['first_name']))
+            if reminder['username']:
+                text += ' (@%s)' % reminder['username']
+
             m = Message()
             if reminder['chat_id'] > 0:
                 m.sender = User()
                 m.sender.id = reminder['chat_id']
+                m.receiver = User()
+                m.receiver.id = bot.id
             else:
                 m.receiver = Group()
                 m.receiver.id = reminder['chat_id']
-            send_message(m, reminder['text'], markup='Markdown')
+
+            send_message(m, text, markup='HTML')
             del reminders[id]
             save_json('data/reminders.json', reminders)

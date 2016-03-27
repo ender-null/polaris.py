@@ -23,10 +23,10 @@ def run(m):
                             message += ' | %s' % plugin.shortcut.replace('/', config.start)
                     
                         for parameter in parameters:
-                            message += ' *<' + parameter + '>*'
+                            message += ' <b>&lt;' + parameter + '&gt;</b>'
                     break
     else:
-        message = '*Commands*:\n'
+        message = '<b>Commands</b>:\n'
         for plugin in plugins:
             if hasattr(plugin, 'hidden') and plugin.hidden:
                 continue
@@ -36,7 +36,7 @@ def run(m):
                     message += ' | %s' % plugin.shortcut.replace('/', config.start)
                 
                 for parameter in parameters:
-                    message += ' *<' + parameter + '>*'
+                    message += ' <b>&lt;' + parameter + '&gt;</b>'
                 message += '\n'
 
-    send_message(m, message, markup='Markdown')
+    send_message(m, message, markup='HTML')

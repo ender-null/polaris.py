@@ -54,13 +54,13 @@ def run(m):
 
     result = ''
     if nowplaying:
-        result += '`%s` is now playing:\n🎵 _%s_\n🗣 _%s_' % (username, track, artist)
+        result += '<code>%s</code> is now playing:\n🎵 <i>%s</i>\n🗣 <i>%s</i>' % (username, track, artist)
         if album:
-            result += '\n💽 _%s_' % (album)
+            result += '\n💽 <i>%s</i>' % (album)
     else:
-        result += '`%s` last played \(%s):\n🎵 _%s_\n🗣 _%s_' % (username, date, track, artist)
+        result += '<code>%s</code> last played (%s):\n🎵 <i>%s</i>\n🗣 <i>%s</i>' % (username, date, track, artist)
         if album:
-            result += '\n💽 _%s_' % (album)
+            result += '\n💽 <i>%s</i>' % (album)
 
     url_yt = 'https://www.googleapis.com/youtube/v3/search'
     params_yt = {
@@ -81,7 +81,7 @@ def run(m):
 
     if len(youtube['items']) > 0:
         result += '\n\n🎞 %s\nhttp://youtu.be/%s' % (
-            youtube['items'][0]['snippet']['title'].replace('(','\('),
+            youtube['items'][0]['snippet']['title'],
             youtube['items'][0]['id']['videoId'])
 
-    send_message(m, result, markup='Markdown', preview=False)
+    send_message(m, result, markup='HTML', preview=False)

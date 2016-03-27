@@ -34,8 +34,9 @@ def run(m):
         return
 
     elif get_command(m) == 'reload':
+        message = '%s reloading!' % bot.first_name
+        send_message(m, message, markup='HTML')
         start()
-        message = '%s reloaded!' % bot.first_name
 
     elif get_command(m) == 'refreshplugins':
         message = 'Refreshing  %s plugin...' % bot.first_name
