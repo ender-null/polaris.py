@@ -5,6 +5,7 @@ commands = [
     ('/join', ['alias | chat id']),
     ('/mods', []),
     ('/info', []),
+    ('/suicide', []),
     ('/invite', ['user']),
     ('/kill', ['user']),
     ('/ban', ['user']),
@@ -52,8 +53,19 @@ def run(m):
         if len(admins) > 0:
             message += 'Admins: \n%s\n' % admins
         
-    elif get_command(m) == 'info':
+    elif get_command(m) == 'suicide':
         message = lang.errors.unsupported
+	
+        if m.receiver.id > 0:
+            return send_message(m, lang.errors.unsupported)
+            
+        res = kick_user(m, uid)
+        if res is None:
+            return send_message(m, lang.errors.notchatadmin)
+        elif not res:
+            return send_message(m, lang.errors.failed)
+        else:
+            return send_message(m, 'Ｄｕｍｂ  ｗａｙｓ  ｔｏ  ｄｉｅ．')
 
     elif get_command(m) == 'invite' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
@@ -89,7 +101,7 @@ def run(m):
         elif not res:
             return send_message(m, lang.errors.failed)
         else:
-            return
+            return send_message(m, 'Ａｎ  ｅｎｅｍｙ  ｈａｓ  ｂｅｅｎ  ｓｌａｉｎ．')
 
     elif get_command(m) == 'ban':
         message = lang.errors.unsupported

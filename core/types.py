@@ -51,6 +51,40 @@ class Group:
         self.type = type
 
 
+class DataStore(DictObject):
+    def __init__(self):
+        for key in self.keys():
+            self[key] = None
+
+    def __getitem__(self, key):
+        if key not in self.keys():
+            raise Exception("'" + key + "'" + " is not a valid key")
+        return dict.__getitem__(self,key)
+
+    def __setitem__(self, key, value):
+        if key not in self.keys():
+            raise Exception("'" + key + "'" + " is not a valid key")
+        dict.__setitem__(self,key,value)
+        
+    def load(self):
+        try:
+            with open('data/%s' % type(self).__name__, 'r') as f:
+                data = json.load(f, object_pairs_hook=OrderedDict)
+                for key in data:
+                    self[key] = None
+                return True
+        except:
+            raise Exception('[Failed] %s.json NOT loaded.' % type(self).__name__)
+
+    def save(self):
+        try:
+            with open('data/%s' % type(self).__name__, 'w') as f:
+                json.dump(self, f, sort_keys=True, indent=4)
+                return True
+        except:
+            raise Exception('[Failed] %s.json NOT saved.' % type(self).__name__)
+        
+        
 # This classes define and manage configuration files and stored data.
 class ConfigStore:
     # Main configuration file.

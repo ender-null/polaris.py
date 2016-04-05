@@ -28,12 +28,14 @@ def run(m):
     if res.status_code != 200:
         send_alert('%s\n%s' % (lang.errors.connection, res.text))
         return send_message(m, lang.errors.connection)
+	
+    try:
+        chatting = DictObject(json.loads(res.text))
+        message = chatting.botsay
 
-    chatting = DictObject(json.loads(res.text))
-    
-    message = chatting.botsay
-
-    send_message(m, message)
+        send_message(m, message)
+    except:
+        send_alert(res.text)
 
 def process(m):
     if m.reply and m.type == 'text':
