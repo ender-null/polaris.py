@@ -13,9 +13,6 @@ def send_request(url, params=None, headers=None, files=None, data=None):
     if result.status_code != 200:
         print(result.text)
 
-        if result.status_code != 429:
-            return False
-
         while result.status_code == 429:
             result = requests.get(url, params=params, headers=headers, files=files, data=data)
 
@@ -25,7 +22,7 @@ def send_request(url, params=None, headers=None, files=None, data=None):
 def api_request(api_method, params=None, headers=None, files=None):
     url = api_url + api_method
 
-    return send_request(url, params, headers, files)
+    return DictObject(send_request(url, params, headers, files))
 
 
 def get_updates(offset=None, limit=None, timeout=None):
@@ -40,7 +37,7 @@ def get_updates(offset=None, limit=None, timeout=None):
 
 
 def api_send_message(chat_id, text, disable_web_page_preview=None,
-                     reply_to_message_id=None, reply_markup=None, parse_mode=None):
+                     reply_to_message_id=None, reply_markup=None, parse_mode='HTML'):
     params = {
         'chat_id': chat_id,
         'text': text,
@@ -249,7 +246,41 @@ def get_me():
     bot.first_name = result['result']['first_name']
     bot.username = result['result']['username']
     bot.id = result['result']['id']
-
+    
+    
+def kick_chat_member(chat_id, user_id):
+    params = {
+        'chat_id': chat_id,
+        'user_id': user_id
+    }
+    
+    result = api_request('kickChatMember', params)
+    
+    if result.ok == False:
+        if result.description.split(': ')[2] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[2] == 'Not enough rights to kick participant':
+            raise PolarisExceptions.NotAdminException()
+        else:
+            raise PolarisExceptions.FailedException()
+            
+    else:
+        return True
+    
+def unban_chat_member(chat_id, user_id):
+    params = {
+        'chat_id': chat_id,
+        'user_id': user_id
+    }
+    
+    return api_request('unbanChatMember', params)
+    
+    if result.ok == False:
+        if result.description.split(': ')[2] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[2] == 'Not enough rights to kick participant':
+            raise PolarisExceptions.NotAdminException()
+        else:
+            raise PolarisExceptions.FailedException()
+            
+    else:
+        return True
 
 def convert_message(msg):
     id = msg['message_id']
@@ -315,17 +346,17 @@ def convert_message(msg):
         extra = None
     elif 'contact' in msg:
         type = 'contact'
-        content = msg['contact']['user_id']
-        extra = msg['contact']['phone_number']
+        content = msg['contact']['phone_number']
+        extra = msg['contact']['first_name']
     elif 'location' in msg:
         type = 'location'
         content = msg['location']['latitude']
         extra = msg['location']['longitude']
-    elif 'new_chat_participant' in msg:
+    elif 'new_chat_member' in msg:
         type = 'status'
         content = 'join_user'
         extra = None
-    elif 'left_chat_participant' in msg:
+    elif 'left_chat_member' in msg:
         type = 'status'
         content = 'left_user'
         extra = None

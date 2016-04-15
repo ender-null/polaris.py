@@ -260,6 +260,12 @@ class Message:
         self.markup = markup
         self.extra = extra
 
+class PolarisExceptions():       
+    class FailedException(Exception):
+        pass
+    
+    class NotAdminException(Exception):
+        pass
 
 class Colors:
     HEADER = '\033[95m'

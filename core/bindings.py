@@ -2,7 +2,7 @@ from core.shared import *
 import sys, traceback
 
 
-def send_message(m, text, preview=False, markup=None):
+def send_message(m, text, preview=False, markup='HTML'):
     if m.receiver.id > 0:
         message = Message(None, m.receiver, m.sender, text, 'text', markup=markup, extra=preview)
     else:
@@ -85,22 +85,24 @@ def invite_user(m, user):
 
 def kick_user(m, user):
     try:
-        if str(m.receiver.id).startswith('-100'):
-            result = bot.wrapper.tgsender.channel_kick(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
-        else:
-            result = bot.wrapper.tgsender.chat_del_user(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
-    except:
-        error = str(sys.exc_info()[1]).split()[4].rstrip("'")
-    else:
-        if hasattr(result, 'result') and result.result == 'FAIL':
-            error = result.error.split()[-1]
-        else:
-            return True
-        
-    if error == 'CHAT_ADMIN_REQUIRED':
+        bot.wrapper.kick_chat_member(m.receiver.id, user)
+    except PolarisExceptions.NotAdminException:
         return None
-    else:
+    except PolarisExceptions.FailedException:
         return False
+    else:
+        return True
+        
+
+def unban_user(m, user):
+    try:
+        bot.wrapper.unban_chat_member(m.receiver.id, user)
+    except PolarisExceptions.NotAdminException:
+        return None
+    except PolarisExceptions.FailedException:
+        return False
+    else:
+        return True
     
     
 def user_info(user):
@@ -133,7 +135,7 @@ def send_alert(text):
     
 def send_exception(m):
     exc_type, exc_obj, exc_tb = sys.exc_info()
-    tb = traceback.extract_tb(exc_tb, 4)
+    tb = traceback.extract_tb(exc_tb)
     text = 'Traceback (most recent call last)'
     for row in tb:
         text += '\n\tFile "%s", line %s, in %s\n\t\t%s' % (row)
@@ -148,8 +150,8 @@ def send_exception(m):
         error = lang.errors.exception
         
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, '%s' % error, 'text', extra=False)
+        message = Message(None, m.receiver, m.sender, '%s' % error, 'text', extra=False, markup='HTML')
     else:
-        message = Message(None, bot, m.receiver, '%s' % error, 'text', extra=False)
+        message = Message(None, bot, m.receiver, '%s' % error, 'text', extra=False, markup='HTML')
     outbox.put(message)
     send_alert(text)

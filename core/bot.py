@@ -75,9 +75,9 @@ def load_plugins():
     for plugin in config.plugins:
         try:
             plugins.append(importlib.import_module('plugins.' + plugin))
-            print('\t%s[OK] %s %s' % (Colors.OKGREEN, plugin, Colors.ENDC))
+            print('\t[OK] %s ' % (plugin))
         except Exception as e:
-            print('\t%s[Failed] %s: %s %s' % (Colors.FAIL, plugin, str(e), Colors.ENDC))
+            print('\t[Failed] %s: %s ' % (plugin, str(e)))
 
     print('\tLoaded: ' + str(len(plugins)) + '/' + str(len(config.plugins)))
     return plugins
@@ -102,13 +102,15 @@ def handle_message(message):
             return
 
     if message.receiver.id > 0:
-        print('%s[%s << %s <%s>] %s%s' % (
-            Colors.WARNING, message.receiver.first_name, message.sender.first_name, message.type, message.content,
-            Colors.ENDC))
+        if message.sender.id > 0:
+            print('[%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.first_name, message.type, message.content))
+        else:
+            print('[%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.title, message.type, message.content))
     else:
-        print('%s[%s << %s <%s>] %s%s' % (
-            Colors.WARNING, message.receiver.title, message.sender.first_name, message.type, message.content,
-            Colors.ENDC))
+        if message.sender.id > 0:
+            print('[%s << %s <%s>] %s' % (message.receiver.title, message.sender.first_name, message.type, message.content))
+        else:
+            print('[%s << %s <%s>] %s' % (message.receiver.title, message.sender.title, message.type, message.content))
 
     for plugin in plugins:
         if hasattr(plugin, 'process'):
@@ -151,20 +153,16 @@ def outbox_listener():
     while (True):
         message = outbox.get()
         try:
-            if message.type == 'text':
-                if message.receiver.id > 0:
-                    print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.first_name, message.content,
-                                                             message.sender.first_name, color.OKBLUE, color.ENDC))
+            if message.receiver.id > 0:
+                if message.sender.id > 0:
+                    print('>> [%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.first_name, message.type, message.content))
                 else:
-                    print('{3}>> [{0} << {2}] {1}{4}'.format(message.receiver.title, message.content,
-                                                             message.sender.first_name, color.OKBLUE, color.ENDC))
+                    print('>> [%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.title, message.type, message.content))
             else:
-                if message.receiver.id > 0:
-                    print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.first_name, message.type,
-                                                               message.sender.first_name, color.OKBLUE, color.ENDC))
+                if message.sender.id > 0:
+                    print('>> [%s << %s <%s>] %s' % (message.receiver.title, message.sender.first_name, message.type, message.content))
                 else:
-                    print('{3}>> [{0} << {2}] <{1}>{4}'.format(message.receiver.title, message.type,
-                                                               message.sender.first_name, color.OKBLUE, color.ENDC))
+                    print('>> [%s << %s <%s>] %s' % (message.receiver.title, message.sender.title, message.type, message.content))
             bot.wrapper.send_message(message)
         except:
             return send_exception(message)

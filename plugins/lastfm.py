@@ -54,13 +54,13 @@ def run(m):
 
     result = ''
     if nowplaying:
-        result += '<code>%s</code> is now playing:\n🎵 <i>%s</i>\n🗣 <i>%s</i>' % (username, track, artist)
-        if album:
-            result += '\n💽 <i>%s</i>' % (album)
+        result += '<b>%s</b> is now playing:\n' % username
     else:
-        result += '<code>%s</code> last played (%s):\n🎵 <i>%s</i>\n🗣 <i>%s</i>' % (username, date, track, artist)
-        if album:
-            result += '\n💽 <i>%s</i>' % (album)
+        result += '<b>%s</b> last played:\n' % username
+        
+    result += '🎵 <i>%s</i>\n💽 %s' % (track, artist)
+    if album:
+        result += ' - %s' % album
 
     url_yt = 'https://www.googleapis.com/youtube/v3/search'
     params_yt = {
@@ -74,7 +74,7 @@ def run(m):
     res_yt = requests.get(url_yt, params=params_yt)
 
     if res_yt.status_code != 200:
-        send_alert('%s\n%s' % (lang.errors.connection, res_yt.text))
+        send_alert('<i>%s</i>\n%s' % (lang.errors.connection, res_yt.text))
         return send_message(m, lang.errors.connection)
 
     youtube = json.loads(res_yt.text)

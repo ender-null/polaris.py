@@ -63,6 +63,26 @@ def get_me():
     bot.username = msg.username
     bot.id = msg.peer_id
 
+def kick_chat_member(chat, user):
+    if str(chat).startswith('-100'):
+            result = tgsender.channel_kick(peer(chat), peer(get_id(user)))
+        else:
+            result = tgsender.chat_del_user(peer(chat), peer(get_id(user)))
+    except:
+        error = str(sys.exc_info()[1]).split()[4].rstrip("'")
+    else:
+        if hasattr(result, 'result') and result.result == 'FAIL':
+            error = result.error.split()[-1]
+        else:
+            return True
+            
+    if error == 'CHAT_ADMIN_REQUIRED':
+        raise PolarisExceptions.NotAdminException()
+    else:
+        raise PolarisExceptions.FailedException()
+        
+def unban_chat_member(chat, user):
+    pass
 
 def convert_message(msg):
     id = msg['id']
@@ -83,14 +103,25 @@ def convert_message(msg):
         else:
             receiver.id = - int(msg.receiver.peer_id)
         receiver.title = msg.receiver.title
-    sender = User()
-    sender.id = int(msg.sender.peer_id)
-    if 'first_name' in msg.sender:
+        
+    if msg.sender.type == 'user':
+        sender = User()
+        sender.id = int(msg.sender.peer_id)
         sender.first_name = msg.sender.first_name
-    if 'last_name' in msg.sender:
-        sender.last_name = msg.sender.last_name
-    if 'username' in msg.sender:
-        sender.username = msg.sender.username
+        if 'first_name' in msg.sender:
+            sender.first_name = msg.sender.first_name
+        if 'last_name' in msg.sender:
+            sender.last_name = msg.sender.last_name
+        if 'username' in msg.sender:
+            sender.username = msg.sender.username
+    else:
+        sender = Group()
+        if msg.sender.type == 'channel':
+            sender.id = - int('100' + str(msg.sender.peer_id))
+        else:
+            sender.id = - int(msg.sender.peer_id)
+        sender.title = msg.sender.title
+        
     date = msg.date
 
     # Gets the type of the message
@@ -116,6 +147,10 @@ def convert_message(msg):
         elif msg.action.type == 'chat_add_user_link':
             content = 'join_user'
             extra = msg.sender.peer_id
+        else:
+            type = None
+            content = None
+            extra = None
     else:
         type = None
         content = None

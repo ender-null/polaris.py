@@ -37,7 +37,7 @@ def first_word(text, i=1):
 def all_but_first_word(text):
     if ' ' not in text:
         return False
-    return text.replace(first_word(text) + ' ', '')
+    return text.split(' ', 1)[1]
 
 
 def last_word(text):

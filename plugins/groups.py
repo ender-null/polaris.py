@@ -57,19 +57,20 @@ def run(m):
         message = lang.errors.unsupported
 	
         if m.receiver.id > 0:
-            return send_message(m, lang.errors.unsupported)
+            return send_message(m, lang.errors.unsupported, markup='HTML')
             
         res = kick_user(m, uid)
+        unban_user(m, uid)
         if res is None:
-            return send_message(m, lang.errors.notchatadmin)
+            return send_message(m, lang.errors.notchatadmin, markup='HTML')
         elif not res:
-            return send_message(m, lang.errors.failed)
+            return send_message(m, lang.errors.failed, markup='HTML')
         else:
-            return send_message(m, 'Ｄｕｍｂ  ｗａｙｓ  ｔｏ  ｄｉｅ．')
+            return send_message(m, '<code>Dumb ways to die.</code>', markup='HTML')
 
     elif get_command(m) == 'invite' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
-            return send_message(m, lang.errors.unsupported)
+            return send_message(m, lang.errors.unsupported, markup='HTML')
 
         if m.reply:
             target = id
@@ -78,15 +79,15 @@ def run(m):
 
         res = invite_user(m, target)
         if res is None:
-            return send_message(m, lang.errors.peerflood)
+            return send_message(m, lang.errors.peerflood, markup='HTML')
         elif not res:
-            return send_message(m, lang.errors.failed)
+            return send_message(m, lang.errors.failed, markup='HTML')
         else:
             return
 
     elif get_command(m) == 'kill' and (is_admin(uid) or is_mod(uid, gid)):
         if m.receiver.id > 0:
-            return send_message(m, lang.errors.unsupported)
+            return send_message(m, lang.errors.unsupported, markup='HTML')
 
         if m.reply:
             target = id
@@ -96,12 +97,13 @@ def run(m):
             target = uid
             
         res = kick_user(m, target)
+        unban_user(m, target)
         if res is None:
-            return send_message(m, lang.errors.notchatadmin)
+            return send_message(m, lang.errors.notchatadmin, markup='HTML')
         elif not res:
-            return send_message(m, lang.errors.failed)
+            return send_message(m, lang.errors.failed, markup='HTML')
         else:
-            return send_message(m, 'Ａｎ  ｅｎｅｍｙ  ｈａｓ  ｂｅｅｎ  ｓｌａｉｎ．')
+            return send_message(m, '<code>An enemy has been slain.</code>', markup='HTML')
 
     elif get_command(m) == 'ban':
         message = lang.errors.unsupported
@@ -114,7 +116,7 @@ def run(m):
 
     elif get_command(m) == 'addmod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
-            return send_message(m, lang.errors.unsupported)
+            return send_message(m, lang.errors.unsupported, markup='HTML')
             
         if m.reply:
             name = m.reply.sender.first_name
@@ -129,7 +131,7 @@ def run(m):
 
     elif get_command(m) == 'demod' and (is_admin(uid) or is_mod(uid, str(gid)[1:])):
         if m.receiver.id > 0:
-            return send_message(m, lang.errors.unsupported)
+            return send_message(m, lang.errors.unsupported, markup='HTML')
             
         if m.reply:
             name = m.reply.sender.first_name
@@ -145,4 +147,4 @@ def run(m):
     else:
         message = lang.errors.permission
 
-    send_message(m, message)
+    send_message(m, message, markup='HTML')

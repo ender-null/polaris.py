@@ -44,8 +44,8 @@ def get_server(m):
         return server
 
 
-def get_summoner(server, input):
-    url = 'https://' + server + '.api.pvp.net/api/lol/' + server + '/v1.4/summoner/by-name/' + input
+def get_summoner(server, name):
+    url = 'https://' + server + '.api.pvp.net/api/lol/' + server + '/v1.4/summoner/by-name/' + name
     params = {
         'api_key': config.keys.league_of_legends
     }
@@ -81,20 +81,22 @@ def get_stats_ranked(server, summoner_id):
 def run(m):
     input = get_input(m)
     if not input:
-        return send_message(m, lang.errors.input)
+        return send_message(m, lang.errors.input, markup='HTML')
 
+    input = input.lower().replace(' ', '')
+    
     global server
     server = None
 
     if not input:
-        return send_message(m, lang.errors.results)
+        return send_message(m, lang.errors.results, markup='HTML')
 
     server = get_server(m)
     if not server:
-        return send_message(m, lang.errors.results)
+        return send_message(m, lang.errors.results, markup='HTML')
     summoner = get_summoner(server, input)
     if not summoner:
-        return send_message(m, lang.errors.results)
+        return send_message(m, lang.errors.results, markup='HTML')
 
     stats = get_stats(server, str(summoner[input]['id']))
 
@@ -102,22 +104,16 @@ def run(m):
         return send_message(m, 'results')
     summoner_icon = get_summoner_icon(server, summoner, input)
     if not summoner_icon:
-        return send_message(m, lang.errors.unknown)
+        return send_message(m, lang.errors.unknown, markup='HTML')
 
     try:
         ranked = get_stats_ranked(server, str(summoner[input]['id']))
     except:
         ranked = None
 
-    text = summoner[input]['name'] + ' (Lv: ' + str(summoner[input]['summonerLevel']) + ')'
-    text += '\n\nNormal games:'
-    for summary in stats['playerStatSummaries']:
-        if summary['playerStatSummaryType'] == 'Unranked':
-            text += '\n\t5vs5 Wins: ' + str(summary['wins'])
-        elif summary['playerStatSummaryType'] == 'Unranked3x3':
-            text += '\n\t3vs3 Wins: ' + str(summary['wins'])
-        elif summary['playerStatSummaryType'] == 'AramUnranked5x5':
-            text += '\n\tARAM Wins: ' + str(summary['wins'])
+    text = summoner[input]['name']
+    if summoner[input]['summonerLevel'] != 30:
+        text += ' (Lv: ' + str(summoner[input]['summonerLevel']) + ')'
 
     if '30' in str(summoner[input]['summonerLevel']):
         if not ranked:
@@ -135,11 +131,19 @@ def run(m):
                         found = True
 
                 text += '\n\nRanked games:'
-                text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'] + ' ' + info[
+                text += '\n\tLeague: ' + ranked[str(summoner[input]['id'])][0]['tier'].title() + ' ' + info[
                     'division'] + ' (' + str(info['leaguePoints']) + 'LP)'
                 text += '\n\tWins/Loses: ' + str(info['wins']) + '/' + str(info['losses']) + ' (' + str(
                     int((float(info['wins']) / (float(info['wins']) + float(info['losses']))) * 100)).replace('.',
                                                                                                               '\'') + '%)'
+    text += '\n\nNormal games:'
+    for summary in stats['playerStatSummaries']:
+        if summary['playerStatSummaryType'] == 'Unranked':
+            text += '\n\t5vs5 Wins: ' + str(summary['wins'])
+        elif summary['playerStatSummaryType'] == 'Unranked3x3':
+            text += '\n\t3vs3 Wins: ' + str(summary['wins'])
+        elif summary['playerStatSummaryType'] == 'AramUnranked5x5':
+            text += '\n\tARAM Wins: ' + str(summary['wins'])
 
     photo = download(summoner_icon)
 

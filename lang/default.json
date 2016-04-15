@@ -95,18 +95,18 @@
     },
     "errors": {
         "connection": "Connection error.",
-        "results": "＊  ｂｕｔ  ｎｏｂｏｄｙ  ｃａｍｅ．．．",
+        "results": "<code>* But nobody came...</code>",
         "argument": "Invalid argument.",
         "syntax": "Invalid syntax.",
-        "permission": "Ｎｏ．  ｓｈｉｔ  ａｉｎ＇ｔ  ｇｏｉｎｇ  ｄｏｗｎ  ｌｉｋｅ  ｔｈａｔ．",
+        "permission": "<code>No. shin ain't going down like that.</code>",
         "id": "Must be used via reply or by specifying a user's ID.",
-        "download": "＊  ｂｕｔ  ｎｏｂｏｄｙ  ｃａｍｅ．．．",
-        "exception": "Exception found.",
+        "download": "<code>* But nobody came...</code>",
+        "exception": "<code>Exception found.</code>",
         "unknown": "Unknown error.",
         "input": "No input.",
-        "unsupported": "＊  ｂｕｔ  ｎｏｂｏｄｙ  ｃａｍｅ．．．",
+        "unsupported": "<code>* But nobody came...</code>",
         "peerflood": "Sorry, I can only interact with mutual contacts at the moment.",
-        "notchatadmin": "Sorry, but I can't do that if I'm not an admin.",
-        "failed": "Ｍｉｓｓ"
+        "notchatadmin": "I must be an administrator in the group for this to work.",
+        "failed": "<code>Miss</code>"
     }
 }

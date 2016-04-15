@@ -11,16 +11,19 @@ def run(m):
         m.receiver = m.reply.receiver
         m.sender = m.reply.sender
     uid = str(m.sender.id)
+    
+    if m.sender.id > 0:
+        if m.sender.last_name:
+            message = 'Info of <b>%s %s</b>:' % (m.sender.first_name, m.sender.last_name)
+        else:
+            message = 'Info of <b>%s</b>:' % (m.sender.first_name)
 
-    if m.sender.last_name:
-        message = 'Info of <b>%s %s</b>:' % (escape_markdown(m.sender.first_name), escape_markdown(m.sender.last_name))
+        if m.sender.username:
+            message += '\n👤 @%s (%s)' % (m.sender.username, m.sender.id)
+        else:
+            message += '\n👤 (%s)' % (m.sender.id)
     else:
-        message = 'Info of <b>%s</b>:' % (escape_markdown(m.sender.first_name))
-
-    if m.sender.username:
-        message += '\n👤 @%s (%s)' % (m.sender.username, m.sender.id)
-    else:
-        message += '\n👤 (%s)' % (m.sender.id)
+        message = 'Info of <b>%s</b>:' % (m.sender.title)
 
     if m.receiver.id < 0:
         message += '\n👥 %s (%s)' % (m.receiver.title, m.receiver.id)
