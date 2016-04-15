@@ -271,7 +271,7 @@ def unban_chat_member(chat_id, user_id):
         'user_id': user_id
     }
     
-    return api_request('unbanChatMember', params)
+    result = api_request('unbanChatMember', params)
     
     if result.ok == False:
         if result.description.split(': ')[2] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[2] == 'Not enough rights to kick participant':
