@@ -5,7 +5,6 @@ commands = [
 ]
 description = 'Generates an audio file using Google Text-To-Speech API.'
 shortcut = '/v '
-hidden = True
 
 langs = [
     'af', 'aq', 'ar', 'hy', 'ca', 'zh', 'zh-cn', 'zh-tw', 'zh-yue',
@@ -104,7 +103,7 @@ def inline(m):
             'type': 'article',
             'id': str(jstr.status_code),
             'title': lang.errors.connection,
-            'input_message_content': json.dumps(message),
+            'input_message_content': message,
             'description': jstr.text
         }
         results_json.append(result)

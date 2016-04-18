@@ -80,7 +80,7 @@ def run(m):
     youtube = json.loads(res_yt.text)
 
     if len(youtube['items']) > 0:
-        result += '\n\n🎞 %s\nhttp://youtu.be/%s' % (
+        result += '\n\n🎞 <i>%s</i>\nhttp://youtu.be/%s' % (
             youtube['items'][0]['snippet']['title'],
             youtube['items'][0]['id']['videoId'])
 

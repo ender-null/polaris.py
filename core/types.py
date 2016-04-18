@@ -109,10 +109,10 @@ class ConfigStore:
                     self.timeout = data.timeout
                     self.start = data.start
                     self.language = data.language
-                    print('\t%s[OK] config.json loaded.%s' % (Colors.OKGREEN, Colors.ENDC))
+                    print('\t[OK] config.json loaded.')
             except:
                 self.keys = DictObject()
-                print('\t%s[Failed] config.json NOT loaded.%s' % (Colors.FAIL, Colors.ENDC))
+                print('\t[Failed] config.json NOT loaded.')
 
         def save(self):
             try:
@@ -131,9 +131,9 @@ class ConfigStore:
                     config = OrderedDict(config_tuples)
 
                     json.dump(config, f, sort_keys=True, indent=4)
-                    print('\t%s[OK] config.json saved.%s' % (Colors.OKGREEN, Colors.ENDC))
+                    print('\t[OK] config.json saved.')
             except:
-                print('\t%s[Failed] config.json NOT saved.%s' % (Colors.FAIL, Colors.ENDC))
+                print('\t[Failed] config.json NOT saved.')
 
     # Defines a language for the messages.
     class Language:
@@ -153,12 +153,12 @@ class ConfigStore:
                     self.messages = data.messages
                     self.errors = data.errors
                     self.interactions = data.interactions
-                    print('\t%s[OK] %s.json loaded.%s' % (Colors.OKGREEN, file, Colors.ENDC))
+                    print('\t[OK] %s.json loaded.')
             except:
                 self.messages = DictObject()
                 self.errors = DictObject()
                 self.interactions = DictObject()
-                print('\t%s[Failed] %s.json NOT loaded.%s' % (Colors.FAIL, file, Colors.ENDC))
+                print('\t[Failed] %s.json NOT loaded.')
 
         def save(self):
             try:
@@ -178,9 +178,9 @@ class ConfigStore:
                     config = OrderedDict(config_tuples)
 
                     json.dump(config, f, sort_keys=True, indent=4)
-                    print('\t%s[OK] %s.json saved.%s' % (Colors.OKGREEN, file, Colors.ENDC))
+                    print('\t[OK] %s.json saved.')
             except:
-                print('\t%s[Failed] %s.json NOT saved.%s' % (Colors.FAIL, file, Colors.ENDC))
+                print('\t[Failed] %s.json NOT saved.')
 
     # Stores a list of data of users.
     class Users:
@@ -223,18 +223,18 @@ class ConfigStore:
                     data = json.load(f, object_pairs_hook=OrderedDict)
                     self.list = DictObject(data)
 
-                    print('\t%s[OK] tags.json loaded.%s' % (Colors.OKGREEN, Colors.ENDC))
+                    print('\t[OK] tags.json loaded.')
             except:
                 self.list = DictObject()
-                print('\t%s[Failed] tags.json NOT loaded.%s' % (Colors.FAIL, Colors.ENDC))
+                print('\t[Failed] tags.json NOT loaded.')
 
         def save(self):
             try:
                 with open('data/tags.json', 'w') as f:
                     json.dump(self.list, f, sort_keys=True, indent=4)
-                    print('\t%s[OK] tags.json saved.%s' % (Colors.OKGREEN, Colors.ENDC))
+                    print('\t[OK] tags.json saved.')
             except:
-                print('\t%s[Failed] tags.json NOT saved.%s' % (Colors.FAIL, Colors.ENDC))
+                print('\t[Failed] tags.json NOT saved.')
 
 
 # Defines the structure of the Messages objects.

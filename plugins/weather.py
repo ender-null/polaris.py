@@ -5,7 +5,7 @@ commands = [
     ('/forecast', ['location'])
 ]
 description = 'Returns the current temperature and weather conditions for a specified location using WeatherUnderground API.'
-shortcut = '/w '
+shortcut = ['/w ', '/f ']
 
 def get_icon(icon):
     weather_emoji = {}
@@ -84,7 +84,7 @@ def run(m):
             photo = None
 
         if photo:
-            send_photo(m, photo, remove_markdown(message))
+            send_photo(m, photo, remove_html(message))
         else:
             send_message(m, title + message, markup='HTML')
 

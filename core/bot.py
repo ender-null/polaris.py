@@ -117,8 +117,11 @@ def handle_message(message):
             plugin.process(message)
             
         if hasattr(plugin, 'shortcut'):
-            if check_trigger(plugin.shortcut, plugin, message):
-                break
+            if type(plugin.shortcut) is not list:
+                plugin.shortcut = [plugin.shortcut]
+            for command in plugin.shortcut:
+                if command and check_trigger(command, plugin, message):
+                    break
 
         if hasattr(plugin, 'commands'):
             for command, parameters in plugin.commands:

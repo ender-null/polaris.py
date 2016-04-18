@@ -2,7 +2,7 @@ from core.shared import *
 import sys, traceback
 
 
-def send_message(m, text, preview=False, markup='HTML'):
+def send_message(m, text, preview=False, markup=None):
     if m.receiver.id > 0:
         message = Message(None, m.receiver, m.sender, text, 'text', markup=markup, extra=preview)
     else:

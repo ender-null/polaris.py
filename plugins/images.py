@@ -7,7 +7,7 @@ commands = [
     ('/insfw', ['query'])
 ]
 description = 'This command performs a Bing Images search for the given query.'
-shortcut = '/i '
+shortcut = ['/i ', None]
 
 exts = {
     '.jpg$',
@@ -105,7 +105,7 @@ def inline(m):
             'type': 'article',
             'id': str(jstr.status_code),
             'title': lang.errors.connection,
-            'input_message_content': json.dumps(message),
+            'input_message_content': message,
             'description': jstr.text
         }
         results_json.append(result)
@@ -121,7 +121,7 @@ def inline(m):
             'type': 'article',
             'id': str(jstr.status_code),
             'title': lang.errors.results,
-            'input_message_content': json.dumps(message),
+            'input_message_content': message,
             'description': jstr.text
         }
         results_json.append(result)

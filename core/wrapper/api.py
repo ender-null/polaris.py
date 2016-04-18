@@ -37,7 +37,7 @@ def get_updates(offset=None, limit=None, timeout=None):
 
 
 def api_send_message(chat_id, text, disable_web_page_preview=None,
-                     reply_to_message_id=None, reply_markup=None, parse_mode='HTML'):
+                     reply_to_message_id=None, reply_markup=None, parse_mode=None):
     params = {
         'chat_id': chat_id,
         'text': text,
