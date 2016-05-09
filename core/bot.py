@@ -34,11 +34,11 @@ def start():
 
 def setup():
     print('Loading configuration...')
-    config.load(config)
-    lang.load(lang)
-    users.load(users)
-    groups.load(groups)
-    tags.load(tags)
+    config.load()
+    lang.load()
+    users.load()
+    groups.load()
+    tags.load()
 
     if not 'bot_api_token' in config.keys and not 'tg_cli_port' in config.keys:
         print('\nWrapper not configured!')
@@ -51,7 +51,7 @@ def setup():
             config.keys.bot_api_token = input('\tTelegram Bot API token: ')
             config.wrapper = 'api'
         config.plugins = list_plugins()
-        config.save(config)
+        config.save()
     else:
         if config.wrapper == 'api' and config.keys.bot_api_token:
             print('\nUsing Telegram Bot API token: {}'.format(config.keys.bot_api_token))
@@ -131,6 +131,11 @@ def handle_message(message):
 
 def check_trigger(command, plugin, message):
     trigger = command.replace('/', '^' + config.start)
+    if trigger == '':
+        trigger = config.start + 'help'
+
+    if message.type == 'inline_query':
+        trigger = trigger.replace(config.start, '')
 
     if message.content and re.compile(trigger).search(message.content.lower()):
         try:

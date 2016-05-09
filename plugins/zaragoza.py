@@ -29,15 +29,15 @@ def run(m):
         jdat = json.loads(jstr.text)
 
         street = jdat['title'].split(')')[-1].split('Lí')[0].strip()
-        poste = jdat['title'].split(')')[0]
+        poste = jdat['title'].split(')')[0].replace('(', '')
         line = jdat['title'].split(street)[-1].strip()
 
         text = '<b>{0}</b>\n\tPoste: {1}\n\t{2}\n\n'.format(street.title(), poste, line)
         for destino in jdat['destinos']:
-            text += destino['linea'] + ' ' + destino['destino']
-            text += '\n - ' + destino['primero']
-            text += '\n - ' + destino['segundo']
-            text += '\n'
+            text += '<b>%s %s</b>' % (destino['linea'], destino['destino'].rstrip(',').rstrip('.').title())
+            text += '\n • ' + destino['primero'].rstrip('.').replace('cin', 'ción')
+            text += '\n • ' + destino['segundo'].rstrip('.').replace('cin', 'ción')
+            text += '\n\n'
         text = text.rstrip('\n')
         
         send_message(m, text, markup='HTML')

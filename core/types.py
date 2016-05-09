@@ -1,7 +1,9 @@
 from core.shared import *
 from collections import OrderedDict
 from DictObject import DictObject
-import json, importlib
+from os.path import isfile as exists
+from pprint import pprint
+import json, importlib, inspect
 
 
 # Used to store the bindings module and the User data of the bot.
@@ -51,7 +53,7 @@ class Group:
         self.type = type
 
 
-class DataStore(DictObject):
+class DataStoreTest(DictObject):
     def __init__(self):
         for key in self.keys():
             self[key] = None
@@ -83,6 +85,59 @@ class DataStore(DictObject):
                 return True
         except:
             raise Exception('[Failed] %s.json NOT saved.' % type(self).__name__)
+            
+
+class DataStore(object):
+    store = DictObject()
+    def get_my_name(self):
+        ans = []
+        frame = inspect.currentframe()
+        tmp = dict(list(frame.f_globals.items()) + list(frame.f_locals.items()))
+        print(tmp)
+        for k, var in tmp.items():
+            if isinstance(var, self.__class__):
+                print('%s - %s' % (k, var))
+                if hash(self) == hash(var) and k is not 'self':
+                    ans.append(k)
+        return ans[0]
+
+    def __getitem__(self, key):
+        if key not in self.store.keys():
+            raise Exception("'" + key + "'" + " is not a valid key")
+        return dict.__getitem__(self.store,key)
+
+    def __setitem__(self, key, value):
+        if key not in self.store.keys():
+            raise Exception("'" + key + "'" + " is not a valid key")
+        dict.__setitem__(self.store,key,value)
+
+    def load(self):
+        print(self.get_my_name())
+        file_name = 'data/%s.json' % self.get_my_name()
+        if exists(file_name):
+            try:
+                with open(file_name) as f:
+                    self.store = json.load(f)
+                    print('\t[OK] %s loaded.' % self.get_my_name())
+            except:
+                print('\t[Failed] %s loaded.' % self.get_my_name())
+        else:
+            print('not found')
+
+    def save(self):
+        file_name = 'data/%s.json' % self.get_my_name()
+        if self.store:
+            try:
+                with open(file_name) as f:
+                    json.dump(self.store, f)
+                    print('\t[OK] %s saved.' % self.get_my_name())
+            except:
+                print('\t[Failed] %s saved.' % self.get_my_name())
+        else:
+            print('not found')
+    def print_it(self):
+        if self.store:
+            pprint(self.store)
         
         
 # This classes define and manage configuration files and stored data.
@@ -153,12 +208,12 @@ class ConfigStore:
                     self.messages = data.messages
                     self.errors = data.errors
                     self.interactions = data.interactions
-                    print('\t[OK] %s.json loaded.')
+                    print('\t[OK] %s.json loaded.' % file)
             except:
                 self.messages = DictObject()
                 self.errors = DictObject()
                 self.interactions = DictObject()
-                print('\t[Failed] %s.json NOT loaded.')
+                print('\t[Failed] %s.json NOT loaded.' % file)
 
         def save(self):
             try:
@@ -178,9 +233,9 @@ class ConfigStore:
                     config = OrderedDict(config_tuples)
 
                     json.dump(config, f, sort_keys=True, indent=4)
-                    print('\t[OK] %s.json saved.')
+                    print('\t[OK] %s.json saved.' % file)
             except:
-                print('\t[Failed] %s.json NOT saved.')
+                print('\t[Failed] %s.json NOT saved.' % file)
 
     # Stores a list of data of users.
     class Users:
