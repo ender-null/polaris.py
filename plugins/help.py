@@ -50,3 +50,35 @@ def run(m):
                 i += 1
 
     send_message(m, message, markup='HTML')
+
+def inline(m):
+    input = get_input(m)
+
+    results_json = []
+    
+    for plugin in plugins:
+        if hasattr(plugin, 'hidden') and plugin.hidden:
+            continue
+        for command, parameters in plugin.commands:
+            trigger = command.replace('/', '')            
+            for parameter in parameters:
+                trigger += ' <%s>' % parameter
+            
+            message = {
+                'message_text': command.replace('/', config.start),
+            }
+            
+            result = {
+                'type': 'article',
+                'id': command,
+                'title': trigger,
+                'input_message_content': message,
+                'description': remove_html(plugin.description),
+                'thumb_url': 'http://fa2png.io/media/icons/fa-terminal/96/16/ffffff_673ab7.png',
+                'parse_mode': 'Markdown'
+            }
+
+            results_json.append(result)
+
+    results = json.dumps(results_json)
+    answer_inline_query(m, results)

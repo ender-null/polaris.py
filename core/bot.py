@@ -100,6 +100,9 @@ def handle_message(message):
         # if chat or user is muted ignores the message
         if has_tag(message.sender.id, 'muted') or has_tag(message.receiver.id, 'muted'):
             return
+            
+    if message.type == 'inline_query' and message.content == '':
+        message.content = 'help'
 
     if message.receiver.id > 0:
         if message.sender.id > 0:
@@ -131,8 +134,6 @@ def handle_message(message):
 
 def check_trigger(command, plugin, message):
     trigger = command.replace('/', '^' + config.start)
-    if trigger == '':
-        trigger = config.start + 'help'
 
     if message.type == 'inline_query':
         trigger = trigger.replace(config.start, '')
