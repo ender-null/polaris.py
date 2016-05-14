@@ -287,9 +287,10 @@ def convert_message(msg):
     if msg['chat']['id'] > 0:
         receiver = User()
         receiver.first_name = msg['chat']['first_name']
-        if 'last_name' in msg['from']:
+        if 'last_name' in msg['chat']:
             receiver.last_name = msg['chat']['last_name']
-        receiver.username = msg['chat']['username']
+        if 'username' in msg['chat']:
+            receiver.username = msg['chat']['username']
     else:
         receiver = Group()
         receiver.title = msg['chat']['title']
