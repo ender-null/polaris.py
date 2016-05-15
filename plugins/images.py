@@ -30,7 +30,7 @@ def run(m):
         'Query': "'" + input + "'",
         'Adult': "'Moderate'",
         '$format': 'json',
-        '$top': '8'
+        '$top': '16'
     }
     auth = HTTPBasicAuth(config.keys.azure_key, config.keys.azure_key)
 
@@ -75,14 +75,17 @@ def inline(m):
     input = get_input(m)
     query = ''
     caption = ''
-    if input and '|' in input and input[-1] != '|':
+    
+    if not input:
+        query = 'None'
+    elif '|' in input and input[-1] != '|':
         query, caption = input.split('|')
     else:
         query = input
 
     url = 'https://api.datamarket.azure.com/Data.ashx/Bing/Search/Image'
     params = {
-        'Query': "'" + query + "'",
+        'Query': "'%s'" % query,
         'Adult': "'Moderate'",
         '$format': 'json',
         '$top': '16'

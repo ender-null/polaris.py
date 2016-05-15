@@ -1,13 +1,12 @@
 from core.utils import *
-from bs4 import BeautifulSoup
+from requests.auth import HTTPBasicAuth
 
 commands = [
     ('/search', ['query']),
     ('/snsfw', ['query'])
 ]
-description = 'This command performs a Google search for the given query.'
+description = 'This command performs a Bing Web search for the given query.'
 shortcut = ['/s ', None]
-
 
 def run(m):
     input = get_input(m)
@@ -15,59 +14,66 @@ def run(m):
     if not input:
         return send_message(m, lang.errors.input)
 
-    url = 'https://ajax.googleapis.com/ajax/services/search/web'
+    url = 'https://api.datamarket.azure.com/Bing/Search/v1/Web'
     params = {
-        'v': 1.0,
-        'q': input,
-        'safe': 'active',
-        'rsz': '8'
+        'Query': "'" + input + "'",
+        'Adult': "'Moderate'",
+        '$format': 'json',
+        '$top': '16'
     }
+    auth = HTTPBasicAuth(config.keys.azure_key, config.keys.azure_key)
 
     if get_command(m) == 'insfw':
-        del params['safe']
+        params['Adult'] = "'Off'"
 
-    jstr = requests.get(url, params=params)
+    jstr = requests.get(url, params=params, auth=auth)
 
     if jstr.status_code != 200:
         send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
-        return send_message(m, lang.errors.connection, markup='HTML')
+        return send_message(m, lang.errors.connection)
 
     jdat = json.loads(jstr.text)
 
-    print(len(jdat['responseData']['results']))
+    if not len(jdat['d']['results']) != 0:
+        return send_message(m, lang.errors.results)
 
-    if not len(jdat['responseData']['results']) != 0:
-        return send_message(m, lang.errors.results, markup='HTML')
+    message = '<b>Web results for</b> <i>%s</i>:' % input
 
-    output = '<b>Google search for:</b> <i>%s</i>\n' % input
-    for result in jdat['responseData']['results']:
-        title = result['titleNoFormatting']
-        url = result['unescapedUrl']
-        output += '\t🌐\t<a href="%s">%s</a>\n' % (url, title)
-    
-    send_message(m, output, markup='HTML')
+    for result in jdat['d']['results']:
+        if len(result['Title']) > 30:
+            title = result['Title'][:27] + '...'
+        else:
+            title = result['Title']
+        message += '\n • <a href="%s">%s</a>' % (result['Url'], title)
+
+    send_message(m, message, markup='HTML')
 
 
 def inline(m):
     input = get_input(m)
     query = ''
     caption = ''
-    if input and '|' in input and input[-1] != '|':
+    
+    if not input:
+        query = 'None'
+    elif '|' in input and input[-1] != '|':
         query, caption = input.split('|')
     else:
         query = input
 
-    url = 'https://ajax.googleapis.com/ajax/services/search/web'
+    url = 'https://api.datamarket.azure.com/Bing/Search/v1/Web'
     params = {
-        'v': 1.0,
-        'q': input,
-        'rsz': '8'
+        'Query': "'%s'" % query,
+        'Adult': "'Moderate'",
+        '$format': 'json',
+        '$top': '16'
     }
+    auth = HTTPBasicAuth(config.keys.azure_key, config.keys.azure_key)
 
-    if get_command(m) == 'insfw':
-        del params['safe']
+    if get_command(m) == 'snsfw':
+        params['Adult'] = "'Off'"
 
-    jstr = requests.get(url, params=params)
+    jstr = requests.get(url, params=params, auth=auth)
     
     results_json = []
     
@@ -87,7 +93,7 @@ def inline(m):
 
     jdat = json.loads(jstr.text)
 
-    if not len(jdat['responseData']['results']) != 0:
+    if not len(jdat['d']['results']) != 0:
         message = {
             'message_text': lang.errors.results,
             'parse_mode': 'HTML'
@@ -101,24 +107,19 @@ def inline(m):
         }
         results_json.append(result)
 
-    for item in jdat['responseData']['results']:
+    for item in jdat['d']['results']:
         message = {
-            'message_text': item['unescapedUrl'],
-            'parse_mode': 'HTML'
+            'message_text': item['Url']
         }
-
         result = {
             'type': 'article',
-            'id': item['cacheUrl'].split(':')[-2],
-            'title': item['titleNoFormatting'],
-            'url': item['url'],
+            'id': item['ID'],
+            'title': item['Title'],
             'input_message_content': message,
-            'description': BeautifulSoup(item['content'], 'lxml').text,
-            'thumb_url': 'http://fa2png.io/media/icons/fa-globe/96/16/673ab7_ffffff.png',
-            'thumb_width': 128,
-            'thumb_height': 128
+            'url': item['Url'],
+            'description': item['Description'],
+            'thumb_url': 'http://fa2png.io/media/icons/devicons-bing_small/96/32/ffffff_673ab7.png'
         }
-        
         results_json.append(result)
 
     results = json.dumps(results_json)

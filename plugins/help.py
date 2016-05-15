@@ -74,11 +74,10 @@ def inline(m):
                 'title': trigger,
                 'input_message_content': message,
                 'description': remove_html(plugin.description),
-                'thumb_url': 'http://fa2png.io/media/icons/fa-terminal/96/16/ffffff_673ab7.png',
-                'parse_mode': 'Markdown'
+                'thumb_url': 'http://fa2png.io/media/icons/fa-terminal/96/16/ffffff_673ab7.png'
             }
-
-            results_json.append(result)
+            if hasattr(plugin,'inline'):
+                results_json.append(result)
 
     results = json.dumps(results_json)
     answer_inline_query(m, results)
