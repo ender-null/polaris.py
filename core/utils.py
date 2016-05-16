@@ -258,36 +258,41 @@ def is_mod(id, gid):
 
 
 def set_tag(id, tag):
-    uid = str(id)
+    id = str(id)
     message = ''
-    if not uid in tags.list:
-        tags.list[uid] = []
+    if not id in tags.list:
+        tags.list[id] = []
 
-    if not tag in tags.list[uid]:
-        tags.list[uid].append(tag)
+    if not tag in tags.list[id]:
+        tags.list[id].append(tag)
         message += '\'%s\' ' % tag
     
-    tags.save(tags)
+    tags.save()
     return message
 
 
 def rem_tag(id, tag):
-    uid = str(id)
+    id = str(id)
     message = ''
-    if not uid in tags.list:
+    if not id in tags.list:
         return message
 
-    if tag in tags.list[uid]:
-        tags.list[uid].remove(tag)
+    if tag in tags.list[id]:
+        tags.list[id].remove(tag)
         message += '-\'%s\' ' % tag
 
-    tags.save(tags)
+    tags.save()
     return message
 
 
 def has_tag(id, tag):
-    uid = str(id)
-    if uid in tags.list and tag in tags.list[uid]:
+    id = str(id)
+    if id in tags.list and '?' in tag:
+        for t in tags.list[id]:
+            if t.startswith(tag.split('?')[0]):
+                return True
+        return False
+    elif id in tags.list and tag in tags.list[id]:
         return True
     else:
         return False

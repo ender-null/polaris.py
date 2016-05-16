@@ -104,16 +104,7 @@ def handle_message(message):
     if message.type == 'inline_query' and message.content == '':
         message.content = 'help'
 
-    if message.receiver.id > 0:
-        if message.sender.id > 0:
-            print('[%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.first_name, message.type, message.content))
-        else:
-            print('[%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.title, message.type, message.content))
-    else:
-        if message.sender.id > 0:
-            print('[%s << %s <%s>] %s' % (message.receiver.title, message.sender.first_name, message.type, message.content))
-        else:
-            print('[%s << %s <%s>] %s' % (message.receiver.title, message.sender.title, message.type, message.content))
+    print('• %s' % message.content)
 
     for plugin in plugins:
         if hasattr(plugin, 'process'):
@@ -158,20 +149,10 @@ def handle_cron():
         sleep(5)
 
 def outbox_listener():
-    color = Colors()
     while (True):
         message = outbox.get()
         try:
-            if message.receiver.id > 0:
-                if message.sender.id > 0:
-                    print('>> [%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.first_name, message.type, message.content))
-                else:
-                    print('>> [%s << %s <%s>] %s' % (message.receiver.first_name, message.sender.title, message.type, message.content))
-            else:
-                if message.sender.id > 0:
-                    print('>> [%s << %s <%s>] %s' % (message.receiver.title, message.sender.first_name, message.type, message.content))
-                else:
-                    print('>> [%s << %s <%s>] %s' % (message.receiver.title, message.sender.title, message.type, message.content))
+            print('↩ %s' % message.content)
             bot.wrapper.send_message(message)
         except:
             return send_exception(message)

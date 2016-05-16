@@ -219,6 +219,18 @@ def api_send_chat_action(chat_id, action):
     }
     return api_request('sendChatAction', params)
 
+def api_forward_message(chat_id, from_chat_id, message_id, disable_notification=False):
+    params = {
+        'chat_id': chat_id,
+        'from_chat_id': from_chat_id,
+        'message_id': message_id
+    }
+
+    if disable_notification:
+            params['disable_notification'] = disable_notification
+
+    return api_request('forwardMessage', params)
+
 
 def api_answer_inline_query(inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
     params = {
@@ -322,6 +334,14 @@ def convert_message(msg):
         type = 'text'
         content = msg['text']
         extra = None
+        
+        if 'entities' in msg:
+            for entity in msg['entities']:
+                if entity['type'] == 'url':
+                    type = 'url'
+                    content = msg['text'][entity['offset']:entity['offset']+entity['length']]
+                    extra = None
+
     elif 'audio' in msg:
         type = 'audio'
         content = msg['audio']['file_id']
@@ -434,6 +454,8 @@ def send_message(message):
         api_send_location(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'inline_results':
         api_answer_inline_query(message.id, message.content, next_offset=message.extra)
+    elif message.type == 'forward':
+        api_forward_message(message.content, message.receiver.id, message.id)
     elif message.type == 'service':
         api_send_message(message.receiver.id, '`Not Yet Implemented!`', parse_mode='Markdown')
     else:

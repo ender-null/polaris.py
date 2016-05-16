@@ -5,7 +5,7 @@ commands = [
 ]
 description = 'Returns the current temperature and weather conditions for a specified location. Uses Open Weather Map.'
 shortcut = '/ow'
-
+hidden = True
 
 def get_icon(weather_icon):
     weather_emoji = {}

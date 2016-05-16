@@ -30,11 +30,11 @@ def run(m):
 
     if res.status_code != 200:
         send_alert('%s\n%s' % (lang.errors.connection, res.text))
-        return send_message(m, lang.errors.connection)
+        return send_message(m, lang.errors.connection, markup='Markdown')
 
     lastfm = json.loads(res.text)
-    
-    if not 'recenttracks' in lastfm:
+
+    if not len(lastfm['recenttracks']['track']) > 0:
         return send_message(m, lang.errors.results)
     
     artist = lastfm['recenttracks']['track'][0]['artist']['#text'].title()
