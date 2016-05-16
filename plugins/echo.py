@@ -15,25 +15,26 @@ def run(m):
 
     if get_command(m) == 'reverb':
         preview = False
-        text = latcyr(input)
     else:
         preview = True
-        text = input
+    
+    text = input
     
     send_message(m, text, markup='Markdown', preview=preview)
 
 
 def inline(m):
     input = get_input(m)
+    if not input:
+        input = lang.errors.input
 
     if get_command(m) == 'reverb':
         preview = True
-        text = latcyr(input)
     else:
         preview = False
-        text = input
+    text = input
 
-    results_json = [
+    results = [
         {
             'type': 'article',
             'id': '%s' % text,
@@ -95,5 +96,4 @@ def inline(m):
         },
     ]
 
-    results = json.dumps(results_json)
     answer_inline_query(m, results)

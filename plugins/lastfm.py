@@ -2,7 +2,7 @@
 from core.utils import *
 
 commands = [
-    ('/nowplaying', ['username'])
+    ('/nowplaying', ['user'])
 ]
 description = 'Returns what you are or were last listening to. If you specify a username, info will be returned for that username.'
 shortcut = '/np'
@@ -79,9 +79,16 @@ def run(m):
 
     youtube = json.loads(res_yt.text)
 
-    if len(youtube['items']) > 0:
-        result += '\n\n🎞 <i>%s</i>\nhttp://youtu.be/%s' % (
-            youtube['items'][0]['snippet']['title'],
-            youtube['items'][0]['id']['videoId'])
+    keyboard = {}
 
-    send_message(m, result, markup='HTML', preview=False)
+    if len(youtube['items']) > 0:
+        keyboard['inline_keyboard'] = [
+            [
+                {
+                    'text': 'Watch "%s"' % youtube['items'][0]['snippet']['title'],
+                    'url': 'http://youtu.be/%s' % youtube['items'][0]['id']['videoId']
+                }
+            ]
+        ]
+
+    send_message(m, result, markup='HTML', preview=False, keyboard=keyboard)

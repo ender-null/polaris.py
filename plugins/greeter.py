@@ -8,6 +8,6 @@ hidden = True
 
 def run(m):
     if m.content == 'join_user':
-        return send_message(m, 'Hello!')
+        return send_message(m, 'Hello %s!' % m.extra.first_name)
     elif m.content == 'left_user':
-        return send_message(m, 'Goodbye!')
+        return send_message(m, 'Goodbye %s!' % m.extra.first_name)

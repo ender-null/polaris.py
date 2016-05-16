@@ -39,6 +39,8 @@ def run(m):
 
 def inline(m):
     input = get_input(m)
+    if not input:
+        input = lang.errors.input
 
     url = 'https://www.googleapis.com/youtube/v3/search'
     params = {
@@ -51,7 +53,7 @@ def inline(m):
 
     jdat = send_request(url, params)
 
-    results_json = []
+    results = []
     for item in jdat['items']:
         text = 'Watch "%s" on YouTube\nhttp://youtu.be/%s' % (
             item['snippet']['title'],
@@ -108,7 +110,6 @@ def inline(m):
             'video_duration': duration,
             'thumb_url': item['snippet']['thumbnails']['default']['url']
         }
-        results_json.append(result)
+        results.append(result)
 
-    results = json.dumps(results_json)
     answer_inline_query(m, results)

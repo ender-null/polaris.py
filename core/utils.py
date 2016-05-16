@@ -20,9 +20,10 @@ def get_input(message, ignore_reply=False):
 
 def get_command(message):
     if message.content.startswith(config.start):
-        command = message.content.split(' ')[0].lstrip(config.start)
-        command = command.replace('@' + bot.username, '')
-        return command
+        command = first_word(message.content).lstrip(config.start)
+        return command.replace('@' + bot.username, '')
+    elif message.type == 'inline_query':
+        return first_word(message.content)
     else:
         return None
 

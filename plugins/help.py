@@ -54,7 +54,7 @@ def run(m):
 def inline(m):
     input = get_input(m)
 
-    results_json = []
+    results = []
     
     for plugin in plugins:
         if hasattr(plugin, 'hidden') and plugin.hidden:
@@ -77,7 +77,6 @@ def inline(m):
                 'thumb_url': 'http://fa2png.io/media/icons/fa-terminal/96/16/ffffff_673ab7.png'
             }
             if hasattr(plugin,'inline'):
-                results_json.append(result)
+                results.append(result)
 
-    results = json.dumps(results_json)
     answer_inline_query(m, results)

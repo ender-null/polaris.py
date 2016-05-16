@@ -2,7 +2,7 @@ from core.utils import *
 from time import time
 
 commands = [
-    ('/remindme', ['delay', 'message'])
+    ('/remindme', ['delay', 'text'])
 ]
 description = 'Set a reminder for yourself. First argument is delay until you wish to be reminded.\nExample: "' + config.start + 'remindme 2h GiT GuD"'
 

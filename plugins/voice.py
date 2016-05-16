@@ -1,7 +1,7 @@
 from core.utils import *
 
 commands = [
-    ('/voice', ['language', 'text'])
+    ('/voice', ['lang', 'text'])
 ]
 description = 'Generates an audio file using Google Text-To-Speech API.'
 shortcut = '/v '
@@ -92,7 +92,7 @@ def inline(m):
 
     jstr = requests.get(url, params=params)
     
-    results_json = []
+    results = []
     
     if jstr.status_code != 200:
         message = {
@@ -106,7 +106,7 @@ def inline(m):
             'input_message_content': message,
             'description': jstr.text
         }
-        results_json.append(result)
+        results.append(result)
         return
 
 
@@ -116,7 +116,6 @@ def inline(m):
         'voice_url': jstr.url,
         'title': text
     }
-    results_json.append(result)
+    results.append(result)
 
-    results = json.dumps(results_json)
     answer_inline_query(m, results)

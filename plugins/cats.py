@@ -24,8 +24,20 @@ def run(m):
         return send_message(m, lang.errors.connection)
 
     photo = download(url)
+    keyboard = {
+        'inline_keyboard': [[
+            {
+                'text': 'More...',
+                'url': 'http://thecatapi.com/'
+            },
+            {
+                'text': 'Source',
+                'url': url
+            }
+        ]]
+    }
 
     if photo:
-        send_photo(m, photo)
+        send_photo(m, photo, keyboard=keyboard)
     else:
         send_message(m, lang.errors.download)

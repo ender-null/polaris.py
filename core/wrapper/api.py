@@ -9,7 +9,6 @@ api_url = 'https://api.telegram.org/bot' + config.keys.bot_api_token + '/'
 
 def send_request(url, params=None, headers=None, files=None, data=None):
     result = requests.get(url, params=params, headers=headers, files=files, data=data)
-
     if result.status_code != 200:
         print(result.text)
 
@@ -37,7 +36,7 @@ def get_updates(offset=None, limit=None, timeout=None):
 
 
 def api_send_message(chat_id, text, disable_web_page_preview=None,
-                     reply_to_message_id=None, reply_markup=None, parse_mode=None):
+                     reply_to_message_id=None, parse_mode=None, disable_notification=False, reply_markup=None):
     params = {
         'chat_id': chat_id,
         'text': text,
@@ -48,9 +47,13 @@ def api_send_message(chat_id, text, disable_web_page_preview=None,
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
     if parse_mode:
         params['parse_mode'] = parse_mode
+    if disable_notification:
+        params['disable_notification'] = disable_notification
+    if reply_markup:
+        params['reply_markup'] = json.dumps(reply_markup)
 
     return api_request('sendMessage', params)
 
@@ -66,7 +69,7 @@ def api_forward_message(chat_id, from_chat_id, message_id):
 
 
 def api_send_photo(chat_id, photo, caption=None,
-                   reply_to_message_id=None, reply_markup=None):
+                   reply_to_message_id=None, disable_notification=False, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -79,13 +82,15 @@ def api_send_photo(chat_id, photo, caption=None,
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
+    if disable_notification:
+        params['disable_notification'] = disable_notification
 
     return api_request('sendPhoto', params, files=files)
 
 
 def api_send_audio(chat_id, audio, title=None, duration=None, performer=None,
-                   reply_to_message_id=None, reply_markup=None):
+                   reply_to_message_id=None, disable_notification=False, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -101,14 +106,15 @@ def api_send_audio(chat_id, audio, title=None, duration=None, performer=None,
         params['title'] = title
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
+    if disable_notification:
+        params['disable_notification'] = disable_notification
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
 
     return api_request('sendAudio', params, files=files)
 
 
-def api_send_document(chat_id, document, caption=None, reply_to_message_id=None,
-                      reply_markup=None):
+def api_send_document(chat_id, document, caption=None, reply_to_message_id=None, disable_notification=False, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -120,14 +126,15 @@ def api_send_document(chat_id, document, caption=None, reply_to_message_id=None,
         params['caption'] = caption
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
+    if disable_notification:
+        params['disable_notification'] = disable_notification
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
 
     return api_request('sendDocument', params, files=files)
 
 
-def api_send_sticker(chat_id, sticker, reply_to_message_id=None,
-                     reply_markup=None):
+def api_send_sticker(chat_id, sticker, reply_to_message_id=None, disable_notification=False, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -137,14 +144,16 @@ def api_send_sticker(chat_id, sticker, reply_to_message_id=None,
         params['sticker'] = sticker
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
+    if disable_notification:
+        params['disable_notification'] = disable_notification
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
 
     return api_request('sendSticker', params, files=files)
 
 
 def api_send_video(chat_id, video, caption=None, duration=None,
-                   reply_to_message_id=None, reply_markup=None):
+                   reply_to_message_id=None, disable_notification=False, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -158,14 +167,15 @@ def api_send_video(chat_id, video, caption=None, duration=None,
         params['caption'] = caption
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
+    if disable_notification:
+        params['disable_notification'] = disable_notification
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
 
     return api_request('sendVideo', params, files=files)
 
 
-def api_send_voice(chat_id, voice, duration=None, reply_to_message_id=None,
-                   reply_markup=None):
+def api_send_voice(chat_id, voice, duration=None, reply_to_message_id=None, disable_notification=False, reply_markup=None):
     params = {'chat_id': chat_id}
 
     files = None
@@ -177,14 +187,15 @@ def api_send_voice(chat_id, voice, duration=None, reply_to_message_id=None,
         params['duration'] = duration
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
+    if disable_notification:
+        params['disable_notification'] = disable_notification
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
 
     return api_request('sendVoice', params, files=files)
 
 
-def api_send_location(chat_id, latitude, longitude, reply_to_message_id=None,
-                      reply_markup=None):
+def api_send_location(chat_id, latitude, longitude, reply_to_message_id=None, disable_notification=False, reply_markup=None):
     params = {
         'chat_id': chat_id,
         'latitude': latitude,
@@ -193,8 +204,10 @@ def api_send_location(chat_id, latitude, longitude, reply_to_message_id=None,
 
     if reply_to_message_id:
         params['reply_to_message_id'] = reply_to_message_id
+    if disable_notification:
+        params['disable_notification'] = disable_notification
     if reply_markup:
-        params['reply_markup'] = reply_markup
+        params['reply_markup'] = json.dumps(reply_markup)
 
     return api_request('sendLocation', params)
 
@@ -210,7 +223,7 @@ def api_send_chat_action(chat_id, action):
 def api_answer_inline_query(inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
     params = {
         'inline_query_id': inline_query_id,
-        'results': results
+        'results': json.dumps(results)
     }
     if cache_time:
         params['cache_time'] = cache_time
@@ -257,7 +270,7 @@ def kick_chat_member(chat_id, user_id):
     result = api_request('kickChatMember', params)
     
     if result.ok == False:
-        if result.description.split(': ')[2] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[2] == 'Not enough rights to kick participant':
+        if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
             raise PolarisExceptions.NotAdminException()
         else:
             raise PolarisExceptions.FailedException()
@@ -274,7 +287,7 @@ def unban_chat_member(chat_id, user_id):
     result = api_request('unbanChatMember', params)
     
     if result.ok == False:
-        if result.description.split(': ')[2] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[2] == 'Not enough rights to kick participant':
+        if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
             raise PolarisExceptions.NotAdminException()
         else:
             raise PolarisExceptions.FailedException()
@@ -354,13 +367,23 @@ def convert_message(msg):
         content = msg['location']['latitude']
         extra = msg['location']['longitude']
     elif 'new_chat_member' in msg:
-        type = 'status'
+        type = 'service'
         content = 'join_user'
-        extra = None
+        extra = User()
+        extra.first_name = msg['new_chat_member']['first_name']
+        if 'last_name' in msg['new_chat_member']:
+            extra.last_name = msg['new_chat_member']['last_name']
+        if 'username' in msg['new_chat_member']:
+            extra.username = msg['new_chat_member']['username']
     elif 'left_chat_member' in msg:
-        type = 'status'
+        type = 'service'
         content = 'left_user'
-        extra = None
+        extra = User()
+        extra.first_name = msg['left_chat_member']['first_name']
+        if 'last_name' in msg['left_chat_member']:
+            extra.last_name = msg['left_chat_member']['last_name']
+        if 'username' in msg['left_chat_member']:
+            extra.username = msg['left_chat_member']['username']
     elif ('new_chat_title' in msg
           or 'new_chat_photo' in msg
           or 'delete_chat_photo' in msg
@@ -369,7 +392,7 @@ def convert_message(msg):
           or 'channel_chat_created' in msg
           or 'migrate_to_chat_id'
           or 'migrate_from_chat_id' in msg):
-        type = 'status'
+        type = 'service'
         content = None
         extra = None
     else:
@@ -388,30 +411,30 @@ def convert_message(msg):
 def send_message(message):
     if message.type == 'text':
         api_send_chat_action(message.receiver.id, 'typing')
-        api_send_message(message.receiver.id, message.content, not message.extra, parse_mode=message.markup)
+        api_send_message(message.receiver.id, message.content, not message.extra, parse_mode=message.markup, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'photo':
         api_send_chat_action(message.receiver.id, 'upload_photo')
-        api_send_photo(message.receiver.id, message.content, message.extra)
+        api_send_photo(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'audio':
         api_send_chat_action(message.receiver.id, 'upload_audio')
-        api_send_audio(message.receiver.id, message.content, message.extra)
+        api_send_audio(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'document':
         api_send_chat_action(message.receiver.id, 'upload_document')
-        api_send_document(message.receiver.id, message.content, message.extra)
+        api_send_document(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'sticker':
-        api_send_sticker(message.receiver.id, message.content, message.extra)
+        api_send_sticker(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'video':
         api_send_chat_action(message.receiver.id, 'upload_video')
-        api_send_video(message.receiver.id, message.content, message.extra)
+        api_send_video(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'voice':
         api_send_chat_action(message.receiver.id, 'record_audio')
-        api_send_voice(message.receiver.id, message.content, message.extra)
+        api_send_voice(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'location':
         api_send_chat_action(message.receiver.id, 'find_location')
-        api_send_location(message.receiver.id, message.content, message.extra)
+        api_send_location(message.receiver.id, message.content, message.extra, reply_markup=message.keyboard, disable_notification=message.silent)
     elif message.type == 'inline_results':
         api_answer_inline_query(message.id, message.content, next_offset=message.extra)
-    elif message.type == 'status':
+    elif message.type == 'service':
         api_send_message(message.receiver.id, '`Not Yet Implemented!`', parse_mode='Markdown')
     else:
         print('UNKNOWN MESSAGE TYPE: ' + message.type)

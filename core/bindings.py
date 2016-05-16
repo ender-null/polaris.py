@@ -2,59 +2,59 @@ from core.shared import *
 import sys, traceback
 
 
-def send_message(m, text, preview=False, markup=None):
+def send_message(m, text, preview=False, markup=None, keyboard=None, silent=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, text, 'text', markup=markup, extra=preview)
+        message = Message(None, m.receiver, m.sender, text, 'text', markup=markup, extra=preview, keyboard=keyboard, silent=silent)
     else:
-        message = Message(None, bot, m.receiver, text, 'text', markup=markup, extra=preview)
+        message = Message(None, bot, m.receiver, text, 'text', markup=markup, extra=preview, keyboard=keyboard, silent=silent)
     outbox.put(message)
 
 
-def send_photo(m, photo, caption=None):
+def send_photo(m, photo, caption=None, keyboard=None, silent=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, photo, 'photo', extra=caption)
+        message = Message(None, m.receiver, m.sender, photo, 'photo', extra=caption, keyboard=keyboard, silent=silent)
     else:
-        message = Message(None, bot, m.receiver, photo, 'photo', extra=caption)
+        message = Message(None, bot, m.receiver, photo, 'photo', extra=caption, keyboard=keyboard, silent=silent)
     outbox.put(message)
 
 
-def send_document(m, document, caption=None):
+def send_document(m, document, caption=None, keyboard=None, silent=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, document, 'document', extra=caption)
+        message = Message(None, m.receiver, m.sender, document, 'document', extra=caption, keyboard=keyboard, silent=silent)
     else:
-        message = Message(None, bot, m.receiver, document, 'document', extra=caption)
+        message = Message(None, bot, m.receiver, document, 'document', extra=caption, keyboard=keyboard, silent=silent)
     outbox.put(message)
 
 
-def send_video(m, video, caption=None):
+def send_video(m, video, caption=None, keyboard=None, silent=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, video, 'video', extra=caption)
+        message = Message(None, m.receiver, m.sender, video, 'video', extra=caption, keyboard=keyboard, silent=silent)
     else:
-        message = Message(None, bot, m.receiver, video, 'video', extra=caption)
+        message = Message(None, bot, m.receiver, video, 'video', extra=caption, keyboard=keyboard, silent=silent)
     outbox.put(message)
 
 
-def send_audio(m, audio, title=None):
+def send_audio(m, audio, title=None, keyboard=None, silent=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, audio, 'audio', extra=title)
+        message = Message(None, m.receiver, m.sender, audio, 'audio', extra=title, keyboard=keyboard, silent=silent)
     else:
-        message = Message(None, bot, m.receiver, audio, 'audio', extra=title)
+        message = Message(None, bot, m.receiver, audio, 'audio', extra=title, keyboard=keyboard, silent=silent)
     outbox.put(message)
 
 
-def send_voice(m, voice):
+def send_voice(m, voice, keyboard=None, silent=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, voice, 'voice')
+        message = Message(None, m.receiver, m.sender, voice, 'voice', keyboard=keyboard, silent=silent)
     else:
-        message = Message(None, bot, m.receiver, voice, 'voice')
+        message = Message(None, bot, m.receiver, voice, 'voice', keyboard=keyboard, silent=silent)
     outbox.put(message)
 
 
-def send_sticker(m, sticker):
+def send_sticker(m, sticker, keyboard=None, silent=None):
     if m.receiver.id > 0:
-        message = Message(None, m.receiver, m.sender, sticker, 'sticker')
+        message = Message(None, m.receiver, m.sender, sticker, 'sticker', keyboard=keyboard, silent=silent)
     else:
-        message = Message(None, bot, m.receiver, sticker, 'sticker')
+        message = Message(None, bot, m.receiver, sticker, 'sticker', keyboard=keyboard, silent=silent)
     outbox.put(message)
 
 

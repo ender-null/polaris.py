@@ -294,17 +294,7 @@ class ConfigStore:
 
 # Defines the structure of the Messages objects.
 class Message:
-    id = None
-    sender = None
-    receiver = None
-    content = None
-    type = None
-    date = None
-    reply = None
-    markup = None
-    extra = None
-
-    def __init__(self, id=None, sender=None, receiver=None, content=None, type='text', date=None, reply=None, markup=None, extra=None):
+    def __init__(self, id=None, sender=None, receiver=None, content=None, type='text', date=None, reply=None, extra=None, markup=None, keyboard=None, silent=False):
         self.id = id
         self.sender = sender
         self.receiver = receiver
@@ -312,8 +302,10 @@ class Message:
         self.type = type
         self.date = date
         self.reply = reply
-        self.markup = markup
         self.extra = extra
+        self.markup = markup
+        self.keyboard = keyboard
+        self.silent = silent
 
 class PolarisExceptions():       
     class FailedException(Exception):

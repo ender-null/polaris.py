@@ -40,8 +40,8 @@ def run(m):
     message = '<b>Web results for</b> <i>%s</i>:' % input
 
     for result in jdat['d']['results']:
-        if len(result['Title']) > 30:
-            title = result['Title'][:27] + '...'
+        if len(result['Title']) > 24:
+            title = result['Title'][:21] + '...'
         else:
             title = result['Title']
         message += '\n • <a href="%s">%s</a>' % (result['Url'], title)
@@ -55,7 +55,7 @@ def inline(m):
     caption = ''
     
     if not input:
-        query = 'None'
+        query = lang.errors.input
     elif '|' in input and input[-1] != '|':
         query, caption = input.split('|')
     else:
@@ -75,7 +75,7 @@ def inline(m):
 
     jstr = requests.get(url, params=params, auth=auth)
     
-    results_json = []
+    results = []
     
     if jstr.status_code != 200:
         message = {
@@ -89,7 +89,7 @@ def inline(m):
             'input_message_content': message,
             'description': jstr.text
         }
-        results_json.append(result)
+        results.append(result)
 
     jdat = json.loads(jstr.text)
 
@@ -105,7 +105,7 @@ def inline(m):
             'input_message_content': message,
             'description': jstr.text
         }
-        results_json.append(result)
+        results.append(result)
 
     for item in jdat['d']['results']:
         message = {
@@ -120,7 +120,6 @@ def inline(m):
             'description': item['Description'],
             'thumb_url': 'http://fa2png.io/media/icons/devicons-bing_small/96/32/ffffff_673ab7.png'
         }
-        results_json.append(result)
+        results.append(result)
 
-    results = json.dumps(results_json)
     answer_inline_query(m, results)

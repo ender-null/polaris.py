@@ -57,35 +57,40 @@ def run(m):
 
         i = random.randint(1, len(jdat['d']['results'])) - 1
         result_url = jdat['d']['results'][i]['MediaUrl']
-        caption = '"{0}"  {1}'.format(input, get_short_url(result_url).lstrip('https://'))
 
         for v in exts:
             if re.compile(v).search(result_url):
                 is_real = True
 
     photo = download(result_url)
+    keyboard = {
+        'inline_keyboard': [[
+            {
+                'text': '"%s"' % input,
+                'url': 'http://www.bing.com/images/search?q=%s' % input.replace(' ', '+')      
+            },
+            {
+                'text': 'Source',
+                'url': result_url
+            }
+        ]]
+    }
 
     if photo:
-        send_photo(m, photo, caption)
+        send_photo(m, photo, keyboard=keyboard)
     else:
         send_message(m, lang.errors.download)
 
 
 def inline(m):
     input = get_input(m)
-    query = ''
-    caption = ''
     
     if not input:
-        query = 'None'
-    elif '|' in input and input[-1] != '|':
-        query, caption = input.split('|')
-    else:
-        query = input
+        input = lang.errors.input
 
     url = 'https://api.datamarket.azure.com/Data.ashx/Bing/Search/Image'
     params = {
-        'Query': "'%s'" % query,
+        'Query': "'%s'" % input,
         'Adult': "'Moderate'",
         '$format': 'json',
         '$top': '16'
@@ -97,7 +102,7 @@ def inline(m):
 
     jstr = requests.get(url, params=params, auth=auth)
     
-    results_json = []
+    results = []
     
     if jstr.status_code != 200:
         message = {
@@ -111,7 +116,7 @@ def inline(m):
             'input_message_content': message,
             'description': jstr.text
         }
-        results_json.append(result)
+        results.append(result)
 
     jdat = json.loads(jstr.text)
 
@@ -127,10 +132,24 @@ def inline(m):
             'input_message_content': message,
             'description': jstr.text
         }
-        results_json.append(result)
+        results.append(result)
 
     for item in jdat['d']['results']:
         ext = os.path.splitext(item['MediaUrl'])[1].split('?')[0]
+
+        keyboard = {
+            'inline_keyboard': [[
+                {
+                    'text': '"%s"' % input,
+                    'url': 'http://www.bing.com/images/search?q=%s' % input.replace(' ', '+')      
+                },
+                {
+                    'text': 'Source',
+                    'url': item['MediaUrl']
+                }
+            ]]
+        }
+
         if ext != '.gif':
             result = {
                 'type': 'photo',
@@ -139,7 +158,7 @@ def inline(m):
                 'photo_width': int(item['Width']),
                 'photo_height': int(item['Height']),
                 'thumb_url': item['Thumbnail']['MediaUrl'],
-                'caption': caption
+                'reply_markup': keyboard
             }
         else:
             result = {
@@ -149,9 +168,8 @@ def inline(m):
                 'gif_width': int(item['Width']),
                 'gif_height': int(item['Height']),
                 'thumb_url': item['Thumbnail']['MediaUrl'],
-                'caption': caption
+                'reply_markup': keyboard
             }
-        results_json.append(result)
+        results.append(result)
 
-    results = json.dumps(results_json)
     answer_inline_query(m, results)

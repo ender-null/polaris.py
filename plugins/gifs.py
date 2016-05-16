@@ -38,12 +38,23 @@ def run(m):
 
     i = random.randint(1, len(jdat['data'])) - 1
     result_url = jdat['data'][i]['images']['original']['url']
-    caption = '"{0}"  {1}'.format(input, get_short_url(result_url).lstrip('https://'))
     
     photo = download(result_url)
+    keyboard = {
+        'inline_keyboard': [[
+            {
+                'text': '"%s"' % input,
+                'url': 'http://giphy.com/search/%s' % input.replace(' ', '-')
+            },
+            {
+                'text': 'Source',
+                'url': result_url
+            }
+        ]]
+    }
 
     if photo:
-        send_document(m, photo, caption)
+        send_document(m, photo, keyboard=keyboard)
     else:
         send_message(m, lang.errors.download)
 
@@ -64,8 +75,20 @@ def inline(m):
     jstr = requests.get(url, params=params)
     jdat = json.loads(jstr.text)
 
-    results_json = []
+    results = []
     for item in jdat['data']:
+        keyboard = {
+            'inline_keyboard': [[
+                {
+                    'text': '"%s"' % input,
+                    'url': 'http://giphy.com/search/%s' % input.replace(' ', '-')
+                },
+                {
+                    'text': 'Source',
+                    'url': item['images']['original']['url']
+                }
+            ]]
+        }
         result = {
             'type': 'gif',
             'id': item['id'],
@@ -74,9 +97,9 @@ def inline(m):
             'gif_height': int(item['images']['original']['height']),
             'thumb_url': item['images']['fixed_width_small']['url'],
             'thumb_width': int(item['images']['fixed_width_small']['width']),
-            'thumb_height': int(item['images']['fixed_width_small']['height'])
+            'thumb_height': int(item['images']['fixed_width_small']['height']),
+            'reply_markup': keyboard
         }
-        results_json.append(result)
+        results.append(result)
 
-    results = json.dumps(results_json)
     answer_inline_query(m, results)
