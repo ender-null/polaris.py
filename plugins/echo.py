@@ -28,11 +28,16 @@ def inline(m):
     if not input:
         input = lang.errors.input
 
+    text = input
+
+    fullwidth_text = fullwidth(text)
+    quoted_fullwidth_text = fullwidth(text, True)
+
     if get_command(m) == 'reverb':
         preview = True
     else:
         preview = False
-    text = input
+
 
     results = [
         {
@@ -73,6 +78,24 @@ def inline(m):
             'description': '```%s```' % text,
             'thumb_url': 'http://fa2png.io/media/icons/oi-code/96/32/ffffff_673ab7.png',
             'parse_mode': 'HTML'
+        },
+        {
+            'type': 'article',
+            'id': fullwidth_text,
+            'title': 'Ｆｕｌｌｗｉｄｔｈ',
+            'message_text': fullwidth_text,
+            'disable_web_page_preview': preview,
+            'description': fullwidth_text,
+            'thumb_url': 'http://i.imgur.com/GVVd8ek.png'
+        },
+        {
+            'type': 'article',
+            'id': quoted_fullwidth_text,
+            'title': '﻿Ｆｕｌｌｗｉｄｔｈ  ｗｉｔｈ  ｑｕｏｔｅｓ',
+            'message_text': quoted_fullwidth_text,
+            'disable_web_page_preview': preview,
+            'description': quoted_fullwidth_text,
+            'thumb_url': 'http://i.imgur.com/FhgB10A.png'
         },
         {
             'type': 'article',

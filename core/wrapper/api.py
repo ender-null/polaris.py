@@ -271,7 +271,28 @@ def get_me():
     bot.first_name = result['result']['first_name']
     bot.username = result['result']['username']
     bot.id = result['result']['id']
+
+
+def get_file(file_id, only_url):
+    params = {
+        'file_id': file_id
+    }
     
+    result = api_request('getFile', params)
+    
+    if result.ok == True:
+        url = 'https://api.telegram.org/file/bot%s/%s' % (config.keys.bot_api_token, result.result.file_path)
+        if only_url:
+            return url
+        else:
+            return download(url)
+    else:
+        return False
+    
+
+def invite_chat_member(chat_id, user_id):
+    raise PolarisExceptions.FailedException()
+
     
 def kick_chat_member(chat_id, user_id):
     params = {

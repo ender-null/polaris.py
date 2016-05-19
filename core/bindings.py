@@ -66,24 +66,22 @@ def answer_inline_query(m, results, offset=None):
     outbox.put(message)
 
 
+def get_file(file_id, only_url=False):
+    try:
+        return bot.wrapper.get_file(file_id, only_url)
+    except:
+        return None
+
+
 def invite_user(m, user):
     try:
-        if str(m.receiver.id).startswith('-100'):
-            result = bot.wrapper.tgsender.channel_invite(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
-        else:
-            result = bot.wrapper.tgsender.chat_add_user(bot.wrapper.peer(m.receiver.id), bot.wrapper.peer(bot.wrapper.get_id(user)))
-    except:
-        error = str(sys.exc_info()[1]).split()[4].rstrip("'")
-    else:
-        if hasattr(result, 'result') and result.result == 'FAIL':
-            error = result.error.split()[-1]
-        else:
-            return True
-        
-    if error == 'PEER_FLOOD':
+        bot.wrapper.invite_chat_member(m.receiver.id, user)
+    except PolarisExceptions.NotAdminException:
         return None
-    else:
+    except PolarisExceptions.FailedException:
         return False
+    else:
+        return True
 
 
 def kick_user(m, user):

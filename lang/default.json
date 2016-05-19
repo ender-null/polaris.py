@@ -100,6 +100,8 @@
         "syntax": "Invalid syntax, idiot",
         "permission": "<b>You don't have any power here.</b>",
         "id": "Must be used via reply or by specifying a user's ID.",
+        "reply": "Must be used via reply.",
+        "wait": "This action can take some long time, please wait.",
         "download": "Download failed, try again.",
         "exception": "Exception found, and the admin got notified about it.",
         "unknown": "<i>dunno lol</i>",

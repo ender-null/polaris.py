@@ -96,6 +96,18 @@ def download(url, params=None, headers=None, method='get'):
     return open(f.name, 'rb')
 
 
+def save_to_file(res):
+    ext = os.path.splitext(res.url)[1].split('?')[0]
+    f = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
+    for chunk in res.iter_content(chunk_size=1024):
+        if chunk:
+            f.write(chunk)
+    f.seek(0)
+    if not ext:
+        f.name = fix_extension(f.name)
+    return open(f.name, 'rb')
+
+
 def fix_extension(file_path):
     type = magic.from_file(file_path, mime=True).decode("utf-8")
     extension = str(mimetypes.guess_extension(type, strict=False))
@@ -201,6 +213,24 @@ def latcyr(text):
         text = text.replace(k, lc_list[k])
     return text
 
+def fullwidth(text, quotes=False):
+    if not text:
+        return None
+
+    normalwidth_list = '''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~⦅⦆。¢£¬¦¥₩←↑→↓■○'''
+    fullwidth_list = '''！＂＃＄％＆＇（）＊＋，－．／０１２３４５６７８９：；＜＝＞？＠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ［＼］＾＿｀ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｛｜｝～｟｠｡￠￡￢￤￥￦￩￪￫￬￭￮'''
+    normal_to_full = {' ':'  '}
+    for i in range(len(normalwidth_list)):
+      normal_to_full[normalwidth_list[i]] = fullwidth_list[i]
+    newtext = ''
+    for char in text:
+        if char in normal_to_full:
+            newtext += normal_to_full[char]
+        else:
+            newtext += char
+    if quotes:
+        newtext = '「'+newtext+'」'
+    return newtext
 
 def escape_markdown(text):
     characters = ['_', '*', '[']
