@@ -137,19 +137,6 @@ def inline(m):
     for item in jdat['d']['results']:
         ext = os.path.splitext(item['MediaUrl'])[1].split('?')[0]
 
-        keyboard = {
-            'inline_keyboard': [[
-                {
-                    'text': '"%s"' % input,
-                    'url': 'http://www.bing.com/images/search?q=%s' % input.replace(' ', '+')      
-                },
-                {
-                    'text': 'Source',
-                    'url': item['MediaUrl']
-                }
-            ]]
-        }
-
         if ext != '.gif':
             result = {
                 'type': 'photo',
@@ -158,7 +145,6 @@ def inline(m):
                 'photo_width': int(item['Width']),
                 'photo_height': int(item['Height']),
                 'thumb_url': item['Thumbnail']['MediaUrl'],
-                'reply_markup': keyboard
             }
         else:
             result = {
@@ -168,7 +154,6 @@ def inline(m):
                 'gif_width': int(item['Width']),
                 'gif_height': int(item['Height']),
                 'thumb_url': item['Thumbnail']['MediaUrl'],
-                'reply_markup': keyboard
             }
         results.append(result)
 

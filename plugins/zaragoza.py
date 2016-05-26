@@ -20,20 +20,20 @@ def run(m):
         params = {
             'srsname': 'wgs84'
         }
-        jstr = requests.get(url, params=params, timeout=config.timeout)
+        res = requests.get(url, params=params, timeout=config.timeout)
 
-        if jstr.status_code != 200:
-            send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
+        if res.status_code != 200:
+            send_alert('%s\n%s' % (lang.errors.connection, res.text))
             return send_message(m, lang.errors.connection)
 
-        jdat = json.loads(jstr.text)
+        data = json.loads(res.text)
 
-        street = jdat['title'].split(')')[-1].split('Lí')[0].strip()
-        poste = jdat['title'].split(')')[0].replace('(', '')
-        line = jdat['title'].split(street)[-1].strip()
+        street = data['title'].split(')')[-1].split('Lí')[0].strip()
+        poste = data['title'].split(')')[0].replace('(', '')
+        line = data['title'].split(street)[-1].strip()
 
         text = '<b>{0}</b>\n\tPoste: {1}\n\t{2}\n\n'.format(street.title(), poste, line)
-        for destino in jdat['destinos']:
+        for destino in data['destinos']:
             text += '<b>%s %s</b>' % (destino['linea'], destino['destino'].rstrip(',').rstrip('.').title())
             text += '\n • ' + destino['primero'].rstrip('.').replace('cin', 'ción')
             text += '\n • ' + destino['segundo'].rstrip('.').replace('cin', 'ción')
@@ -47,36 +47,33 @@ def run(m):
         params = {
             'srsname': 'wgs84'
         }
-        jstr = requests.get(url, params=params, timeout=config.timeout)
+        res = requests.get(url, params=params, timeout=config.timeout)
 
-        if jstr.status_code != 200:
-            send_alert('%s\n%s' % (lang.errors.connection, jstr.text))
+        if res.status_code != 200:
+            send_alert('%s\n%s' % (lang.errors.connection, res.text))
             return send_message(m, lang.errors.connection)
 
-        jdat = json.loads(jstr.text)
+        data = json.loads(res.text)
         
-        markers = []
-        max = 30
-        for item in jdat['result']:
+        path = 'weight:5'
+        for item in data['result']:
             if item['geometry']['type'] == 'Point':
                 lat = item['geometry']['coordinates'][1].__round__(6)
                 lon = item['geometry']['coordinates'][0].__round__(6)
-                markers.append('color:red|label:%s|%s,%s' % ('p', lat, lon))
-                max -= 1
-                
-                if max == 0:
-                    break
+                path += '|%s,%s' % (lat, lon)
+
 
         map_url = 'https://maps.googleapis.com/maps/api/staticmap'
         map_params = {
             'key': config.keys.google_developer_console,
-            'size': '640x320',
-            'markers': markers
+            'size': '640x480',
+            'scale': 2,
+            'path': path
         }
                 
         map = download(map_url, map_params, method = 'post')
 
         if map:
-            send_photo(m, map)
+            send_photo(m, map, caption=data['title'])
         else:
             send_message(m, lang.errors.download)

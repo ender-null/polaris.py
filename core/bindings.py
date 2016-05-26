@@ -104,17 +104,13 @@ def unban_user(m, user):
         return False
     else:
         return True
-    
-    
-def user_info(user):
-    if config.wrapper == 'tg':
-        result = bot.wrapper.tgsender.user_info(bot.wrapper.peer(bot.wrapper.get_id(user)))
-        if hasattr(result, 'print_name'):
-            return result['print_name'].replace('_', ' ')
-        else:
-            return user
-    else:
-        return user
+
+
+def chat_info(chat):
+    try:
+        return bot.wrapper.chat_info(chat)
+    except:
+        return chat
 
 def send_alert(text):
     for id in tags.list:

@@ -41,11 +41,20 @@ def run(m):
         
         for uid in tags.list:
             if 'mod:' + str(m.receiver.id)[1:] in tags.list[uid]:
-                mods += '\t%s\n' % user_info(int(uid))
+                if chat_info(uid):
+                    mods += '\t%s\n' % chat_info(uid)['first_name']
+                else: 
+                    mods += '\t%s\n' % uid
             if 'globalmod' in tags.list[uid]:
-                globalmods += '\t%s\n' % user_info(int(uid))
+                if chat_info(uid):
+                    globalmods += '\t%s\n' % chat_info(uid)['first_name']
+                else: 
+                    globalmods += '\t%s\n' % uid
             if 'admin' in tags.list[uid]:
-                admins += '\t%s\n' % user_info(int(uid))
+                if chat_info(uid):
+                    admins += '\t%s\n' % chat_info(uid)['first_name']
+                else: 
+                    admins += '\t%s\n' % uid
         if len(mods) > 0:
             message += 'Group mods: \n%s\n' % mods
         if len(globalmods) > 0:

@@ -83,6 +83,14 @@ def kick_chat_member(chat, user):
         
 def unban_chat_member(chat, user):
     pass
+    
+
+def chat_info(user):
+    result = bot.wrapper.tgsender.user_info(bot.wrapper.peer(bot.wrapper.get_id(user)))
+    if hasattr(result, 'print_name'):
+        return result
+    else:
+        return user
 
 def convert_message(msg):
     id = msg['id']

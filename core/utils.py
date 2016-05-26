@@ -77,6 +77,20 @@ def load_json(path, hide=False):
         return {}
 
 
+def send_request(url, params=None, headers=None, files=None, data=None):
+    try:
+        r = requests.get(url, params=params, headers=headers, files=files, data=data, timeout=config.timeout)
+    except:
+        print('Error making request')
+        return None
+    if r.status_code != 200:
+        print(r.text)
+        while r.status_code == 429:
+            r = s.get(url, params=params, headers=headers, files=files, data=data)
+
+    return json.loads(r.text)
+
+
 def download(url, params=None, headers=None, method='get'):
     try:
         if method == 'post':
@@ -112,23 +126,13 @@ def fix_extension(file_path):
     type = magic.from_file(file_path, mime=True).decode("utf-8")
     extension = str(mimetypes.guess_extension(type, strict=False))
     if extension is not None:
-        # I hate to have to use this s***, f*** jpe
-        if '.jpe' in extension:
+        # I hate to have to use this s***
+        if extension.endswith('jpe'):
             extension = extension.replace('jpe', 'jpg')
         os.rename(file_path, file_path + extension)
         return file_path + extension
     else:
         return file_path
-
-
-def send_request(url, params=None, headers=None, files=None, data=None):
-    res = requests.get(url, params=params, headers=headers, files=files, data=data, timeout=config.timeout)
-
-    if res.status_code != 200:
-        print(res.text)
-        return False
-
-    return json.loads(res.text)
 
 
 def get_coords(input):

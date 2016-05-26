@@ -77,18 +77,6 @@ def inline(m):
 
     results = []
     for item in jdat['data']:
-        keyboard = {
-            'inline_keyboard': [[
-                {
-                    'text': '"%s"' % input,
-                    'url': 'http://giphy.com/search/%s' % input.replace(' ', '-')
-                },
-                {
-                    'text': 'Source',
-                    'url': item['images']['original']['url']
-                }
-            ]]
-        }
         result = {
             'type': 'gif',
             'id': item['id'],
@@ -97,8 +85,7 @@ def inline(m):
             'gif_height': int(item['images']['original']['height']),
             'thumb_url': item['images']['fixed_width_small']['url'],
             'thumb_width': int(item['images']['fixed_width_small']['width']),
-            'thumb_height': int(item['images']['fixed_width_small']['height']),
-            'reply_markup': keyboard
+            'thumb_height': int(item['images']['fixed_width_small']['height'])
         }
         results.append(result)
 

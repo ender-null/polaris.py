@@ -30,6 +30,6 @@ def run(m):
     photo = save_to_file(res)
 
     if photo:
-        send_photo(m, photo)
+        send_document(m, photo)
     else:
         send_message(m, lang.errors.download)

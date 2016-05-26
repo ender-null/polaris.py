@@ -1,3 +1,4 @@
+from core.utils import *
 from core.shared import *
 from six import string_types
 from time import time
@@ -6,21 +7,8 @@ import requests
 # Telegram Bot API methods
 api_url = 'https://api.telegram.org/bot' + config.keys.bot_api_token + '/'
 
-
-def send_request(url, params=None, headers=None, files=None, data=None):
-    result = requests.get(url, params=params, headers=headers, files=files, data=data)
-    if result.status_code != 200:
-        print(result.text)
-
-        while result.status_code == 429:
-            result = requests.get(url, params=params, headers=headers, files=files, data=data)
-
-    return json.loads(result.text)
-
-
 def api_request(api_method, params=None, headers=None, files=None):
     url = api_url + api_method
-
     return DictObject(send_request(url, params, headers, files))
 
 
@@ -230,7 +218,48 @@ def api_forward_message(chat_id, from_chat_id, message_id, disable_notification=
             params['disable_notification'] = disable_notification
 
     return api_request('forwardMessage', params)
+    
 
+def api_leave_chat(chat_id):
+    params = {
+        'chat_id': chat_id
+    }
+
+    return api_request('leaveChat', params)
+
+    
+def api_get_chat_administrators(chat_id):
+    params = {
+        'chat_id': chat_id
+    }
+
+    return api_request('getChatAdministrators', params)
+    
+    
+def api_get_chat_members_count(chat_id):
+    params = {
+        'chat_id': chat_id
+    }
+
+    return api_request('getChatMembersCount', params)
+    
+    
+def api_get_chat_members_count(chat_id, user_id):
+    params = {
+        'chat_id': chat_id,
+        'user_id': user_id
+    }
+
+    return api_request('getChatMemberd', params)
+    
+    
+def api_get_chat_member(chat_id):
+    params = {
+        'chat_id': chat_id
+    }
+
+    return api_request('getChatMembersCount', params)
+    
 
 def api_answer_inline_query(inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
     params = {
@@ -327,6 +356,19 @@ def unban_chat_member(chat_id, user_id):
             
     else:
         return True
+        
+        
+def chat_info(chat_id):
+    params = {
+        'chat_id': chat_id
+    }
+
+    res = api_request('getChat', params)
+    if res.ok != False:
+        return res['result']
+    else:
+        return None
+        
 
 def convert_message(msg):
     id = msg['message_id']
@@ -487,18 +529,20 @@ def inbox_listener():
     last_update = 0
 
     while (True):
-        updates = get_updates(last_update + 1)
-        result = updates['result']
-
+        result = get_updates(last_update + 1).result
         if result:
-            for update in result:
-                if update['update_id'] > last_update:
-                    last_update = update['update_id']
+            for u in result:
+                if u.update_id > last_update:
+                    last_update = u.update_id
 
-                    if 'inline_query' in update:
-                        message = convert_inline(update['inline_query'])
+                    if 'inline_query' in u:
+                        message = convert_inline(u.inline_query)
                         inbox.put(message)
 
-                    elif 'message' in update:
-                        message = convert_message(update['message'])
+                    elif 'message' in u:
+                        message = convert_message(u.message)
+                        inbox.put(message)
+
+                    elif 'edited_message' in u:
+                        message = convert_message(u.edited_message)
                         inbox.put(message)

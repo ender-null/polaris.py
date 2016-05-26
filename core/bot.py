@@ -24,12 +24,17 @@ def start():
     cron_handler = Thread(target=handle_cron)
     cron_handler.daemon = True
     cron_handler.start()
+    threads = []
 
     while (bot.started):
-        message = inbox.get()
-        handle_message(message)
+        try:
+            message = inbox.get()
+            threads.append(Thread(target = handle_message(message)).start())
 
-    print('Halted.')
+        except KeyboardInterrupt:
+            break
+
+    print('\nHalted.')
 
 
 def setup():
