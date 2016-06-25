@@ -9,8 +9,10 @@ api_url = 'https://api.telegram.org/bot' + config.keys.bot_api_token + '/'
 
 def api_request(api_method, params=None, headers=None, files=None):
     url = api_url + api_method
-    return DictObject(send_request(url, params, headers, files))
-
+    try:
+        return DictObject(send_request(url, params, headers, files))
+    except:
+        return None
 
 def get_updates(offset=None, limit=None, timeout=None):
     params = {}
@@ -529,8 +531,9 @@ def inbox_listener():
     last_update = 0
 
     while (True):
-        result = get_updates(last_update + 1).result
-        if result:
+        res = get_updates(last_update + 1)
+        if res:
+            result = res.result
             for u in result:
                 if u.update_id > last_update:
                     last_update = u.update_id

@@ -109,6 +109,8 @@
         "unsupported": "<code>[sample text]</code>",
         "peerflood": "Sorry, I can only interact with mutual contacts at the moment.",
         "notchatadmin": "I must be an administrator in the group for this to work.",
-        "failed": "<code>Miss</code>"
+        "failed": "<code>Miss</code>",
+        "notgroup": "This command only works on <b>groups</b>.",
+        "notpm": "This command only works on <b>private message</b>."
     }
 }
