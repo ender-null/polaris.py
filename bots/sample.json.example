@@ -1,0 +1,13 @@
+{
+    "connector": "telegram-bot-api",
+    "connector_token": "TOKEN",
+    "api_keys": {
+        "some_key": "some_value"
+    },
+    "command_start": "/",
+    "owner": 12345678,
+    "debug": true,
+    "plugins": [
+        "echo"
+    ]
+}

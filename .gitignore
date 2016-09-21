@@ -56,16 +56,5 @@ docs/_build/
 # PyBuilder
 target/
 
-tmp/
-config.json
-groups.json
-log.txt
-locale/weeabo.json
-data/config.json
-data/groups.json
-data/users.json
-data/reminders.json
-data/tags.json
-data/pins.json
-plugins/logger.py
-plugins/logbot.py
+bot.log
+bots/*.json
