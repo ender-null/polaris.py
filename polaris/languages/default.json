@@ -1,0 +1,51 @@
+{
+    "greeting": {
+        "morning": "Ohayo gozaimasu",
+        "afternoon": "Konnichi wa",
+        "evening": "Konban wa",
+        "night": "Konban wa"
+    },
+    "goodbye": {
+        "morning": "Shitsurei shimasu",
+        "afternoon": "Sayonara",
+        "evening": "Mata ashita",
+        "night": "Oyasumi nasai"
+    },
+    "errors": {
+        "missing_parameter": "Missing parameter",
+        "connection_error": "Connection error",
+ 	"no_results": "No results found.",
+        "invalid_argument": "Invalid argument.",
+        "invalid_syntax": "Invalid syntax.",
+        "permission_required": "Permission denied.",
+        "missing_id": "Must be used via reply or by specifying a user\"s ID.",
+        "download_failed": "Download failed.",
+        "exception_found": "Exception found.",
+        "unknown": "Unknown error."
+    },
+    "plugins": {
+        "echo": {
+            "commands": {
+                "echo": {
+                    "command": "/echo",
+                    "friendly": "say",
+                    "arguments": ["text"]
+                }
+            },
+            "description": "Repeats stuff."
+        },
+        "help": {
+            "commands": {
+                "help": {
+                    "command": "/help",
+                    "friendly": null,
+                    "arguments": ["command"]
+                }
+            },
+            "description": "Help about stuff",
+            "strings": {
+                "commands": "<b>Commands</b>:"
+            }
+        }
+    }
+}

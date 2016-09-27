@@ -56,5 +56,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# PyCharm
+.idea/
+
+# Bot log and bot configurations
 bot.log
 bots/*.json

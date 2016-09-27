@@ -1,0 +1,51 @@
+{
+    "greeting": {
+        "morning": "Ohayo gozaimasu",
+        "afternoon": "Konnichi wa",
+        "evening": "Konban wa",
+        "night": "Konban wa"
+    },
+    "goodbye": {
+        "morning": "Shitsurei shimasu",
+        "afternoon": "Sayonara",
+        "evening": "Mata ashita",
+        "night": "Oyasumi nasai"
+    },
+    "errors": {
+        "missing_parameter": "Necesito otro parametro ;)",
+        "connection_error": "No pude conectarme.",
+ 	"no_results": "Te aburres no?",
+        "invalid_argument": "Argumento invalido, como Clarita.",
+        "invalid_syntax": "Aprende a escribir.",
+        "permission_required": "Machista opresor, paso de ti.",
+        "missing_id": "No se a quien te refieres, gilipollas.",
+        "download_failed": "Algo ha pasado y no he podido descargarlo.",
+        "exception_found": "Porque tocas las cosas de no tocar?",
+        "unknown": "yoqsetio"
+    },
+    "plugins": {
+        "echo": {
+            "commands": {
+                "echo": {
+                    "command": "/repite",
+                    "friendly": "^[D|d]i ",
+                    "arguments": ["texto"]
+                }
+            },
+            "description": "Repite cosas nya!"
+        },
+        "help": {
+            "commands": {
+                "help": {
+                    "command": "/ayuda",
+                    "friendly": null,
+                    "arguments": ["comando"]
+                }
+            },
+            "description": "Aiuda",
+            "strings": {
+                "commands": "<b>Comandos</b>:"
+            }
+        }
+    }
+}

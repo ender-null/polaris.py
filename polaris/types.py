@@ -13,8 +13,16 @@ class User(object):
     def __str__(self):
         return self.id
 
+class Conversation(object):
+    def __init__(self, id, title = None):
+        self.id = id
+        self.title = title
+
+    def __str__(self):
+        return self.id
+
 class Message(object):
-    def __init__(self, id, conversation, sender, content, type, date = time(), reply = None, markup=None, extra = None):
+    def __init__(self, id, conversation, sender, content, type, date = time(), reply = None, extra = None):
         self.id = id
         self.conversation = conversation
         self.sender = sender
@@ -22,19 +30,10 @@ class Message(object):
         self.type = type
         self.date = date
         self.reply = reply
-        self.markup = markup
+        self.extra = extra
 
     def __str__(self):
         return self.content
-        self.extra = extra
-
-    class Conversation(object):
-        def __init__(self, id, title = None):
-            self.id = id
-            self.title = title
-
-        def __str__(self):
-            return self.id
 
 class json2obj(object):
     def __init__(self, string):
@@ -63,6 +62,9 @@ class json2obj(object):
     def __iter__(self):
         return iter(self.json)
 
+    def __len__(self):
+        return len(self.json)
+
 class json2file(json2obj):
     def __init__(self, path):
         self.path = path
@@ -84,7 +86,7 @@ class json2file(json2obj):
     def load(self):
         try:
             with open(self.path, 'r') as file:
-                self.data = json.load(file, object_pairs_hook = collections.OrderedDict)
+                self.data = json.load(file)
                 logging.info('Loaded succesfully: %s' % self.path)
         except:
             logging.error('Failed loading: %s' % self.path)
