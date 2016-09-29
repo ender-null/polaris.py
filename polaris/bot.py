@@ -1,4 +1,4 @@
-from polaris.types import json2file, AutosaveDict, Message
+from polaris.types import AutosaveDict, Message
 from multiprocessing import Process, Queue
 import importlib, logging, time, re, traceback, sys, os
 

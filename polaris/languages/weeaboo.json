@@ -19,6 +19,7 @@
         "invalid_syntax": "Aprende a escribir.",
         "permission_required": "Machista opresor, paso de ti.",
         "missing_id": "No se a quien te refieres, gilipollas.",
+        "needs_reply": "Solo funciona como <b>respuesta</b> a algo.",
         "download_failed": "Algo ha pasado y no he podido descargarlo.",
         "exception_found": "Porque tocas las cosas de no tocar?",
         "unknown": "yoqsetio"
@@ -28,7 +29,7 @@
             "commands": {
                 "help": {
                     "command": "/ayuda",
-                    "friendly": "^[A|a]yudame",
+                    "friendly": "^Ayudame",
                     "parameters": {
                         "comando": false
                     }
@@ -43,7 +44,7 @@
             "commands": {
                 "echo": {
                     "command": "/repite",
-                    "friendly": "^[D|d]i ",
+                    "friendly": "^Repite ",
                     "parameters": {
                         "texto": true
                     }
@@ -59,6 +60,40 @@
                 }
             },
             "description": "Gatitos nyo!!"
+        },
+        "pins": {
+            "commands": {
+                "pin": {
+                    "command": "/pin ",
+                    "friendly": "Pinealo como ",
+                    "parameters": {
+                        "nombre": true
+                    }
+                },
+                "unpin": {
+                    "command": "/unpin",
+                    "friendly": "Despinealo",
+                    "parameters": {
+                        "nombre": true
+                    }
+                },
+                "pins": {
+                    "command": "/pins",
+                    "friendly": "Lista de pines",
+                    "parameters": {
+                        "nombre": true
+                    }
+                }
+            },
+            "description": "Comandos para noobs c:",
+            "strings": {
+                "pins": "<b>Pins</b>:",
+                "pinned": "<b>%s</b> se ha añadido.",
+                "unpinned": "<b>%s</b> se ha borrado.",
+                "already_pinned": "<b>%s</b> ya existe, no se ha podido añadir.",
+                "not_found": "<b>%s</b> no existe.",
+                "not_creator": "<b>%s</b> no ha podido ser borrado porque no eres el creador."
+            }
         },
         "weather": {
             "commands": {

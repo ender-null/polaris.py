@@ -4,7 +4,7 @@ from DictObject import DictObject
 import logging, requests, json, magic, mimetypes, tempfile, os, subprocess, re
 
 
-def get_input(message, ignore_reply=False):
+def get_input(message, ignore_reply=True):
     if message.type == 'text' or message.type == 'inline_query':
         text = message.content
     else:
