@@ -12,9 +12,9 @@
         "night": "Oyasumi nasai"
     },
     "errors": {
-        "missing_parameter": "Necesito otro parametro ;)",
+        "missing_parameter": "Necesito que me introduzcan un <i>parametro</i> 😏",
         "connection_error": "No pude conectarme.",
- 	"no_results": "Te aburres no?",
+        "no_results": "Te aburres, ¿no?",
         "invalid_argument": "Argumento invalido, como Clarita.",
         "invalid_syntax": "Aprende a escribir.",
         "permission_required": "Machista opresor, paso de ti.",
@@ -24,27 +24,64 @@
         "unknown": "yoqsetio"
     },
     "plugins": {
-        "echo": {
-            "commands": {
-                "echo": {
-                    "command": "/repite",
-                    "friendly": "^[D|d]i ",
-                    "arguments": ["texto"]
-                }
-            },
-            "description": "Repite cosas nya!"
-        },
         "help": {
             "commands": {
                 "help": {
                     "command": "/ayuda",
-                    "friendly": null,
-                    "arguments": ["comando"]
+                    "friendly": "^[A|a]yudame",
+                    "parameters": {
+                        "comando": false
+                    }
                 }
             },
             "description": "Aiuda",
             "strings": {
                 "commands": "<b>Comandos</b>:"
+            }
+        },
+        "echo": {
+            "commands": {
+                "echo": {
+                    "command": "/repite",
+                    "friendly": "^[D|d]i ",
+                    "parameters": {
+                        "texto": true
+                    }
+                }
+            },
+            "description": "Repite cosas nya!"
+        },
+        "cats": {
+            "commands": {
+                "cat": {
+                    "command": "/gatito",
+                    "friendly": "Gat[o|a|ito]"
+                }
+            },
+            "description": "Gatitos nyo!!"
+        },
+        "weather": {
+            "commands": {
+                "weather": {
+                    "command": "/tiempo",
+                    "friendly": "[T|t]iempo en ",
+                    "parameters": {
+                        "localización": true
+                    }
+                },
+                "forecast": {
+                    "command": "/prevision",
+                    "friendly": "[P|p]revisión en ",
+                    "parameters": {
+                        "localización": true
+                    }
+                }
+            },
+            "description": "Te puedo decir el tiempo nya.",
+            "strings": {
+                "title": "<b>Tiempo en %s (%s)</b>:",
+                "titleforecast": "<b>Previsión para %s (%s)</b>:",
+                "feelslike": " (Sesación termica %sºC)"
             }
         }
     }

@@ -1,6 +1,8 @@
 from polaris.types import json2obj
 from html.parser import HTMLParser
+from DictObject import DictObject
 import logging, requests, json, magic, mimetypes, tempfile, os, subprocess, re
+
 
 def get_input(message, ignore_reply=False):
     if message.type == 'text' or message.type == 'inline_query':
@@ -45,6 +47,7 @@ def last_word(text):
         return False
     return text.split()[-1]
 
+
 def send_request(url, params=None, headers=None, files=None, data=None, post=False):
     try:
         if post:
@@ -53,13 +56,35 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
             r = requests.get(url, params=params, headers=headers, files=files, data=data, timeout=100)
     except:
         logging.error('Error making request to: %s' % r.url)
+        print('Error making request to: %s' % r.url)
         return None
+
     if r.status_code != 200:
         logging.error(r.text)
         while r.status_code == 429:
             r = s.get(url, params=params, headers=headers, files=files, data=data)
 
-    return json2obj(r.text)
+    return DictObject(json.loads(r.text))
+
+
+def get_coords(input):
+    url = 'http://maps.googleapis.com/maps/api/geocode/json'
+    params = {'address': input}
+
+    data = send_request(url, params=params)
+
+    if not data or data['status'] == 'ZERO_RESULTS':
+        return False, False, False, False
+
+    locality = data.results[0].address_components[0].long_name
+    for address in data.results[0].address_components:
+        if 'country' in address['types']:
+            country = address['long_name']
+
+    return (data['results'][0]['geometry']['location']['lat'],
+            data['results'][0]['geometry']['location']['lng'],
+            locality, country)
+
 
 def download(url, params=None, headers=None, method='get'):
     try:
@@ -105,12 +130,13 @@ def fix_extension(file_path):
     else:
         return file_path
 
+
 def get_short_url(long_url, api_key):
     url = 'https://www.googleapis.com/urlshortener/v1/url'
     params = {'longUrl': long_url, 'key': api_key}
     headers = {'content-type': 'application/json'}
 
-    res = send_request(url, params = params, headers=headers, data=json.dumps(params), post=True)
+    res = send_request(url, params=params, headers=headers, data=json.dumps(params), post=True)
 
     return res.id
 
@@ -128,6 +154,22 @@ def mp3_to_ogg(original):
         converted.write(data)
 
     return open(converted.name, 'rb')
+
+
+def remove_html(text):
+    text = re.sub('<[^<]+?>', '', text)
+    text = text.replace('&lt;', '<');
+    text = text.replace('&gt;', '>');
+    return text
+    s = HTMLParser()
+    s.reset()
+    s.reset()
+    s.strict = False
+    s.convert_charrefs = True
+    s.fed = []
+    s.feed(text)
+    return ''.join(s.fed)
+
 
 logFormatter = logging.Formatter("%(asctime)s [%(processName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 rootLogger = logging.getLogger()
