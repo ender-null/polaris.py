@@ -11,15 +11,15 @@ class Bot(object):
         self.started = False
         self.inbox = Queue()
         self.outbox = Queue()
-        self.bindings = importlib.import_module('polaris.bindings.%s' % self.config.bindings)
+        self.bindings = importlib.import_module('polaris.bindings.%s' % self.config.bindings).bindings(self)
         self.plugins = self.init_plugins()
-        self.info = self.bindings.get_me(self)
+        self.info = self.bindings.get_me()
 
     def receiver_worker(self):
         try:
             logging.debug('Starting receiver worker...')
             while self.started:
-                self.bindings.get_messages(self)
+                self.bindings.get_messages()
         except KeyboardInterrupt:
             pass
 
@@ -30,7 +30,7 @@ class Bot(object):
                 msg = self.outbox.get()
                 logging.info(
                     ' %s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
-                self.bindings.send_message(self, msg)
+                self.bindings.send_message(msg)
         except KeyboardInterrupt:
             pass
 
@@ -39,8 +39,12 @@ class Bot(object):
             logging.debug('Starting message handler...')
             while self.started:
                 msg = self.inbox.get()
-                logging.info(
-                    '%s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
+                try:
+                    logging.info(
+                        '%s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
+                except:
+                    logging.info(
+                        '%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
 
                 p = Process(target=self.on_message_receive, args=(msg,), name='%s' % self.name)
                 p.daemon = True
