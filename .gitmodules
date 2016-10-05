@@ -1,3 +1,0 @@
-[submodule "polaris/plugins"]
-	path = polaris/plugins
-	url = https://github.com/luksireiku/polaris-plugins.git

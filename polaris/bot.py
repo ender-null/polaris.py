@@ -15,14 +15,6 @@ class Bot(object):
         self.plugins = self.init_plugins()
         self.info = self.bindings.get_me()
 
-    def receiver_worker(self):
-        try:
-            logging.debug('Starting receiver worker...')
-            while self.started:
-                self.bindings.get_messages()
-        except KeyboardInterrupt:
-            pass
-
     def sender_worker(self):
         try:
             logging.debug('Starting sender worker...')
@@ -55,10 +47,10 @@ class Bot(object):
 
     def start(self):
         self.started = True
-        logging.debug('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
+        logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
 
         jobs = []
-        jobs.append(Process(target=self.receiver_worker, name='%sReceiver' % self.name))
+        jobs.append(Process(target=self.bindings.receiver_worker, name='%sReceiver' % self.name))
         jobs.append(Process(target=self.sender_worker, name='%sSender' % self.name))
 
         for job in jobs:

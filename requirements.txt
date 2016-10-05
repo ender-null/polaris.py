@@ -2,12 +2,7 @@ beautifulsoup4==4.5.1
 DictObject==0.1.2
 luckydonald-utils==0.48
 ordereddict==1.1
-requests==2.11.1
-six==1.10.0
-beautifulsoup4==4.5.1
-DictObject==0.1.2
-luckydonald-utils==0.48
-ordereddict==1.1
+pytg==0.4.10
 python-magic==0.4.12
 requests==2.11.1
 six==1.10.0

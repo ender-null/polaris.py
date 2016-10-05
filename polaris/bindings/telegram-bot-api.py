@@ -51,38 +51,43 @@ class bindings(object):
 
         return Message(id, conversation, sender, content, type, date, reply, extra)
 
-    def get_messages(self):
-        def get_updates(offset=None, limit=None, timeout=None):
-            params = {}
-            if offset:
-                params['offset'] = offset
-            if limit:
-                params['limit'] = limit
-            if timeout:
-                params['timeout'] = timeout
-            return self.api_request('getUpdates', params)
+    def receiver_worker(self):
+        try:
+            logging.debug('Starting receiver worker...')
+            def get_updates(offset=None, limit=None, timeout=None):
+                params = {}
+                if offset:
+                    params['offset'] = offset
+                if limit:
+                    params['limit'] = limit
+                if timeout:
+                    params['timeout'] = timeout
+                return self.api_request('getUpdates', params)
 
-        last_update = 0
+            while self.bot.started:
+                last_update = 0
 
-        while (self.bot.started):
-            res = get_updates(last_update + 1)
-            if res:
-                result = res.result
-                for u in result:
-                    if u.update_id > last_update:
-                        last_update = u.update_id
+                while (self.bot.started):
+                    res = get_updates(last_update + 1)
+                    if res:
+                        result = res.result
+                        for u in result:
+                            if u.update_id > last_update:
+                                last_update = u.update_id
 
-                        if 'inline_query' in u:
-                            message = self.convert_inline(u.inline_query)
-                            self.bot.inbox.put(message)
+                                if 'inline_query' in u:
+                                    message = self.convert_inline(u.inline_query)
+                                    self.bot.inbox.put(message)
 
-                        elif 'message' in u:
-                            message = self.convert_message(u.message)
-                            self.bot.inbox.put(message)
+                                elif 'message' in u:
+                                    message = self.convert_message(u.message)
+                                    self.bot.inbox.put(message)
 
-                        elif 'edited_message' in u:
-                            message = self.convert_message(u.edited_message)
-                            self.bot.inbox.put(message)
+                                elif 'edited_message' in u:
+                                    message = self.convert_message(u.edited_message)
+                                    self.bot.inbox.put(message)
+        except KeyboardInterrupt:
+            pass
 
     def send_message(self, message):
         if message.type == 'text':

@@ -4,7 +4,6 @@ from pytg.receiver import Receiver
 from pytg.sender import Sender
 from pytg.utils import coroutine
 from DictObject import DictObject
-from multiprocessing import Process, Queue
 import json, logging
 
 
@@ -13,10 +12,7 @@ class bindings(object):
         self.bot = bot
         self.receiver = Receiver(host="localhost", port=self.bot.config.bindings_token)
         self.sender = Sender(host="localhost", port=self.bot.config.bindings_token)
-        # logging.getLogger("pytg").setLevel(logging.WARNING)
-        self.queue = Queue()
-        self.receiver.start()
-        self.receiver.message(self.main_loop())
+        logging.getLogger("pytg").setLevel(logging.WARNING)
 
     def get_me(self):
         msg = self.sender.get_self()
@@ -25,8 +21,8 @@ class bindings(object):
     def convert_message(self, msg):
         id = msg['id']
         if msg.receiver.type == 'user':
-            conversation = Conversation(msg.receiver.peer_id)
-            conversation.title = msg.receiver.first_name
+            conversation = Conversation(msg.sender.peer_id)
+            conversation.title = msg.sender.first_name
         else:
             if msg.receiver.type == 'channel':
                 conversation = Conversation(- int('100' + str(msg.receiver.peer_id)))
@@ -94,24 +90,29 @@ class bindings(object):
 
         return Message(id, conversation, sender, content, type, date, reply, extra)
 
-    def get_messages(self):
-        while self.queue.qsize() > 0:
-            self.bot.inbox.put(self.queue.get())
+    def receiver_worker(self):
+        try:
+            logging.debug('Starting receiver worker...')
+            while self.bot.started:
+                self.receiver.start()
+                self.receiver.message(self.main_loop())
+        except KeyboardInterrupt:
+            pass
 
     def send_message(self, message):
         if message.type == 'text':
-            self.sender.send_typing(self.peer(message.receiver.id), 1)
+            self.sender.send_typing(self.peer(message.conversation.id), 1)
 
-            if message.markup == 'Markdown':
+            if 'format' in message.extra and message.extra['format'] == 'Markdown':
                 message.content = remove_markdown(message.content)
-            elif message.markup == 'HTML':
+            elif 'format' in message.extra and message.extra['format'] == 'HTML':
                 message.content = remove_html(message.content)
-
+            logging.debug('peer: %s conversation: %s' % (self.peer(message.conversation.id), message.conversation.id))
             try:
-                self.sender.send_msg(self.peer(message.conversation.id), message.content, enable_preview=message.extra)
+                self.sender.send_msg(self.peer(message.conversation.id), message.content, enable_preview=False)
             except:
                 self.sender.raw('post ' + self.peer(message.conversation.id) + ' ' + self.escape(message.content),
-                             enable_preview=message.extra)
+                             enable_preview=False)
 
         elif message.type == 'photo':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 7
@@ -165,12 +166,11 @@ class bindings(object):
 
     @coroutine
     def main_loop(self):
-        while True:
+        while self.bot.started:
             msg = (yield)
             if (msg.event == 'message' and msg.own == False) or msg.event == 'service':
                 message = self.convert_message(msg)
-                logging.debug('CLI: %s' % message.content)
-                self.queue.put(message)
+                self.bot.inbox.put(message)
 
                 try:
                     if message.conversation.id > 0:
