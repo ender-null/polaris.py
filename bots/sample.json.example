@@ -1,13 +1,26 @@
+
 {
-    "connector": "telegram-bot-api",
-    "connector_token": "TOKEN",
-    "api_keys": {
-        "some_key": "some_value"
-    },
+    "bindings": "telegram-bot-api",
+    "bindings_token": "YOUR TOKEN",
     "command_start": "/",
     "owner": 12345678,
     "debug": true,
+    "language": "default",
     "plugins": [
-        "echo"
-    ]
+        "help",
+        "cats",
+        "echo",
+        "weather"
+    ],
+    "api_keys": {
+        "microsoft_azure_key": "",
+        "google_developer_console": "",
+        "cat_api": "",
+        "chatbot": 6,
+        "giphy": "",
+        "lastfm": "",
+        "league_of_legends": "",
+        "openweathermap": "",
+        "weather_underground": ""
+    }
 }
