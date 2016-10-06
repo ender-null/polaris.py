@@ -12,39 +12,110 @@
         "night": "Oyasumi nasai"
     },
     "errors": {
-        "missing_parameter": "Missing parameter",
-        "connection_error": "Connection error",
- 	"no_results": "No results found.",
+        "missing_parameter": "Missing parameter.",
+        "connection_error": "Connection error.",
+        "no_results": "No results.",
         "invalid_argument": "Invalid argument.",
         "invalid_syntax": "Invalid syntax.",
-        "permission_required": "Permission denied.",
-        "missing_id": "Must be used via reply or by specifying a user\"s ID.",
+        "permission_required": "Permission required.",
+        "missing_id": "Missing id.",
+        "needs_reply": "Only works with replies.",
         "download_failed": "Download failed.",
         "exception_found": "Exception found.",
         "unknown": "Unknown error."
     },
     "plugins": {
-        "echo": {
-            "commands": {
-                "echo": {
-                    "command": "/echo",
-                    "friendly": "say",
-                    "arguments": ["text"]
-                }
-            },
-            "description": "Repeats stuff."
-        },
         "help": {
             "commands": {
                 "help": {
                     "command": "/help",
-                    "friendly": null,
-                    "arguments": ["command"]
+                    "friendly": "^Help me",
+                    "parameters": {
+                        "command": false
+                    }
                 }
             },
-            "description": "Help about stuff",
+            "description": "Help about commands.",
             "strings": {
                 "commands": "<b>Commands</b>:"
+            }
+        },
+        "echo": {
+            "commands": {
+                "echo": {
+                    "command": "/echo",
+                    "friendly": "^Echo ",
+                    "parameters": {
+                        "text": true
+                    }
+                }
+            },
+            "description": "Simplest plugin ever!"
+        },
+        "cats": {
+            "commands": {
+                "cat": {
+                    "command": "/cat",
+                    "friendly": "Cat",
+                    "parameters": {}
+                }
+            },
+            "description": "Sends random photos of cats."
+        },
+        "pins": {
+            "commands": {
+                "pin": {
+                    "command": "/pin ",
+                    "friendly": "Pin as ",
+                    "parameters": {
+                        "name": true
+                    }
+                },
+                "unpin": {
+                    "command": "/unpin",
+                    "friendly": "Unpin",
+                    "parameters": {
+                        "name": true
+                    }
+                },
+                "pins": {
+                    "command": "/pins",
+                    "friendly": "Pin list",
+                    "parameters": {}
+                }
+            },
+            "description": "Easy commands.",
+            "strings": {
+                "pins": "<b>Pins</b>:",
+                "pinned": "<b>%s</b> was added.",
+                "unpinned": "<b>%s</b> was deleted.",
+                "already_pinned": "<b>%s</b> exists, cannot add.",
+                "not_found": "<b>%s</b> doesn't exist.",
+                "not_creator": "<b>%s</b> cannot be deleted, you are not the creator."
+            }
+        },
+        "weather": {
+            "commands": {
+                "weather": {
+                    "command": "/weather",
+                    "friendly": "Weather of ",
+                    "parameters": {
+                        "location": true
+                    }
+                },
+                "forecast": {
+                    "command": "/forecast",
+                    "friendly": "Forecast of ",
+                    "parameters": {
+                        "location": true
+                    }
+                }
+            },
+            "description": "Displays weather of places.",
+            "strings": {
+                "title": "<b>Weather of %s (%s)</b>:",
+                "titleforecast": "<b>Forecast of %s (%s)</b>:",
+                "feelslike": " (Feels like %sºC)"
             }
         }
     }

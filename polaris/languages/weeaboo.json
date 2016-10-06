@@ -56,7 +56,8 @@
             "commands": {
                 "cat": {
                     "command": "/gatito",
-                    "friendly": "Gat[o|a|ito]"
+                    "friendly": "Gat[o|a|ito]",
+                    "parameters": {}
                 }
             },
             "description": "Gatitos nyo!!"
@@ -80,9 +81,7 @@
                 "pins": {
                     "command": "/pins",
                     "friendly": "Lista de pines",
-                    "parameters": {
-                        "nombre": true
-                    }
+                    "parameters": {}
                 }
             },
             "description": "Comandos para noobs c:",

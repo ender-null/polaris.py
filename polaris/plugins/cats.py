@@ -29,7 +29,7 @@ class plugin(object):
         if res.status_code != 200:
             return self.bot.send_message(m, self.bot.lang.errors.connection_error)
 
-        photo = download(url, params)
+        photo = download(res.url)
 
         if photo:
             self.bot.send_message(m, photo, 'photo')
