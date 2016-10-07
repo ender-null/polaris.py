@@ -103,7 +103,9 @@ def download(url, params=None, headers=None, method='get'):
     f.seek(0)
     if not ext:
         f.name = fix_extension(f.name)
-    return open(f.name, 'rb')
+    # f.cose
+    return f.name
+    # return open(f.name, 'rb')
 
 
 def save_to_file(res):

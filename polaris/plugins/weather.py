@@ -52,16 +52,16 @@ class plugin(object):
         if self.bot.lang.plugins.weather.commands.weather.command in m.content:
             message = u'\n%sºC%s - %s %s\n💧 %s | 🌬 %s km/h' % (
                 temp, feelslike, weather_string, weather_icon, humidity, wind)
-            # try:
-            #     photo_url = webcams[0].CURRENTIMAGEURL
-            #     photo = download(photo_url)
-            # except Exception as e:
-            #     photo = None
-            #
-            # if photo:
-            #     return self.bot.send_message(m, photo, 'photo')
-            # else:
-            return self.bot.send_message(m, title + message, 'text', extra={'format': 'HTML'})
+            try:
+                photo_url = webcams[0].CURRENTIMAGEURL
+                photo = download(photo_url)
+            except Exception as e:
+                photo = None
+            
+            if photo:
+                return self.bot.send_message(m, photo, 'photo', extra={'caption': message})
+            else:
+                return self.bot.send_message(m, title + message, 'text', extra={'format': 'HTML'})
 
         elif self.bot.lang.plugins.weather.commands.forecast.command in m.content:
             message = self.bot.lang.plugins.weather.strings.titleforecast % (locality, country)

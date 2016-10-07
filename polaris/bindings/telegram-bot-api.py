@@ -103,22 +103,21 @@ class bindings(object):
                 self.api_request('sendMessage', params)
 
         elif message.type == 'photo':
-            print('type photo')
             self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_photo"})
             params = {
                 "chat_id": message.conversation.id,
-                "photo": message.content,
             }
 
             if message.extra and 'caption' in message.extra:
                 params['caption'] = message.extra['caption']
 
+            photo = open(message.content, 'rb')
             files = None
-            if not isinstance(message.content, string_types):
-                files = {'photo': message.content}
+            if not isinstance(photo, string_types):
+                files = {'photo': photo}
             else:
                 params['photo'] = message.content
-            print('api send photo')
+
             self.api_request('sendPhoto', params, files=files)
         else:
             logging.debug("UNKNOWN MESSAGE TYPE")

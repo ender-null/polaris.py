@@ -115,7 +115,7 @@
             "strings": {
                 "title": "<b>Tiempo en %s (%s)</b>:",
                 "titleforecast": "<b>Previsión para %s (%s)</b>:",
-                "feelslike": " (Sesación termica %sºC)"
+                "feelslike": " (Sensación termica %sºC)"
             }
         }
     }

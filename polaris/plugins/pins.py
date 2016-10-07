@@ -23,7 +23,9 @@ class plugin(object):
         self.description = self.bot.lang.plugins.pins.description
 
         self.pins = AutosaveDict('polaris/data/%s.pins.json' % self.bot.name, defaults={})
-        # self.pins.store_database()
+
+        for pin in self.pins:
+            self.commands.append(pin = {'hidden': True})
 
     # Plugin action #
     def run(self, m):
@@ -75,4 +77,6 @@ class plugin(object):
                                          extra={'format': 'HTML'})
 
         else:
-            print('kek')
+            for pin in self.pins:
+                if pin in m.content:
+                    self.bot.send_message(m, pin['content'], pin['type'])
