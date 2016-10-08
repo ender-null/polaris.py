@@ -107,7 +107,7 @@ class bindings(object):
                 message.content = remove_markdown(message.content)
             elif 'format' in message.extra and message.extra['format'] == 'HTML':
                 message.content = remove_html(message.content)
-            logging.debug('peer: %s conversation: %s' % (self.peer(message.conversation.id), message.conversation.id))
+            print('peer: %s conversation: %s' % (self.peer(message.conversation.id), message.conversation.id))
             try:
                 self.sender.send_msg(self.peer(message.conversation.id), message.content, enable_preview=False)
             except:
@@ -116,11 +116,14 @@ class bindings(object):
 
         elif message.type == 'photo':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 7
+            print('peer: %s conversation: %s' % (self.peer(message.conversation.id), message.conversation.id))
             try:
-                self.sender.send_photo(self.peer(message.conversation.id), message.content.name, message.extra)
-            except:
+                self.sender.send_photo(self.peer(message.conversation.id), message.content)
+                print('good')
+            except Exception as e:
                 self.sender.raw(
-                    'post_photo %s %s %s' % (self.peer(message.conversation.id), message.content.name, self.escape(message.extra)))
+                    'post_photo %s %s' % (self.peer(message.conversation.id), message.content))
+                print('probably bad: %s' % e)
 
         elif message.type == 'audio':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 6

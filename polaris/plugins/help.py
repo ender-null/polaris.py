@@ -28,7 +28,7 @@ class plugin(object):
                 # If the command is hidden, ignore it #
                 if not 'hidden' in args or not args['hidden']:
                     # Adds the command and parameters#
-                    text += '\n • ' + command
+                    text += '\n ' + command.replace('/', self.bot.config.command_start)
                     if 'parameters' in args:
                         for parameter, required in args['parameters'].items():
                             # Bold for required parameters, and italic for optional #
