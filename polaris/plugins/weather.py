@@ -8,12 +8,11 @@ class plugin(object):
         self.commands = {
             self.bot.lang.plugins.weather.commands.weather.command: {
                 'friendly': self.bot.lang.plugins.weather.commands.weather.friendly,
-                'parameters': self.bot.lang.plugins.weather.commands.weather.parameters,
+                'parameters': self.bot.lang.plugins.weather.commands.weather.parameters
             },
             self.bot.lang.plugins.weather.commands.forecast.command: {
                 'friendly': self.bot.lang.plugins.weather.commands.forecast.friendly,
-                'parameters': self.bot.lang.plugins.weather.commands.forecast.parameters,
-                'hidden': True
+                'parameters': self.bot.lang.plugins.weather.commands.forecast.parameters
             }
         }
         self.description = self.bot.lang.plugins.help.description
@@ -48,8 +47,8 @@ class plugin(object):
         weather_icon = (self.get_weather_icon(weather.icon))
         humidity = weather.relative_humidity
         wind = weather.wind_kph
-
-        if self.bot.lang.plugins.weather.commands.weather.command in m.content:
+        
+        if self.bot.lang.plugins.weather.commands.weather.command.replace('/', self.bot.config.command_start) in m.content:
             message = u'\n%sºC%s - %s %s\n💧 %s | 🌬 %s km/h' % (
                 temp, feelslike, weather_string, weather_icon, humidity, wind)
             try:
@@ -63,7 +62,7 @@ class plugin(object):
             else:
                 return self.bot.send_message(m, title + message, 'text', extra={'format': 'HTML'})
 
-        elif self.bot.lang.plugins.weather.commands.forecast.command in m.content:
+        elif self.bot.lang.plugins.weather.commands.forecast.command.replace('/', self.bot.config.command_start) in m.content:
             message = self.bot.lang.plugins.weather.strings.titleforecast % (locality, country)
             for day in forecast:
                 weekday = day.date.weekday

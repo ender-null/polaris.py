@@ -119,5 +119,140 @@ class bindings(object):
                 params['photo'] = message.content
 
             self.api_request('sendPhoto', params, files=files)
+
+        elif message.type == 'audio':
+            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_audio"})
+            params = {
+                "chat_id": message.conversation.id,
+            }
+
+            if message.extra and 'caption' in message.extra:
+                params['caption'] = message.extra['caption']
+
+            audio = open(message.content, 'rb')
+            files = None
+            if not isinstance(photo, string_types):
+                files = {'audio': audio}
+            else:
+                params['audio'] = message.content
+
+            self.api_request('sendAudio', params, files=files)
+
+        elif message.type == 'document':
+            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_document"})
+            params = {
+                "chat_id": message.conversation.id,
+            }
+
+            if message.extra and 'caption' in message.extra:
+                params['caption'] = message.extra['caption']
+
+            document = open(message.content, 'rb')
+            files = None
+            if not isinstance(photo, string_types):
+                files = {'document': document}
+            else:
+                params['document'] = message.content
+
+            self.api_request('sendDocument', params, files=files)
+
+        elif message.type == 'photo':
+            params = {
+                "chat_id": message.conversation.id,
+            }
+
+            if message.extra and 'caption' in message.extra:
+                params['caption'] = message.extra['caption']
+
+            sticker = open(message.content, 'rb')
+            files = None
+            if not isinstance(sticker, string_types):
+                files = {'sticker': sticker}
+            else:
+                params['sticker'] = message.content
+
+            self.api_request('sendSticker', params, files=files)
+
+        elif message.type == 'video':
+            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_video"})
+            params = {
+                "chat_id": message.conversation.id,
+            }
+
+            if message.extra and 'caption' in message.extra:
+                params['caption'] = message.extra['caption']
+
+            video = open(message.content, 'rb')
+            files = None
+            if not isinstance(video, string_types):
+                files = {'video': video}
+            else:
+                params['video'] = message.content
+
+            self.api_request('sendVideo', params, files=files)
+
+        elif message.type == 'voice':
+            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "record_audio"})
+            params = {
+                "chat_id": message.conversation.id,
+            }
+
+            if message.extra and 'caption' in message.extra:
+                params['caption'] = message.extra['caption']
+
+            voice = open(message.content, 'rb')
+            files = None
+            if not isinstance(voice, string_types):
+                files = {'voice': voice}
+            else:
+                params['voice'] = message.content
+
+            self.api_request('sendVoice', params, files=files)
+
+        elif message.type == 'location':
+            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "find_location"})
+            params = {
+                "chat_id": message.conversation.id,
+                "latitude": message.content['latitude'],
+                "longitude": message.content['longitude']
+            }
+
+            if message.extra and 'caption' in message.extra:
+                params['caption'] = message.extra['caption']
+
+            self.api_request('sendLocation', params)
+
+        elif message.type == 'venue':
+            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "find_location"})
+            params = {
+                "chat_id": message.conversation.id,
+                "latitude": message.content['latitude'],
+                "longitude": message.content['longitude']
+            }
+
+            if message.extra:
+                if 'caption' in message.extra:
+                    params['caption'] = message.extra['caption']
+
+                if 'title' in message.extra:
+                    params['title'] = message.extra['title']
+
+                if 'address' in message.extra:
+                    params['address'] = message.extra['address']
+
+            self.api_request('sendVenue', params)
+
+        elif message.type == 'contact':
+            params = {
+                "chat_id": message.conversation.id,
+                "phone_number": message.content['phone_number'],
+                "first_name": message.content['first_name']
+            }
+
+            if message.extra and 'last_name' in message.extra:
+                params['last_name'] = message.extra['last_name']
+
+            self.api_request('sendContact', params)
+
         else:
-            logging.debug("UNKNOWN MESSAGE TYPE")
+            logging.debug("UNKNOWN MESSAGE TYPE: %s" % message.type)

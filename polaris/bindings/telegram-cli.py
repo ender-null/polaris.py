@@ -28,7 +28,7 @@ class bindings(object):
                 conversation = Conversation(- int('100' + str(msg.receiver.peer_id)))
             else:
                 conversation = Conversation(- int(msg.receiver.peer_id))
-                conversation.title = msg.receiver.title
+            conversation.title = msg.receiver.title
 
         if msg.sender.type == 'user':
             sender = User(int(msg.sender.peer_id))
@@ -107,40 +107,36 @@ class bindings(object):
                 message.content = remove_markdown(message.content)
             elif 'format' in message.extra and message.extra['format'] == 'HTML':
                 message.content = remove_html(message.content)
-            print('peer: %s conversation: %s' % (self.peer(message.conversation.id), message.conversation.id))
+
             try:
                 self.sender.send_msg(self.peer(message.conversation.id), message.content, enable_preview=False)
-            except:
-                self.sender.raw('post ' + self.peer(message.conversation.id) + ' ' + self.escape(message.content),
-                             enable_preview=False)
+            except Exception as e:
+                logging.exception(e)
 
         elif message.type == 'photo':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 7
-            print('peer: %s conversation: %s' % (self.peer(message.conversation.id), message.conversation.id))
             try:
-                self.sender.send_photo(self.peer(message.conversation.id), message.content)
-                print('good')
+                if message.extra and 'caption' in message.extra:
+                    self.sender.send_photo(self.peer(message.conversation.id), message.content, message.extra['caption'])
+                else:
+                    self.sender.send_photo(self.peer(message.conversation.id), message.content)
             except Exception as e:
-                self.sender.raw(
-                    'post_photo %s %s' % (self.peer(message.conversation.id), message.content))
-                print('probably bad: %s' % e)
+                logging.exception(e)
 
         elif message.type == 'audio':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 6
             try:
-                self.sender.send_audio(self.peer(message.conversation.id), message.content.name)
-            except:
-                self.sender.raw(
-                    'post_audio %s %s %s' % (self.peer(message.conversation.id), message.content.name, self.escape(message.extra)))
+                self.sender.send_audio(self.peer(message.conversation.id), message.content)
+            except Exception as e:
+                logging.exception(e)
 
         elif message.type == 'document':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 8
             try:
                 # self.sender.send_document(self.peer(message.receiver.id), message.content.name, message.extra)
-                self.sender.send_document(self.peer(message.conversation.id), message.content.name, self.escape(message.extra))
-            except:
-                self.sender.raw(
-                    'post_document %s %s %s' % (self.peer(message.conversation.id), message.content.name, self.escape(message.extra)))
+                self.sender.send_document(self.peer(message.conversation.id), message.content, self.escape(message.extra['title']))
+            except Exception as e:
+                logging.exception(e)
 
         elif message.type == 'sticker':
             self.sender.send_file(self.peer(message.conversation.id), message.content.name)
@@ -148,20 +144,20 @@ class bindings(object):
         elif message.type == 'video':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 4
             try:
-                self.sender.send_video(self.peer(message.conversation.id), message.content.name)
-            except:
-                self.sender.raw('post_video %s %s' % (self.peer(message.conversation.id), message.content.name))
+                self.sender.send_video(self.peer(message.conversation.id), message.content)
+            except Exception as e:
+                logging.exception(e)
 
         elif message.type == 'voice':
             self.sender.send_typing(self.peer(message.conversation.id), 5)
             try:
-                self.sender.send_audio(self.peer(message.conversation.id), message.content.name)
-            except:
-                self.sender.raw('post_audio %s %s' % (self.peer(message.conversation.id), message.content.name))
+                self.sender.send_audio(self.peer(message.conversation.id), message.content)
+            except Exception as e:
+                logging.exception(e)
 
         elif message.type == 'location':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 9
-            self.sender.send_location(self.peer(message.conversation.id), message.content, message.extra)
+            self.sender.send_location(self.peer(message.conversation.id), message.content['latitude'], message.content['longitude'])
 
         else:
             print('UNKNOWN MESSAGE TYPE: ' + message.type)

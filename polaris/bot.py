@@ -36,7 +36,7 @@ class Bot(object):
                         '%s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
                 except:
                     logging.info(
-                        '%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
+                        '%s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
 
                 p = Process(target=self.on_message_receive, args=(msg,), name='%s' % self.name)
                 p.daemon = True

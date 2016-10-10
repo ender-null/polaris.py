@@ -32,7 +32,7 @@ class plugin(object):
         input = get_input(m)
 
         # Lists all pins #
-        if self.bot.lang.plugins.pins.commands.pins.command == m.content:
+        if self.bot.lang.plugins.pins.commands.pins.command.replace('/', self.bot.config.command_start) == m.content:
             text = self.bot.lang.plugins.pins.strings.pins
             for pin in self.pins:
                 print(pin)
@@ -40,7 +40,7 @@ class plugin(object):
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         # Adds a pin #
-        elif self.bot.lang.plugins.pins.commands.pin.command in m.content:
+        elif self.bot.lang.plugins.pins.commands.pin.command.replace('/', self.bot.config.command_start) in m.content:
             if not input:
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -60,7 +60,7 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.lang.plugins.pins.strings.pinned % input, extra={'format': 'HTML'})
 
         # Remove a pin #
-        elif self.bot.lang.plugins.pins.commands.unpin.command in m.content:
+        elif self.bot.lang.plugins.pins.commands.unpin.command.replace('/', self.bot.config.command_start) in m.content:
             if not input:
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
