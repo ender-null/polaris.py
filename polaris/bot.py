@@ -12,8 +12,8 @@ class Bot(object):
         self.inbox = Queue()
         self.outbox = Queue()
         self.bindings = importlib.import_module('polaris.bindings.%s' % self.config.bindings).bindings(self)
-        self.plugins = self.init_plugins()
-        self.info = self.bindings.get_me()
+        self.plugins = None
+        self.info = None
 
     def sender_worker(self):
         try:
@@ -47,6 +47,9 @@ class Bot(object):
 
     def start(self):
         self.started = True
+        self.plugins = self.init_plugins()
+        self.info = self.bindings.get_me()
+
         logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
 
         jobs = []
@@ -78,11 +81,14 @@ class Bot(object):
         self.started = False
 
     def on_message_receive(self, msg):
-        for plugin in self.plugins:
-            for command, args in plugin.commands.items():
-                if 'friendly' in args:
-                    self.check_trigger(args['friendly'], msg, plugin)
-                self.check_trigger(command, msg, plugin)
+        try:
+            for plugin in self.plugins:
+                for command, args in list(plugin.commands.items()):
+                    if 'friendly' in args:
+                        self.check_trigger(args['friendly'], msg, plugin)
+                    self.check_trigger(command, msg, plugin)
+        except Exception as e:
+            logging.exception(e)
 
     def check_trigger(self, command, message, plugin):
         trigger = command.replace('/', '^' + self.config.command_start)

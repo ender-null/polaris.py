@@ -87,11 +87,11 @@
             "description": "Easy commands.",
             "strings": {
                 "pins": "<b>Pins</b>:",
-                "pinned": "<b>%s</b> was added.",
-                "unpinned": "<b>%s</b> was deleted.",
-                "already_pinned": "<b>%s</b> exists, cannot add.",
-                "not_found": "<b>%s</b> doesn't exist.",
-                "not_creator": "<b>%s</b> cannot be deleted, you are not the creator."
+                "pinned": "<b>#%s</b> was added.",
+                "unpinned": "<b>#%s</b> was deleted.",
+                "already_pinned": "<b>#%s</b> exists, cannot add.",
+                "not_found": "<b>#%s</b> doesn't exist.",
+                "not_creator": "<b>#%s</b> cannot be deleted, you are not the creator."
             }
         },
         "weather": {

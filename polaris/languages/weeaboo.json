@@ -87,11 +87,11 @@
             "description": "Comandos para noobs c:",
             "strings": {
                 "pins": "<b>Pins</b>:",
-                "pinned": "<b>%s</b> se ha añadido.",
-                "unpinned": "<b>%s</b> se ha borrado.",
-                "already_pinned": "<b>%s</b> ya existe, no se ha podido añadir.",
-                "not_found": "<b>%s</b> no existe.",
-                "not_creator": "<b>%s</b> no ha podido ser borrado porque no eres el creador."
+                "pinned": "<b>#%s</b> se ha añadido.",
+                "unpinned": "<b>#%s</b> se ha borrado.",
+                "already_pinned": "<b>#%s</b> ya existe, no se ha podido añadir.",
+                "not_found": "<b>#%s</b> no existe.",
+                "not_creator": "<b>#%s</b> no ha podido ser borrado porque no eres el creador."
             }
         },
         "weather": {
