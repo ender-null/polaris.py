@@ -43,7 +43,8 @@ class bindings(object):
             if 'entities' in msg:
                 for entity in msg.entities:
                     if entity.type == 'url':
-                        extra['urls'].append(msg.content[entity.offset:entity.offset + entity.lenght])
+                        extra['urls'] = []
+                        extra['urls'].append(msg.text[entity.offset:entity.offset + entity.length])
 
         elif 'audio' in msg:
             type = 'audio'
