@@ -308,7 +308,7 @@ class bindings(object):
                 params['reply_to_message_id'] = message.reply
 
             files = None
-            if not isinstance(message.content, string_types):
+            if message.content.startswith('/'):
                 photo = open(message.content, 'rb')
                 files = {'photo': photo}
             else:
@@ -329,7 +329,7 @@ class bindings(object):
                 params['reply_to_message_id'] = message.reply
 
             files = None
-            if not isinstance(message.content, string_types):
+            if message.content.startswith('/'):
                 audio = open(message.content, 'rb')
                 files = {'audio': audio}
             else:
@@ -350,7 +350,7 @@ class bindings(object):
                 params['reply_to_message_id'] = message.reply
 
             files = None
-            if not isinstance(message.content, string_types):
+            if message.content.startswith('/'):
                 document = open(message.content, 'rb')
                 files = {'document': document}
             else:
@@ -370,7 +370,7 @@ class bindings(object):
                 params['reply_to_message_id'] = message.reply
 
             files = None
-            if not isinstance(message.content, string_types):
+            if message.content.startswith('/'):
                 sticker = open(message.content, 'rb')
                 files = {'sticker': sticker}
             else:
@@ -391,7 +391,7 @@ class bindings(object):
                 params['reply_to_message_id'] = message.reply
 
             files = None
-            if not isinstance(message.content, string_types):
+            if message.content.startswith('/'):
                 video = open(message.content, 'rb')
                 files = {'video': video}
             else:
@@ -412,7 +412,7 @@ class bindings(object):
                 params['reply_to_message_id'] = message.reply
 
             files = None
-            if not isinstance(message.content, string_types):
+            if message.content.startswith('/'):
                 voice = open(message.content, 'rb')
                 files = {'voice': voice}
             else:

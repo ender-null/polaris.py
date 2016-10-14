@@ -29,9 +29,4 @@ class plugin(object):
         if res.status_code != 200:
             return self.bot.send_message(m, self.bot.lang.errors.connection_error)
 
-        photo = download(res.url)
-
-        if photo:
-            self.bot.send_message(m, photo, 'photo')
-        else:
-            self.bot.send_message(m, self.bot.lang.errors.missing_parameter, 'text')
+        self.bot.send_message(m, res.url, 'photo')

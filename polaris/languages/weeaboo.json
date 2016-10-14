@@ -65,7 +65,7 @@
         "pins": {
             "commands": {
                 "pin": {
-                    "command": "/pin ",
+                    "command": "/pin",
                     "friendly": "Pinealo como ",
                     "parameters": {
                         "nombre": true
@@ -115,7 +115,33 @@
             "strings": {
                 "title": "<b>Tiempo en %s (%s)</b>:",
                 "titleforecast": "<b>Previsión para %s (%s)</b>:",
-                "feelslike": " (Sensación termica %sºC)"
+                "feelslike": " (Sensación %sºC)",
+                "sunday": "Domingo",
+                "monday": "Lunes",
+                "tuesday": "Martes",
+                "wednesday": "Miércoles",
+                "thursday": "Jueves",
+                "friday": "Viernes",
+                "saturday": "Sábado",
+                "clear": "Despejado",
+                "sunny": "Soleado",
+                "chancesnow": "Prob. de Nieve",
+                "chanceflurries": "Prob. de Ráfagas",
+                "chancerain": "Prob. de Lluvia",
+                "chancesleet": "Prob. de Aguanieve",
+                "chancetstorms": "Prob. de Tormenta",
+                "cloudy": "Nublado",
+                "flurries": "Ráfagas",
+                "fog": "Neblado",
+                "hazy": "Brumoso",
+                "mostlycloudy": "Muy Nublado",
+                "partlycloudy": "Parc. Nublado",
+                "partlysunny": "Parc. Soleado",
+                "sleet": "Aguanieve",
+                "rain": "Lluvia",
+                "sleet": "Ráfagas",
+                "snow": "Nieve",
+                "tstorms": "Tormenta"
             }
         }
     }

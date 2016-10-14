@@ -1,5 +1,5 @@
 from polaris.types import Message, Conversation, User
-from polaris.utils import remove_html, remove_markdown
+from polaris.utils import remove_html, remove_markdown, download
 from pytg.receiver import Receiver
 from pytg.sender import Sender
 from pytg.utils import coroutine
@@ -100,6 +100,9 @@ class bindings(object):
             pass
 
     def send_message(self, message):
+        if message.type != 'text' and message.content.startswith('http'):
+            message.content = download(message.content)
+
         if message.type == 'text':
             self.sender.send_typing(self.peer(message.conversation.id), 1)
 

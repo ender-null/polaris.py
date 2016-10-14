@@ -65,7 +65,7 @@
         "pins": {
             "commands": {
                 "pin": {
-                    "command": "/pin ",
+                    "command": "/pin",
                     "friendly": "Pin as ",
                     "parameters": {
                         "name": true
@@ -115,7 +115,33 @@
             "strings": {
                 "title": "<b>Weather of %s (%s)</b>:",
                 "titleforecast": "<b>Forecast of %s (%s)</b>:",
-                "feelslike": " (Feels like %sºC)"
+                "feelslike": " (Feels like %sºC)",
+                "sunday": "Sunday",
+                "monday": "Monday",
+                "tuesday": "Tuesday",
+                "wednesday": "Wednesday",
+                "thursday": "Thursday",
+                "friday": "Friday",
+                "saturday": "Saturday",
+                "clear": "Clear",
+                "sunny": "Sunny",
+                "chancesnow": "Snow Chance",
+                "chanceflurries": "Flurries Chance",
+                "chancerain": "Rain Chance",
+                "chancesleet": "Sleet Chance",
+                "chancetstorms": "Storm Chance",
+                "cloudy": "Cloudy",
+                "flurries": "Flurries",
+                "fog": "Fog",
+                "hazy": "Hazy",
+                "mostlycloudy": "Mostly Cloudy",
+                "partlycloudy": "Partly Cloudy",
+                "partlysunny": "Partly Sunny",
+                "sleet": "Sleet",
+                "rain": "Rain",
+                "sleet": "Sleet",
+                "snow": "Snow",
+                "tstorms": "Thunder Storm"
             }
         }
     }

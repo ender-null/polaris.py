@@ -43,34 +43,36 @@ class plugin(object):
         feelslike = ""
         if (float(weather.feelslike_c) - float(weather.temp_c)) > 0.001:
             feelslike = self.bot.lang.plugins.weather.strings.feelslike % weather.feelslike_c
-        weather_string = weather.weather.title()
+        # weather_string = weather.weather.title()
+        weather_string = self.bot.lang.plugins.weather.strings[weather.icon]
         weather_icon = (self.get_weather_icon(weather.icon))
         humidity = weather.relative_humidity
         wind = weather.wind_kph
         
         if self.bot.lang.plugins.weather.commands.weather.command.replace('/', self.bot.config.command_start) in m.content:
-            message = u'\n%sºC%s - %s %s\n💧 %s | 🌬 %s km/h' % (
-                temp, feelslike, weather_string, weather_icon, humidity, wind)
+            message = u'%s\n%sºC%s - %s %s\n💧 %s | 🌬 %s km/h' % (
+                remove_html(title), temp, feelslike, weather_string, weather_icon, humidity, wind)
             try:
-                photo_url = webcams[0].CURRENTIMAGEURL
-                photo = download(photo_url)
+                photo = webcams[0].CURRENTIMAGEURL
             except Exception as e:
                 photo = None
             
             if photo:
                 return self.bot.send_message(m, photo, 'photo', extra={'caption': message})
             else:
-                return self.bot.send_message(m, title + message, 'text', extra={'format': 'HTML'})
+                return self.bot.send_message(m, message, 'text', extra={'format': 'HTML'})
 
         elif self.bot.lang.plugins.weather.commands.forecast.command.replace('/', self.bot.config.command_start) in m.content:
             message = self.bot.lang.plugins.weather.strings.titleforecast % (locality, country)
             for day in forecast:
-                weekday = day.date.weekday
+                # weekday = day.date.weekday
+                weekday = self.bot.lang.plugins.weather.strings[day.date.weekday.lower()][:3]
                 temp = day.low.celsius
                 temp_max = day.high.celsius
-                weather_string = day.conditions.title()
+                # weather_string = day.conditions.title()
+                weather_string = self.bot.lang.plugins.weather.strings[day.icon]
                 weather_icon = (self.get_weather_icon(day.icon))
-                message += u'\n • <b>%s</b>: %s-%sºC - %s %s' % (weekday, temp, temp_max, weather_string, weather_icon)
+                message += u'\n • <b>%s</b>: <i>%s - %sºC</i> · %s %s' % (weekday, temp, temp_max, weather_string, weather_icon)
 
             return self.bot.send_message(m, message, extra={'format': 'HTML'})
 
@@ -93,7 +95,6 @@ class plugin(object):
             weather_emoji['flurries'] = u'❄️'
             weather_emoji['fog'] = u'🌫'
             weather_emoji['hazy'] = u'🌫'
-            weather_emoji['mostlycloudy'] = u'🌥'
             weather_emoji['mostlycloudy'] = u'🌤'
             weather_emoji['partlycloudy'] = u'⛅️'
             weather_emoji['partlysunny'] = u'⛅️'
