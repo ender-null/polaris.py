@@ -228,7 +228,7 @@ class bindings(object):
             content = None
 
         if 'caption' in msg:
-            extra['caption'] == msg.caption
+            extra['caption'] = msg.caption
 
         date = msg.date
 
