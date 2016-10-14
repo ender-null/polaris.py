@@ -101,7 +101,7 @@ class plugin(object):
             }
 
             data = send_request(url, params=params)
-            if data.status == 400:
+            if 'status' in data:
                 return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
 
             tranvias = []
