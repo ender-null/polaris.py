@@ -32,7 +32,7 @@ class plugin(object):
         input = get_input(m)
         baseurl = 'http://www.zaragoza.es/api'
 
-        if '/bus' in m.content:
+        if '/bus'.replace('/', self.bot.config.command_start) in m.content:
             if not input:
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -51,7 +51,7 @@ class plugin(object):
             line = data['title'].title().split(street)[-1].strip().replace('Líneas: ','')
             buses = []
 
-            text = '<b>%s</b>\n\tParada: <b>%s</b>  [%s]\n\n' % (street, parada, line)
+            text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (street, parada, line)
 
             for destino in data['destinos']:
                 try:
@@ -90,7 +90,7 @@ class plugin(object):
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
-        elif '/tranvia' in m.content:
+        elif '/tranvia'.replace('/', self.bot.config.command_start) in m.content:
             if not input:
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -106,7 +106,7 @@ class plugin(object):
 
             tranvias = []
 
-            text = '<b>%s</b>\n\tParada: <b>%s</b>\n\n' % (data['title'].title(), data['id'])
+            text = '<b>%s</b>\n   Parada: <b>%s</b>\n\n' % (data['title'].title(), data['id'])
 
             for destino in data['destinos']:
                 tranvias.append((
@@ -123,13 +123,12 @@ class plugin(object):
             for tranvia in tranvias:
                 text += ' • <b>%s min.</b>  %s <i>%s</i>\n' % (tranvia[2], tranvia[0], tranvia[1])
 
-            text += '\n%s' % data['mensajes'][-1].replace('INFORMACIN','INFORMACIÓN').capitalize()
-
+            # text += '\n%s' % data['mensajes'][-1].replace('INFORMACIN','INFORMACIÓN').capitalize()
             text = text.rstrip('\n')
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
-        elif '/bizi' in m.content:
+        elif '/bizi'.replace('/', self.bot.config.command_start) in m.content:
             if input:
                 start = input
             else:
@@ -145,6 +144,6 @@ class plugin(object):
             if 'error' in data:
                 return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n\tEstación: <b>%s</b>\n\n<b>Bicicletas disponibles:</b> <i>%s</i> de <i>%s</i>\n<b>Actualizado</b>: %s' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'], data['lastUpdated'])
+            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n<i>%s</i> de <i>%s</i> bicicletas disponibles.' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'])
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})

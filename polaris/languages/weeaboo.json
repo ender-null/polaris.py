@@ -65,7 +65,7 @@
         "pins": {
             "commands": {
                 "pin": {
-                    "command": "/pin",
+                    "command": "/pin ",
                     "friendly": "Pinealo como ",
                     "parameters": {
                         "nombre": true

@@ -169,21 +169,21 @@ class bindings(object):
             }
 
             if 'last_name' in msg.new_chat_member:
-                extra['user']['last_name'] = msg.new_chat_member.last_name
+                extra['user'].last_name = msg.new_chat_member.last_name
             if 'username' in msg.new_chat_member:
-                extra['user']['username'] = msg.new_chat_member.username
+                extra['user'].username = msg.new_chat_member.username
 
         elif 'left_chat_member' in msg:
             type = 'notification'
             content = 'left_chat_member'
             extra = {
-                'user': User(msg.new_chat_member.id, msg.new_chat_member.first_name)
+                'user': User(msg.left_chat_member.id, msg.left_chat_member.first_name)
             }
 
-            if 'last_name' in msg.new_chat_member:
-                extra['user']['last_name'] = msg.new_chat_member.last_name
-            if 'username' in msg.new_chat_member:
-                extra['user']['username'] = msg.new_chat_member.username
+            if 'last_name' in msg.left_chat_member:
+                extra['user'].last_name = msg.left_chat_member.last_name
+            if 'username' in msg.left_chat_member:
+                extra['user'].username = msg.left_chat_member.username
 
         elif 'new_chat_photo' in msg:
             type = 'notification'
