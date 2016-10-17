@@ -38,9 +38,10 @@ class Bot(object):
                     logging.info(
                         '%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
 
-                p = Process(target=self.on_message_receive, args=(msg,), name='%s' % self.name)
-                p.daemon = True
-                p.start()
+                # p = Process(target=self.on_message_receive, args=(msg,), name='%s' % self.name)
+                # p.daemon = True
+                # p.start()
+                self.on_message_receive(msg)
 
         except KeyboardInterrupt:
             pass
