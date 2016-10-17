@@ -52,6 +52,22 @@
             },
             "description": "Repite cosas nya!"
         },
+        "about": {
+            "commands": {
+                "about": {
+                    "command": "/acerca",
+                    "friendly": "^Acerca de ti",
+                    "parameters": {}
+                }
+            },
+            "description": "Información acerca del bot.",
+            "strings": {
+                "greeting": "Hola! Soy <b>%s</b>!\nEncantada de conocerte.",
+                "license": "<b>Polaris</b> (incluyendo todos los plugins y documentación) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
+                "version": "Basado en <a href=\"https://git.io/polaris\">polaris</a> de @luksireiku:\n • Branch: <code>%s</code>\n • Tag: <code>%s</code>\n • Commit: <code>%s</code>",
+                "help": "Escribe %sayuda para saber todo lo que puedo hacer!"
+            }
+        },
         "cats": {
             "commands": {
                 "cat": {

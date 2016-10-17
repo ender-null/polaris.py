@@ -1,0 +1,164 @@
+{
+    "greeting": {
+        "morning": "Ohayo gozaimasu",
+        "afternoon": "Konnichi wa",
+        "evening": "Konban wa",
+        "night": "Konban wa"
+    },
+    "goodbye": {
+        "morning": "Shitsurei shimasu",
+        "afternoon": "Sayonara",
+        "evening": "Mata ashita",
+        "night": "Oyasumi nasai"
+    },
+    "errors": {
+        "missing_parameter": "* Bolita mira fijamente a su amito esperando un parametro *",
+        "connection_error": "* Bolita se ha golpeado con una pared de camino al servidor remoto, eso la pone triste *",
+        "no_results": "* Bolita esta triste porque no ha podido encontrar nada para su amito, eso la pone triste*",
+        "invalid_argument": "* Bolita no recibe lo que esperaba, eso la pone triste *",
+        "invalid_syntax": "* Bolita no entiende a su amito, eso la pone triste *",
+        "permission_required": "* Bolita se da cuenta de que no eres un amito, solo un ser horiiiiiible! *",
+        "missing_id": "* Bolita no pudo identificar a su amito, eso la pone triste *",
+        "needs_reply": "* Bolita necesita que le indiquen a que se refiere amito *",
+        "download_failed": "* Bolita no pudo traer a amito lo que pedia, eso la pone triste *",
+        "exception_found": "* Bolita esta confusa, y triste, ¿porque nadie piensa en Bolita? *",
+        "unknown": "* Bolita rueda sin saber que hacer *"
+    },
+    "plugins": {
+        "help": {
+            "commands": {
+                "help": {
+                    "command": "/ayuda",
+                    "friendly": "^Ayudame",
+                    "parameters": {
+                        "comando": false
+                    }
+                }
+            },
+            "description": "Aiuda",
+            "strings": {
+                "commands": "<b>Comandos</b>:"
+            }
+        },
+        "echo": {
+            "commands": {
+                "echo": {
+                    "command": "/repite",
+                    "friendly": "^Repite ",
+                    "parameters": {
+                        "texto": true
+                    }
+                }
+            },
+            "description": "Repite cosas nya!"
+        },
+        "about": {
+            "commands": {
+                "about": {
+                    "command": "/acerca",
+                    "friendly": "^Acerca de ti",
+                    "parameters": {}
+                }
+            },
+            "description": "Información acerca de Bolita",
+            "strings": {
+                "greeting": "Hola! Soy <b>%s</b> y soy una cosita, nyu!",
+                "license": "<b>Polaris</b> (incluyendo todos los plugins y documentación) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
+                "version": "Basado en <a href=\"https://git.io/polaris\">polaris</a> de @luksireiku:\n • Branch: <code>%s</code>\n • Tag: <code>%s</code>\n • Commit: <code>%s</code>",
+                "help": "Escribe %sayuda para saber todo lo que puedo hacer con mis patitas!"
+            }
+        },
+        "cats": {
+            "commands": {
+                "cat": {
+                    "command": "/gatito",
+                    "friendly": "Gat[o|a|ito]",
+                    "parameters": {}
+                }
+            },
+            "description": "Gatitos nyo!!"
+        },
+        "pins": {
+            "commands": {
+                "pin": {
+                    "command": "/pin ",
+                    "friendly": "Pinealo como ",
+                    "parameters": {
+                        "nombre": true
+                    }
+                },
+                "unpin": {
+                    "command": "/unpin",
+                    "friendly": "Despinealo",
+                    "parameters": {
+                        "nombre": true
+                    }
+                },
+                "pins": {
+                    "command": "/pins",
+                    "friendly": "Lista de pines",
+                    "parameters": {}
+                }
+            },
+            "description": "Comandos para noobs c:",
+            "strings": {
+                "pins": "<b>Pins</b>:",
+                "pinned": "<b>#%s</b> se ha añadido.",
+                "unpinned": "<b>#%s</b> se ha borrado.",
+                "already_pinned": "<b>#%s</b> ya existe, no se ha podido añadir.",
+                "not_found": "<b>#%s</b> no existe.",
+                "not_creator": "<b>#%s</b> no ha podido ser borrado porque no eres el creador."
+            }
+        },
+        "weather": {
+            "commands": {
+                "weather": {
+                    "command": "/tiempo",
+                    "friendly": "[T|t]iempo en ",
+                    "parameters": {
+                        "localización": true
+                    }
+                },
+                "forecast": {
+                    "command": "/prevision",
+                    "friendly": "[P|p]revisión en ",
+                    "parameters": {
+                        "localización": true
+                    }
+                }
+            },
+            "description": "Te puedo decir el tiempo nya.",
+            "strings": {
+                "title": "<b>Tiempo en %s (%s)</b>:",
+                "titleforecast": "<b>Previsión para %s (%s)</b>:",
+                "feelslike": " (Sensación %sºC)",
+                "sunday": "Domingo",
+                "monday": "Lunes",
+                "tuesday": "Martes",
+                "wednesday": "Miércoles",
+                "thursday": "Jueves",
+                "friday": "Viernes",
+                "saturday": "Sábado",
+                "clear": "Despejado",
+                "sunny": "Soleado",
+                "chancesnow": "Prob. de Nieve",
+                "chanceflurries": "Prob. de Ráfagas",
+                "chancerain": "Prob. de Lluvia",
+                "chancesleet": "Prob. de Aguanieve",
+                "chancetstorms": "Prob. de Tormenta",
+                "cloudy": "Nublado",
+                "flurries": "Ráfagas",
+                "fog": "Neblado",
+                "hazy": "Brumoso",
+                "mostlycloudy": "Muy Nublado",
+                "partlycloudy": "Parc. Nublado",
+                "partlysunny": "Parc. Soleado",
+                "sleet": "Aguanieve",
+                "rain": "Lluvia",
+                "sleet": "Ráfagas",
+                "snow": "Nieve",
+                "tstorms": "Tormenta"
+            }
+        }
+    }
+}
