@@ -110,6 +110,24 @@
                 "not_creator": "<b>#%s</b> cannot be deleted, you are not the creator."
             }
         },
+        "reminders": {
+            "commands": {
+                "remindme": {
+                    "command": "/remindme",
+                    "friendly": "^Remindme to ",
+                    "parameters": {
+                        "delay": true,
+                        "text": true
+                    }
+                }
+            },
+            "description": "Set a reminder for yourself.",
+            "strings": {
+                "wrongdelay": "The delay must be in this format: '(integer)(s|m|h|d)'.\nExample: '2h' for 2 hours.",
+                "noreminder": "Please include a reminder.",
+                "added": "<b>%s</b>, I'll remind you in <b>%s</b> to <i>%s</i>."
+            }
+        },
         "weather": {
             "commands": {
                 "weather": {

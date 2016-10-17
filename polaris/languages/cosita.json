@@ -110,6 +110,24 @@
                 "not_creator": "<b>#%s</b> no ha podido ser borrado porque no eres el creador."
             }
         },
+        "reminders": {
+            "commands": {
+                "remindme": {
+                    "command": "/recuerdame",
+                    "friendly": "^recuerdame ",
+                    "parameters": {
+                        "retardo": true,
+                        "texto": true
+                    }
+                }
+            },
+            "description": "Establece un recordatorio para ti.",
+            "strings": {
+                "wrongdelay": "El retardo debe tener este formato: '(entero)(s|m|h|d)'.\nEjemplo: '2h' para dos horas.",
+                "noreminder": "Necesito saber que tengo que recordarte.",
+                "added": "<b>%s</b>, te recordaré en <b>%s</b> que tienes que <i>%s</i>."
+            }
+        },
         "weather": {
             "commands": {
                 "weather": {

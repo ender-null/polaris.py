@@ -47,6 +47,13 @@ def last_word(text):
         return False
     return text.split()[-1]
 
+def is_int(number):
+    try:
+        number = int(number)
+        return True
+    except ValueError:
+        return False
+
 
 def send_request(url, params=None, headers=None, files=None, data=None, post=False):
     try:
