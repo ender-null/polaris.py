@@ -64,7 +64,7 @@
             "strings": {
                 "greeting": "Hi! I'm <b>%s</b>!\nNice to meet you.",
                 "license": "<b>Polaris</b> (including all plugins and documentation) is <b>free software</b>; you are free to redistribute it and/or modify it under the terms of the <b>GNU AGPLv3</b>.",
-                "version": "Based on <a href=\"https://git.io/polaris\">polaris</a> by @luksireiku:\n • Branch: <code>%s</code>\n • Tag: <code>%s</code>\n • Commit: <code>%s</code>",
+                "version": "Using <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> by @luksireiku.",
                 "help": "Type %shelp to know all I can do!"
             }
         },
