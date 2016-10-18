@@ -22,8 +22,12 @@ class plugin(object):
         
         soup = BeautifulSoup(res.text, 'lxml')
 
-        text = soup.find(class_='advlink').get_text()
-        text = text.replace('<br/>', '\n')
-        text = text.replace('ADV', '<b>ADV</b>')
+        story = soup.find(class_='story')
+        published = story.find(class_='pre').get_text()
+        content = story.find(class_='advlink').get_text()
+        content = content.replace('<br/>', '\n')
+        content = content.replace('ADV', '<b>ADV</b>')
+
+        text = '%s\n<i>%s</i>' % (content, published)
         
         self.bot.send_message(m, text, extra={'format': 'HTML'})
