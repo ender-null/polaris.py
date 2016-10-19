@@ -144,6 +144,6 @@ class plugin(object):
             if 'error' in data:
                 return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n<i>%s</i> de <i>%s</i> bicicletas disponibles.' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'])
+            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\nBicis Disponibles: <b>%s</b>\nAnclajes Disponibles: <b>%s</b>' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'])
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})

@@ -1,8 +1,8 @@
 from polaris.utils import get_input, first_word, all_but_first_word, is_int
 from polaris.types import AutosaveDict
-from time import time
 from collections import OrderedDict
 from DictObject import DictObject
+from time import time
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -21,6 +21,16 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
+        def to_seconds(delaytime, unit):
+            if unit == 's':
+                return float(delaytime)
+            elif unit == 'm':
+                return float(delaytime) * 60
+            elif unit == 'h':
+                return float(delaytime) * 60 * 60
+            elif unit == 'd':
+                return float(delaytime) * 60 * 60 * 24
+
         input = get_input(m)
         if not input:
             return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
@@ -33,7 +43,7 @@ class plugin(object):
             if not is_int(delaytime) or is_int(unit):
                 return self.bot.send_message(m, self.bot.lang.plugins.reminders.strings.wrongdelay)
 
-        alarm = time() + self.to_seconds(delaytime, unit)
+        alarm = time() + to_seconds(delaytime, unit)
 
         text = all_but_first_word(input)
         if not text:
@@ -60,33 +70,4 @@ class plugin(object):
         message = self.bot.lang.plugins.reminders.strings.added % (m.sender.first_name, delay, text)
 
         return self.bot.send_message(m, message, extra={'format': 'HTML'})
-
-    def cron(self):
-        for id, reminder in self.reminders.items():
-            if time() > reminder['alarm']:
-                text = '<i>%s</i>\n - %s' % (reminder['text'], reminder['first_name'])
-                if reminder['username']:
-                    text += ' (@%s)' % reminder['username']
-
-                m = Message()
-                if reminder['chat_id'] > 0:
-                    m.sender = User()
-                    m.sender.id = reminder['chat_id']
-                    m.conversation = Conversation(bot.id)
-                else:
-                    m.conversation = Conversation(reminder['chat_id'])
-
-                self.bot.send_message(m, text, markup='HTML')
-                del(self.reminders[id])
-                self.reminders.store_database()
-
-    def to_seconds(self, delaytime, unit):
-        if unit == 's':
-            return float(delaytime)
-        elif unit == 'm':
-            return float(delaytime) * 60
-        elif unit == 'h':
-            return float(delaytime) * 60 * 60
-        elif unit == 'd':
-            return float(delaytime) * 60 * 60 * 24
                     
