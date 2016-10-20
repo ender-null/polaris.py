@@ -68,7 +68,7 @@
                 "greeting": "Hi! I'm <b>%s</b>!\nNice to meet you.",
                 "license": "<b>Polaris</b> (including all plugins and documentation) is <b>free software</b>; you are free to redistribute it and/or modify it under the terms of the <b>GNU AGPLv3</b>.",
                 "version": "Running <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> by @luksireiku.",
-                "help": "Write %sayuda to know what I can do!"
+                "help": "Write %shelp to know what I can do!"
             }
         },
         "cats": {

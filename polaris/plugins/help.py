@@ -19,6 +19,33 @@ class plugin(object):
     # Plugin action #
     def run(self, m):
         input = get_input(m)
+
+        if input:
+            for plugin in self.bot.plugins:
+                text = plugin.description
+                for command in plugin.commands:
+                    # If the command is hidden, ignore it #
+                    if not 'hidden' in command or not command['hidden']:
+                        # Adds the command and parameters#
+                        if input in command['command'].replace('/', '').rstrip('\s'):
+                            text += '\n • ' + command['command'].replace('/', self.bot.config.command_start)
+                            if 'parameters' in command:
+                                for parameter in command['parameters']:
+                                    name, required = list(parameter.items())[0]
+                                    # Bold for required parameters, and italic for optional #
+                                    if required:
+                                        text += ' <b>&lt;%s&gt;</b>' % name
+                                    else:
+                                        text += ' [%s]' % name
+
+                            if 'description' in command:
+                                text += '\n   <i>%s</i>' % command['description']
+                            else:
+                                text += '\n   <i>?¿</i>'
+
+                            return self.bot.send_message(m, text, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
+
         
         if self.commands[-1]['command'].replace('/', self.bot.config.command_start) in m.content:
             text = ''
@@ -43,7 +70,6 @@ class plugin(object):
                         if 'parameters' in command:
                             for parameter in command['parameters']:
                                 name, required = list(parameter.items())[0]
-                                print(name)
                                 # Bold for required parameters, and italic for optional #
                                 if required:
                                     text += ' <b>&lt;%s&gt;</b>' % name
