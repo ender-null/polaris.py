@@ -1,4 +1,5 @@
 from polaris.types import AutosaveDict, Message
+from polaris.utils import set_logger
 from multiprocessing import Process, Queue
 import importlib, logging, time, re, traceback, sys, os
 
@@ -54,8 +55,8 @@ class Bot(object):
         logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
 
         jobs = []
-        jobs.append(Process(target=self.bindings.receiver_worker, name='%sReceiver' % self.name))
-        jobs.append(Process(target=self.sender_worker, name='%sSender' % self.name))
+        jobs.append(Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
+        jobs.append(Process(target=self.sender_worker, name='%s S.' % self.name))
 
         for job in jobs:
             job.daemon = True
@@ -65,6 +66,7 @@ class Bot(object):
 
     def init_plugins(self):
         plugins = []
+
         logging.info('Importing plugins...')
 
         for plugin in self.config.plugins:
@@ -84,10 +86,11 @@ class Bot(object):
     def on_message_receive(self, msg):
         try:
             for plugin in self.plugins:
-                for command, args in list(plugin.commands.items()):
-                    if 'friendly' in args:
-                        self.check_trigger(args['friendly'], msg, plugin)
-                    self.check_trigger(command, msg, plugin)
+                for command in plugin.commands:
+                    if 'command' in command:
+                        self.check_trigger(command['command'], msg, plugin)
+                    if 'friendly' in command:
+                        self.check_trigger(command['friendly'], msg, plugin)
         except Exception as e:
             logging.exception(e)
 

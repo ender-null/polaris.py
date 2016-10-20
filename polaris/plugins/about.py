@@ -6,15 +6,11 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = {
-            self.bot.lang.plugins.about.commands.about.command: {
-                'friendly': self.bot.lang.plugins.about.commands.about.friendly,
-                'parameters': self.bot.lang.plugins.about.commands.about.parameters
-            },
-            '/start': {
-                'hidden': True
-            }
-        }
+        self.commands = self.bot.lang.plugins.about.commands
+        self.commands.append({
+            'command': '/start',
+            'hidden': True
+        })
         self.description = self.bot.lang.plugins.about.description
 
     # Plugin action #

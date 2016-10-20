@@ -6,11 +6,7 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = {
-            self.bot.lang.plugins.cats.commands.cat.command: {
-                'friendly': self.bot.lang.plugins.cats.commands.cat.friendly,
-            },
-        }
+        self.commands = self.bot.lang.plugins.cats.commands
         self.description = self.bot.lang.plugins.help.description
 
     # Plugin action #

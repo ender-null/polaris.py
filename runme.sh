@@ -14,4 +14,4 @@ if [ ! -f "$DIR/env/updated" -o $DIR/requirements.txt -nt $DIR/env/updated ]; th
     echo "Requirements installed."
 fi
 
-python $DIR/main.py
+python -B $DIR/loader.py

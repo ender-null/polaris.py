@@ -6,9 +6,12 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = {
-            '/adv': {}
-        }
+        self.commands = [
+            {
+                'command': '/adv',
+                'description': 'ADV aleatorios.'
+            }
+        ]
         self.description = 'ADV aleatorios de Asco de vida.'
 
     # Plugin action #

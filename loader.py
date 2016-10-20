@@ -1,5 +1,6 @@
 from polaris.types import AutosaveDict
 from polaris import utils, types, bot
+from multiprocessing import Process
 import os, logging, time, importlib
 
 
@@ -167,6 +168,7 @@ def setup():
 
 
 # setup()
+utils.set_logger()
 logging.info('Looking for bot configurations in "bots" folder...')
 botlist = get_bots()
 

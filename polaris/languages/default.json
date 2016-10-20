@@ -26,125 +26,135 @@
     },
     "plugins": {
         "help": {
-            "commands": {
-                "help": {
-                    "command": "/help",
-                    "friendly": "^Help me",
-                    "parameters": {
-                        "command": false
-                    }
+            "commands": [
+                {
+                    "command": "/help ",
+                    "friendly": "^Help",
+                    "description": "Help about commands.",
+                    "parameters": [
+                        { "command": false }
+                    ]
                 }
-            },
-            "description": "Help about commands.",
+            ],
+            "description": "Shows the bot help.",
             "strings": {
                 "commands": "<b>Commands</b>:"
             }
         },
         "echo": {
-            "commands": {
-                "echo": {
+            "commands": [
+                {
                     "command": "/echo",
                     "friendly": "^Echo ",
-                    "parameters": {
-                        "text": true
-                    }
+                    "description": "Repeats whatever you want.",
+                    "parameters": [
+                        { "text": true }
+                    ]
                 }
-            },
-            "description": "Simplest plugin ever!"
+            ],
+            "description": "Simplest plugin ever."
         },
         "about": {
-            "commands": {
-                "about": {
+            "commands": [
+                {
                     "command": "/about",
-                    "friendly": "^About",
-                    "parameters": {}
+                    "friendly": "^About you",
+                    "description": "Info about the bot.",
+                    "parameters": []
                 }
-            },
-            "description": "Información acerca del bot.",
+            ],
+            "description": "Info about the bot.",
             "strings": {
                 "greeting": "Hi! I'm <b>%s</b>!\nNice to meet you.",
                 "license": "<b>Polaris</b> (including all plugins and documentation) is <b>free software</b>; you are free to redistribute it and/or modify it under the terms of the <b>GNU AGPLv3</b>.",
-                "version": "Using <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> by @luksireiku.",
-                "help": "Type %shelp to know all I can do!"
+                "version": "Running <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> by @luksireiku.",
+                "help": "Write %sayuda to know what I can do!"
             }
         },
         "cats": {
-            "commands": {
-                "cat": {
+            "commands": [
+                {
                     "command": "/cat",
                     "friendly": "Cat",
-                    "parameters": {}
+                    "description": "Send a cute cat.",
+                    "parameters": []
                 }
-            },
-            "description": "Sends random photos of cats."
+            ],
+            "description": "Send pictures of cats."
         },
         "pins": {
-            "commands": {
-                "pin": {
+            "commands": [
+                {
+                    "command": "/pins",
+                    "friendly": "List pins",
+                    "description": "Lists the pins of the current user.",
+                    "parameters": []
+                },
+                {
                     "command": "/pin ",
                     "friendly": "Pin as ",
-                    "parameters": {
-                        "name": true
-                    }
+                    "description": "Sets a pin.",
+                    "parameters": [
+                        {"name": true}
+                    ]
                 },
-                "unpin": {
+                {
                     "command": "/unpin",
-                    "friendly": "Unpin",
-                    "parameters": {
-                        "name": true
-                    }
-                },
-                "pins": {
-                    "command": "/pins",
-                    "friendly": "Pin list",
-                    "parameters": {}
+                    "friendly": "Unpin ",
+                    "description": "Deletes a pin.",
+                    "parameters": [
+                        {"name": true}
+                    ]
                 }
-            },
-            "description": "Easy commands.",
+            ],
+            "description": "Commands for noobs c:",
             "strings": {
                 "pins": "<b>Pins</b>:",
-                "pinned": "<b>#%s</b> was added.",
+                "pinned": "<b>#%s</b> was set",
                 "unpinned": "<b>#%s</b> was deleted.",
-                "already_pinned": "<b>#%s</b> exists, cannot add.",
+                "already_pinned": "<b>#%s</b> already exists, can't be set.",
                 "not_found": "<b>#%s</b> doesn't exist.",
-                "not_creator": "<b>#%s</b> cannot be deleted, you are not the creator."
+                "not_creator": "<b>#%s</b> you don't have permission to delete it."
             }
         },
         "reminders": {
-            "commands": {
-                "remindme": {
+            "commands": [
+                {
                     "command": "/remindme",
-                    "friendly": "^Remindme to ",
-                    "parameters": {
-                        "delay": true,
-                        "text": true
-                    }
+                    "friendly": "^remind me",
+                    "description": "Sets a reminder.",
+                    "parameters": [
+                        {"delay": true},
+                        {"text": true}
+                    ]
                 }
-            },
-            "description": "Set a reminder for yourself.",
+             ],
+            "description": "Envia mensajes con retardo.",
             "strings": {
-                "wrongdelay": "The delay must be in this format: '(integer)(s|m|h|d)'.\nExample: '2h' for 2 hours.",
-                "noreminder": "Please include a reminder.",
-                "added": "<b>%s</b>, I'll remind you in <b>%s</b> to <i>%s</i>."
+                "wrongdelay": "The delay must be in this format: '(entero)(s|m|h|d)'.\nExample: '2h' for 2 hours.",
+                "noreminder": "I need to know taht I have to remind you.",
+                "added": "<b>%s</b>, I'll remint you in <b>%s</b> to <i>%s</i>."
             }
         },
         "weather": {
-            "commands": {
-                "weather": {
+            "commands": [
+                {
                     "command": "/weather",
-                    "friendly": "Weather of ",
-                    "parameters": {
-                        "location": true
-                    }
+                    "friendly": "Weather from ",
+                    "description": "Current weather.",
+                    "parameters": [
+                        {"location": true}
+                    ]
                 },
-                "forecast": {
+                {
                     "command": "/forecast",
-                    "friendly": "Forecast of ",
-                    "parameters": {
-                        "location": true
-                    }
+                    "friendly": "Forecast from ",
+                    "description": "3 day forecast.",
+                    "parameters": [
+                        {"location": true}
+                    ]
                 }
-            },
+            ],
             "description": "Displays weather of places.",
             "strings": {
                 "title": "<b>Weather of %s (%s)</b>:",

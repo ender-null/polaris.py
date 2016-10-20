@@ -1,30 +1,36 @@
-from polaris.utils import get_input, get_coords, send_request, download, remove_html
+from polaris.utils import get_input, send_request, is_int
 
 
 class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = {
-            "/bus": {
-                'friendly': "^Bus ",
-                'parameters': {
-                    "número de parada": True
-                },
+        self.commands = [
+            {
+                'command': '/bus',
+                'friendly': '^Bus ',
+                'description': 'Tiempos de espera en el poste.',
+                'parameters': [
+                    { "número de parada": True }
+                ],
             },
-            "/tranvia": {
-                'friendly': "^Tranvia ",
-                'parameters': {
-                    "número de parada": True
-                },
+            {
+                'command': '/tranvia',
+                'friendly': '^Tranvia ',
+                'description': 'Datos de una parada de tranvia.',
+                'parameters': [
+                    { "número de parada": True }
+                ],
             },
-            "/bizi": {
-                'friendly': "^Bizi ",
-                'parameters': {
-                    "número de estación": True
-                },
-            },
-        }
+            {
+                'command': '/bizi',
+                'friendly': '^Bizi ',
+                'description': 'Datos de una estación Bizi.',
+                'parameters': [
+                    { "número de estación": True }
+                ],
+            }
+        ]
         self.description = "Servicio pensado para reutilizadores que pone a su disposición información sobre las operaciones que puede realizar sobre unos determinados conjuntos de datos de Zaragoza."
 
     # Plugin action #
@@ -43,6 +49,7 @@ class plugin(object):
             }
 
             data = send_request(url, params=params)
+
             if 'error' in data:
                 return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
 
@@ -50,41 +57,51 @@ class plugin(object):
             parada = data['title'].split(')')[0].replace('(', '')
             line = data['title'].title().split(street)[-1].strip().replace('Líneas: ','')
             buses = []
+            nodatabuses = []
 
             text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (street, parada, line)
 
             for destino in data['destinos']:
                 try:
                     tiempo = int(destino['primero'].replace(' minutos', '').rstrip('.'))
+                    buses.append((
+                        destino['linea'],
+                        destino['destino'].rstrip(',').rstrip('.').title(),
+                        tiempo
+                    ))
                 except Exception as e:
                     print(e)
                     tiempo = destino['primero'].rstrip('.').replace('cin', 'ción')
-
-                buses.append((
-                    destino['linea'],
-                    destino['destino'].rstrip(',').rstrip('.').title(),
-                    tiempo
-                ))
+                    nodatabuses.append((
+                        destino['linea'],
+                        destino['destino'].rstrip(',').rstrip('.').title(),
+                        tiempo
+                    ))
 
                 try:
                     tiempo = int(destino['segundo'].replace(' minutos', '').rstrip('.'))
+                    buses.append((
+                        destino['linea'],
+                        destino['destino'].rstrip(',').rstrip('.').title(),
+                        tiempo
+                    ))
                 except Exception as e:
                     print(e)
                     tiempo = destino['segundo'].rstrip('.').replace('cin', 'ción')
-
-                buses.append((
-                    destino['linea'],
-                    destino['destino'].rstrip(',').rstrip('.').title(),
-                    tiempo
-                ))
+                    nodatabuses.append((
+                        destino['linea'],
+                        destino['destino'].rstrip(',').rstrip('.').title(),
+                        tiempo
+                    ))
             
-            try:
-                buses = sorted(buses, key=lambda bus: bus[2])
-            except:
-                pass
+            
+            buses = sorted(buses, key=lambda bus: bus[2])
+            buses.extend(nodatabuses)
 
-            for bus in buses:
-                text += ' • <b>%s min.</b>  %s <i>%s</i>\n' % (bus[2], bus[0], bus[1])
+            for bus in list(buses):
+                if is_int(bus[2]):
+                    bus = (bus[0], bus[1], '%s min.' % bus[2])
+                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus[2], bus[0], bus[1])
 
             text = text.rstrip('\n')
             
@@ -123,7 +140,7 @@ class plugin(object):
             for tranvia in tranvias:
                 text += ' • <b>%s min.</b>  %s <i>%s</i>\n' % (tranvia[2], tranvia[0], tranvia[1])
 
-            # text += '\n%s' % data['mensajes'][-1].replace('INFORMACIN','INFORMACIÓN').capitalize()
+            # text += '\n%s' % data['mensajes'][-1].replace('INFORMACIN','INFORMACIÓN')
             text = text.rstrip('\n')
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
@@ -144,6 +161,6 @@ class plugin(object):
             if 'error' in data:
                 return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\nBicis Disponibles: <b>%s</b>\nAnclajes Disponibles: <b>%s</b>' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'])
+            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'])
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})

@@ -5,16 +5,7 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = {
-            self.bot.lang.plugins.weather.commands.weather.command: {
-                'friendly': self.bot.lang.plugins.weather.commands.weather.friendly,
-                'parameters': self.bot.lang.plugins.weather.commands.weather.parameters
-            },
-            self.bot.lang.plugins.weather.commands.forecast.command: {
-                'friendly': self.bot.lang.plugins.weather.commands.forecast.friendly,
-                'parameters': self.bot.lang.plugins.weather.commands.forecast.parameters
-            }
-        }
+        self.commands = self.bot.lang.plugins.weather.commands
         self.description = self.bot.lang.plugins.help.description
 
     # Plugin action #

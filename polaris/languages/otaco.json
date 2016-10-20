@@ -26,80 +26,87 @@
     },
     "plugins": {
         "help": {
-            "commands": {
-                "help": {
+            "commands": [
+                {
                     "command": "/ayuda",
                     "friendly": "^Ayudame",
-                    "parameters": {
-                        "comando": false
-                    }
+                    "description": "Lista de comandos.",
+                    "parameters": [
+                        { "comando": false }
+                    ]
                 }
-            },
-            "description": "Aiuda",
+            ],
+            "description": "Muestra la ayuda sobre el bot.",
             "strings": {
                 "commands": "<b>Comandos</b>:"
             }
         },
         "echo": {
-            "commands": {
-                "echo": {
+            "commands": [
+                {
                     "command": "/repite",
                     "friendly": "^Repite ",
-                    "parameters": {
-                        "texto": true
-                    }
+                    "description": "Repite lo que se pase por parametro.",
+                    "parameters": [
+                        { "texto": true }
+                    ]
                 }
-            },
-            "description": "Repite cosas nya!"
+            ],
+            "description": "El plugin mas estupidamente simple."
         },
         "about": {
-            "commands": {
-                "about": {
+            "commands": [
+                {
                     "command": "/acerca",
                     "friendly": "^Acerca de ti",
-                    "parameters": {}
+                    "description": "Información acerca del bot.",
+                    "parameters": []
                 }
-            },
+            ],
             "description": "Información acerca del bot.",
             "strings": {
                 "greeting": "Hola! Soy <b>%s</b>!\nEncantada de conocerte.",
                 "license": "<b>Polaris</b> (incluyendo todos los plugins y documentación) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
-                "version": "Usando <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> de @luksireiku.",
+                "version": "Ejecutando <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> de @luksireiku.",
                 "help": "Escribe %sayuda para saber todo lo que puedo hacer!"
             }
         },
         "cats": {
-            "commands": {
-                "cat": {
+            "commands": [
+                {
                     "command": "/gatito",
                     "friendly": "Gat[o|a|ito]",
-                    "parameters": {}
+                    "description": "Envia un gatito.",
+                    "parameters": []
                 }
-            },
+            ],
             "description": "Gatitos nyo!!"
         },
         "pins": {
-            "commands": {
-                "pin": {
-                    "command": "/pin ",
-                    "friendly": "Pinealo como ",
-                    "parameters": {
-                        "nombre": true
-                    }
-                },
-                "unpin": {
-                    "command": "/unpin",
-                    "friendly": "Despinealo",
-                    "parameters": {
-                        "nombre": true
-                    }
-                },
-                "pins": {
+            "commands": [
+                {
                     "command": "/pins",
                     "friendly": "Lista de pines",
-                    "parameters": {}
+                    "description": "Lista de pins del usuario.",
+                    "parameters": []
+                },
+                {
+                    "command": "/pin ",
+                    "friendly": "Pinealo como ",
+                    "description": "Establece un pin.",
+                    "parameters": [
+                        {"nombre": true}
+                    ]
+                },
+                {
+                    "command": "/unpin",
+                    "friendly": "Despinealo",
+                    "description": "Borra un pin.",
+                    "parameters": [
+                        {"nombre": true}
+                    ]
                 }
-            },
+            ],
             "description": "Comandos para noobs c:",
             "strings": {
                 "pins": "<b>Pins</b>:",
@@ -111,17 +118,18 @@
             }
         },
         "reminders": {
-            "commands": {
-                "remindme": {
+            "commands": [
+                {
                     "command": "/recuerdame",
                     "friendly": "^recuerdame ",
-                    "parameters": {
-                        "retardo": true,
-                        "texto": true
-                    }
+                    "description": "Establece un recordatorio.",
+                    "parameters": [
+                        {"retardo": true},
+                        {"texto": true}
+                    ]
                 }
-            },
-            "description": "Establece un recordatorio para ti.",
+             ],
+            "description": "Envia mensajes con retardo.",
             "strings": {
                 "wrongdelay": "El retardo debe tener este formato: '(entero)(s|m|h|d)'.\nEjemplo: '2h' para dos horas.",
                 "noreminder": "Necesito saber que tengo que recordarte.",
@@ -129,22 +137,24 @@
             }
         },
         "weather": {
-            "commands": {
-                "weather": {
+            "commands": [
+                {
                     "command": "/tiempo",
                     "friendly": "[T|t]iempo en ",
-                    "parameters": {
-                        "localización": true
-                    }
+                    "description": "Tiempo actual.",
+                    "parameters": [
+                        {"localización": true}
+                    ]
                 },
-                "forecast": {
+                {
                     "command": "/prevision",
                     "friendly": "[P|p]revisión en ",
-                    "parameters": {
-                        "localización": true
-                    }
+                    "description": "Previsión meteorologica de 3 dias.",
+                    "parameters": [
+                        {"localización": true}
+                    ]
                 }
-            },
+            ],
             "description": "Te puedo decir el tiempo nya.",
             "strings": {
                 "title": "<b>Tiempo en %s (%s)</b>:",

@@ -190,17 +190,21 @@ def remove_html(text):
     s.feed(text)
     return ''.join(s.fed)
 
+def set_logger(debug=False):
+    logFormatterConsole = logging.Formatter("[%(processName)-11.11s]  %(message)s")
+    logFormatterFile = logging.Formatter("%(asctime)s [%(processName)-11.11s] [%(levelname)-5.5s]  %(message)s")
+    rootLogger = logging.getLogger()
+    if debug:
+        rootLogger.setLevel(logging.DEBUG)
+    else:
+        rootLogger.setLevel(logging.INFO)
 
-logFormatter = logging.Formatter("%(asctime)s [%(processName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-rootLogger = logging.getLogger()
-rootLogger.setLevel(logging.DEBUG)
+    fileHandler = logging.FileHandler("bot.log", mode='w')
+    fileHandler.setFormatter(logFormatterFile)
+    rootLogger.addHandler(fileHandler)
 
-fileHandler = logging.FileHandler("bot.log", mode='w')
-fileHandler.setFormatter(logFormatter)
-rootLogger.addHandler(fileHandler)
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatterConsole)
+    rootLogger.addHandler(consoleHandler)
 
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
-rootLogger.addHandler(consoleHandler)
-
-logging.getLogger("requests").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)

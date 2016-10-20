@@ -9,12 +9,7 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = {
-            self.bot.lang.plugins.reminders.commands.remindme.command: {
-                'friendly': self.bot.lang.plugins.reminders.commands.remindme.friendly,
-                'parameters': self.bot.lang.plugins.reminders.commands.remindme.parameters
-            }
-        }
+        self.commands = self.bot.lang.plugins.reminders.commands
         self.description = self.bot.lang.plugins.reminders.description
 
         self.reminders = AutosaveDict('polaris/data/%s.reminders.json' % self.bot.name, defaults={})

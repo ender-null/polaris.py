@@ -7,40 +7,30 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = {
-            self.bot.lang.plugins.pins.commands.pin.command: {
-                'friendly': self.bot.lang.plugins.pins.commands.pin.friendly,
-                'parameters': self.bot.lang.plugins.pins.commands.pin.parameters
-            },
-            self.bot.lang.plugins.pins.commands.unpin.command: {
-                'friendly': self.bot.lang.plugins.pins.commands.unpin.friendly,
-                'parameters': self.bot.lang.plugins.pins.commands.unpin.parameters
-            },
-            self.bot.lang.plugins.pins.commands.pins.command: {
-                'friendly': self.bot.lang.plugins.pins.commands.pins.friendly,
-                'parameters': self.bot.lang.plugins.pins.commands.pins.parameters
-            }
-        }
+        self.commands = self.bot.lang.plugins.pins.commands
         self.description = self.bot.lang.plugins.pins.description
 
         self.pins = AutosaveDict('polaris/data/%s.pins.json' % self.bot.name, defaults={})
 
         for pin, attributes in self.pins.items():
-            self.commands['#' + pin] = {'hidden': True}
+            self.commands.append({
+                'command': '#' + pin,
+                'hidden': True
+            })
 
     # Plugin action #
     def run(self, m):
         input = get_input(m)
 
         # Lists all pins #
-        if self.bot.lang.plugins.pins.commands.pins.command.replace('/', self.bot.config.command_start) == m.content:
+        if self.commands[0]['command'].replace('/', self.bot.config.command_start) in m.content:
             text = self.bot.lang.plugins.pins.strings.pins
             for pin in self.pins:
                 text += '\n • #%s' % pin
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         # Adds a pin #
-        elif self.bot.lang.plugins.pins.commands.pin.command.replace('/', self.bot.config.command_start) in m.content:
+        elif self.commands[1]['command'].replace('/', self.bot.config.command_start) in m.content:
             if not input:
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -65,7 +55,7 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.lang.plugins.pins.strings.pinned % input, extra={'format': 'HTML'})
 
         # Remove a pin #
-        elif self.bot.lang.plugins.pins.commands.unpin.command.replace('/', self.bot.config.command_start) in m.content:
+        elif self.commands[2]['command'].replace('/', self.bot.config.command_start) in m.content:
             if not input:
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -101,5 +91,7 @@ class plugin(object):
 
     def update_triggers(self):
         for pin, attributes in self.pins.items():
-            self.commands['#' + pin] = {'hidden': True}
-                    
+            self.commands.append({
+                'command': '#' + pin,
+                'hidden': True
+            })
