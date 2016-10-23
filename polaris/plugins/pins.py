@@ -26,7 +26,8 @@ class plugin(object):
         if self.commands[0]['command'].replace('/', self.bot.config.command_start) in m.content:
             text = self.bot.lang.plugins.pins.strings.pins
             for pin in self.pins:
-                text += '\n • #%s' % pin
+                if self.pins[pin].creator == m.sender.id:
+                    text += '\n • #%s' % pin
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         # Adds a pin #
@@ -35,7 +36,8 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
             if input.startswith('#'):
-                input.lstrip('#')
+                input = input.lstrip('#')
+            input = input.lower()
 
             if not m.reply:
                 return self.bot.send_message(m, self.bot.lang.errors.needs_reply, extra={'format': 'HTML'})
@@ -49,7 +51,6 @@ class plugin(object):
                 'creator': m.sender.id,
                 'type': m.reply.type
             }
-            self.commands['#' + input] = {'hidden': True}
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.lang.plugins.pins.strings.pinned % input, extra={'format': 'HTML'})
@@ -60,7 +61,8 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
 
             if input.startswith('#'):
-                input.lstrip('#')
+                input = input.lstrip('#')
+            input = input.lower()
 
             if not input in self.pins:
                 return self.bot.send_message(m, self.bot.lang.plugins.pins.strings.not_found % input,
@@ -71,7 +73,6 @@ class plugin(object):
                                              extra={'format': 'HTML'})
 
             del(self.pins[input])
-            del(self.commands['#' + input])
             self.pins.store_database()
             self.update_triggers()
 
@@ -80,7 +81,7 @@ class plugin(object):
 
         else:
             for pin, attributes in self.pins.items():
-                if pin in m.content:
+                if pin in m.content.lower():
                     # You can reply with a pin and the message will reply too.
                     if m.reply:
                         reply = m.reply.id
