@@ -12,17 +12,13 @@ class plugin(object):
 
         self.pins = AutosaveDict('polaris/data/%s.pins.json' % self.bot.name, defaults={})
 
-        for pin, attributes in self.pins.items():
-            self.commands.append({
-                'command': '#' + pin,
-                'hidden': True
-            })
+        self.update_triggers()
 
     # Plugin action #
     def run(self, m):
         input = get_input(m)
 
-        # Lists all pins #
+        # List all pins #
         if self.commands[0]['command'].replace('/', self.bot.config.command_start) in m.content:
             text = self.bot.lang.plugins.pins.strings.pins
             for pin in self.pins:
@@ -30,7 +26,7 @@ class plugin(object):
                     text += '\n • #%s' % pin
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
-        # Adds a pin #
+        # Add a pin #
         elif self.commands[1]['command'].replace('/', self.bot.config.command_start) in m.content:
             if not input:
                 return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
@@ -51,6 +47,7 @@ class plugin(object):
                 'creator': m.sender.id,
                 'type': m.reply.type
             }
+            self.pins.store_database()
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.lang.plugins.pins.strings.pinned % input, extra={'format': 'HTML'})
@@ -79,10 +76,11 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.lang.plugins.pins.strings.unpinned % input,
                                          extra={'format': 'HTML'})
 
+        # Check what pin was triggered #
         else:
             for pin, attributes in self.pins.items():
                 if pin in m.content.lower():
-                    # You can reply with a pin and the message will reply too.
+                    # You can reply with a pin and the message will reply too. #
                     if m.reply:
                         reply = m.reply.id
                     else:
@@ -90,9 +88,17 @@ class plugin(object):
 
                     return self.bot.send_message(m, attributes['content'], attributes['type'], extra={'format': 'HTML'}, reply = reply)
 
+
     def update_triggers(self):
+        # Add new triggers #
         for pin, attributes in self.pins.items():
-            self.commands.append({
-                'command': '#' + pin,
-                'hidden': True
-            })
+            if not next((i for i,d in enumerate(self.commands) if 'command' in d and d.command == '#' + pin), None):
+                self.commands.append({
+                    'command': '#' + pin,
+                    'hidden': True
+                })
+
+        # Remove unused triggers #
+        for command in self.commands:
+            if 'hidden' in command and command.hidden and not command.command.lstrip('#') in self.pins:
+                self.commands.remove(command)

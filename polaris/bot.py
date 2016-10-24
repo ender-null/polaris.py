@@ -85,12 +85,18 @@ class Bot(object):
 
     def on_message_receive(self, msg):
         try:
-            for plugin in self.plugins:
-                for command in plugin.commands:
-                    if 'command' in command:
-                        self.check_trigger(command['command'], msg, plugin)
-                    if 'friendly' in command:
-                        self.check_trigger(command['friendly'], msg, plugin)
+            triggered = False
+            while not triggered:
+                for plugin in self.plugins:
+                    for command in plugin.commands:
+                        if 'command' in command:
+                            triggered = self.check_trigger(command['command'], msg, plugin)
+                            if triggered:
+                                break
+                        if 'friendly' in command:
+                            triggered = self.check_trigger(command['friendly'], msg, plugin)
+                            if triggered:
+                                break
         except Exception as e:
             logging.exception(e)
 
@@ -103,13 +109,16 @@ class Bot(object):
         if message.content and re.compile(trigger).search(message.content.lower()):
             try:
                 if hasattr(plugin, 'inline') and message.type == 'inline_query':
-                    return plugin.inline(message)
+                    plugin.inline(message)
                 else:
-                    return plugin.run(message)
+                    plugin.run(message)
+                return True
+
             except Exception as e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 logging.error('[%s %s:%s] %s' % (exc_type.__name__, fname, exc_tb.tb_lineno, e))
+                return False
 
     # METHODS TO MANAGE MESSAGES #
     def send_message(self, msg, content, type='text', reply=None, extra=None):

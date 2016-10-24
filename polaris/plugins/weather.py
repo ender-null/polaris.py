@@ -29,7 +29,6 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.lang.errors.no_results)
 
         title = self.bot.lang.plugins.weather.strings.title % (locality, country)
-
         temp = weather.temp_c
         feelslike = ""
         if (float(weather.feelslike_c) - float(weather.temp_c)) > 0.001:
@@ -40,7 +39,7 @@ class plugin(object):
         humidity = weather.relative_humidity
         wind = weather.wind_kph
         
-        if self.bot.lang.plugins.weather.commands.weather.command.replace('/', self.bot.config.command_start) in m.content:
+        if self.commands[0]['command'].replace('/', self.bot.config.command_start) in m.content:
             message = u'%s\n%sºC%s - %s %s\n💧 %s | 🌬 %s km/h' % (
                 remove_html(title), temp, feelslike, weather_string, weather_icon, humidity, wind)
             try:
@@ -53,7 +52,7 @@ class plugin(object):
             else:
                 return self.bot.send_message(m, message, 'text', extra={'format': 'HTML'})
 
-        elif self.bot.lang.plugins.weather.commands.forecast.command.replace('/', self.bot.config.command_start) in m.content:
+        elif self.commands[1]['command'].replace('/', self.bot.config.command_start) in m.content:
             message = self.bot.lang.plugins.weather.strings.titleforecast % (locality, country)
             for day in forecast:
                 # weekday = day.date.weekday
