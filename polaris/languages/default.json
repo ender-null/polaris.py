@@ -91,7 +91,7 @@
                     "parameters": []
                 },
                 {
-                    "command": "/pin ",
+                    "command": "/pin",
                     "friendly": "Pin as ",
                     "description": "Sets a pin.",
                     "parameters": [

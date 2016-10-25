@@ -86,17 +86,17 @@ class Bot(object):
     def on_message_receive(self, msg):
         try:
             triggered = False
-            while not triggered:
-                for plugin in self.plugins:
-                    for command in plugin.commands:
-                        if 'command' in command:
-                            triggered = self.check_trigger(command['command'], msg, plugin)
-                            if triggered:
-                                break
-                        if 'friendly' in command:
-                            triggered = self.check_trigger(command['friendly'], msg, plugin)
-                            if triggered:
-                                break
+          
+            for plugin in self.plugins:
+                for command in plugin.commands:
+                    if 'command' in command:
+                        triggered = self.check_trigger(command['command'], msg, plugin)
+                        if triggered:
+                            break
+                    if 'friendly' in command:
+                        triggered = self.check_trigger(command['friendly'], msg, plugin)
+                        if triggered:
+                            break
         except Exception as e:
             logging.exception(e)
 

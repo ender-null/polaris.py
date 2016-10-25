@@ -146,10 +146,9 @@ class plugin(object):
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         elif '/bizi'.replace('/', self.bot.config.command_start) in m.content:
-            if input:
-                start = input
-            else:
-                start = 0
+            if not input:
+                return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
+           
 
             url = baseurl + '/recurso/urbanismo-infraestructuras/estacion-bicicleta/' + input.lstrip('0') + '.json'
             params = {
