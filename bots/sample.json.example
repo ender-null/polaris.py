@@ -5,7 +5,7 @@
     "command_start": "/",
     "owner": 12345678,
     "debug": true,
-    "language": "default",
+    "translation": "default",
     "plugins": [
         "help",
         "cats",

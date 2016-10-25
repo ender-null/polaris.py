@@ -47,6 +47,7 @@ def last_word(text):
         return False
     return text.split()[-1]
 
+
 def is_int(number):
     try:
         number = int(number)
@@ -189,6 +190,7 @@ def remove_html(text):
     s.fed = []
     s.feed(text)
     return ''.join(s.fed)
+
 
 def set_logger(debug=False):
     logFormatterConsole = logging.Formatter("[%(processName)-11.11s]  %(message)s")

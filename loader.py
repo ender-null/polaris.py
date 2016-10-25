@@ -1,5 +1,6 @@
 from polaris.types import AutosaveDict
-from polaris import utils, types, bot
+from polaris.bot import Bot
+from polaris.utils import set_logger
 from multiprocessing import Process
 import os, logging, time, importlib
 
@@ -10,7 +11,7 @@ def get_bots():
 
     for filename in os.listdir('bots'):
         if filename.endswith('.json'):
-            botlist.append(bot.Bot(filename[:-5]))
+            botlist.append(Bot(filename[:-5]))
 
     return botlist
 
@@ -18,12 +19,13 @@ def get_bots():
 # Loads all plugins from /polaris/plugins/ #
 def load_plugins():
     plugin_list = []
-    for file in os.listdir('polaris/plugins'):
-        if file.endswith('.py'):
-            plugin_list.append(file.replace('.py', ''))
+    for plugin_name in os.listdir('polaris/plugins'):
+        if plugin_name.endswith('.py'):
+            plugin_list.append(plugin_name[:-3])
     return sorted(plugin_list)
 
 
+# Imports all plugin modules to a list. #
 def import_plugins(enabled_plugins):
     plugins = []
     logging.info('Importing plugins...')
@@ -39,7 +41,8 @@ def import_plugins(enabled_plugins):
 
     return plugins
 
-# Adds, removes and configures bots #
+
+# EXPERIMENTAL!! Adds, removes and configures bots #
 def setup():
     def bot_config(name):
         config = AutosaveDict('bots/%s.json' % name)
@@ -166,9 +169,9 @@ def setup():
                 print('Removed "bots/%s.json".' % botlist[int(user_input)-1])
                 
 
-
+# Now let's start doing stuff. #
 # setup()
-utils.set_logger()
+set_logger()
 logging.info('Looking for bot configurations in "bots" folder...')
 botlist = get_bots()
 
@@ -191,3 +194,4 @@ try:
 except KeyboardInterrupt:
     for bot in botlist:
         logging.info('Exiting [%s] bot...' % bot.name)
+        bot.started = False

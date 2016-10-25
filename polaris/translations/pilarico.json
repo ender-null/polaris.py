@@ -1,0 +1,192 @@
+{
+    "greeting": {
+        "morning": "Ohayo gozaimasu",
+        "afternoon": "Konnichi wa",
+        "evening": "Konban wa",
+        "night": "Konban wa"
+    },
+    "goodbye": {
+        "morning": "Shitsurei shimasu",
+        "afternoon": "Sayonara",
+        "evening": "Mata ashita",
+        "night": "Oyasumi nasai"
+    },
+    "errors": {
+        "missing_parameter": "Necesito un parametro, co.",
+        "connection_error": "No pude conectarme, co.",
+        "no_results": "Eso no existe, ¿de que vas? co.",
+        "invalid_argument": "Argumento invalido, co.",
+        "invalid_syntax": "Sintaxis invalida, co.",
+        "permission_required": "No tienes suficientes privilegios, co.",
+        "missing_id": "Necesito un identificador, co.",
+        "needs_reply": "Solo funciona como <b>respuesta</b>, co.",
+        "download_failed": "Algo ha pasado y no he podido descargarlo, co.",
+        "exception_found": "Ha saltado una excepcion, co.",
+        "unknown": "Yo que se, co."
+    },
+    "plugins": {
+        "help": {
+            "commands": [
+                {
+                    "command": "/ayuda",
+                    "friendly": "^Ayudame",
+                    "description": "Lista de comandos.",
+                    "parameters": [
+                        { "comando": false }
+                    ]
+                }
+            ],
+            "description": "Muestra la ayuda sobre el bot.",
+            "strings": {
+                "commands": "<b>Comandos</b>:"
+            }
+        },
+        "echo": {
+            "commands": [
+                {
+                    "command": "/repite",
+                    "friendly": "^Repite ",
+                    "description": "Repite lo que se pase por parametro.",
+                    "parameters": [
+                        { "texto": true }
+                    ]
+                }
+            ],
+            "description": "El plugin mas estupidamente simple."
+        },
+        "about": {
+            "commands": [
+                {
+                    "command": "/acerca",
+                    "friendly": "^Acerca de ti",
+                    "description": "Información acerca del bot.",
+                    "parameters": []
+                }
+            ],
+            "description": "Información acerca del bot.",
+            "strings": {
+                "greeting": "Hola! Soy <b>%s</b>!\nEncantada de conocerte.",
+                "license": "<b>Polaris</b> (incluyendo todos los plugins y documentación) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
+                "version": "Ejecutando <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> de @luksireiku.",
+                "help": "Escribe %sayuda para saber todo lo que puedo hacer!"
+            }
+        },
+        "cats": {
+            "commands": [
+                {
+                    "command": "/gatito",
+                    "friendly": "Gat[o|a|ito]",
+                    "description": "Envia un gatito.",
+                    "parameters": []
+                }
+            ],
+            "description": "Gatitos nyo!!"
+        },
+        "pins": {
+            "commands": [
+                {
+                    "command": "/pins",
+                    "friendly": "Lista de pines",
+                    "description": "Lista de pins del usuario.",
+                    "parameters": []
+                },
+                {
+                    "command": "/pin",
+                    "friendly": "Pinealo como ",
+                    "description": "Establece un pin.",
+                    "parameters": [
+                        {"nombre": true}
+                    ]
+                },
+                {
+                    "command": "/unpin",
+                    "friendly": "Despinealo",
+                    "description": "Borra un pin.",
+                    "parameters": [
+                        {"nombre": true}
+                    ]
+                }
+            ],
+            "description": "Comandos para noobs c:",
+            "strings": {
+                "pins": "<b>Pins</b>:",
+                "pinned": "<b>#%s</b> se ha añadido.",
+                "unpinned": "<b>#%s</b> se ha borrado.",
+                "already_pinned": "<b>#%s</b> ya existe, no se ha podido añadir.",
+                "not_found": "<b>#%s</b> no existe.",
+                "not_creator": "<b>#%s</b> no ha podido ser borrado porque no eres el creador."
+            }
+        },
+        "reminders": {
+            "commands": [
+                {
+                    "command": "/recuerdame",
+                    "friendly": "^recuerdame ",
+                    "description": "Establece un recordatorio.",
+                    "parameters": [
+                        {"retardo": true},
+                        {"texto": true}
+                    ]
+                }
+             ],
+            "description": "Envia mensajes con retardo.",
+            "strings": {
+                "wrongdelay": "El retardo debe tener este formato: '(entero)(s|m|h|d)'.\nEjemplo: '2h' para dos horas.",
+                "noreminder": "Necesito saber que tengo que recordarte.",
+                "added": "<b>%s</b>, te recordaré en <b>%s</b> que tienes que <i>%s</i>."
+            }
+        },
+        "weather": {
+            "commands": [
+                {
+                    "command": "/tiempo",
+                    "friendly": "[T|t]iempo en ",
+                    "description": "Tiempo actual.",
+                    "parameters": [
+                        {"localización": true}
+                    ]
+                },
+                {
+                    "command": "/prevision",
+                    "friendly": "[P|p]revisión en ",
+                    "description": "Previsión meteorologica de 3 dias.",
+                    "parameters": [
+                        {"localización": true}
+                    ]
+                }
+            ],
+            "description": "Te puedo decir el tiempo nya.",
+            "strings": {
+                "title": "<b>Tiempo en %s (%s)</b>:",
+                "titleforecast": "<b>Previsión para %s (%s)</b>:",
+                "feelslike": " (Sensación %sºC)",
+                "sunday": "Domingo",
+                "monday": "Lunes",
+                "tuesday": "Martes",
+                "wednesday": "Miércoles",
+                "thursday": "Jueves",
+                "friday": "Viernes",
+                "saturday": "Sábado",
+                "clear": "Despejado",
+                "sunny": "Soleado",
+                "chancesnow": "Prob. de Nieve",
+                "chanceflurries": "Prob. de Ráfagas",
+                "chancerain": "Prob. de Lluvia",
+                "chancesleet": "Prob. de Aguanieve",
+                "chancetstorms": "Prob. de Tormenta",
+                "cloudy": "Nublado",
+                "flurries": "Ráfagas",
+                "fog": "Neblado",
+                "hazy": "Brumoso",
+                "mostlycloudy": "Muy Nublado",
+                "partlycloudy": "Parc. Nublado",
+                "partlysunny": "Parc. Soleado",
+                "sleet": "Aguanieve",
+                "rain": "Lluvia",
+                "sleet": "Ráfagas",
+                "snow": "Nieve",
+                "tstorms": "Tormenta"
+            }
+        }
+    }
+}

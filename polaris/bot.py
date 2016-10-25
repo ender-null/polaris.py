@@ -8,13 +8,14 @@ class Bot(object):
     def __init__(self, name):
         self.name = name
         self.config = AutosaveDict('bots/%s.json' % self.name)
-        self.lang = AutosaveDict('polaris/languages/%s.json' % self.config.language)
+        self.lang = AutosaveDict('polaris/translations/%s.json' % self.config.translation)
         self.started = False
         self.inbox = Queue()
         self.outbox = Queue()
         self.bindings = importlib.import_module('polaris.bindings.%s' % self.config.bindings).bindings(self)
         self.plugins = None
         self.info = None
+
 
     def sender_worker(self):
         try:
@@ -26,6 +27,7 @@ class Bot(object):
                 self.bindings.send_message(msg)
         except KeyboardInterrupt:
             pass
+
 
     def messages_handler(self):
         try:
@@ -47,6 +49,7 @@ class Bot(object):
         except KeyboardInterrupt:
             pass
 
+
     def start(self):
         self.started = True
         self.plugins = self.init_plugins()
@@ -64,6 +67,11 @@ class Bot(object):
 
         Process(target=self.messages_handler, name='%s' % self.name).start()
 
+
+    def stop(self):
+        self.started = False
+
+
     def init_plugins(self):
         plugins = []
 
@@ -80,8 +88,6 @@ class Bot(object):
 
         return plugins
 
-    def stop(self):
-        self.started = False
 
     def on_message_receive(self, msg):
         try:
@@ -90,18 +96,22 @@ class Bot(object):
             for plugin in self.plugins:
                 for command in plugin.commands:
                     if 'command' in command:
-                        triggered = self.check_trigger(command['command'], msg, plugin)
-                        if triggered:
+                        if self.check_trigger(command['command'], msg, plugin):
                             break
                     if 'friendly' in command:
-                        triggered = self.check_trigger(command['friendly'], msg, plugin)
-                        if triggered:
+                        if  self.check_trigger(command['friendly'], msg, plugin):
                             break
+
         except Exception as e:
             logging.exception(e)
 
+
     def check_trigger(self, command, message, plugin):
-        trigger = command.replace('/', '^' + self.config.command_start)
+        # If the commands are not /start or /help, set the correct command start symbol. #
+        if command == '/start' or command == '/help':
+            trigger = command.replace('/', '^/')
+        else:
+            trigger = command.replace('/', '^' + self.config.command_start)
 
         if message.type == 'inline_query':
             trigger = trigger.replace(self.config.command_start, '')
@@ -120,10 +130,12 @@ class Bot(object):
                 logging.error('[%s %s:%s] %s' % (exc_type.__name__, fname, exc_tb.tb_lineno, e))
                 return False
 
+
     # METHODS TO MANAGE MESSAGES #
     def send_message(self, msg, content, type='text', reply=None, extra=None):
         message = Message(None, msg.conversation, self.info, content, type, reply=reply, extra=extra)
         self.outbox.put(message)
+
 
     def forward_message(self, msg, id):
         self.outbox.put(Message(None, msg.conversation, self.info, msg.content, 'forward',
@@ -132,12 +144,14 @@ class Bot(object):
     def answer_inline_query(self, msg, results, offset=None):
         self.outbox.put(Message(None, msg.conversation, self.info, results, 'inline_results', extra={"offset": offset}))
 
+
     # THESE METHODS DO DIRECT ACTIONS #
     def get_file(self, file_id, only_url=False):
         try:
             return self.bindings.get_file(file_id, only_url)
         except:
             return None
+
 
     def invite_user(self, msg, user):
         try:
@@ -149,6 +163,7 @@ class Bot(object):
         else:
             return True
 
+
     def kick_user(self, msg, user):
         try:
             self.bindings.kick_chat_member(msg.conversation.id, user)
@@ -158,6 +173,7 @@ class Bot(object):
             return False
         else:
             return True
+
 
     def unban_user(self, msg, user):
         try:
@@ -169,11 +185,13 @@ class Bot(object):
         else:
             return True
 
+
     def chat_info(self, chat):
         try:
             return self.connector.chat_info(chat)
         except:
             return chat
+
 
     def send_alert(self, text):
         pass
