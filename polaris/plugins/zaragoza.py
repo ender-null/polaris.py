@@ -40,7 +40,7 @@ class plugin(object):
 
         if '/bus'.replace('/', self.bot.config.command_start) in m.content:
             if not input:
-                return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = baseurl + '/recurso/urbanismo-infraestructuras/transporte-urbano/poste/tuzsa-' + input.lstrip(
                 '0') + '.json'
@@ -51,7 +51,7 @@ class plugin(object):
             data = send_request(url, params=params)
 
             if 'error' in data:
-                return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
             street = data['title'].split(')')[-1].split('Lí')[0].strip().title()
             parada = data['title'].split(')')[0].replace('(', '')
@@ -109,7 +109,7 @@ class plugin(object):
 
         elif '/tranvia'.replace('/', self.bot.config.command_start) in m.content:
             if not input:
-                return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = baseurl + '/recurso/urbanismo-infraestructuras/tranvia/' + input.lstrip('0') + '.json'
             params = {
@@ -119,7 +119,7 @@ class plugin(object):
 
             data = send_request(url, params=params)
             if 'status' in data:
-                return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
             tranvias = []
 
@@ -147,7 +147,7 @@ class plugin(object):
 
         elif '/bizi'.replace('/', self.bot.config.command_start) in m.content:
             if not input:
-                return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
            
 
             url = baseurl + '/recurso/urbanismo-infraestructuras/estacion-bicicleta/' + input.lstrip('0') + '.json'
@@ -158,7 +158,7 @@ class plugin(object):
 
             data = send_request(url, params=params)
             if 'error' in data:
-                return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
             text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'])
             

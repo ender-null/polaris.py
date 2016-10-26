@@ -6,8 +6,8 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.lang.plugins.cats.commands
-        self.description = self.bot.lang.plugins.help.description
+        self.commands = self.bot.trans.plugins.cats.commands
+        self.description = self.bot.trans.plugins.help.description
 
     # Plugin action #
     def run(self, m):
@@ -23,6 +23,6 @@ class plugin(object):
         )
 
         if res.status_code != 200:
-            return self.bot.send_message(m, self.bot.lang.errors.connection_error)
+            return self.bot.send_message(m, self.bot.trans.errors.connection_error)
 
         self.bot.send_message(m, res.url, 'photo')

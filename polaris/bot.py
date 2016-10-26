@@ -8,11 +8,11 @@ class Bot(object):
     def __init__(self, name):
         self.name = name
         self.config = AutosaveDict('bots/%s.json' % self.name)
-        self.lang = AutosaveDict('polaris/translations/%s.json' % self.config.translation)
-        self.started = False
+        self.trans = AutosaveDict('polaris/translations/%s.json' % self.config.translation)
+        self.bindings = importlib.import_module('polaris.bindings.%s' % self.config.bindings).bindings(self)
         self.inbox = Queue()
         self.outbox = Queue()
-        self.bindings = importlib.import_module('polaris.bindings.%s' % self.config.bindings).bindings(self)
+        self.started = False
         self.plugins = None
         self.info = None
 
@@ -98,6 +98,7 @@ class Bot(object):
                     if 'command' in command:
                         if self.check_trigger(command['command'], msg, plugin):
                             break
+
                     if 'friendly' in command:
                         if  self.check_trigger(command['friendly'], msg, plugin):
                             break
@@ -110,25 +111,20 @@ class Bot(object):
         # If the commands are not /start or /help, set the correct command start symbol. #
         if command == '/start' or command == '/help':
             trigger = command.replace('/', '^/')
+
+        elif message.type == 'inline_query':
+            trigger = trigger.replace(self.config.command_start, '')
+
         else:
             trigger = command.replace('/', '^' + self.config.command_start)
 
-        if message.type == 'inline_query':
-            trigger = trigger.replace(self.config.command_start, '')
-
         if message.content and re.compile(trigger).search(message.content.lower()):
-            try:
                 if hasattr(plugin, 'inline') and message.type == 'inline_query':
                     plugin.inline(message)
                 else:
                     plugin.run(message)
-                return True
 
-            except Exception as e:
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                logging.error('[%s %s:%s] %s' % (exc_type.__name__, fname, exc_tb.tb_lineno, e))
-                return False
+                return True
 
 
     # METHODS TO MANAGE MESSAGES #

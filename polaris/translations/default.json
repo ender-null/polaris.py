@@ -109,7 +109,8 @@
             ],
             "description": "Commands for noobs c:",
             "strings": {
-                "pins": "<b>Pins</b>:",
+                "pins": "<b>You created %s pins</b>:",
+                "no_pins": "You don't have any pin yet.",
                 "pinned": "<b>#%s</b> was set",
                 "unpinned": "<b>#%s</b> was deleted.",
                 "already_pinned": "<b>#%s</b> already exists, can't be set.",

@@ -5,7 +5,7 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.lang.plugins.help.commands
+        self.commands = self.bot.trans.plugins.help.commands
         self.commands.append({
             'command': '/help',
             'hidden': True
@@ -14,7 +14,7 @@ class plugin(object):
             'command': '/genhelp',
             'hidden': True
         })
-        self.description = self.bot.lang.plugins.help.description
+        self.description = self.bot.trans.plugins.help.description
 
     # Plugin action #
     def run(self, m):
@@ -44,13 +44,13 @@ class plugin(object):
                                 text += '\n   <i>?¿</i>'
 
                             return self.bot.send_message(m, text, extra={'format': 'HTML'})
-            return self.bot.send_message(m, self.bot.lang.errors.no_results, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         
         if self.commands[-1]['command'].replace('/', self.bot.config.command_start) in m.content:
             text = ''
         else:
-            text = self.bot.lang.plugins.help.strings.commands
+            text = self.bot.trans.plugins.help.strings.commands
 
         # Iterates the initialized plugins #
         for plugin in self.bot.plugins:

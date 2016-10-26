@@ -9,9 +9,8 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.lang.plugins.reminders.commands
-        self.description = self.bot.lang.plugins.reminders.description
-
+        self.commands = self.bot.trans.plugins.reminders.commands
+        self.description = self.bot.trans.plugins.reminders.description
         self.reminders = AutosaveDict('polaris/data/%s.reminders.json' % self.bot.name, defaults={})
 
     # Plugin action #
@@ -26,9 +25,9 @@ class plugin(object):
             elif unit == 'd':
                 return float(delaytime) * 60 * 60 * 24
 
-        input = get_input(m)
+        input = get_input(m, ignore_reply=False)
         if not input:
-            return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         # Lists all pins #
         delay = first_word(input)
@@ -36,13 +35,13 @@ class plugin(object):
             delaytime = delay[:-1]
             unit = delay[-1:]
             if not is_int(delaytime) or is_int(unit):
-                return self.bot.send_message(m, self.bot.lang.plugins.reminders.strings.wrongdelay)
+                return self.bot.send_message(m, self.bot.trans.plugins.reminders.strings.wrongdelay)
 
         alarm = time() + to_seconds(delaytime, unit)
 
         text = all_but_first_word(input)
         if not text:
-            return self.bot.send_message(m, self.bot.lang.plugins.reminders.strings.noreminder)
+            return self.bot.send_message(m, self.bot.trans.plugins.reminders.strings.noreminder)
 
         reminder = DictObject(OrderedDict())
         reminder.alarm = alarm
@@ -62,7 +61,7 @@ class plugin(object):
         if unit == 'd':
             delay = delay.replace('d', ' days')
 
-        message = self.bot.lang.plugins.reminders.strings.added % (m.sender.first_name, delay, text)
+        message = self.bot.trans.plugins.reminders.strings.added % (m.sender.first_name, delay, text)
 
         return self.bot.send_message(m, message, extra={'format': 'HTML'})
                     

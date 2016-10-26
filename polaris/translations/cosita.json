@@ -12,17 +12,17 @@
         "night": "Oyasumi nasai"
     },
     "errors": {
-        "missing_parameter": "* Bolita mira fijamente a su amito esperando un parametro *",
+        "missing_parameter": "* Bolita mira fijamente esperando un parámetro *",
         "connection_error": "* Bolita se ha golpeado con una pared de camino al servidor remoto, eso la pone triste *",
-        "no_results": "* Bolita esta triste porque no ha podido encontrar nada para su amito, eso la pone triste*",
+        "no_results": "* Bolita esta triste porque no ha podido encontrar nada, eso la pone triste*",
         "invalid_argument": "* Bolita no recibe lo que esperaba, eso la pone triste *",
-        "invalid_syntax": "* Bolita no entiende a su amito, eso la pone triste *",
+        "invalid_syntax": "* Bolita no entiende, eso la pone triste *",
         "permission_required": "* Bolita se da cuenta de que no eres un amito, solo un ser horiiiiiible! *",
         "missing_id": "* Bolita no pudo identificar a su amito, eso la pone triste *",
         "needs_reply": "* Bolita necesita que le indiquen a que se refiere amito *",
-        "download_failed": "* Bolita no pudo traer a amito lo que pedia, eso la pone triste *",
+        "download_failed": "* Bolita no pudo traer lo que pedian, eso la pone triste *",
         "exception_found": "* Bolita esta confusa, y triste, ¿porque nadie piensa en Bolita? *",
-        "unknown": "* Bolita rueda sin saber que hacer *"
+        "unknown": "* Bolita rueda sin saber que dhacer *"
     },
     "plugins": {
         "help": {
@@ -109,7 +109,8 @@
             ],
             "description": "Comandos para noobs c:",
             "strings": {
-                "pins": "<b>Pins</b>:",
+                "pins": "<b>Has creado %s pins</b>:",
+                "no_pins": "No has creado ningún pin todavia.",
                 "pinned": "<b>#%s</b> se ha añadido.",
                 "unpinned": "<b>#%s</b> se ha borrado.",
                 "already_pinned": "<b>#%s</b> ya existe, no se ha podido añadir.",

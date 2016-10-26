@@ -5,14 +5,14 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.lang.plugins.weather.commands
-        self.description = self.bot.lang.plugins.help.description
+        self.commands = self.bot.trans.plugins.weather.commands
+        self.description = self.bot.trans.plugins.help.description
 
     # Plugin action #
     def run(self, m):
-        input = get_input(m)
+        input = get_input(m, ignore_reply=False)
         if not input:
-            return self.bot.send_message(m, self.bot.lang.errors.missing_parameter, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         lat, lon, locality, country = get_coords(input)
 
@@ -26,15 +26,15 @@ class plugin(object):
             forecast = data.forecast.simpleforecast.forecastday
             webcams = data.webcams
         except:
-            return self.bot.send_message(m, self.bot.lang.errors.no_results)
+            return self.bot.send_message(m, self.bot.trans.errors.no_results)
 
-        title = self.bot.lang.plugins.weather.strings.title % (locality, country)
+        title = self.bot.trans.plugins.weather.strings.title % (locality, country)
         temp = weather.temp_c
         feelslike = ""
         if (float(weather.feelslike_c) - float(weather.temp_c)) > 0.001:
-            feelslike = self.bot.lang.plugins.weather.strings.feelslike % weather.feelslike_c
+            feelslike = self.bot.trans.plugins.weather.strings.feelslike % weather.feelslike_c
         # weather_string = weather.weather.title()
-        weather_string = self.bot.lang.plugins.weather.strings[weather.icon]
+        weather_string = self.bot.trans.plugins.weather.strings[weather.icon]
         weather_icon = (self.get_weather_icon(weather.icon))
         humidity = weather.relative_humidity
         wind = weather.wind_kph
@@ -53,14 +53,14 @@ class plugin(object):
                 return self.bot.send_message(m, message, 'text', extra={'format': 'HTML'})
 
         elif self.commands[1]['command'].replace('/', self.bot.config.command_start) in m.content:
-            message = self.bot.lang.plugins.weather.strings.titleforecast % (locality, country)
+            message = self.bot.trans.plugins.weather.strings.titleforecast % (locality, country)
             for day in forecast:
                 # weekday = day.date.weekday
-                weekday = self.bot.lang.plugins.weather.strings[day.date.weekday.lower()][:3]
+                weekday = self.bot.trans.plugins.weather.strings[day.date.weekday.lower()][:3]
                 temp = day.low.celsius
                 temp_max = day.high.celsius
                 # weather_string = day.conditions.title()
-                weather_string = self.bot.lang.plugins.weather.strings[day.icon]
+                weather_string = self.bot.trans.plugins.weather.strings[day.icon]
                 weather_icon = (self.get_weather_icon(day.icon))
                 message += u'\n • <b>%s</b>: <i>%s - %sºC</i> · %s %s' % (weekday, temp, temp_max, weather_string, weather_icon)
 

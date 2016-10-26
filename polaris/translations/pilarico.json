@@ -12,7 +12,7 @@
         "night": "Oyasumi nasai"
     },
     "errors": {
-        "missing_parameter": "Necesito un parametro, co.",
+        "missing_parameter": "Necesito un parámetro, co.",
         "connection_error": "No pude conectarme, co.",
         "no_results": "Eso no existe, ¿de que vas? co.",
         "invalid_argument": "Argumento invalido, co.",
@@ -109,7 +109,8 @@
             ],
             "description": "Comandos para noobs c:",
             "strings": {
-                "pins": "<b>Pins</b>:",
+                "pins": "<b>Has creado %s pins</b>:",
+                "no_pins": "No has creado ningún pin todavia.",
                 "pinned": "<b>#%s</b> se ha añadido.",
                 "unpinned": "<b>#%s</b> se ha borrado.",
                 "already_pinned": "<b>#%s</b> ya existe, no se ha podido añadir.",
