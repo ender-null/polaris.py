@@ -102,6 +102,11 @@ class bindings(object):
     def send_message(self, message):
         if message.type != 'text' and message.content.startswith('http'):
             message.content = download(message.content)
+        elif message.type != 'text' and not message.content.startswith('/'):
+            message.content = self.sender.load_file(message.content)
+
+        if not message.extra or not 'caption' in message.extra:
+            message.extra['caption'] = None
 
         if message.type == 'text':
             self.sender.send_typing(self.peer(message.conversation.id), 1)
@@ -119,48 +124,65 @@ class bindings(object):
         elif message.type == 'photo':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 7
             try:
-                if message.extra and 'caption' in message.extra:
-                    self.sender.send_photo(self.peer(message.conversation.id), message.content, message.extra['caption'])
+                if message.reply:
+                    self.sender.reply_photo(message.reply, message.content, message.extra['caption'])
                 else:
-                    self.sender.send_photo(self.peer(message.conversation.id), message.content)
+                    self.sender.send_photo(self.peer(message.conversation.id), message.content, message.extra['caption'])
             except Exception as e:
                 logging.exception(e)
 
         elif message.type == 'audio':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 6
             try:
-                self.sender.send_audio(self.peer(message.conversation.id), message.content)
+                if message.reply:
+                    self.sender.reply_audio(message.reply, message.content)
+                else:
+                    self.sender.send_audio(self.peer(message.conversation.id), message.content)
             except Exception as e:
                 logging.exception(e)
 
         elif message.type == 'document':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 8
             try:
-                # self.sender.send_document(self.peer(message.receiver.id), message.content.name, message.extra)
-                self.sender.send_document(self.peer(message.conversation.id), message.content, self.escape(message.extra['title']))
+                if message.reply:
+                    self.sender.reply_document(message.reply, message.content, message.extra['caption'])
+                else:
+                    self.sender.send_document(self.peer(message.conversation.id), message.content, message.extra['caption'])
             except Exception as e:
                 logging.exception(e)
 
         elif message.type == 'sticker':
-            self.sender.send_file(self.peer(message.conversation.id), message.content.name)
+            if message.reply:
+                self.sender.reply_file(message.reply, message.content)
+            else:
+                self.sender.send_file(self.peer(message.conversation.id), message.content)
 
         elif message.type == 'video':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 4
             try:
-                self.sender.send_video(self.peer(message.conversation.id), message.content)
+                if message.reply:
+                    self.sender.reply_video(message.reply, message.content, message.extra['caption'])
+                else:
+                    self.sender.send_video(self.peer(message.conversation.id), message.content, message.extra['caption'])
             except Exception as e:
                 logging.exception(e)
 
         elif message.type == 'voice':
             self.sender.send_typing(self.peer(message.conversation.id), 5)
             try:
-                self.sender.send_audio(self.peer(message.conversation.id), message.content)
+                if message.reply:
+                    self.sender.reply_audio(message.reply, message.content)
+                else:
+                    self.sender.send_audio(self.peer(message.conversation.id), message.content)
             except Exception as e:
                 logging.exception(e)
 
         elif message.type == 'location':
             self.sender.send_typing(self.peer(message.conversation.id), 1)  # 9
-            self.sender.send_location(self.peer(message.conversation.id), message.content['latitude'], message.content['longitude'])
+            if message.reply:
+                self.sender.reply_location(message.reply, message.content['latitude'], message.content['longitude'])
+            else:
+                self.sender.send_location(self.peer(message.conversation.id), message.content['latitude'], message.content['longitude'])
 
         else:
             print('UNKNOWN MESSAGE TYPE: ' + message.type)

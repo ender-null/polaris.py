@@ -284,11 +284,13 @@ class bindings(object):
             self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "typing"})
             params = {
                 "chat_id": message.conversation.id,
-                "text": message.content,
-                "disable_web_page_preview": True,
+                "text": message.content
             }
             if message.extra and 'format' in message.extra:
                 params['parse_mode'] = message.extra['format']
+
+            if message.extra and 'preview' in message.extra:
+                params['disable_web_page_preview'] = not message.extra['preview']
 
             if message.reply:
                 params['reply_to_message_id'] = message.reply

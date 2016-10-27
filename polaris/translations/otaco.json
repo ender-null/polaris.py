@@ -30,6 +30,7 @@
                 {
                     "command": "/ayuda",
                     "friendly": "^Ayudame",
+                    "shortcut": "/h",
                     "description": "Lista de comandos.",
                     "parameters": [
                         { "comando": false }
@@ -46,6 +47,7 @@
                 {
                     "command": "/repite",
                     "friendly": "^Repite ",
+                    "shortcut": "/e",
                     "description": "Repite lo que se pase por parametro.",
                     "parameters": [
                         { "texto": true }
@@ -118,11 +120,36 @@
                 "not_creator": "<b>#%s</b> no ha podido ser borrado porque no eres el creador."
             }
         },
+        "lastfm": {
+            "commands": [
+                {
+                    "command": "/reproduciendo",
+                    "friendly": "Reproduciendo",
+                    "shortcut": "/np",
+                    "description": "Muestra la ultima pista reproducida en last.fm.",
+                    "parameters": [
+                        {"nombre de usuario": false}
+                    ]
+                },
+                {
+                    "command": "/fmset",
+                    "hidden": true
+                }
+             ],
+            "description": "Muestra la última pista reproducida en last.fm. Puedes añadir tu nombre de usuario de last.fm con /fmset",
+            "strings": {
+                "now_playing": "<b>%s</b> esta escuchando:",
+                "last_played": "<b>%s</b> escuchó por ultima vez:",
+                "no_username": "No pude encontrar ningún nombre de usuario, configuralo con /fmset.",
+                "username_set": "Se ha establecido tu nombre de usuario de last.fm, puedes cambiarlo con /fmset."
+            }
+        },
         "reminders": {
             "commands": [
                 {
                     "command": "/recuerdame",
                     "friendly": "^recuerdame ",
+                    "shortcut": "/r",
                     "description": "Establece un recordatorio.",
                     "parameters": [
                         {"retardo": true},
@@ -142,6 +169,7 @@
                 {
                     "command": "/tiempo",
                     "friendly": "[T|t]iempo en ",
+                    "shortcut": "/w",
                     "description": "Tiempo actual.",
                     "parameters": [
                         {"localización": true}
@@ -150,6 +178,7 @@
                 {
                     "command": "/prevision",
                     "friendly": "[P|p]revisión en ",
+                    "shortcut": "/fc",
                     "description": "Previsión meteorologica de 3 dias.",
                     "parameters": [
                         {"localización": true}

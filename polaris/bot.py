@@ -100,7 +100,16 @@ class Bot(object):
                             break
 
                     if 'friendly' in command:
-                        if  self.check_trigger(command['friendly'], msg, plugin):
+                        if self.check_trigger(command['friendly'], msg, plugin):
+                            break
+
+                    if 'shortcut' in command:
+                        if len(command['shortcut']) > 3:
+                            shortcut = command['shortcut'] + ' '
+                        else:
+                            shortcut = command['shortcut']
+
+                        if self.check_trigger(shortcut, msg, plugin):
                             break
 
         except Exception as e:

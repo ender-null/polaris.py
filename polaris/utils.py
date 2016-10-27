@@ -1,6 +1,8 @@
 from polaris.types import json2obj
 from html.parser import HTMLParser
 from DictObject import DictObject
+from polaris.types import AutosaveDict
+from re import compile
 import logging, requests, json, magic, mimetypes, tempfile, os, subprocess, re
 
 
@@ -27,6 +29,27 @@ def get_command(message):
         return first_word(message.content)
     else:
         return None
+
+
+def is_command(self, number, text):
+    if 'command' in self.commands[number - 1]:
+        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config.command_start).lower()
+        if compile(trigger).search(text.lower()):
+            return True
+
+    if 'friendly' in self.commands[number - 1]:
+        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config.command_start).lower()
+        if compile(trigger).search(text.lower()):
+            return True
+
+    if 'shortcut' in self.commands[number - 1]:
+        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config.command_start).lower()
+        if len(self.commands[number - 1]['shortcut']) < 3:
+            trigger += ' '
+        if compile(trigger).search(text.lower()):
+            return True
+
+    return False
 
 
 def first_word(text, i=1):
@@ -190,6 +213,28 @@ def remove_html(text):
     s.fed = []
     s.feed(text)
     return ''.join(s.fed)
+
+def set_setting(bot, uid, key, value):
+    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
+    uid = str(uid)
+    settings[uid][key] = value
+    settings.store_database()
+
+
+def get_setting(bot, uid, key):
+    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
+    uid = str(uid)
+    try:
+        return settings[uid][key]
+    except:
+        return None
+
+
+def del_setting(bot, uid, key):
+    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
+    uid = str(uid)
+    del(settings[uid][key])
+    settings.store_database()
 
 
 def set_logger(debug=False):

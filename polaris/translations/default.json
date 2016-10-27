@@ -118,6 +118,30 @@
                 "not_creator": "<b>#%s</b> you don't have permission to delete it."
             }
         },
+        "lastfm": {
+            "commands": [
+                {
+                    "command": "/nowplaying",
+                    "friendly": "Now playing",
+                    "shortcut": "/np",
+                    "description": "Shows the last track played on last.fm.",
+                    "parameters": [
+                        {"username": false}
+                    ]
+                },
+                {
+                    "command": "/fmset",
+                    "hidden": true
+                }
+             ],
+            "description": "Shows the last track played on last.fm. You can add your username from last.fm with /fmset",
+            "strings": {
+                "now_playing": "<b>%s</b> is playing:",
+                "last_played": "<b>%s</b> last played:",
+                "no_username": "Didn't find any username, configure it with /fmset.",
+                "username_set": "Your last.fm username was set, you can change it with /fmset."
+            }
+        },
         "reminders": {
             "commands": [
                 {

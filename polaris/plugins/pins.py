@@ -49,10 +49,11 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.already_pinned % input, extra={'format': 'HTML'})
 
             self.pins[input] = {
-                'content': m.reply.content,
+                'content': m.reply.content.replace('<','&lt;').replace('>','&gt;'),
                 'creator': m.sender.id,
                 'type': m.reply.type
             }
+            
             self.pins.store_database()
             self.update_triggers()
 
