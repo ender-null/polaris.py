@@ -33,17 +33,17 @@ def get_command(message):
 
 def is_command(self, number, text):
     if 'command' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config.command_start).lower()
+        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config.prefix).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'friendly' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config.command_start).lower()
+        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config.prefix).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'shortcut' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config.command_start).lower()
+        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config.prefix).lower()
         if len(self.commands[number - 1]['shortcut']) < 3:
             trigger += ' '
         if compile(trigger).search(text.lower()):
@@ -217,6 +217,8 @@ def remove_html(text):
 def set_setting(bot, uid, key, value):
     settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
     uid = str(uid)
+    if not uid in settings:
+        settings[uid] = {}
     settings[uid][key] = value
     settings.store_database()
 

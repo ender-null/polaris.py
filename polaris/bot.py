@@ -1,6 +1,8 @@
 from polaris.types import AutosaveDict, Message
 from polaris.utils import set_logger
 from multiprocessing import Process, Queue
+from threading import Thread
+from time import sleep
 import importlib, logging, time, re, traceback, sys, os
 
 
@@ -53,6 +55,7 @@ class Bot(object):
     def start(self):
         self.started = True
         self.plugins = self.init_plugins()
+        Thread(target=self.run_daemons).start()
         self.info = self.bindings.get_me()
 
         logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
@@ -89,10 +92,19 @@ class Bot(object):
         return plugins
 
 
+    def run_daemons(self):
+        logging.info('Running daemons...')
+        while(True):
+            for plugin in self.plugins:
+                if hasattr(plugin, 'daemon'):
+                    plugin.daemon()
+            sleep(5)
+
+
     def on_message_receive(self, msg):
         try:
             triggered = False
-          
+
             for plugin in self.plugins:
                 for command in plugin.commands:
                     if 'command' in command:
@@ -104,7 +116,7 @@ class Bot(object):
                             break
 
                     if 'shortcut' in command:
-                        if len(command['shortcut']) > 3:
+                        if len(command['shortcut']) < 3:
                             shortcut = command['shortcut'] + ' '
                         else:
                             shortcut = command['shortcut']
@@ -122,10 +134,10 @@ class Bot(object):
             trigger = command.replace('/', '^/')
 
         elif message.type == 'inline_query':
-            trigger = trigger.replace(self.config.command_start, '')
+            trigger = trigger.replace(self.config.prefix, '')
 
         else:
-            trigger = command.replace('/', '^' + self.config.command_start)
+            trigger = command.replace('/', '^' + self.config.prefix)
 
         if message.content and re.compile(trigger).search(message.content.lower()):
                 if hasattr(plugin, 'inline') and message.type == 'inline_query':

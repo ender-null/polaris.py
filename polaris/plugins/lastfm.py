@@ -1,4 +1,4 @@
-from polaris.utils import get_input, send_request, set_setting, get_setting, is_command
+from polaris.utils import get_input, is_command, send_request, set_setting, get_setting, is_command
 from polaris.types import AutosaveDict
 from re import findall
 
@@ -59,7 +59,7 @@ class plugin(object):
                 text = self.bot.trans.plugins.lastfm.strings.now_playing % username
             else:
                 text = self.bot.trans.plugins.lastfm.strings.last_played % username
-                
+
             text += '\n🎵 <i>%s</i>\n💽 %s' % (track, artist)
             if album:
                 text += ' - %s' % album
@@ -71,14 +71,14 @@ class plugin(object):
                 'type': 'video',
                 'part': 'snippet',
                 'maxResults': '1',
-                'q': '%s %s %s' % (track, artist, album),
+                'q': '%s %s' % (track, artist),
                 'key': self.bot.config.api_keys.google_developer_console
             }
 
             youtube = send_request(url, params=params)
 
             if len(youtube['items']) > 0:
-                text += '\n\nhttps://youtu.be/%s' % youtube['items'][0]['id']['videoId']
+                text += '\n\n🌐 %s\n%s\nhttps://youtu.be/%s' % (self.bot.trans.plugins.lastfm.strings.might_be, youtube['items'][0]['snippet']['title'], youtube['items'][0]['id']['videoId'])
 
             self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 

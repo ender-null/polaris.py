@@ -30,6 +30,7 @@
                 {
                     "command": "/ayuda",
                     "friendly": "^Ayudame",
+                    "shortcut": "/h",
                     "description": "Lista de comandos.",
                     "parameters": [
                         { "comando": false }
@@ -46,6 +47,7 @@
                 {
                     "command": "/repite",
                     "friendly": "^Repite ",
+                    "shortcut": "/e",
                     "description": "Repite lo que se pase por parametro.",
                     "parameters": [
                         { "texto": true }
@@ -139,7 +141,8 @@
                 "now_playing": "<b>%s</b> esta escuchando:",
                 "last_played": "<b>%s</b> escuchó por ultima vez:",
                 "no_username": "No pude encontrar ningún nombre de usuario, configuralo con /fmset.",
-                "username_set": "Se ha establecido tu nombre de usuario de last.fm, puedes cambiarlo con /fmset."
+                "username_set": "Se ha establecido tu nombre de usuario de last.fm, puedes cambiarlo con /fmset.",
+                "might_be": "Podría ser esto en YouTube:"
             }
         },
         "reminders": {
@@ -147,6 +150,7 @@
                 {
                     "command": "/recuerdame",
                     "friendly": "^recuerdame ",
+                    "shortcut": "/r",
                     "description": "Establece un recordatorio.",
                     "parameters": [
                         {"retardo": true},
@@ -166,6 +170,7 @@
                 {
                     "command": "/tiempo",
                     "friendly": "[T|t]iempo en ",
+                    "shortcut": "/w",
                     "description": "Tiempo actual.",
                     "parameters": [
                         {"localización": true}
@@ -174,6 +179,7 @@
                 {
                     "command": "/prevision",
                     "friendly": "[P|p]revisión en ",
+                    "shortcut": "/f",
                     "description": "Previsión meteorologica de 3 dias.",
                     "parameters": [
                         {"localización": true}
@@ -195,20 +201,19 @@
                 "clear": "Despejado",
                 "sunny": "Soleado",
                 "chancesnow": "Prob. de Nieve",
-                "chanceflurries": "Prob. de Ráfagas",
+                "chanceflurries": "Prob. de Ráfagas de Nieve",
                 "chancerain": "Prob. de Lluvia",
                 "chancesleet": "Prob. de Aguanieve",
                 "chancetstorms": "Prob. de Tormenta",
                 "cloudy": "Nublado",
-                "flurries": "Ráfagas",
-                "fog": "Neblado",
-                "hazy": "Brumoso",
+                "flurries": "Ráfagas de Nieve",
+                "fog": "Niebla",
+                "hazy": "Neblina",
                 "mostlycloudy": "Muy Nublado",
                 "partlycloudy": "Parc. Nublado",
                 "partlysunny": "Parc. Soleado",
                 "sleet": "Aguanieve",
                 "rain": "Lluvia",
-                "sleet": "Ráfagas",
                 "snow": "Nieve",
                 "tstorms": "Tormenta"
             }

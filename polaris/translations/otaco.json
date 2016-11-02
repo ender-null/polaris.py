@@ -12,7 +12,7 @@
         "night": "Oyasumi nasai"
     },
     "errors": {
-        "missing_parameter": "Necesito que me introduzcan un <i>parámetro</i> 😏",
+        "missing_parameter": "Necesito que me introduzcan un <i>parametro</i>.",
         "connection_error": "No pude conectarme.",
         "no_results": "Te aburres, ¿no?",
         "invalid_argument": "Argumento invalido, como Clarita.",
@@ -61,14 +61,14 @@
                 {
                     "command": "/acerca",
                     "friendly": "^Acerca de ti",
-                    "description": "Información acerca del bot.",
+                    "description": "Informacion acerca del bot.",
                     "parameters": []
                 }
             ],
-            "description": "Información acerca del bot.",
+            "description": "Informacion acerca del bot.",
             "strings": {
                 "greeting": "Hola! Soy <b>%s</b>!\nEncantada de conocerte.",
-                "license": "<b>Polaris</b> (incluyendo todos los plugins y documentación) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
+                "license": "<b>Polaris</b> (incluyendo todos los plugins y documentacion) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
                 "version": "Ejecutando <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> de @luksireiku.",
                 "help": "Escribe %sayuda para saber todo lo que puedo hacer!"
             }
@@ -112,10 +112,10 @@
             "description": "Comandos para noobs c:",
             "strings": {
                 "pins": "<b>Has creado %s pins</b>:",
-                "no_pins": "No has creado ningún pin todavia.",
-                "pinned": "<b>#%s</b> se ha añadido.",
+                "no_pins": "No has creado ningun pin todavia.",
+                "pinned": "<b>#%s</b> se ha anadido.",
                 "unpinned": "<b>#%s</b> se ha borrado.",
-                "already_pinned": "<b>#%s</b> ya existe, no se ha podido añadir.",
+                "already_pinned": "<b>#%s</b> ya existe, no se ha podido anadir.",
                 "not_found": "<b>#%s</b> no existe.",
                 "not_creator": "<b>#%s</b> no ha podido ser borrado porque no eres el creador."
             }
@@ -136,12 +136,13 @@
                     "hidden": true
                 }
              ],
-            "description": "Muestra la última pista reproducida en last.fm. Puedes añadir tu nombre de usuario de last.fm con /fmset",
+            "description": "Muestra la ultima pista reproducida en last.fm. Puedes anadir tu nombre de usuario de last.fm con /fmset",
             "strings": {
                 "now_playing": "<b>%s</b> esta escuchando:",
-                "last_played": "<b>%s</b> escuchó por ultima vez:",
-                "no_username": "No pude encontrar ningún nombre de usuario, configuralo con /fmset.",
-                "username_set": "Se ha establecido tu nombre de usuario de last.fm, puedes cambiarlo con /fmset."
+                "last_played": "<b>%s</b> escucho por ultima vez:",
+                "no_username": "No pude encontrar ningun nombre de usuario, configuralo con /fmset.",
+                "username_set": "Se ha establecido tu nombre de usuario de last.fm, puedes cambiarlo con /fmset.",
+                "might_be": "Podria ser esto en YouTube:"
             }
         },
         "reminders": {
@@ -161,7 +162,7 @@
             "strings": {
                 "wrongdelay": "El retardo debe tener este formato: '(entero)(s|m|h|d)'.\nEjemplo: '2h' para dos horas.",
                 "noreminder": "Necesito saber que tengo que recordarte.",
-                "added": "<b>%s</b>, te recordaré en <b>%s</b> que tienes que <i>%s</i>."
+                "added": "<b>%s</b>, te recordare en <b>%s</b> que tienes que <i>%s</i>."
             }
         },
         "weather": {
@@ -172,48 +173,47 @@
                     "shortcut": "/w",
                     "description": "Tiempo actual.",
                     "parameters": [
-                        {"localización": true}
+                        {"localizacion": true}
                     ]
                 },
                 {
                     "command": "/prevision",
-                    "friendly": "[P|p]revisión en ",
-                    "shortcut": "/fc",
-                    "description": "Previsión meteorologica de 3 dias.",
+                    "friendly": "[P|p]revision en ",
+                    "shortcut": "/f",
+                    "description": "Prevision meteorologica de 3 dias.",
                     "parameters": [
-                        {"localización": true}
+                        {"localizacion": true}
                     ]
                 }
             ],
             "description": "Te puedo decir el tiempo nya.",
             "strings": {
                 "title": "<b>Tiempo en %s (%s)</b>:",
-                "titleforecast": "<b>Previsión para %s (%s)</b>:",
-                "feelslike": " (Sensación %sºC)",
+                "titleforecast": "<b>Prevision para %s (%s)</b>:",
+                "feelslike": " (Sensacion %soC)",
                 "sunday": "Domingo",
                 "monday": "Lunes",
                 "tuesday": "Martes",
-                "wednesday": "Miércoles",
+                "wednesday": "Miercoles",
                 "thursday": "Jueves",
                 "friday": "Viernes",
-                "saturday": "Sábado",
+                "saturday": "Sabado",
                 "clear": "Despejado",
                 "sunny": "Soleado",
                 "chancesnow": "Prob. de Nieve",
-                "chanceflurries": "Prob. de Ráfagas",
+                "chanceflurries": "Prob. de Rafagas de Nieve",
                 "chancerain": "Prob. de Lluvia",
                 "chancesleet": "Prob. de Aguanieve",
                 "chancetstorms": "Prob. de Tormenta",
                 "cloudy": "Nublado",
-                "flurries": "Ráfagas",
-                "fog": "Neblado",
-                "hazy": "Brumoso",
+                "flurries": "Rafagas de Nieve",
+                "fog": "Niebla",
+                "hazy": "Neblina",
                 "mostlycloudy": "Muy Nublado",
                 "partlycloudy": "Parc. Nublado",
                 "partlysunny": "Parc. Soleado",
                 "sleet": "Aguanieve",
                 "rain": "Lluvia",
-                "sleet": "Ráfagas",
                 "snow": "Nieve",
                 "tstorms": "Tormenta"
             }

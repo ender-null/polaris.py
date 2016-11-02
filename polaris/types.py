@@ -24,7 +24,7 @@ class Conversation(object):
 
 
 class Message(object):
-    def __init__(self, id, conversation, sender, content, type, date=time(), reply=None, extra=None):
+    def __init__(self, id, conversation, sender, content, type='text', date=time(), reply=None, extra=None):
         self.id = id
         self.conversation = conversation
         self.sender = sender
@@ -107,6 +107,7 @@ class AutosaveDict(DictObject):
             self.merge_dict(data)
 
 
+# Not used #
 class json2obj(object):
     def __init__(self, string):
         if isinstance(string, str):
@@ -141,6 +142,7 @@ class json2obj(object):
         return str(self.json)
 
 
+# Not used #
 class json2file(json2obj):
     def __init__(self, path):
         self.path = path

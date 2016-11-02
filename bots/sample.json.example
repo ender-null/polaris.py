@@ -2,7 +2,7 @@
 {
     "bindings": "telegram-bot-api",
     "bindings_token": "YOUR TOKEN",
-    "command_start": "/",
+    "prefix": "/",
     "owner": 12345678,
     "debug": true,
     "translation": "default",

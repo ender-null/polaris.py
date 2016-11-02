@@ -22,7 +22,7 @@ class plugin(object):
         greeting = self.bot.trans.plugins.about.strings.greeting % self.bot.info.first_name
         version = self.bot.trans.plugins.about.strings.version % (tag)
         # license = self.bot.trans.plugins.about.strings.license
-        help = self.bot.trans.plugins.about.strings.help % self.bot.config.command_start
+        help = self.bot.trans.plugins.about.strings.help % self.bot.config.prefix
 
         text = '%s\n\n%s\n\n%s' % (greeting, help, version)
 

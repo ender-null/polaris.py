@@ -100,6 +100,9 @@ class bindings(object):
             pass
 
     def send_message(self, message):
+        if not message.extra:
+            message.extra = {}
+
         if message.type != 'text' and message.content.startswith('http'):
             message.content = download(message.content)
         elif message.type != 'text' and not message.content.startswith('/'):

@@ -1,4 +1,4 @@
-from polaris.utils import get_input, send_request, is_int
+from polaris.utils import get_input, is_command, send_request, is_int
 
 
 class plugin(object):
@@ -38,7 +38,7 @@ class plugin(object):
         input = get_input(m)
         baseurl = 'http://www.zaragoza.es/api'
 
-        if '/bus'.replace('/', self.bot.config.command_start) in m.content:
+        if is_command(self, 1, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -107,7 +107,7 @@ class plugin(object):
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
-        elif '/tranvia'.replace('/', self.bot.config.command_start) in m.content:
+        elif is_command(self, 2, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -145,7 +145,7 @@ class plugin(object):
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
-        elif '/bizi'.replace('/', self.bot.config.command_start) in m.content:
+        elif is_command(self, 3, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
            

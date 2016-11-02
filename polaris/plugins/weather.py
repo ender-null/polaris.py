@@ -1,4 +1,4 @@
-from polaris.utils import get_input, get_coords, send_request, download, remove_html
+﻿from polaris.utils import get_input, is_command, get_coords, send_request, download, remove_html
 
 
 class plugin(object):
@@ -37,32 +37,31 @@ class plugin(object):
         weather_string = self.bot.trans.plugins.weather.strings[weather.icon]
         weather_icon = (self.get_weather_icon(weather.icon))
         humidity = weather.relative_humidity
-        wind = weather.wind_kph
-        
-        if self.commands[0]['command'].replace('/', self.bot.config.command_start) in m.content:
-            message = u'%s\n%sºC%s - %s %s\n💧 %s | 🌬 %s km/h' % (
-                remove_html(title), temp, feelslike, weather_string, weather_icon, humidity, wind)
+        wind = format(float(weather.wind_kph) / 3.6, '.1f')
+
+        if is_command(self, 1, m.content):
+            message = u'%s\n%s %s%s\n🌡%sºC 💧%s 🌬%s m/s' % (
+                remove_html(title), weather_icon, weather_string, feelslike, temp, humidity, wind)
             try:
                 photo = webcams[0].CURRENTIMAGEURL
             except Exception as e:
                 photo = None
-            
+
             if photo:
                 return self.bot.send_message(m, photo, 'photo', extra={'caption': message})
             else:
                 return self.bot.send_message(m, message, 'text', extra={'format': 'HTML'})
 
-        elif self.commands[1]['command'].replace('/', self.bot.config.command_start) in m.content:
+        elif is_command(self, 2, m.content):
             message = self.bot.trans.plugins.weather.strings.titleforecast % (locality, country)
             for day in forecast:
-                # weekday = day.date.weekday
                 weekday = self.bot.trans.plugins.weather.strings[day.date.weekday.lower()][:3]
                 temp = day.low.celsius
                 temp_max = day.high.celsius
                 # weather_string = day.conditions.title()
                 weather_string = self.bot.trans.plugins.weather.strings[day.icon]
                 weather_icon = (self.get_weather_icon(day.icon))
-                message += u'\n • <b>%s</b>: <i>%s - %sºC</i> · %s %s' % (weekday, temp, temp_max, weather_string, weather_icon)
+                message += u'\n • <b>%s</b>: 🌡 %s-%sºC %s %s' % (weekday, temp, temp_max, weather_icon, weather_string)
 
             return self.bot.send_message(m, message, extra={'format': 'HTML'})
 

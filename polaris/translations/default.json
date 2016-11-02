@@ -30,6 +30,7 @@
                 {
                     "command": "/help ",
                     "friendly": "^Help",
+                    "shortcut": "/h",
                     "description": "Help about commands.",
                     "parameters": [
                         { "command": false }
@@ -46,6 +47,7 @@
                 {
                     "command": "/echo",
                     "friendly": "^Echo ",
+                    "shortcut": "/e",
                     "description": "Repeats whatever you want.",
                     "parameters": [
                         { "text": true }
@@ -139,7 +141,8 @@
                 "now_playing": "<b>%s</b> is playing:",
                 "last_played": "<b>%s</b> last played:",
                 "no_username": "Didn't find any username, configure it with /fmset.",
-                "username_set": "Your last.fm username was set, you can change it with /fmset."
+                "username_set": "Your last.fm username was set, you can change it with /fmset.",
+                "might_be": "This might be it on YouTube:"
             }
         },
         "reminders": {
@@ -147,6 +150,7 @@
                 {
                     "command": "/remindme",
                     "friendly": "^remind me",
+                    "shortcut": "/r",
                     "description": "Sets a reminder.",
                     "parameters": [
                         {"delay": true},
@@ -166,6 +170,7 @@
                 {
                     "command": "/weather",
                     "friendly": "Weather from ",
+                    "shortcut": "/w",
                     "description": "Current weather.",
                     "parameters": [
                         {"location": true}
@@ -174,6 +179,7 @@
                 {
                     "command": "/forecast",
                     "friendly": "Forecast from ",
+                    "shortcut": "/f",
                     "description": "3 day forecast.",
                     "parameters": [
                         {"location": true}
@@ -208,7 +214,6 @@
                 "partlysunny": "Partly Sunny",
                 "sleet": "Sleet",
                 "rain": "Rain",
-                "sleet": "Sleet",
                 "snow": "Snow",
                 "tstorms": "Thunder Storm"
             }

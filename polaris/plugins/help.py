@@ -1,4 +1,4 @@
-from polaris.utils import get_input
+from polaris.utils import get_input, is_command
 
 
 class plugin(object):
@@ -28,7 +28,7 @@ class plugin(object):
                     if not 'hidden' in command or not command['hidden']:
                         # Adds the command and parameters#
                         if input in command['command'].replace('/', '').rstrip('\s'):
-                            text += '\n • ' + command['command'].replace('/', self.bot.config.command_start)
+                            text += '\n • ' + command['command'].replace('/', self.bot.config.prefix)
                             if 'parameters' in command:
                                 for parameter in command['parameters']:
                                     name, required = list(parameter.items())[0]
@@ -47,7 +47,7 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         
-        if self.commands[-1]['command'].replace('/', self.bot.config.command_start) in m.content:
+        if is_command(self, 3, m.content):
             text = ''
         else:
             text = self.bot.trans.plugins.help.strings.commands
@@ -58,7 +58,7 @@ class plugin(object):
                 # If the command is hidden, ignore it #
                 if not 'hidden' in command or not command['hidden']:
                     # Adds the command and parameters#
-                    if self.commands[-1]['command'].replace('/', self.bot.config.command_start) in m.content:
+                    if self.commands[-1]['command'].replace('/', self.bot.config.prefix) in m.content:
                         text += '\n' + command['command'].lstrip('/')
 
                         if 'description' in command:
@@ -66,7 +66,7 @@ class plugin(object):
                         else:
                             text += ' - ?¿'
                     else:
-                        text += '\n • ' + command['command'].replace('/', self.bot.config.command_start)
+                        text += '\n • ' + command['command'].replace('/', self.bot.config.prefix)
                         if 'parameters' in command:
                             for parameter in command['parameters']:
                                 name, required = list(parameter.items())[0]

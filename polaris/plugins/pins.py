@@ -1,4 +1,4 @@
-from polaris.utils import get_input
+from polaris.utils import get_input, is_command
 from polaris.types import AutosaveDict
 from re import findall
 
@@ -9,7 +9,7 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans.plugins.pins.commands
         self.description = self.bot.trans.plugins.pins.description
-        self.pins = AutosaveDict('polaris/data/%s.pins.json' % self.bot.name, defaults={})
+        self.pins = AutosaveDict('polaris/data/%s.pins.json' % self.bot.name)
         self.update_triggers()
 
     # Plugin action #
@@ -17,7 +17,7 @@ class plugin(object):
         input = get_input(m)
 
         # List all pins #
-        if self.commands[0]['command'].replace('/', self.bot.config.command_start) in m.content:
+        if is_command(self, 1, m.content):
             pins = []
             for pin in self.pins:
                 if self.pins[pin].creator == m.sender.id:
@@ -31,10 +31,14 @@ class plugin(object):
             else:
                 text = self.bot.trans.plugins.pins.strings.no_pins
 
-            return self.bot.send_message(m, text, extra={'format': 'HTML'})
+            # If the message is too long send an error message instead #
+            if len(text) < 4096:
+                return self.bot.send_message(m, text, extra={'format': 'HTML'})
+            else:
+                return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
 
         # Add a pin #
-        elif self.commands[1]['command'].replace('/', self.bot.config.command_start) in m.content:
+        elif is_command(self, 2, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
@@ -60,7 +64,7 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.pinned % input, extra={'format': 'HTML'})
 
         # Remove a pin #
-        elif self.commands[2]['command'].replace('/', self.bot.config.command_start) in m.content:
+        elif is_command(self, 3, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
