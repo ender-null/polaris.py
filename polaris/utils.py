@@ -52,6 +52,82 @@ def is_command(self, number, text):
     return False
 
 
+def set_setting(bot, uid, key, value):
+    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
+    uid = str(uid)
+    if not uid in settings:
+        settings[uid] = {}
+    settings[uid][key] = value
+    settings.store_database()
+
+
+def get_setting(bot, uid, key):
+    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
+    uid = str(uid)
+    try:
+        return settings[uid][key]
+    except:
+        return None
+
+
+def del_setting(bot, uid, key):
+    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
+    uid = str(uid)
+    del(settings[uid][key])
+    settings.store_database()
+
+
+def has_tag(bot, target, tag):
+    tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
+    if target in tags and tag in tags[target]:
+        return True
+    else:
+        return False
+
+
+def set_tag(bot, target, tag):
+    tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
+    if not target in tags:
+        tags[target] = []
+
+    if not tag in tags[target]:
+        tags[target].append(tag)
+        tags.store_database()
+
+
+def del_tag(bot, target, tag):
+    tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
+    tags[target].remove(tag)
+    tags.store_database()
+
+
+def is_admin(bot, uid):
+    if bot.config.owner == uid:
+        return True
+
+    elif has_tag(bot, uid, 'admin') or has_tag(bot, uid, 'owner'):
+        return True
+
+    else:
+        return False
+
+
+def is_trusted(bot, uid):
+    if is_admin(bot, uid) or has_tag(bot, uid, 'trusted'):
+        return True
+
+    else:
+        return False
+
+
+def is_mod(bot, uid, gid):
+    if is_trusted(bot, uid) or has_tag(bot, uid, 'globalmod') or has_tag(bot, uid, 'mod:%s' % gid):
+        return True
+
+    else:
+        return False
+
+
 def first_word(text, i=1):
     try:
         return text.split()[i - 1]
@@ -75,11 +151,11 @@ def is_int(number):
     try:
         number = int(number)
         return True
-    except ValueError:
+    except:
         return False
 
 
-def send_request(url, params=None, headers=None, files=None, data=None, post=False):
+def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True):
     try:
         if post:
             r = requests.post(url, params=params, headers=headers, files=files, data=data, timeout=100)
@@ -94,8 +170,10 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
         logging.error(r.text)
         while r.status_code == 429:
             r = s.get(url, params=params, headers=headers, files=files, data=data)
-
-    return DictObject(json.loads(r.text))
+    if parse:
+        return DictObject(json.loads(r.text))
+    else:
+        return r.url
 
 
 def get_coords(input):
@@ -152,7 +230,7 @@ def save_to_file(res):
 
 
 def fix_extension(file_path):
-    type = magic.from_file(file_path, mime=True).decode("utf-8")
+    type = magic.from_file(file_path, mime=True)
     extension = str(mimetypes.guess_extension(type, strict=False))
     if extension is not None:
         # I hate to have to use this s***
@@ -177,7 +255,7 @@ def get_short_url(long_url, api_key):
 def mp3_to_ogg(original):
     converted = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg')
     conv = subprocess.Popen(
-        ['avconv', '-i', original.name, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', converted.name],
+        ['avconv', '-i', original, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', converted.name],
         stdout=subprocess.PIPE)
 
     while True:
@@ -186,7 +264,7 @@ def mp3_to_ogg(original):
             break
         converted.write(data)
 
-    return open(converted.name, 'rb')
+    return converted.name
 
 
 def remove_markdown(text):
@@ -213,30 +291,6 @@ def remove_html(text):
     s.fed = []
     s.feed(text)
     return ''.join(s.fed)
-
-def set_setting(bot, uid, key, value):
-    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-    uid = str(uid)
-    if not uid in settings:
-        settings[uid] = {}
-    settings[uid][key] = value
-    settings.store_database()
-
-
-def get_setting(bot, uid, key):
-    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-    uid = str(uid)
-    try:
-        return settings[uid][key]
-    except:
-        return None
-
-
-def del_setting(bot, uid, key):
-    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-    uid = str(uid)
-    del(settings[uid][key])
-    settings.store_database()
 
 
 def set_logger(debug=False):

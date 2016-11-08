@@ -14,9 +14,6 @@ class plugin(object):
         self.description = self.bot.trans.plugins.reminders.description
         self.reminders = AutosaveDict('polaris/data/%s.reminders.json' % self.bot.name)
         self.sort_reminders()
-        #d = Thread(target=self.daemon)
-        #d.daemon = True
-        #d.start()
 
 
     # Plugin action #
@@ -25,6 +22,7 @@ class plugin(object):
         if not input:
             return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
+        self.reminders.load_database()
         # Lists all pins #
         delay = first_word(input)
         if delay:
@@ -49,6 +47,7 @@ class plugin(object):
 
         self.reminders.list.append(reminder)
         self.sort_reminders()
+        self.reminders.store_database()
 
         if unit == 's':
             delay = delay.replace('s', ' seconds')
@@ -64,13 +63,18 @@ class plugin(object):
         return self.bot.send_message(m, message, extra={'format': 'HTML'})
 
 
-    def daemon(self):
-        # print(self.reminders.list)
+    def cron(self):
+        self.reminders.load_database()
         while len(self.reminders.list) > 0 and self.reminders.list[0].alarm < time():
-            m = Message(None, Conversation(self.reminders.list[0].chat_id), self.info, None)
-            self.bot.send_message(m, self.reminders.list[0].text, extra={'format': 'HTML'})
-            self.reminders.list.remove(self.reminders.list[0])
-            self.reminders.store_database()
+            reminder = self.reminders.list[0]
+            text = '<i>%s</i>\n - %s' % (reminder.text, reminder.first_name)
+            if reminder.username:
+                 text += ' (@%s)' % reminder.username
+
+            m = Message(None, Conversation(reminder.chat_id), None, None)
+            self.bot.send_message(m, text, extra={'format': 'HTML'})
+            self.reminders.list.remove(reminder)
+            self.sort_reminders()
 
 
     @staticmethod

@@ -1,16 +1,4 @@
 {
-    "greeting": {
-        "morning": "Ohayo gozaimasu",
-        "afternoon": "Konnichi wa",
-        "evening": "Konban wa",
-        "night": "Konban wa"
-    },
-    "goodbye": {
-        "morning": "Shitsurei shimasu",
-        "afternoon": "Sayonara",
-        "evening": "Mata ashita",
-        "night": "Oyasumi nasai"
-    },
     "errors": {
         "missing_parameter": "Necesito que me introduzcan un <i>parametro</i>.",
         "connection_error": "No pude conectarme.",
@@ -20,6 +8,8 @@
         "permission_required": "Machista opresor, paso de ti.",
         "missing_id": "No se a quien te refieres, gilipollas.",
         "needs_reply": "Solo funciona como <b>respuesta</b> a algo.",
+        "group_only": "Solo funciona en <b>grupos</b>.",
+        "private_only": "Solo funciona en <b>privado</b>.",
         "download_failed": "Algo ha pasado y no he podido descargarlo.",
         "exception_found": "Porque tocas las cosas de no tocar?",
         "unknown": "yoqsetio"
@@ -42,6 +32,116 @@
                 "commands": "<b>Comandos</b>:"
             }
         },
+        "tags": {
+            "commands": [
+                {
+                    "command": "/tag",
+                    "friendly": "^Etiqueta como",
+                    "description": "Establece una etiqueta para un usuario o grupo.",
+                    "parameters": [
+                        { "etiqueta": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/untag",
+                    "friendly": "^Desetiqueta",
+                    "description": "Elimina una etiqueta de un usuario o grupo.",
+                    "parameters": [
+                        { "etiqueta": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Permite establecer y quitar etiquetas sobre usuarios y grupos.",
+            "strings": {
+                "tagged": "<b>👤 %s</b>\n🏷 +%s",
+                "untagged": "<b>👤 %s</b>\n🏷 -%s",
+                "already_tagged": "<b>👤 %s</b>\n🏷 %s",
+                "not_tagged": "<b>👤 %s</b>\n🏷"
+            }
+        },
+        "administration": {
+            "commands": [
+                {
+                    "command": "/administracion",
+                    "friendly": "^Comandos de administración.",
+                    "shortcut": "/ghelp",
+                    "description": "Lista de comandos de administración.",
+                    "parameters": []
+                },
+                {
+                    "command": "/grupos",
+                    "friendly": "^Lista de grupos",
+                    "shortcut": "/gr",
+                    "description": "Lista de grupos.",
+                    "parameters": []
+                },
+                {
+                    "command": "/unirse",
+                    "friendly": "^Unirse a",
+                    "shortcut": "/j",
+                    "description": "Devuelve información y enlace de invitación.",
+                    "parameters": [
+                        { "nombre | alias": true }
+                    ]
+                },
+                {
+                    "command": "/informacion",
+                    "friendly": "^Informacion del grupo.",
+                    "shortcut": "/info",
+                    "description": "Devuelve información del grupo actual.",
+                    "parameters": [],
+                    "hidden": true
+                },
+                {
+                    "command": "/reglas",
+                    "friendly": "^Reglas del grupo.",
+                    "shortcut": "/j",
+                    "description": "Devuelve las reglas del grupo actual.",
+                    "parameters": [],
+                    "hidden": true
+                },
+                {
+                    "command": "/matar",
+                    "friendly": "^Mata a",
+                    "shortcut": "/k",
+                    "description": "Mata a la persona indicada.",
+                    "parameters": [
+                        { "nombre | id": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/martillazo",
+                    "friendly": "^Mata a",
+                    "shortcut": "/ban",
+                    "description": "Banea a la persona indicada.",
+                    "parameters": [
+                        { "nombre | id": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/configurar",
+                    "friendly": "^Configurar grupo",
+                    "shortcut": "/cfg",
+                    "description": "Devuelve información y enlace de invitación.",
+                    "parameters": [
+                        { "id | alias": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Diferentes funcionalidades para administrar grupos.",
+            "strings": {
+                "commands": "<b>Comandos</b>:",
+                "added": "<b>%s</b> se ha añadido a la lista de grupos.",
+                "already_added": "<b>%s</b> ya está la lista de grupos.",
+                "not_added": "<b>%s</b> no está en la lista de grupos.",
+                "set": "Se ha establecido un parámetro de <b>%s</b>."
+            }
+        },
         "echo": {
             "commands": [
                 {
@@ -55,6 +155,53 @@
                 }
             ],
             "description": "El plugin mas estupidamente simple."
+        },
+        "image_search": {
+            "commands": [
+                {
+                    "command": "/imagen",
+                    "friendly": "^Imagen de ",
+                    "shortcut": "/i",
+                    "description": "Devuelve una imágen de Google.",
+                    "parameters": [
+                        { "texto": true }
+                    ]
+                },
+                {
+                    "command": "/insfw",
+                    "description": "Devuelve una imágen de Google con el filtro desactivado.",
+                    "parameters": [
+                        { "texto": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Devuelve una imágen de Google."
+        },
+        "web_search": {
+            "commands": [
+                {
+                    "command": "/buscar",
+                    "friendly": "^Busca ",
+                    "shortcut": "/s",
+                    "description": "Busca en Google.",
+                    "parameters": [
+                        { "texto": true }
+                    ]
+                },
+                {
+                    "command": "/snsfw",
+                    "description": "Busca en Google con el filtro desactivado.",
+                    "parameters": [
+                        { "texto": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Busca en Google.",
+            "strings": {
+                "results": "<b>Resultados de</b> <i>%s</i>:"
+            }
         },
         "about": {
             "commands": [
@@ -70,7 +217,8 @@
                 "greeting": "Hola! Soy <b>%s</b>!\nEncantada de conocerte.",
                 "license": "<b>Polaris</b> (incluyendo todos los plugins y documentacion) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
                 "version": "Ejecutando <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> de @luksireiku.",
-                "help": "Escribe %sayuda para saber todo lo que puedo hacer!"
+                "help": "Escribe %sayuda para saber todo lo que puedo hacer!",
+                "stats": "👤 %s usuarios\n👥 %s grupos"
             }
         },
         "cats": {
@@ -164,6 +312,20 @@
                 "noreminder": "Necesito saber que tengo que recordarte.",
                 "added": "<b>%s</b>, te recordare en <b>%s</b> que tienes que <i>%s</i>."
             }
+        },
+        "text_to_speech": {
+            "commands": [
+                {
+                    "command": "/voz",
+                    "friendly": "^Habla ",
+                    "shortcut": "/v",
+                    "description": "Convierte texto en voz.",
+                    "parameters": [
+                        {"texto": true}
+                    ]
+                }
+             ],
+            "description": "Convierte texto en voz."
         },
         "weather": {
             "commands": [

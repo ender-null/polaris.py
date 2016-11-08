@@ -1,5 +1,5 @@
 from polaris.types import AutosaveDict, Message
-from polaris.utils import set_logger
+from polaris.utils import set_logger, is_int
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep
@@ -24,8 +24,7 @@ class Bot(object):
             logging.debug('Starting sender worker...')
             while self.started:
                 msg = self.outbox.get()
-                logging.info(
-                    ' %s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
+                logging.info(' %s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
                 self.bindings.send_message(msg)
         except KeyboardInterrupt:
             pass
@@ -55,7 +54,6 @@ class Bot(object):
     def start(self):
         self.started = True
         self.plugins = self.init_plugins()
-        Thread(target=self.run_daemons).start()
         self.info = self.bindings.get_me()
 
         logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
@@ -63,6 +61,7 @@ class Bot(object):
         jobs = []
         jobs.append(Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
         jobs.append(Process(target=self.sender_worker, name='%s S.' % self.name))
+        jobs.append(Process(target=self.cron_jobs, name='%s' % self.name))
 
         for job in jobs:
             job.daemon = True
@@ -92,20 +91,16 @@ class Bot(object):
         return plugins
 
 
-    def run_daemons(self):
-        logging.info('Running daemons...')
-        while(True):
-            for plugin in self.plugins:
-                if hasattr(plugin, 'daemon'):
-                    plugin.daemon()
-            sleep(5)
-
-
     def on_message_receive(self, msg):
         try:
             triggered = False
 
             for plugin in self.plugins:
+                # Always do this action for every message. #
+                if hasattr(plugin, 'always'):
+                    plugin.always(msg)
+
+                # Check if any command of a plugin matches. #
                 for command in plugin.commands:
                     if 'command' in command:
                         if self.check_trigger(command['command'], msg, plugin):
@@ -146,6 +141,15 @@ class Bot(object):
                     plugin.run(message)
 
                 return True
+
+
+    def cron_jobs(self):
+        while(self.started):
+            for plugin in self.plugins:
+                if hasattr(plugin, 'cron'):
+                    plugin.cron()
+
+            sleep(5)
 
 
     # METHODS TO MANAGE MESSAGES #

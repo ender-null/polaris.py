@@ -213,7 +213,7 @@ class bindings(object):
             content = 'upgrade_to_supergroup'
             extra = {
                 'chat_id': msg.migrate_to_chat_id,
-                'from_chat_id': msg.migrate_from_chat_id
+                'from_chat_id': msg.chat.id
             }
 
         elif 'pinned_message' in msg:

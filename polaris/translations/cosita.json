@@ -1,25 +1,15 @@
 {
-    "greeting": {
-        "morning": "Ohayo gozaimasu",
-        "afternoon": "Konnichi wa",
-        "evening": "Konban wa",
-        "night": "Konban wa"
-    },
-    "goodbye": {
-        "morning": "Shitsurei shimasu",
-        "afternoon": "Sayonara",
-        "evening": "Mata ashita",
-        "night": "Oyasumi nasai"
-    },
     "errors": {
         "missing_parameter": "* Bolita mira fijamente esperando un parámetro *",
         "connection_error": "* Bolita se ha golpeado con una pared de camino al servidor remoto, eso la pone triste *",
-        "no_results": "* Bolita esta triste porque no ha podido encontrar nada, eso la pone triste*",
+        "no_results": "* Bolita no ha podido encontrar nada, eso la pone triste*",
         "invalid_argument": "* Bolita no recibe lo que esperaba, eso la pone triste *",
         "invalid_syntax": "* Bolita no entiende, eso la pone triste *",
         "permission_required": "* Bolita se da cuenta de que no eres un amito, solo un ser horiiiiiible! *",
         "missing_id": "* Bolita no pudo identificar a su amito, eso la pone triste *",
         "needs_reply": "* Bolita necesita que le indiquen a que se refiere amito *",
+        "group_only": "* Bolita necesita estar en un grupo de cositas *",
+        "private_only": "* Bolita prefiere eso estando solitos *",
         "download_failed": "* Bolita no pudo traer lo que pedian, eso la pone triste *",
         "exception_found": "* Bolita esta confusa, y triste, ¿porque nadie piensa en Bolita? *",
         "unknown": "* Bolita rueda sin saber que dhacer *"
@@ -42,6 +32,116 @@
                 "commands": "<b>Comandos</b>:"
             }
         },
+        "tags": {
+            "commands": [
+                {
+                    "command": "/tag",
+                    "friendly": "^Etiqueta como",
+                    "description": "Establece una etiqueta para un usuario o grupo.",
+                    "parameters": [
+                        { "etiqueta": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/untag",
+                    "friendly": "^Desetiqueta",
+                    "description": "Elimina una etiqueta de un usuario o grupo.",
+                    "parameters": [
+                        { "etiqueta": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Permite establecer y quitar etiquetas sobre usuarios y grupos.",
+            "strings": {
+                "tagged": "<b>👤 %s</b>\n🏷 +%s",
+                "untagged": "<b>👤 %s</b>\n🏷 -%s",
+                "already_tagged": "<b>👤 %s</b>\n🏷 %s",
+                "not_tagged": "<b>👤 %s</b>\n🏷"
+            }
+        },
+        "administration": {
+            "commands": [
+                {
+                    "command": "/administracion",
+                    "friendly": "^Comandos de administración.",
+                    "shortcut": "/ghelp",
+                    "description": "Lista de comandos de administración.",
+                    "parameters": []
+                },
+                {
+                    "command": "/grupos",
+                    "friendly": "^Lista de grupos",
+                    "shortcut": "/gr",
+                    "description": "Lista de grupos.",
+                    "parameters": []
+                },
+                {
+                    "command": "/unirse",
+                    "friendly": "^Unirse a",
+                    "shortcut": "/j",
+                    "description": "Devuelve información y enlace de invitación.",
+                    "parameters": [
+                        { "nombre | alias": true }
+                    ]
+                },
+                {
+                    "command": "/informacion",
+                    "friendly": "^Informacion del grupo.",
+                    "shortcut": "/info",
+                    "description": "Devuelve información del grupo actual.",
+                    "parameters": [],
+                    "hidden": true
+                },
+                {
+                    "command": "/reglas",
+                    "friendly": "^Reglas del grupo.",
+                    "shortcut": "/j",
+                    "description": "Devuelve las reglas del grupo actual.",
+                    "parameters": [],
+                    "hidden": true
+                },
+                {
+                    "command": "/matar",
+                    "friendly": "^Mata a",
+                    "shortcut": "/k",
+                    "description": "Mata a la persona indicada.",
+                    "parameters": [
+                        { "nombre | id": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/martillazo",
+                    "friendly": "^Mata a",
+                    "shortcut": "/ban",
+                    "description": "Banea a la persona indicada.",
+                    "parameters": [
+                        { "nombre | id": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/configurar",
+                    "friendly": "^Configurar grupo",
+                    "shortcut": "/cfg",
+                    "description": "Devuelve información y enlace de invitación.",
+                    "parameters": [
+                        { "id | alias": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Diferentes funcionalidades para administrar grupos.",
+            "strings": {
+                "commands": "<b>Comandos</b>:",
+                "added": "<b>%s</b> se ha añadido a la lista de grupos.",
+                "already_added": "<b>%s</b> ya está la lista de grupos.",
+                "not_added": "<b>%s</b> no está en la lista de grupos.",
+                "set": "Se ha establecido un parámetro de <b>%s</b>."
+            }
+        },
         "echo": {
             "commands": [
                 {
@@ -56,21 +156,69 @@
             ],
             "description": "El plugin mas estupidamente simple."
         },
+        "image_search": {
+            "commands": [
+                {
+                    "command": "/imagen",
+                    "friendly": "^Imagen de ",
+                    "shortcut": "/i",
+                    "description": "Devuelve una imágen de Google.",
+                    "parameters": [
+                        { "texto": true }
+                    ]
+                },
+                {
+                    "command": "/insfw",
+                    "description": "Devuelve una imágen de Google con el filtro desactivado.",
+                    "parameters": [
+                        { "texto": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Devuelve una imágen de Google."
+        },
+        "web_search": {
+            "commands": [
+                {
+                    "command": "/buscar",
+                    "friendly": "^Busca ",
+                    "shortcut": "/s",
+                    "description": "Busca en Google.",
+                    "parameters": [
+                        { "texto": true }
+                    ]
+                },
+                {
+                    "command": "/snsfw",
+                    "description": "Busca en Google con el filtro desactivado.",
+                    "parameters": [
+                        { "texto": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Busca en Google.",
+            "strings": {
+                "results": "<b>Resultados de</b> <i>%s</i>:"
+            }
+        },
         "about": {
             "commands": [
                 {
                     "command": "/acerca",
                     "friendly": "^Acerca de ti",
-                    "description": "Información acerca del bot.",
+                    "description": "Informacion acerca del bot.",
                     "parameters": []
                 }
             ],
-            "description": "Información acerca del bot.",
+            "description": "Informacion acerca del bot.",
             "strings": {
                 "greeting": "Hola! Soy <b>%s</b>!\nEncantada de conocerte.",
-                "license": "<b>Polaris</b> (incluyendo todos los plugins y documentación) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
+                "license": "<b>Polaris</b> (incluyendo todos los plugins y documentacion) es <b>software libre</b>; eres libre de redistribuirlo y/o modificarlo bajo los terminos de <b>GNU AGPLv3</b>.",
                 "version": "Ejecutando <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> de @luksireiku.",
-                "help": "Escribe %sayuda para saber todo lo que puedo hacer!"
+                "help": "Escribe %sayuda para saber todo lo que puedo hacer!",
+                "stats": "👤 %s usuarios\n👥 %s grupos"
             }
         },
         "cats": {
@@ -112,10 +260,10 @@
             "description": "Comandos para noobs c:",
             "strings": {
                 "pins": "<b>Has creado %s pins</b>:",
-                "no_pins": "No has creado ningún pin todavia.",
-                "pinned": "<b>#%s</b> se ha añadido.",
+                "no_pins": "No has creado ningun pin todavia.",
+                "pinned": "<b>#%s</b> se ha anadido.",
                 "unpinned": "<b>#%s</b> se ha borrado.",
-                "already_pinned": "<b>#%s</b> ya existe, no se ha podido añadir.",
+                "already_pinned": "<b>#%s</b> ya existe, no se ha podido anadir.",
                 "not_found": "<b>#%s</b> no existe.",
                 "not_creator": "<b>#%s</b> no ha podido ser borrado porque no eres el creador."
             }
@@ -136,13 +284,13 @@
                     "hidden": true
                 }
              ],
-            "description": "Muestra la última pista reproducida en last.fm. Puedes añadir tu nombre de usuario de last.fm con /fmset",
+            "description": "Muestra la ultima pista reproducida en last.fm. Puedes anadir tu nombre de usuario de last.fm con /fmset",
             "strings": {
                 "now_playing": "<b>%s</b> esta escuchando:",
-                "last_played": "<b>%s</b> escuchó por ultima vez:",
-                "no_username": "No pude encontrar ningún nombre de usuario, configuralo con /fmset.",
+                "last_played": "<b>%s</b> escucho por ultima vez:",
+                "no_username": "No pude encontrar ningun nombre de usuario, configuralo con /fmset.",
                 "username_set": "Se ha establecido tu nombre de usuario de last.fm, puedes cambiarlo con /fmset.",
-                "might_be": "Podría ser esto en YouTube:"
+                "might_be": "Podria ser esto en YouTube:"
             }
         },
         "reminders": {
@@ -162,8 +310,22 @@
             "strings": {
                 "wrongdelay": "El retardo debe tener este formato: '(entero)(s|m|h|d)'.\nEjemplo: '2h' para dos horas.",
                 "noreminder": "Necesito saber que tengo que recordarte.",
-                "added": "<b>%s</b>, te recordaré en <b>%s</b> que tienes que <i>%s</i>."
+                "added": "<b>%s</b>, te recordare en <b>%s</b> que tienes que <i>%s</i>."
             }
+        },
+        "text_to_speech": {
+            "commands": [
+                {
+                    "command": "/voz",
+                    "friendly": "^Habla ",
+                    "shortcut": "/v",
+                    "description": "Convierte texto en voz.",
+                    "parameters": [
+                        {"texto": true}
+                    ]
+                }
+             ],
+            "description": "Convierte texto en voz."
         },
         "weather": {
             "commands": [
@@ -173,40 +335,40 @@
                     "shortcut": "/w",
                     "description": "Tiempo actual.",
                     "parameters": [
-                        {"localización": true}
+                        {"localizacion": true}
                     ]
                 },
                 {
                     "command": "/prevision",
-                    "friendly": "[P|p]revisión en ",
+                    "friendly": "[P|p]revision en ",
                     "shortcut": "/f",
-                    "description": "Previsión meteorologica de 3 dias.",
+                    "description": "Prevision meteorologica de 3 dias.",
                     "parameters": [
-                        {"localización": true}
+                        {"localizacion": true}
                     ]
                 }
             ],
             "description": "Te puedo decir el tiempo nya.",
             "strings": {
                 "title": "<b>Tiempo en %s (%s)</b>:",
-                "titleforecast": "<b>Previsión para %s (%s)</b>:",
-                "feelslike": " (Sensación %sºC)",
+                "titleforecast": "<b>Prevision para %s (%s)</b>:",
+                "feelslike": " (Sensacion %soC)",
                 "sunday": "Domingo",
                 "monday": "Lunes",
                 "tuesday": "Martes",
-                "wednesday": "Miércoles",
+                "wednesday": "Miercoles",
                 "thursday": "Jueves",
                 "friday": "Viernes",
-                "saturday": "Sábado",
+                "saturday": "Sabado",
                 "clear": "Despejado",
                 "sunny": "Soleado",
                 "chancesnow": "Prob. de Nieve",
-                "chanceflurries": "Prob. de Ráfagas de Nieve",
+                "chanceflurries": "Prob. de Rafagas de Nieve",
                 "chancerain": "Prob. de Lluvia",
                 "chancesleet": "Prob. de Aguanieve",
                 "chancetstorms": "Prob. de Tormenta",
                 "cloudy": "Nublado",
-                "flurries": "Ráfagas de Nieve",
+                "flurries": "Rafagas de Nieve",
                 "fog": "Niebla",
                 "hazy": "Neblina",
                 "mostlycloudy": "Muy Nublado",

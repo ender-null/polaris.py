@@ -1,16 +1,4 @@
 {
-    "greeting": {
-        "morning": "Ohayo gozaimasu",
-        "afternoon": "Konnichi wa",
-        "evening": "Konban wa",
-        "night": "Konban wa"
-    },
-    "goodbye": {
-        "morning": "Shitsurei shimasu",
-        "afternoon": "Sayonara",
-        "evening": "Mata ashita",
-        "night": "Oyasumi nasai"
-    },
     "errors": {
         "missing_parameter": "Missing parameter.",
         "connection_error": "Connection error.",
@@ -19,7 +7,9 @@
         "invalid_syntax": "Invalid syntax.",
         "permission_required": "Permission required.",
         "missing_id": "Missing id.",
-        "needs_reply": "Only works with replies.",
+        "needs_reply": "Only works with <b>replies</b>.",
+        "group_only": "Only works with <b>gruops</b>.",
+        "private_only": "Only works in <b>private</b>.",
         "download_failed": "Download failed.",
         "exception_found": "Exception found.",
         "unknown": "Unknown error."
@@ -42,6 +32,114 @@
                 "commands": "<b>Commands</b>:"
             }
         },
+        "tags": {
+            "commands": [
+                {
+                    "command": "/tag",
+                    "friendly": "^Tag as",
+                    "description": "Sets a tag for an user or group.",
+                    "parameters": [
+                        { "tagname": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/untag",
+                    "friendly": "^Remove tag",
+                    "description": "Removes a tag of an user or group.",
+                    "parameters": [
+                        { "tagname": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Allows tagging of users and groups.",
+            "strings": {
+                "tagged": "<b>👤 %s</b>\n🏷 +%s",
+                "untagged": "<b>👤 %s</b>\n🏷 -%s",
+                "already_tagged": "<b>👤 %s</b>\n🏷 %s",
+                "not_tagged": "<b>👤 %s</b>\n🏷"
+            }
+        },
+        "administration": {
+            "commands": [
+                {
+                    "command": "/administration",
+                    "friendly": "^Group administration commands",
+                    "shortcut": "/ghelp",
+                    "description": "Group administration command list.",
+                    "parameters": []
+                },
+                {
+                    "command": "/groups",
+                    "friendly": "^Group list",
+                    "shortcut": "/gr",
+                    "description": "Lists all groups.",
+                    "parameters": []
+                },
+                {
+                    "command": "/join",
+                    "friendly": "^Join",
+                    "shortcut": "/j",
+                    "description": "Returns info and invite link.",
+                    "parameters": [
+                        { "name | alias": true }
+                    ]
+                },
+                {
+                    "command": "/information",
+                    "friendly": "^Group information.",
+                    "shortcut": "/info",
+                    "description": "Returns information of the current group.",
+                    "parameters": [],
+                    "hidden": true
+                },
+                {
+                    "command": "/rules",
+                    "friendly": "^Rules",
+                    "description": "Returns rules of the current group.",
+                    "parameters": [],
+                    "hidden": true
+                },
+                {
+                    "command": "/kill",
+                    "friendly": "^Kill",
+                    "shortcut": "/k",
+                    "description": "Kicks the specified user.",
+                    "parameters": [
+                        { "name | id": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/banhammer",
+                    "friendly": "^Banhammer",
+                    "shortcut": "/ban",
+                    "description": "Bans the specified user.",
+                    "parameters": [
+                        { "name | id": true }
+                    ],
+                    "hidden": true
+                },
+                {
+                    "command": "/configure",
+                    "friendly": "^Configure group",
+                    "shortcut": "/cfg",
+                    "parameters": [
+                        { "id | alias": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Many features to administrate chats.",
+            "strings": {
+                "commands": "<b>Comands</b>:",
+                "added": "<b>%s</b> was added to the list of groups.",
+                "already_added": "<b>%s</b> is already in the list of groups.",
+                "not_added": "<b>%s</b> isn't in the list of groups.",
+                "set": "The parameter of <b>%s</b> was set."
+            }
+        },
         "echo": {
             "commands": [
                 {
@@ -55,6 +153,53 @@
                 }
             ],
             "description": "Simplest plugin ever."
+        },
+        "image_search": {
+            "commands": [
+                {
+                    "command": "/image",
+                    "friendly": "^Image of ",
+                    "shortcut": "/i",
+                    "description": "Returns a image from Google.",
+                    "parameters": [
+                        { "query": true }
+                    ]
+                },
+                {
+                    "command": "/insfw",
+                    "description": "Returns a image from Google with filter disabled.",
+                    "parameters": [
+                        { "query": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Returns a image from Google."
+        },
+        "web_search": {
+            "commands": [
+                {
+                    "command": "/search",
+                    "friendly": "^Search ",
+                    "shortcut": "/s",
+                    "description": "Searches in Google.",
+                    "parameters": [
+                        { "query": true }
+                    ]
+                },
+                {
+                    "command": "/snsfw",
+                    "description": "Searches in Google with filter disabled.",
+                    "parameters": [
+                        { "query": true }
+                    ],
+                    "hidden": true
+                }
+            ],
+            "description": "Searches in Google.",
+            "strings": {
+                "results": "<b>Results of</b> <i>%s</i>:"
+            }
         },
         "about": {
             "commands": [
@@ -70,7 +215,8 @@
                 "greeting": "Hi! I'm <b>%s</b>!\nNice to meet you.",
                 "license": "<b>Polaris</b> (including all plugins and documentation) is <b>free software</b>; you are free to redistribute it and/or modify it under the terms of the <b>GNU AGPLv3</b>.",
                 "version": "Running <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> by @luksireiku.",
-                "help": "Write %shelp to know what I can do!"
+                "help": "Write %shelp to know what I can do!",
+                "stats": "👤 %s users\n👥 %s groups"
             }
         },
         "cats": {
@@ -164,6 +310,20 @@
                 "noreminder": "I need to know taht I have to remind you.",
                 "added": "<b>%s</b>, I'll remint you in <b>%s</b> to <i>%s</i>."
             }
+        },
+        "text_to_speech": {
+            "commands": [
+                {
+                    "command": "/voice",
+                    "friendly": "^Say ",
+                    "shortcut": "/v",
+                    "description": "Converts text to speech.",
+                    "parameters": [
+                        {"text": true}
+                    ]
+                }
+             ],
+            "description": "Converts text to speech."
         },
         "weather": {
             "commands": [
