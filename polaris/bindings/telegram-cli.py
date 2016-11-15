@@ -32,7 +32,6 @@ class bindings(object):
 
         if msg.sender.type == 'user':
             sender = User(int(msg.sender.peer_id))
-            sender.first_name = msg.sender.first_name
             if 'first_name' in msg.sender:
                 sender.first_name = msg.sender.first_name
             if 'last_name' in msg.sender:
@@ -44,7 +43,7 @@ class bindings(object):
                 sender = Conversation(- int('100' + str(msg.sender.peer_id)))
             else:
                 sender = Conversation(- int(msg.sender.peer_id))
-            sender.title = msg.sender.title
+            sender.first_name = msg.sender.title
 
         date = msg.date
 

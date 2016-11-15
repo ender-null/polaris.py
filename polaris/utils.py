@@ -162,8 +162,8 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
         else:
             r = requests.get(url, params=params, headers=headers, files=files, data=data, timeout=100)
     except:
-        logging.error('Error making request to: %s' % r.url)
-        print('Error making request to: %s' % r.url)
+        logging.error('Error making request to: %s' % url)
+        print('Error making request to: %s' % url)
         return None
 
     if r.status_code != 200:
@@ -263,6 +263,19 @@ def mp3_to_ogg(original):
         if not data:
             break
         converted.write(data)
+
+    return converted.name
+
+def mp3_to_ogg_new(original):
+    converted = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg')
+    frommp3 = subprocess.Popen(['mpg123', '-w', '-', original], stdout=subprocess.PIPE)
+    toogg = subprocess.Popen(['oggenc', '-'], stdin=frommp3.stdout, stdout=subprocess.PIPE)
+    with open(converted.name, 'wb') as outfile:
+        while True:
+            data = toogg.stdout.read(1024 * 100)
+            if not data:
+                break
+            outfile.write(data)
 
     return converted.name
 

@@ -1,5 +1,6 @@
 from polaris.utils import get_input, is_command, send_request, is_int
-
+from bs4 import BeautifulSoup
+import requests
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -42,63 +43,20 @@ class plugin(object):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-            url = baseurl + '/recurso/urbanismo-infraestructuras/transporte-urbano/poste/tuzsa-' + input.lstrip(
-                '0') + '.json'
+            url = 'http://api.drk.cat/zgzpls/bus'
             params = {
-                'srsname': 'wgs84'
+                'poste': input,
+                'simplify': True
             }
 
             data = send_request(url, params=params)
 
-            if 'error' in data:
-                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+            if 'errors' in data:
+                return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
-            street = data['title'].split(')')[-1].split('Lí')[0].strip().title()
-            parada = data['title'].split(')')[0].replace('(', '')
-            line = data['title'].title().split(street)[-1].strip().replace('Líneas: ','')
-            buses = []
-            nodatabuses = []
+            text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.poste, data.lines)
 
-            text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (street, parada, line)
-
-            for destino in data['destinos']:
-                try:
-                    tiempo = int(destino['primero'].replace(' minutos', '').rstrip('.'))
-                    buses.append((
-                        destino['linea'],
-                        destino['destino'].rstrip(',').rstrip('.').title(),
-                        tiempo
-                    ))
-                except Exception as e:
-                    print(e)
-                    tiempo = destino['primero'].rstrip('.').replace('cin', 'ción')
-                    nodatabuses.append((
-                        destino['linea'],
-                        destino['destino'].rstrip(',').rstrip('.').title(),
-                        tiempo
-                    ))
-
-                try:
-                    tiempo = int(destino['segundo'].replace(' minutos', '').rstrip('.'))
-                    buses.append((
-                        destino['linea'],
-                        destino['destino'].rstrip(',').rstrip('.').title(),
-                        tiempo
-                    ))
-                except Exception as e:
-                    print(e)
-                    tiempo = destino['segundo'].rstrip('.').replace('cin', 'ción')
-                    nodatabuses.append((
-                        destino['linea'],
-                        destino['destino'].rstrip(',').rstrip('.').title(),
-                        tiempo
-                    ))
-            
-            
-            buses = sorted(buses, key=lambda bus: bus[2])
-            buses.extend(nodatabuses)
-
-            for bus in list(buses):
+            for bus in list(data.buses):
                 if is_int(bus[2]):
                     bus = (bus[0], bus[1], '%s min.' % bus[2])
                 text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus[2], bus[0], bus[1])
@@ -140,7 +98,6 @@ class plugin(object):
             for tranvia in tranvias:
                 text += ' • <b>%s min.</b>  %s <i>%s</i>\n' % (tranvia[2], tranvia[0], tranvia[1])
 
-            # text += '\n%s' % data['mensajes'][-1].replace('INFORMACIN','INFORMACIÓN')
             text = text.rstrip('\n')
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
