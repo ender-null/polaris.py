@@ -36,7 +36,7 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.trans.errors.no_results)
 
         try:
-            i = randint(0, len(data['items']))
+            i = randint(0, len(data['items']) - 1)
             photo = data['items'][i]['link']
             caption = data['items'][i]['title']
 

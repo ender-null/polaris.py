@@ -42,9 +42,6 @@ class Bot(object):
                     logging.info(
                         '%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
 
-                # p = Process(target=self.on_message_receive, args=(msg,), name='%s' % self.name)
-                # p.daemon = True
-                # p.start()
                 self.on_message_receive(msg)
 
         except KeyboardInterrupt:
@@ -121,6 +118,7 @@ class Bot(object):
 
         except Exception as e:
             logging.exception(e)
+            self.send_alert(e)
 
 
     def check_trigger(self, command, message, plugin):
@@ -167,52 +165,26 @@ class Bot(object):
 
 
     # THESE METHODS DO DIRECT ACTIONS #
-    def get_file(self, file_id, only_url=False):
-        try:
-            return self.bindings.get_file(file_id, only_url)
-        except:
-            return None
+    def get_file(self, file_id):
+        return self.bindings.get_file(file_id)
 
 
-    def invite_user(self, msg, user):
-        try:
-            self.bindings.invite_chat_member(msg.conversation.id, user)
-        except PermissionError:
-            return None
-        except Exception:
-            return False
-        else:
-            return True
+    def invite_user(self, msg, user_id):
+        return self.bindings.invite_conversation_member(msg.conversation.id, user)
 
 
-    def kick_user(self, msg, user):
-        try:
-            self.bindings.kick_chat_member(msg.conversation.id, user)
-        except PermissionError:
-            return None
-        except Exception:
-            return False
-        else:
-            return True
+    def kick_user(self, msg, user_id):
+        return self.bindings.kick_conversation_member(msg.conversation.id, user)
 
 
-    def unban_user(self, msg, user):
-        try:
-            self.bindings.unban_chat_member(msg.conversation.id, user)
-        except PermissionError:
-            return None
-        except Exception:
-            return False
-        else:
-            return True
+    def unban_user(self, msg, user_id):
+        return self.bindings.unban_conversation_member(msg.conversation.id, user)
 
 
-    def chat_info(self, chat):
-        try:
-            return self.connector.chat_info(chat)
-        except:
-            return chat
+    def conversation_info(self, conversation_id):
+        return self.bindings.conversation_info(conversation_id)
 
 
     def send_alert(self, text):
-        pass
+        message = Message(None, self.config.alerts_conversation_id, self.info, text)
+        self.outbox.put(message)

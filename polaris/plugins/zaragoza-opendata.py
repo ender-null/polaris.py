@@ -46,23 +46,30 @@ class plugin(object):
             url = 'http://api.drk.cat/zgzpls/bus'
             params = {
                 'poste': input,
-                'simplify': True
+                'source': 'opendata'
             }
-
             data = send_request(url, params=params)
 
             if 'errors' in data:
-                return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
+                url = 'http://api.drk.cat/zgzpls/bus'
+                params = {
+                    'poste': input,
+                    'source': 'web'
+                }
+                data = send_request(url, params=params)
+                if 'errors' in data:
+                    return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.poste, data.lines)
+            if data.street:
+                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.poste, data.lines)
+            else:
+                text = '<b>Parada: %s</b>\n\n' % (data.poste)
 
             for bus in list(data.buses):
-                if is_int(bus[2]):
-                    bus = (bus[0], bus[1], '%s min.' % bus[2])
-                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus[2], bus[0], bus[1])
+                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus['time'], bus['line'], bus['destination'])
 
             text = text.rstrip('\n')
-            
+
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         elif is_command(self, 2, m.content):

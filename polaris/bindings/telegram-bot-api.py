@@ -479,3 +479,46 @@ class bindings(object):
 
         else:
             logging.debug("UNKNOWN MESSAGE TYPE: %s" % message.type)
+
+
+    # THESE METHODS DO DIRECT ACTIONS #
+    def get_file(self, file_id):
+        return None
+
+
+    def invite_conversation_member(self, conversation_id, user_id):
+        return None
+
+
+    def kick_conversation_member(self, conversation_id, user_id):
+        params = {
+            "chat_id": conversation_id,
+            "user_id": user_id
+        }
+        result = self.api_request('kickChatMember', params)
+        if result.ok == False:
+            if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
+                return False
+            else:
+                return None
+        return True
+
+
+    def unban_conversation_member(self, conversation_id, user_id):
+        params = {
+            "chat_id": conversation_id,
+            "user_id": user_id
+        }
+        result = self.api_request('unbanChatMember', params)
+        if result.ok == False:
+            if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
+                return False
+            else:
+                return None
+        return True
+
+    def conversation_info(self, conversation_id):
+        params = {
+            "chat_id": conversation_id
+        }
+        return self.api_request('getChat', params)

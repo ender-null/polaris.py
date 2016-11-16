@@ -190,6 +190,7 @@ class bindings(object):
             print('UNKNOWN MESSAGE TYPE: ' + message.type)
             logging.debug("UNKNOWN MESSAGE TYPE")
 
+
     @coroutine
     def main_loop(self):
         while self.bot.started:
@@ -206,6 +207,7 @@ class bindings(object):
                 except Exception as e:
                     logging.error(e)
 
+
     def peer(self, chat_id):
         if chat_id > 0:
             peer = 'user#id' + str(chat_id)
@@ -215,6 +217,7 @@ class bindings(object):
             else:
                 peer = 'chat#id' + str(chat_id)[1:]
         return peer
+
 
     def user_id(self, username):
         if username.startswith('@'):
@@ -229,6 +232,7 @@ class bindings(object):
         else:
             return False
 
+
     def get_id(self, user):
         if isinstance(user, int):
             return user
@@ -240,6 +244,7 @@ class bindings(object):
 
         return id
 
+
     def escape(self, string):
         if string is None:
             return None
@@ -250,3 +255,24 @@ class bindings(object):
         for i in range(0, 7):
             string = string.replace(CHARS_UNESCAPED[i], CHARS_ESCAPED[i])
         return string.join(["'", "'"])  # wrap with single quotes.
+
+
+    # THESE METHODS DO DIRECT ACTIONS #
+    def get_file(self, file_id):
+        pass
+
+
+    def invite_conversation_member(self, conversation_id, user_id):
+        self.sender.chat_add_user(self.peer(conversation_id), self.peer(user_id))
+
+
+    def kick_conversation_member(self, conversation_id, user_id):
+        self.sender.chat_del_user(self.peer(conversation_id), self.peer(user_id))
+
+
+    def unban_conversation_member(self, conversation_id, user_id):
+        pass
+
+
+    def conversation_info(self, conversation_id):
+        self.api_request('sendContact', params)
