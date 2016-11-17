@@ -1,5 +1,4 @@
-from polaris.utils import get_input, get_coords, send_request, download, remove_html
-import requests, json, logging
+import requests
 
 
 class plugin(object):

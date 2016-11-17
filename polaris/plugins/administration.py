@@ -129,13 +129,16 @@ class plugin(object):
 
 
     def always(self, m):
+        if str(m.sender.id).startswith('-100'):
+            return
+
         # Update group data #
         gid = str(m.conversation.id)
         if m.conversation.id < 0:
             if gid in self.groups:
                 self.groups[gid].title = m.conversation.title
                 self.groups[gid].messages += 1
-            
+
             else:
                 self.groups[gid] = {
                     "title": m.conversation.title,
@@ -147,10 +150,12 @@ class plugin(object):
         uid = str(m.sender.id)
         if uid in self.users:
             self.users[uid].first_name = m.sender.first_name
-            self.users[uid].last_name = m.sender.last_name
-            self.users[uid].username = m.sender.username
+            if hasattr(m.sender, 'last_name'):
+                self.users[uid].last_name = m.sender.last_name
+            if hasattr(m.sender, 'username'):
+                self.users[uid].username = m.sender.username
             self.users[uid].messages += 1
-        
+
         else:
             self.users[uid] = {
                 "first_name": m.sender.first_name,

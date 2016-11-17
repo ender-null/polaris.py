@@ -230,6 +230,17 @@
             ],
             "description": "Send pictures of cats."
         },
+        "jokes": {
+            "commands": [
+                {
+                    "command": "/joke",
+                    "friendly": "joke",
+                    "description": "Random joke.",
+                    "parameters": []
+                }
+            ],
+            "description": "Random jokes."
+        },
         "pins": {
             "commands": [
                 {

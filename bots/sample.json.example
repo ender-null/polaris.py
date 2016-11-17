@@ -1,22 +1,17 @@
-
 {
     "bindings": "telegram-bot-api",
     "bindings_token": "YOUR TOKEN",
     "prefix": "/",
-    "owner": 12345678,
+    "owner": 123456789,
+    "alerts_conversation_id": 123456789,
     "debug": true,
     "translation": "default",
-    "plugins": [
-        "help",
-        "cats",
-        "echo",
-        "weather"
-    ],
+    "plugins": "all",
     "api_keys": {
         "microsoft_azure_key": "",
         "google_developer_console": "",
+        "google_custom_search_engine": "",
         "cat_api": "",
-        "chatbot": 6,
         "giphy": "",
         "lastfm": "",
         "league_of_legends": "",

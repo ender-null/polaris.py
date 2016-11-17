@@ -1,5 +1,5 @@
-from polaris.types import AutosaveDict, Message
-from polaris.utils import set_logger, is_int
+from polaris.types import AutosaveDict, Message, Conversation
+from polaris.utils import set_logger, is_int, load_plugin_list
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep
@@ -16,7 +16,7 @@ class Bot(object):
         self.outbox = Queue()
         self.started = False
         self.plugins = None
-        self.info = None
+        self.info = self.bindings.get_me()
 
 
     def sender_worker(self):
@@ -51,7 +51,6 @@ class Bot(object):
     def start(self):
         self.started = True
         self.plugins = self.init_plugins()
-        self.info = self.bindings.get_me()
 
         logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
 
@@ -76,14 +75,21 @@ class Bot(object):
 
         logging.info('Importing plugins...')
 
-        for plugin in self.config.plugins:
+        if type(self.config.plugins) is list:
+            plugins_to_load = self.config.plugins
+        elif self.config.plugins == 'all':
+            plugins_to_load = load_plugin_list()
+        else:
+            plugins_to_load = load_plugin_list()
+
+        for plugin in plugins_to_load:
             try:
                 plugins.append(importlib.import_module('polaris.plugins.' + plugin).plugin(self))
                 logging.info('  [OK] %s ' % (plugin))
             except Exception as e:
                 logging.error('  [Failed] %s - %s ' % (plugin, str(e)))
 
-        logging.info('  Loaded: ' + str(len(plugins)) + '/' + str(len(self.config.plugins)))
+        logging.info('  Loaded: ' + str(len(plugins)) + '/' + str(len(plugins_to_load)))
 
         return plugins
 
@@ -186,5 +192,5 @@ class Bot(object):
 
 
     def send_alert(self, text):
-        message = Message(None, self.config.alerts_conversation_id, self.info, text)
+        message = Message(None, Conversation(self.config.alerts_conversation_id, 'Alerts'), self.info, '<pre>%s</pre>' % text, extra={'format': 'HTML', 'preview': False})
         self.outbox.put(message)

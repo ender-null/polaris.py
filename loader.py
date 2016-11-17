@@ -1,6 +1,6 @@
 from polaris.types import AutosaveDict
 from polaris.bot import Bot
-from polaris.utils import set_logger
+from polaris.utils import set_logger, load_plugin_list
 from multiprocessing import Process
 import os, logging, time, importlib
 
@@ -14,15 +14,6 @@ def get_bots():
             botlist.append(Bot(filename[:-5]))
 
     return botlist
-
-
-# Loads all plugins from /polaris/plugins/ #
-def load_plugins():
-    plugin_list = []
-    for plugin_name in os.listdir('polaris/plugins'):
-        if plugin_name.endswith('.py'):
-            plugin_list.append(plugin_name[:-3])
-    return sorted(plugin_list)
 
 
 # Imports all plugin modules to a list. #
@@ -85,7 +76,7 @@ def setup():
             if 'plugins' in config:
                 plugins = config['plugins']
             else:
-                plugins = load_plugins()
+                plugins = load_plugin_list()
 
             if 'api_keys' in config:
                 api_keys = config['api_keys']

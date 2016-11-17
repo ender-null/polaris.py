@@ -29,7 +29,7 @@ class plugin(object):
 
         data = send_request(url, params)
 
-        if not data:
+        if not data or 'error' in data:
             return self.bot.send_message(m, self.bot.trans.errors.connection_error)
 
         if data.searchInformation.totalResults == 0:
@@ -41,7 +41,7 @@ class plugin(object):
             caption = data['items'][i]['title']
 
         except Exception as e:
-            logging.exception(e)
+            self.bot.send_alert(e)
             photo = None
 
         if photo:

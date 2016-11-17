@@ -240,6 +240,10 @@ class bindings(object):
         extra = None
 
         return Message(id, conversation, sender, content, type, date, reply, extra)
+        
+    
+    def convert_inline(self, msg):
+        pass
 
     def receiver_worker(self):
         try:

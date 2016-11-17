@@ -155,6 +155,15 @@ def is_int(number):
         return False
 
 
+# Returns all plugin names from /polaris/plugins/ #
+def load_plugin_list():
+    plugin_list = []
+    for plugin_name in os.listdir('polaris/plugins'):
+        if plugin_name.endswith('.py'):
+            plugin_list.append(plugin_name[:-3])
+    return sorted(plugin_list)
+
+
 def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True):
     try:
         if post:
@@ -195,14 +204,15 @@ def get_coords(input):
             locality, country)
 
 
-def download(url, params=None, headers=None, method='get'):
+def download(url, params=None, headers=None, method='get', extension=None):
     try:
         if method == 'post':
             res = requests.post(url, params=params, headers=headers, stream=True)
         else:
             res = requests.get(url, params=params, headers=headers, stream=True)
-        ext = os.path.splitext(url)[1].split('?')[0]
-        f = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
+        if not extension:
+            extension = os.path.splitext(url)[1].split('?')[0]
+        f = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
         for chunk in res.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
@@ -210,11 +220,9 @@ def download(url, params=None, headers=None, method='get'):
         logging.error(e)
         return None
     f.seek(0)
-    if not ext:
+    if not extension:
         f.name = fix_extension(f.name)
-    # f.cose
     return f.name
-    # return open(f.name, 'rb')
 
 
 def save_to_file(res):

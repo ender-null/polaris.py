@@ -232,6 +232,17 @@
             ],
             "description": "Gatitos nyo!!"
         },
+        "jokes": {
+            "commands": [
+                {
+                    "command": "/chiste",
+                    "friendly": "chiste",
+                    "description": "Chiste aleatorio.",
+                    "parameters": []
+                }
+            ],
+            "description": "Chiste aleatorios."
+        },
         "pins": {
             "commands": [
                 {
