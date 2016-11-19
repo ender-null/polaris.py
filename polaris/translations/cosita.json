@@ -10,6 +10,7 @@
         "needs_reply": "* Bolita necesita que le indiquen a que se refiere amito *",
         "group_only": "* Bolita necesita estar en un grupo de cositas *",
         "private_only": "* Bolita prefiere eso estando solitos *",
+        "admin_required": "* Bolita necesita privilegios de amito *",
         "download_failed": "* Bolita no pudo traer lo que pedian, eso la pone triste *",
         "exception_found": "* Bolita esta confusa, y triste, ¿porque nadie piensa en Bolita? *",
         "unknown": "* Bolita rueda sin saber que dhacer *"

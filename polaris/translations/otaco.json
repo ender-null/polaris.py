@@ -10,6 +10,7 @@
         "needs_reply": "Solo funciona como <b>respuesta</b> a algo.",
         "group_only": "Solo funciona en <b>grupos</b>.",
         "private_only": "Solo funciona en <b>privado</b>.",
+        "admin_required": "Solo funciona con <b>privilegios de machirulo falocentrico opresor</b>.",
         "download_failed": "Algo ha pasado y no he podido descargarlo.",
         "exception_found": "Porque tocas las cosas de no tocar?",
         "unknown": "yoqsetio"

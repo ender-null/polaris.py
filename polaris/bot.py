@@ -148,12 +148,15 @@ class Bot(object):
 
 
     def cron_jobs(self):
-        while(self.started):
-            for plugin in self.plugins:
-                if hasattr(plugin, 'cron'):
-                    plugin.cron()
+        try:
+            while(self.started):
+                for plugin in self.plugins:
+                    if hasattr(plugin, 'cron'):
+                        plugin.cron()
 
-            sleep(5)
+                sleep(5)
+        except KeyboardInterrupt:
+            pass
 
 
     # METHODS TO MANAGE MESSAGES #
@@ -176,15 +179,15 @@ class Bot(object):
 
 
     def invite_user(self, msg, user_id):
-        return self.bindings.invite_conversation_member(msg.conversation.id, user)
+        return self.bindings.invite_conversation_member(msg.conversation.id, user_id)
 
 
     def kick_user(self, msg, user_id):
-        return self.bindings.kick_conversation_member(msg.conversation.id, user)
+        return self.bindings.kick_conversation_member(msg.conversation.id, user_id)
 
 
     def unban_user(self, msg, user_id):
-        return self.bindings.unban_conversation_member(msg.conversation.id, user)
+        return self.bindings.unban_conversation_member(msg.conversation.id, user_id)
 
 
     def conversation_info(self, conversation_id):

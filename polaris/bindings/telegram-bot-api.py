@@ -226,6 +226,7 @@ class bindings(object):
         else:
             type = None
             content = None
+            extra = None
 
         if 'caption' in msg:
             extra['caption'] = msg.caption
@@ -236,8 +237,6 @@ class bindings(object):
             reply = self.convert_message(msg.reply_to_message)
         else:
             reply = None
-
-        extra = None
 
         return Message(id, conversation, sender, content, type, date, reply, extra)
         
@@ -487,11 +486,11 @@ class bindings(object):
 
     # THESE METHODS DO DIRECT ACTIONS #
     def get_file(self, file_id):
-        return None
+        return False
 
 
     def invite_conversation_member(self, conversation_id, user_id):
-        return None
+        return False
 
 
     def kick_conversation_member(self, conversation_id, user_id):
@@ -502,9 +501,9 @@ class bindings(object):
         result = self.api_request('kickChatMember', params)
         if result.ok == False:
             if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
-                return False
-            else:
                 return None
+            else:
+                return False
         return True
 
 
@@ -516,9 +515,9 @@ class bindings(object):
         result = self.api_request('unbanChatMember', params)
         if result.ok == False:
             if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
-                return False
-            else:
                 return None
+            else:
+                return False
         return True
 
     def conversation_info(self, conversation_id):

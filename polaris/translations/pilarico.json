@@ -10,6 +10,7 @@
         "needs_reply": "Solo funciona como <b>respuesta</b>, co.",
         "group_only": "Solo funciona en <b>grupos</b>, co.",
         "private_only": "Solo funciona en <b>privado</b>, co.",
+        "admin_required": "Solo funciona con <b>privilegios de administrador</b>, co.",
         "download_failed": "Algo ha pasado y no he podido descargarlo, co.",
         "exception_found": "Ha saltado una excepcion, co.",
         "unknown": "Yo que se, co."

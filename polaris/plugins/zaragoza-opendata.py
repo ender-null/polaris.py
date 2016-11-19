@@ -45,20 +45,12 @@ class plugin(object):
 
             url = 'http://api.drk.cat/zgzpls/bus'
             params = {
-                'poste': input,
-                'source': 'opendata'
+                'poste': input
             }
             data = send_request(url, params=params)
 
-            if 'errors' in data:
-                url = 'http://api.drk.cat/zgzpls/bus'
-                params = {
-                    'poste': input,
-                    'source': 'web'
-                }
-                data = send_request(url, params=params)
-                if 'errors' in data:
-                    return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
+            if not data or 'errors' in data:
+                return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             if data.street:
                 text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.poste, data.lines)

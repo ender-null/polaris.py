@@ -31,6 +31,9 @@ class plugin(object):
             else:
                 language = 'en-us'
                 text = input
+                
+        if not text:
+            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         url = 'http://translate.google.com/translate_tts'
         params = {

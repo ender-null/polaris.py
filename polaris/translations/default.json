@@ -8,8 +8,9 @@
         "permission_required": "Permission required.",
         "missing_id": "Missing id.",
         "needs_reply": "Only works with <b>replies</b>.",
-        "group_only": "Only works with <b>gruops</b>.",
+        "group_only": "Only works with <b>groups</b>.",
         "private_only": "Only works in <b>private</b>.",
+        "admin_required": "Only works with <b>admin privileges</b>.",
         "download_failed": "Download failed.",
         "exception_found": "Exception found.",
         "unknown": "Unknown error."

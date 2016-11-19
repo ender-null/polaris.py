@@ -172,17 +172,19 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
             r = requests.get(url, params=params, headers=headers, files=files, data=data, timeout=100)
     except:
         logging.error('Error making request to: %s' % url)
-        print('Error making request to: %s' % url)
         return None
 
     if r.status_code != 200:
         logging.error(r.text)
         while r.status_code == 429:
-            r = s.get(url, params=params, headers=headers, files=files, data=data)
-    if parse:
-        return DictObject(json.loads(r.text))
-    else:
-        return r.url
+            r = r.get(url, params=params, headers=headers, files=files, data=data)
+    try:
+        if parse:
+            return DictObject(json.loads(r.text))
+        else:
+            return r.url
+    except:
+        return None
 
 
 def get_coords(input):

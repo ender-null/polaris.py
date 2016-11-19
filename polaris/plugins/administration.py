@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, first_word
+from polaris.utils import get_input, is_command, first_word, is_mod
 from polaris.types import AutosaveDict
 from re import findall
 
@@ -56,8 +56,24 @@ class plugin(object):
             if not is_mod(self.bot, m.sender.id, m.conversation.id):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
-            if not input:
+            if not input and not m.reply:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+
+            if m.reply:
+                target = m.reply.sender.id
+            elif input:
+                target = input
+            else:
+                target = m.sender.id
+                
+            res = self.bot.kick_user(m, target)
+            self.bot.unban_user(m, target)
+            if res is None:
+                return self.bot.send_message(m, self.bot.trans.errors.admin_required, extra={'format': 'HTML'})
+            elif not res:
+                return self.bot.send_message(m, self.bot.trans.errors.failed, extra={'format': 'HTML'})
+            else:
+                return self.bot.send_message(m, '<pre>An enemy has been slain.</pre>', extra={'format': 'HTML'})
 
             return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
 
@@ -163,4 +179,12 @@ class plugin(object):
                 "username": m.sender.username,
                 "messages": 1
             }
+
+        # Update group id when upgraded to supergroup #
+        if m.type == 'notification' and m.content == 'upgrade_to_supergroup':
+            to_id = str(m.extra['chat_id'])
+            from_id = str(m.extra['from_chat_id'])
+            self.groups[to_id] = self.groups.pop(from_id)
+            print('upgraded')
+
         self.users.store_database()
