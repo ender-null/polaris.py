@@ -62,7 +62,7 @@
                 "not_tagged": "<b>👤 %s</b>\n🏷"
             }
         },
-        "administration": {
+       "administration": {
             "commands": [
                 {
                     "command": "/administracion",
@@ -98,10 +98,12 @@
                 {
                     "command": "/reglas",
                     "friendly": "^Reglas del grupo.",
-                    "shortcut": "/j",
+                    "shortcut": "/r",
                     "description": "Devuelve las reglas del grupo actual.",
-                    "parameters": [],
-                    "hidden": true
+                    "parameters": [
+                        { "numero": false }
+                    ],
+                    "hidden": false
                 },
                 {
                     "command": "/matar",
@@ -127,7 +129,7 @@
                     "command": "/configurar",
                     "friendly": "^Configurar grupo",
                     "shortcut": "/cfg",
-                    "description": "Devuelve información y enlace de invitación.",
+                    "description": "Configura parametros del grupo actual.",
                     "parameters": [
                         { "id | alias": true }
                     ],
@@ -140,7 +142,14 @@
                 "added": "<b>%s</b> se ha añadido a la lista de grupos.",
                 "already_added": "<b>%s</b> ya está la lista de grupos.",
                 "not_added": "<b>%s</b> no está en la lista de grupos.",
-                "set": "Se ha establecido un parámetro de <b>%s</b>."
+                "set": "Se ha establecido un parámetro de <b>%s</b>.",
+                "groups": "<b>Grupos</b>:",
+                "rules": "<b>Reglas</b>:",
+                "join": "Unirse al Grupo",
+                "nolink": "<i>Sin enlace de invitación</i>",
+                "norules": "<i>Sin reglas</i>",
+                "commands": "<b>Comandos para grupos</b>:",
+                "notfound": "<i>No existe esa regla</i>."
             }
         },
         "echo": {

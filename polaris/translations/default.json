@@ -126,6 +126,7 @@
                     "command": "/configure",
                     "friendly": "^Configure group",
                     "shortcut": "/cfg",
+                    "description": "Configures group",
                     "parameters": [
                         { "id | alias": true }
                     ],
@@ -138,7 +139,14 @@
                 "added": "<b>%s</b> was added to the list of groups.",
                 "already_added": "<b>%s</b> is already in the list of groups.",
                 "not_added": "<b>%s</b> isn't in the list of groups.",
-                "set": "The parameter of <b>%s</b> was set."
+                "set": "The parameter of <b>%s</b> was set.",
+                "groups": "<b>Groups</b>:",
+                "rules": "<b>Rules</b>:",
+                "join": "Join Group",
+                "nolink": "<i>No invite link</i>",
+                "norules": "<i>No rules</i>",
+                "commands": "<b>Group Commands</b>:",
+                "notfound": "<i>Rule not set</i>."
             }
         },
         "echo": {
