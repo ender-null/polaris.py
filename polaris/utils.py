@@ -218,7 +218,7 @@ def download(url, params=None, headers=None, method='get', extension=None):
         for chunk in res.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
-    except IOError as e:
+    except Exception as e:
         logging.error(e)
         return None
     f.seek(0)

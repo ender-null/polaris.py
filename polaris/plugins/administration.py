@@ -73,10 +73,10 @@ class plugin(object):
                     input in self.groups[id]['title']):
                     gid_to_join = id
                     break
-                
+
             if not gid_to_join in self.administration:
                 return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-                
+
             text = '<b>%s</b>\n<i>%s</i>\n\n%s' % (self.groups[gid_to_join]['title'], self.administration[gid_to_join]['description'], self.bot.trans.plugins.administration.strings.rules)
             i = 1
             for rule in self.administration[gid_to_join]['rules']:
@@ -95,14 +95,17 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
             if not gid in self.administration:
-                return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-                
+                if is_command(self, 4, m.content):
+                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+                elif is_command(self, 9, m.content):
+                    return
+
             text = '<b>%s</b>\n<i>%s</i>\n\n%s' % (self.groups[gid]['title'], self.administration[gid]['description'], self.bot.trans.plugins.administration.strings.rules)
             i = 1
             for rule in self.administration[gid]['rules']:
                 text += '\n %s. <i>%s</i>' % (i, rule)
                 i += 1
-            
+
             if not self.administration[gid]['rules']:
                 text += '\n%s' % self.bot.trans.plugins.administration.strings.norules
             if is_command(self, 4, m.content):
@@ -154,7 +157,7 @@ class plugin(object):
                 target = input
             else:
                 target = m.sender.id
-                
+
             res = self.bot.kick_user(m, target)
             self.bot.unban_user(m, target)
             if res is None:
@@ -186,7 +189,7 @@ class plugin(object):
 
             if not is_trusted(self.bot, m.sender.id):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
-                
+
             parameters = [
                 'add',
                 'remove',
@@ -238,7 +241,7 @@ class plugin(object):
                     return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
                 else:
                     return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-                    
+
             elif first_word(input) == 'link':
                 if gid in self.administration:
                     self.administration[gid]['link'] = all_but_first_word(input)
@@ -317,7 +320,8 @@ class plugin(object):
         if m.type == 'notification' and m.content == 'upgrade_to_supergroup':
             to_id = str(m.extra['chat_id'])
             from_id = str(m.extra['from_chat_id'])
-            self.administration[to_id] = self.administration.pop(from_id)
+            if from_id in self.administration:
+                self.administration[to_id] = self.administration.pop(from_id)
             self.groups[to_id] = self.groups.pop(from_id)
 
         self.administration.store_database()

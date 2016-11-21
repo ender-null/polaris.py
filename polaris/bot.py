@@ -123,8 +123,8 @@ class Bot(object):
                             break
 
         except Exception as e:
-            logging.exception(e)
-            self.send_alert(e)
+            logging.exception(traceback.format_exc())
+            self.send_alert(traceback.format_exc())
 
 
     def check_trigger(self, command, message, plugin):

@@ -1,4 +1,4 @@
-import requests
+from polaris.utils import send_request
 
 
 class plugin(object):
@@ -16,12 +16,9 @@ class plugin(object):
             'api_key': self.bot.config.api_keys.cat_api
         }
 
-        res = requests.get(
-            url,
-            params=params,
-        )
+        photo = send_request(url, params=params, parse=False)
 
-        if res.status_code != 200:
+        if photo:
+            self.bot.send_message(m, photo, 'photo')
+        else:
             return self.bot.send_message(m, self.bot.trans.errors.connection_error)
-
-        self.bot.send_message(m, res.url, 'photo')
