@@ -324,10 +324,10 @@
                     ]
                 }
              ],
-            "description": "Envia mensajes con retardo.",
+            "description": "Send messages with delay.",
             "strings": {
                 "wrongdelay": "The delay must be in this format: '(entero)(s|m|h|d)'.\nExample: '2h' for 2 hours.",
-                "noreminder": "I need to know taht I have to remind you.",
+                "noreminder": "I need to know that I have to remind you.",
                 "added": "<b>%s</b>, I'll remint you in <b>%s</b> to <i>%s</i>."
             }
         },

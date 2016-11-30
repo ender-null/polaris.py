@@ -373,7 +373,7 @@
             "strings": {
                 "title": "<b>Tiempo en %s (%s)</b>:",
                 "titleforecast": "<b>Prevision para %s (%s)</b>:",
-                "feelslike": " (Sensacion %soC)",
+                "feelslike": " (Sensación %sºC)",
                 "sunday": "Domingo",
                 "monday": "Lunes",
                 "tuesday": "Martes",

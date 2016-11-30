@@ -206,6 +206,20 @@ def get_coords(input):
             locality, country)
 
 
+def get_streetview(latitude, longitude, key, size='640x320', fov=90, heading=235, pitch=10):
+    url = 'http://maps.googleapis.com/maps/api/streetview'
+    params = {
+        'size': size,
+        'location': '%s,%s' % (latitude, longitude),
+        'fov': fov,
+        'heading': heading,
+        'pitch': pitch,
+        'key': key
+    }
+
+    return download(url, params=params)
+
+
 def download(url, params=None, headers=None, method='get', extension=None):
     try:
         if method == 'post':
@@ -262,32 +276,15 @@ def get_short_url(long_url, api_key):
     return res.id
 
 
-def mp3_to_ogg(original):
-    converted = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg')
-    conv = subprocess.Popen(
-        ['avconv', '-i', original, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', converted.name],
-        stdout=subprocess.PIPE)
+def mp3_to_ogg(input):
+    output = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg').name
 
-    while True:
-        data = conv.stdout.read(1024 * 100)
-        if not data:
-            break
-        converted.write(data)
+    with open(os.devnull, "w") as DEVNULL:
+        converter = subprocess.check_call(
+            ['ffmpeg', '-i', input, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', output],
+            stdout=DEVNULL)
 
-    return converted.name
-
-def mp3_to_ogg_new(original):
-    converted = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg')
-    frommp3 = subprocess.Popen(['mpg123', '-w', '-', original], stdout=subprocess.PIPE)
-    toogg = subprocess.Popen(['oggenc', '-'], stdin=frommp3.stdout, stdout=subprocess.PIPE)
-    with open(converted.name, 'wb') as outfile:
-        while True:
-            data = toogg.stdout.read(1024 * 100)
-            if not data:
-                break
-            outfile.write(data)
-
-    return converted.name
+    return output
 
 
 def remove_markdown(text):

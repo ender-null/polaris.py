@@ -2,9 +2,8 @@
     "bindings": "telegram-bot-api",
     "bindings_token": "YOUR TOKEN",
     "prefix": "/",
-    "owner": 123456789,
-    "alerts_conversation_id": 123456789,
-    "debug": true,
+    "owner": 12345678,
+    "alerts_conversation_id": -123456789,
     "translation": "default",
     "plugins": "all",
     "api_keys": {
@@ -12,10 +11,10 @@
         "google_developer_console": "",
         "google_custom_search_engine": "",
         "cat_api": "",
-        "giphy": "",
+        "giphy": "dc6zaTOxFJmzC",
         "lastfm": "",
-        "league_of_legends": "",
-        "openweathermap": "",
-        "weather_underground": ""
+        "riot_api": "",
+        "weather_underground": "",
+        "wolfram_alpha": ""
     }
 }

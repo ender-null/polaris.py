@@ -128,6 +128,8 @@ class Bot(object):
 
 
     def check_trigger(self, command, message, plugin):
+        command = command.lower()
+
         # If the commands are not /start or /help, set the correct command start symbol. #
         if command == '/start' or command == '/help':
             trigger = command.replace('/', '^/')

@@ -4,6 +4,7 @@ from pytg.receiver import Receiver
 from pytg.sender import Sender
 from pytg.utils import coroutine
 from DictObject import DictObject
+from bs4 import BeautifulSoup
 import json, logging
 
 
@@ -116,10 +117,13 @@ class bindings(object):
             if 'format' in message.extra and message.extra['format'] == 'Markdown':
                 message.content = remove_markdown(message.content)
             elif 'format' in message.extra and message.extra['format'] == 'HTML':
-                message.content = remove_html(message.content)
+                message.content = self.convert_links(message.content)
 
             try:
-                self.sender.send_msg(self.peer(message.conversation.id), message.content, enable_preview=False)
+                if 'format' in message.extra and message.extra['format'] == 'HTML':
+                    self.sender.raw('[html] msg %s %s' % (self.peer(message.conversation.id), self.escape(message.content)), enable_preview=False)
+                else:
+                    self.sender.send_msg(self.peer(message.conversation.id), message.content, enable_preview=False)
             except Exception as e:
                 logging.exception(e)
 
@@ -255,6 +259,12 @@ class bindings(object):
         for i in range(0, 7):
             string = string.replace(CHARS_UNESCAPED[i], CHARS_ESCAPED[i])
         return string.join(["'", "'"])  # wrap with single quotes.
+
+
+    def convert_links(self, string):
+        for link in BeautifulSoup(string, 'lxml').findAll("a"):
+            string = string.replace(str(link), link.get("href"))
+        return string
 
 
     # THESE METHODS DO DIRECT ACTIONS #

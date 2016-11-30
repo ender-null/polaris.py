@@ -1,4 +1,4 @@
-﻿from polaris.utils import get_input, is_command, get_coords, send_request, download, remove_html
+﻿from polaris.utils import get_input, is_command, get_coords, get_streetview, send_request, download, remove_html
 
 
 class plugin(object):
@@ -43,8 +43,9 @@ class plugin(object):
             message = u'%s\n%s %s%s\n🌡%sºC 💧%s 🌬%s m/s' % (
                 remove_html(title), weather_icon, weather_string, feelslike, temp, humidity, wind)
             try:
-                photo = webcams[0].CURRENTIMAGEURL
+                photo = get_streetview(lat, lon, self.bot.config.api_keys.google_developer_console)
             except Exception as e:
+                print(e)
                 photo = None
 
             if photo:

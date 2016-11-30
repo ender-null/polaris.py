@@ -1,0 +1,9 @@
+[Unit]
+Description=Telegram-CLI Systemd Service
+
+[Service]
+ExecStart=/usr/bin/telegram-cli -p sakubo --json -P 4458 --wait-dialog-list
+User=ender
+
+[Install]
+WantedBy=default.target

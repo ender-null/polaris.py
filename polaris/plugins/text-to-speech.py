@@ -1,4 +1,4 @@
-from polaris.utils import get_input, mp3_to_ogg, mp3_to_ogg_new, send_request, download, first_word, all_but_first_word
+from polaris.utils import get_input, mp3_to_ogg, send_request, download, first_word, all_but_first_word
 
 
 class plugin(object):
@@ -49,9 +49,8 @@ class plugin(object):
             "Referer": 'http://translate.google.com/',
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.8 Safari/537.36"
         }
-        # file = download(url, params, headers)
-        # voice = mp3_to_ogg_new(file)
-        voice = download(url, params, headers)
+        file = download(url, params, headers)
+        voice = mp3_to_ogg(file)
 
         if voice:
             return self.bot.send_message(m, voice, 'voice')

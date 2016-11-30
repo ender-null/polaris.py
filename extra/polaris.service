@@ -1,0 +1,10 @@
+[Unit]
+Description=Polaris Systemd Service
+
+[Service]
+ExecStart=/usr/bin/screen -dmS polaris /bin/bash runme.sh
+WorkingDirectory=/home/ender/Projects/polaris
+User=ender
+
+[Install]
+WantedBy=default.target

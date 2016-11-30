@@ -77,7 +77,7 @@ class plugin(object):
 
             youtube = send_request(url, params=params)
 
-            if len(youtube['items']) > 0:
+            if not 'error' in youtube and len(youtube['items']) > 0:
                 text += '\n\n🌐 %s\n%s\nhttps://youtu.be/%s' % (self.bot.trans.plugins.lastfm.strings.might_be, youtube['items'][0]['snippet']['title'], youtube['items'][0]['id']['videoId'])
 
             self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
