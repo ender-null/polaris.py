@@ -134,6 +134,12 @@
                         { "id | alias": true }
                     ],
                     "hidden": true
+                },
+                {
+                    "command": "^new_chat_member$",
+                    "description": "Muestra el mensaje del dia y reglas al nuevo miembro.",
+                    "parameters": [],
+                    "hidden": true
                 }
             ],
             "description": "Diferentes funcionalidades para administrar grupos.",
@@ -149,7 +155,16 @@
                 "nolink": "<i>Sin enlace de invitación</i>",
                 "norules": "<i>Sin reglas</i>",
                 "commands": "<b>Comandos para grupos</b>:",
-                "notfound": "<i>No existe esa regla</i>."
+                "notfound": "<i>No existe esa regla</i>.",
+                "new_chat_member": "Nuevo miembro añadido",
+                "done": "Configuración añadida con exito para <b>%s</b>.",
+                "cancel": "No te pedire mas datos para <b>%s</b>, se ha guardado todo lo introducido.",
+                "yes": "Si",
+                "ask_to_add": "¿Añadir el grupo <b>%s</b>? <b>Si</b> o <b>No</b>.",
+                "ask_link": "Enviame el enlace de invitación de <b>%s</b>.\n\nPulsa /cancel para omitirlo y terminar.",
+                "ask_alias": "Enviame el alias que quieres para <b>%s</b>.\n\nPulsa /cancel para omitirlo y terminar.",
+                "ask_rules": "Enviame las reglas para <b>%s</b>, cada regla separada por un salto de linea y sin guiones o numeros.\n\nPulsa /cancel para omitirlo y terminar.",
+                "ask_motd": "Enviame el mensaje del dia para <b>%s</b>, sirve como descripción o para publicar anuncios.\n\nPulsa /cancel para omitirlo y terminar."
             }
         },
         "echo": {
@@ -174,14 +189,14 @@
                     "shortcut": "/i",
                     "description": "Devuelve una imágen de Google.",
                     "parameters": [
-                        { "texto": true }
+                        { "consulta": true }
                     ]
                 },
                 {
                     "command": "/insfw",
                     "description": "Devuelve una imágen de Google con el filtro desactivado.",
                     "parameters": [
-                        { "texto": true }
+                        { "consulta": true }
                     ],
                     "hidden": true
                 }
@@ -191,24 +206,56 @@
         "web_search": {
             "commands": [
                 {
-                    "command": "/buscar",
+                    "command": "/google",
                     "friendly": "^Busca ",
-                    "shortcut": "/s",
-                    "description": "Busca en Google.",
+                    "shortcut": "/g",
+                    "description": "Busca en Google y devuelve 8 resultados.",
                     "parameters": [
-                        { "texto": true }
+                        { "consulta": true }
                     ]
                 },
                 {
-                    "command": "/snsfw",
+                    "command": "/glucky",
+                    "shortcut": "/gl",
+                    "description": "Devuelve el primer resultado de Google.",
+                    "parameters": [
+                        { "consulta": true }
+                    ]
+                },
+                {
+                    "command": "/gnsfw",
                     "description": "Busca en Google con el filtro desactivado.",
                     "parameters": [
-                        { "texto": true }
+                        { "consulta": true }
                     ],
                     "hidden": true
                 }
             ],
             "description": "Busca en Google.",
+            "strings": {
+                "results": "<b>Resultados de</b> <i>%s</i>:"
+            }
+        },
+        "youtube_search": {
+            "commands": [
+                {
+                    "command": "/youtube",
+                    "friendly": "^Video de youtube de",
+                    "shortcut": "/yt",
+                    "description": "Busca en YouTube y devuelve el primer video.",
+                    "parameters": [
+                        { "consulta": true }
+                    ]
+                },
+                {
+                    "command": "/ylist",
+                    "description": "Busca en YouTube y devuelve 8 resultados.",
+                    "parameters": [
+                        { "consulta": true }
+                    ]
+                }
+            ],
+            "description": "Busca en YouTube.",
             "strings": {
                 "results": "<b>Resultados de</b> <i>%s</i>:"
             }
@@ -235,7 +282,7 @@
             "commands": [
                 {
                     "command": "/gatito",
-                    "friendly": "Gat[o|a|ito]",
+                    "friendly": "Gatit[a|o]",
                     "description": "Envia un gatito.",
                     "parameters": []
                 }
@@ -246,7 +293,7 @@
             "commands": [
                 {
                     "command": "/chiste",
-                    "friendly": "chiste",
+                    "friendly": "^[cuentame un |]chiste",
                     "description": "Chiste aleatorio.",
                     "parameters": []
                 }
@@ -334,6 +381,22 @@
                 "added": "<b>%s</b>, te recordare en <b>%s</b> que tienes que <i>%s</i>."
             }
         },
+        "russian_roulette": {
+            "commands": [
+                {
+                    "command": "/ruleta",
+                    "friendly": "^Ruleta( rusa|)",
+                    "description": "Ruleta rusa, si pierdes te expulsa y banea del grupo.",
+                    "parameters": []
+                }
+             ],
+            "description": "Ruleta rusa, si pierdes te expulsa y banea del grupo.",
+            "strings": {
+                "empty": "<b>¡Te libraste %s!</b> Quedan <b>%s</b> disparos.",
+                "bang": "<b>¡Bang!</b> %s murio de una manera estupida.",
+                "cant_bang": "<b>¡Bang!</b> %s no puedo matarte, pero hazte el muerto, o algo. ¯\\_(ツ)_/¯"
+            }
+        },
         "text_to_speech": {
             "commands": [
                 {
@@ -342,6 +405,7 @@
                     "shortcut": "/v",
                     "description": "Convierte texto en voz.",
                     "parameters": [
+                        {"idioma": false},
                         {"texto": true}
                     ]
                 }

@@ -1,7 +1,7 @@
 from polaris.types import Message, Conversation, User
 from polaris.utils import send_request
 from six import string_types
-import logging
+import logging, json
 
 
 class bindings(object):
@@ -224,6 +224,7 @@ class bindings(object):
             }
 
         else:
+            logging.error(msg)
             type = None
             content = None
             extra = None
@@ -242,7 +243,24 @@ class bindings(object):
         
     
     def convert_inline(self, msg):
-        pass
+        id = msg.id
+        conversation = Conversation(msg['from'].id, msg['from'].first_name)
+
+        sender = User(msg['from'].id, msg['from'].first_name)
+        if 'last_name' in msg['from']:
+            sender.last_name = msg['from'].last_name
+
+        if 'username' in msg['from']:
+            sender.username = msg['from'].username
+
+        content = msg.query
+        type = 'inline_query'
+        date = None
+        reply = None
+        extra =  {'offset': msg.offset}
+
+        return Message(id, conversation, sender, content, type, date, reply, extra)
+
 
     def receiver_worker(self):
         try:
@@ -279,6 +297,15 @@ class bindings(object):
                                 elif 'edited_message' in u:
                                     message = self.convert_message(u.edited_message)
                                     self.bot.inbox.put(message)
+
+                                elif 'channel_post' in u:
+                                    message = self.convert_message(u.channel_post)
+                                    self.bot.inbox.put(message)
+
+                                elif 'edited_channel_post' in u:
+                                    message = self.convert_message(u.edited_channel_post)
+                                    self.bot.inbox.put(message)
+
         except KeyboardInterrupt:
             pass
 
@@ -297,6 +324,11 @@ class bindings(object):
 
             if message.reply:
                 params['reply_to_message_id'] = message.reply
+
+            if message.extra and 'force_reply' in message.extra:
+                params['reply_markup'] = json.dumps({
+                    'force_reply': message.extra['force_reply']
+                })
 
             self.api_request('sendMessage', params)
 
@@ -480,8 +512,31 @@ class bindings(object):
 
             self.api_request('sendContact', params)
 
+        elif message.type == 'inline_results':
+            params = {
+                "inline_query_id": message.id,
+                "results": message.content
+            }
+
+            if message.extra and 'cache_time' in message.extra:
+                params['cache_time'] = message.extra['cache_time']
+
+            if message.extra and 'is_personal' in message.extra:
+                params['is_personal'] = message.extra['is_personal']
+
+            if message.extra and 'next_offset' in message.extra:
+                params['next_offset'] = message.extra['next_offset']
+
+            if message.extra and 'switch_pm_text' in message.extra:
+                params['switch_pm_text'] = message.extra['switch_pm_text']
+
+            if message.extra and 'switch_pm_parameter' in message.extra:
+                params['switch_pm_parameter'] = message.extra['switch_pm_parameter']
+
+            self.api_request('answerInlineQuery', params)
+
         else:
-            logging.debug("UNKNOWN MESSAGE TYPE: %s" % message.type)
+            logging.error("UNKNOWN MESSAGE TYPE: %s" % message.type)
 
 
     # THESE METHODS DO DIRECT ACTIONS #

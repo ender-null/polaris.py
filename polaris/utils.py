@@ -54,7 +54,10 @@ def is_command(self, number, text):
 
 def set_setting(bot, uid, key, value):
     settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-    uid = str(uid)
+
+    if not isinstance(uid, str):
+        uid = str(uid)
+
     if not uid in settings:
         settings[uid] = {}
     settings[uid][key] = value
@@ -63,7 +66,10 @@ def set_setting(bot, uid, key, value):
 
 def get_setting(bot, uid, key):
     settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-    uid = str(uid)
+
+    if not isinstance(uid, str):
+        uid = str(uid)
+
     try:
         return settings[uid][key]
     except:
@@ -72,21 +78,44 @@ def get_setting(bot, uid, key):
 
 def del_setting(bot, uid, key):
     settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-    uid = str(uid)
+
+    if not isinstance(uid, str):
+        uid = str(uid)
+
     del(settings[uid][key])
     settings.store_database()
 
 
-def has_tag(bot, target, tag):
+def has_tag(bot, target, tag, return_match = False):
     tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
-    if target in tags and tag in tags[target]:
+
+    if not isinstance(target, str):
+        target = str(target)
+
+    if target in tags and '?' in tag:
+        for target_tag in tags[target]:
+            if target_tag.startswith(tag.split('?')[0]):
+                if return_match:
+                    return target_tag
+
+                else:
+                    return True
+
+        return False
+
+    elif target in tags and tag in tags[target]:
         return True
+
     else:
         return False
 
 
 def set_tag(bot, target, tag):
     tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
+
+    if not isinstance(target, str):
+        target = str(target)
+
     if not target in tags:
         tags[target] = []
 
@@ -97,12 +126,19 @@ def set_tag(bot, target, tag):
 
 def del_tag(bot, target, tag):
     tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
+
+    if not isinstance(target, str):
+        target = str(target)
+
     tags[target].remove(tag)
     tags.store_database()
 
 
 def is_admin(bot, uid):
-    if bot.config.owner == uid:
+    if not isinstance(uid, str):
+        uid = str(uid)
+
+    if str(bot.config.owner) == uid:
         return True
 
     elif has_tag(bot, uid, 'admin') or has_tag(bot, uid, 'owner'):
@@ -113,6 +149,9 @@ def is_admin(bot, uid):
 
 
 def is_trusted(bot, uid):
+    if not isinstance(uid, str):
+        uid = str(uid)
+
     if is_admin(bot, uid) or has_tag(bot, uid, 'trusted'):
         return True
 
@@ -121,11 +160,50 @@ def is_trusted(bot, uid):
 
 
 def is_mod(bot, uid, gid):
+    if not isinstance(uid, str):
+        uid = str(uid)
+
     if is_trusted(bot, uid) or has_tag(bot, uid, 'globalmod') or has_tag(bot, uid, 'mod:%s' % gid):
         return True
 
     else:
         return False
+
+
+def set_step(bot, target, plugin, step):
+    steps = AutosaveDict('polaris/data/%s.steps.json' % bot.name)
+
+    if not isinstance(target, str):
+        target = str(target)
+
+    steps[target] = {
+        'plugin': plugin,
+        'step': step
+    }
+    steps.store_database()
+
+
+def get_step(bot, target):
+    steps = AutosaveDict('polaris/data/%s.steps.json' % bot.name)
+
+    if not isinstance(target, str):
+        target = str(target)
+
+    if not target in steps:
+        return None
+    else:
+        return steps[target]
+
+
+def cancel_steps(bot, target):
+    steps = AutosaveDict('polaris/data/%s.steps.json' % bot.name)
+
+    if not isinstance(target, str):
+        target = str(target)
+
+    if target in steps:
+        del steps[target]
+        steps.store_database()
 
 
 def first_word(text, i=1):
@@ -153,6 +231,10 @@ def is_int(number):
         return True
     except:
         return False
+
+
+def get_plugin_name(obj):
+    return str(type(obj)).split('.')[2]
 
 
 # Returns all plugin names from /polaris/plugins/ #
@@ -331,3 +413,4 @@ def set_logger(debug=False):
     rootLogger.addHandler(consoleHandler)
 
     logging.getLogger("requests").setLevel(logging.WARNING)
+    logging.getLogger("polaris.types").getChild('AutosaveDict').setLevel(logging.ERROR)

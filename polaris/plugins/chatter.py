@@ -7,7 +7,7 @@ class plugin(object):
         self.bot = bot
         self.commands = [
             {
-                'command': '@%s' % self.bot.info.username,
+                'command': '^@%s' % self.bot.info.username,
                 'parameters': [],
                 'hidden': True
             },
@@ -20,14 +20,8 @@ class plugin(object):
         self.chatter = ChatBot(
             self.bot.info.first_name,
             trainer='chatterbot.trainers.ChatterBotCorpusTrainer',
-            storage_adapter="chatterbot.adapters.storage.JsonFileStorageAdapter",
-            database='polaris/data/%s.chatter.json' % self.bot.name,
-            logic_adapters=[
-                "chatterbot.adapters.logic.MathematicalEvaluation",
-                "chatterbot.adapters.logic.TimeLogicAdapter",
-                "chatterbot.adapters.logic.ClosestMatchAdapter"
-            ],
-            filters=["chatterbot.filters.RepetitiveResponseFilter"]
+            storage_adapter='chatterbot.storage.MongoDatabaseAdapter',
+            database='chatter-database-%s' % self.bot.config.translation
         )
         if self.bot.config.translation != 'default':
             self.chatter.train("chatterbot.corpus.spanish")
@@ -37,17 +31,28 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
+        input = m.content.replace('@%s ' % self.bot.info.username, '')
+
+        if m.type != 'text':
+            input = '%s:%s' % (m.type, input)
+
         try:
-            text = str(self.chatter.get_response(m.content))
+            text = self.chatter.get_response(input)
         except Exception as e:
+            self.bot.send_alert(traceback.format_exc())
             text = '😕'
 
-        text = text.replace('@%s' % self.bot.info.username, '').capitalize()
+        text = str(text)
+        text = text.replace('@%s ' % self.bot.info.username, '')
 
-        if text:
-            return self.bot.send_message(m, text)
+        if ':' in text and text.split(':')[0] != '':
+            type = text.split(':')[0]
+            content = ''.join(text.split(':')[1:])
+            return self.bot.send_message(m, content, type)
+
         else:
-            return self.bot.send_message(m, self.bot.trans.errors.connection_error)
+            text = text.capitalize()
+            return self.bot.send_message(m, text)
 
 
     def always(self, m):

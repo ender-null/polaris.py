@@ -61,15 +61,15 @@ class bindings(object):
             else:
                 extra = None
         elif msg.event == 'service':
-            type = 'service'
+            type = 'notification'
             if msg.action.type == 'chat_del_user':
-                content = 'left_user'
+                content = 'left_chat_member'
                 extra = msg.action.user.peer_id
             elif msg.action.type == 'chat_add_user':
-                content = 'join_user'
+                content = 'new_chat_member'
                 extra = msg.action.user.peer_id
             elif msg.action.type == 'chat_add_user_link':
-                content = 'join_user'
+                content = 'new_chat_member'
                 extra = msg.sender.peer_id
             else:
                 type = None

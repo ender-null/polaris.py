@@ -29,7 +29,10 @@ class plugin(object):
                 text = all_but_first_word(input)
                 break
             else:
-                language = 'en-us'
+                if self.bot.config.translation != 'default':
+                    language = 'es-es'
+                else:
+                    language = 'en-us'
                 text = input
                 
         if not text:

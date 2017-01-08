@@ -98,6 +98,7 @@
                 {
                     "command": "/rules",
                     "friendly": "^Rules",
+                    "shortcut": "/r",
                     "description": "Returns rules of the current group.",
                     "parameters": [],
                     "hidden": true
@@ -131,6 +132,12 @@
                         { "id | alias": true }
                     ],
                     "hidden": true
+                },
+                {
+                    "command": "^new_chat_member$",
+                    "description": "Shows the MOTD and the rules to new members",
+                    "parameters": [],
+                    "hidden": true
                 }
             ],
             "description": "Many features to administrate chats.",
@@ -146,7 +153,16 @@
                 "nolink": "<i>No invite link</i>",
                 "norules": "<i>No rules</i>",
                 "commands": "<b>Group Commands</b>:",
-                "notfound": "<i>Rule not set</i>."
+                "notfound": "<i>Rule not set</i>.",
+                "new_chat_member": "New member added",
+                "done": "<b>%s</b> configuration successful.",
+                "cancel": "I'm not going to ask you anything more about <b>%s</b>, all data was saved.",
+                "yes": "Yes",
+                "ask_to_add": "¿Add group <b>%s</b>? <b>Yes</b> or <b>No</b>.",
+                "ask_link": "Send me the invite link for <b>%s</b>.\n\nPress /cancel to skip it and finish.",
+                "ask_alias": "Send me the alias you want to use for <b>%s</b>. Alias is used to join easier the group later.\n\nPress /cancel to skip it and finish.",
+                "ask_rules": "Send me the rules for <b>%s</b>, each rule separated with breaklines and without numbers at the begining.\n\nPress /cancel to skip it and finish.",
+                "ask_motd": "Send me the Message of the Day (MOTD) for <b>%s</b>, it's used as description or to show announcements.\n\nPress /cancel to skip it and finish."
             }
         },
         "echo": {
@@ -188,16 +204,24 @@
         "web_search": {
             "commands": [
                 {
-                    "command": "/search",
+                    "command": "/google",
                     "friendly": "^Search ",
-                    "shortcut": "/s",
+                    "shortcut": "/g",
                     "description": "Searches in Google.",
                     "parameters": [
                         { "query": true }
                     ]
                 },
                 {
-                    "command": "/snsfw",
+                    "command": "/glucky",
+                    "shortcut": "/gl",
+                    "description": "Returns first Google result.",
+                    "parameters": [
+                        { "query": true }
+                    ]
+                },
+                {
+                    "command": "/gnsfw",
                     "description": "Searches in Google with filter disabled.",
                     "parameters": [
                         { "query": true }
@@ -205,7 +229,31 @@
                     "hidden": true
                 }
             ],
-            "description": "Searches in Google.",
+            "description": "Searches Google.",
+            "strings": {
+                "results": "<b>Results of</b> <i>%s</i>:"
+            }
+        },
+        "youtube_search": {
+            "commands": [
+                {
+                    "command": "/youtube",
+                    "friendly": "^Youtube video of ",
+                    "shortcut": "/yt",
+                    "description": "Returns first YouTube video.",
+                    "parameters": [
+                        { "query": true }
+                    ]
+                },
+                {
+                    "command": "/ylist",
+                    "description": "Returns 8 YouTube videos.",
+                    "parameters": [
+                        { "query": true }
+                    ]
+                }
+            ],
+            "description": "Searches YouTube.",
             "strings": {
                 "results": "<b>Results of</b> <i>%s</i>:"
             }
@@ -232,7 +280,7 @@
             "commands": [
                 {
                     "command": "/cat",
-                    "friendly": "Cat",
+                    "friendly": "(pussy|kitty|kitten)",
                     "description": "Send a cute cat.",
                     "parameters": []
                 }
@@ -316,7 +364,7 @@
                 {
                     "command": "/remindme",
                     "friendly": "^remind me",
-                    "shortcut": "/r",
+                    "shortcut": "/rm",
                     "description": "Sets a reminder.",
                     "parameters": [
                         {"delay": true},
@@ -329,6 +377,22 @@
                 "wrongdelay": "The delay must be in this format: '(entero)(s|m|h|d)'.\nExample: '2h' for 2 hours.",
                 "noreminder": "I need to know that I have to remind you.",
                 "added": "<b>%s</b>, I'll remint you in <b>%s</b> to <i>%s</i>."
+            }
+        },
+        "russian_roulette": {
+            "commands": [
+                {
+                    "command": "/roulette",
+                    "friendly": "^(Russian |)roulette",
+                    "description": "Russian roulette, if you lose you will be kicked and banned.",
+                    "parameters": []
+                }
+             ],
+            "description": "Russian roulette, if you lose you will be kicked and banned.",
+            "strings": {
+                "empty": "<b>¡You were lucky %s!</b> <b>%s</b> shots left.",
+                "bang": "<b>¡Bang!</b> %s died in a dumb way",
+                "cant_bang": "<b>¡Bang!</b> %s I can't kill you, but play dead, or something. ¯\\_(ツ)_/¯"
             }
         },
         "text_to_speech": {

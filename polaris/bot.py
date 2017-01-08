@@ -1,9 +1,9 @@
 from polaris.types import AutosaveDict, Message, Conversation
-from polaris.utils import set_logger, is_int, load_plugin_list
+from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep
-import importlib, logging, time, re, traceback, sys, os
+import importlib, logging, time, re, traceback, sys, os, json
 
 
 class Bot(object):
@@ -36,11 +36,9 @@ class Bot(object):
             while self.started:
                 msg = self.inbox.get()
                 try:
-                    logging.info(
-                        '%s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
+                    logging.info('%s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
                 except AttributeError:
-                    logging.info(
-                        '%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
+                    logging.info('%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
 
                 self.on_message_receive(msg)
 
@@ -73,7 +71,7 @@ class Bot(object):
     def init_plugins(self):
         plugins = []
 
-        logging.info('Importing plugins...')
+        logging.debug('Importing plugins...')
 
         if type(self.config.plugins) is list:
             plugins_to_load = self.config.plugins
@@ -85,11 +83,11 @@ class Bot(object):
         for plugin in plugins_to_load:
             try:
                 plugins.append(importlib.import_module('polaris.plugins.' + plugin).plugin(self))
-                logging.info('  [OK] %s ' % (plugin))
+                logging.debug('  [OK] %s ' % (plugin))
             except Exception as e:
                 logging.error('  [Failed] %s - %s ' % (plugin, str(e)))
 
-        logging.info('  Loaded: ' + str(len(plugins)) + '/' + str(len(plugins_to_load)))
+        logging.debug('  Loaded: ' + str(len(plugins)) + '/' + str(len(plugins_to_load)))
 
         return plugins
 
@@ -98,29 +96,54 @@ class Bot(object):
         try:
             triggered = False
 
-            for plugin in self.plugins:
-                # Always do this action for every message. #
-                if hasattr(plugin, 'always'):
-                    plugin.always(msg)
+            if msg.content == None:
+                return
 
-                # Check if any command of a plugin matches. #
-                for command in plugin.commands:
-                    if 'command' in command:
-                        if self.check_trigger(command['command'], msg, plugin):
-                            break
+            step = get_step(self, msg.conversation.id)
 
-                    if 'friendly' in command:
-                        if self.check_trigger(command['friendly'], msg, plugin):
-                            break
+            if step:
+                for plugin in self.plugins:
+                    if get_plugin_name(plugin) == step['plugin'] and hasattr(plugin, 'steps'):
+                        if msg.content.startswith('/cancel'):
+                            plugin.steps(msg, -1)
+                            cancel_steps(self, msg.conversation.id)
 
-                    if 'shortcut' in command:
-                        if len(command['shortcut']) < 3:
-                            shortcut = command['shortcut'] + ' '
+                        if msg.content.startswith('/done'):
+                            plugin.steps(msg, 0)
+                            cancel_steps(self, msg.conversation.id)
+
                         else:
-                            shortcut = command['shortcut']
+                            plugin.steps(msg, step['step'])
 
-                        if self.check_trigger(shortcut, msg, plugin):
-                            break
+            else:
+                for plugin in self.plugins:
+                    # Always do this action for every message. #
+                    if hasattr(plugin, 'always'):
+                        plugin.always(msg)
+
+                    # If no query show help #
+                    if msg.type == 'inline_query':
+                        if msg.content == '':
+                            msg.content = '/help'
+
+                    # Check if any command of a plugin matches. #
+                    for command in plugin.commands:
+                        if 'command' in command:
+                            if self.check_trigger(command['command'], msg, plugin):
+                                break
+
+                        if 'friendly' in command:
+                            if self.check_trigger(command['friendly'], msg, plugin):
+                                break
+
+                        if 'shortcut' in command:
+                            if len(command['shortcut']) < 3:
+                                shortcut = command['shortcut'] + ' '
+                            else:
+                                shortcut = command['shortcut']
+
+                            if self.check_trigger(shortcut, msg, plugin):
+                                break
 
         except Exception as e:
             logging.exception(traceback.format_exc())
@@ -128,21 +151,21 @@ class Bot(object):
 
 
     def check_trigger(self, command, message, plugin):
-        command = command.lower()
+        if isinstance(command, str):
+            command = command.lower()
 
-        # If the commands are not /start or /help, set the correct command start symbol. #
-        if command == '/start' or command == '/help':
-            trigger = command.replace('/', '^/')
+            # If the commands are not /start or /help, set the correct command start symbol. #
+            if ((command == '/start' and '/start' in message.content) or
+               (command == '/help' and '/help' in message.content)):
+                trigger = command.replace('/', '^/')
+            else:
+                trigger = command.replace('/', '^' + self.config.prefix)
 
-        elif message.type == 'inline_query':
-            trigger = trigger.replace(self.config.prefix, '')
+            if message.content and re.compile(trigger).search(message.content.lower()):
+                if message.type == 'inline_query':
+                    if hasattr(plugin, 'inline'):
+                        plugin.inline(message)
 
-        else:
-            trigger = command.replace('/', '^' + self.config.prefix)
-
-        if message.content and re.compile(trigger).search(message.content.lower()):
-                if hasattr(plugin, 'inline') and message.type == 'inline_query':
-                    plugin.inline(message)
                 else:
                     plugin.run(message)
 
@@ -171,8 +194,8 @@ class Bot(object):
         self.outbox.put(Message(None, msg.conversation, self.info, msg.content, 'forward',
                                 extra={"message": msg.id, "conversation": id}))
 
-    def answer_inline_query(self, msg, results, offset=None):
-        self.outbox.put(Message(None, msg.conversation, self.info, results, 'inline_results', extra={"offset": offset}))
+    def answer_inline_query(self, msg, results, extra):
+        self.outbox.put(Message(msg.id, msg.conversation, self.info, json.dumps(results), 'inline_results', extra))
 
 
     # THESE METHODS DO DIRECT ACTIONS #

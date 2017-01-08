@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int
+from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name
 from polaris.types import AutosaveDict
 from re import findall
 
@@ -8,11 +8,6 @@ class plugin(object):
     def __init__(self, bot):
         self.bot = bot
         self.commands = self.bot.trans.plugins.administration.commands
-        self.commands.append({
-            "command": "^new_chat_member$",
-            "parameters": [],
-            "hidden": True
-        })
         self.description = self.bot.trans.plugins.administration.description
         self.administration = AutosaveDict('polaris/data/%s.administration.json' % self.bot.name)
         self.groups = AutosaveDict('polaris/data/%s.groups.json' % self.bot.name)
@@ -29,29 +24,24 @@ class plugin(object):
             text = self.bot.trans.plugins.administration.strings.commands
             for command in self.commands:
                 # Adds the command and parameters#
-                if self.commands[-1]['command'].replace('/', self.bot.config.prefix) in m.content:
-                    text += '\n' + command['command'].lstrip('/')
-
-                    if 'description' in command:
-                        text += ' - %s' % command['description']
-                    else:
-                        text += ' - ?¿'
+                if command['command'] == '^new_chat_member$':
+                    text += '\n • ' + self.bot.trans.plugins.administration.strings.new_chat_member
                 else:
                     text += '\n • ' + command['command'].replace('/', self.bot.config.prefix)
-                    if 'parameters' in command:
-                        for parameter in command['parameters']:
-                            name, required = list(parameter.items())[0]
-                            # Bold for required parameters, and italic for optional #
-                            if required:
-                                text += ' <b>&lt;%s&gt;</b>' % name
-                            else:
-                                text += ' [%s]' % name
 
-                    if 'description' in command:
-                        text += '\n   <i>%s</i>' % command['description']
-                    else:
-                        text += '\n   <i>?¿</i>'
-                        text += '\n   <i>?¿</i>'
+                if 'parameters' in command:
+                    for parameter in command['parameters']:
+                        name, required = list(parameter.items())[0]
+                        # Bold for required parameters, and italic for optional #
+                        if required:
+                            text += ' <b>&lt;%s&gt;</b>' % name
+                        else:
+                            text += ' [%s]' % name
+
+                if 'description' in command:
+                    text += '\n   <i>%s</i>' % command['description']
+                else:
+                    text += '\n   <i>?¿</i>'
 
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
@@ -187,25 +177,11 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_trusted(self.bot, m.sender.id):
+            if not is_mod(self.bot, m.sender.id):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
-            parameters = [
-                'add',
-                'remove',
-                'alias',
-                'description',
-                'rules',
-                'rule'
-            ]
-
             if not input:
-                text = '<b>Available commands:</b>'
-                for param in parameters:
-                    text += '\n • %scfg %s' % (self.bot.config.prefix, param)
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
-
-            if first_word(input) == 'add':
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_to_add % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
                 if not gid in self.administration:
                     self.administration[gid] = {
                         'alias': None,
@@ -214,71 +190,80 @@ class plugin(object):
                         'rules': []
                     }
                     self.administration.store_database()
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.added % m.conversation.title, extra={'format': 'HTML'})
-                else:
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.already_added % m.conversation.title, extra={'format': 'HTML'})
-
-            elif first_word(input) == 'remove':
-                if gid in self.administration:
-                    del(self.administration[gid])
-                    self.administration.store_database()
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.removed % m.conversation.title, extra={'format': 'HTML'})
-                else:
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-
-            elif first_word(input) == 'alias':
-                if gid in self.administration:
-                    self.administration[gid]['alias'] = all_but_first_word(input)
-                    self.administration.store_database()
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
-                else:
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-
-            elif first_word(input) == 'description':
-                if gid in self.administration:
-                    self.administration[gid]['description'] = all_but_first_word(input)
-                    self.administration.store_database()
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
-                else:
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-
-            elif first_word(input) == 'link':
-                if gid in self.administration:
-                    self.administration[gid]['link'] = all_but_first_word(input)
-                    self.administration.store_database()
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
-                else:
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-
-            elif first_word(input) == 'rules':
-                if gid in self.administration:
-                    self.administration[gid]['rules'] = all_but_first_word(input).split('\n')[0:]
-                    self.administration.store_database()
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
-                else:
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-
-            elif first_word(input) == 'rule':
-                if gid in self.administration:
-                    try:
-                        i = int(first_word(all_but_first_word(input)))-1
-                        if i > len(self.administration[gid]['rules']):
-                            i = len(self.administration[gid]['rules'])
-                        elif i < 1:
-                            i = 0
-                    except:
-                        return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
-                    self.administration[gid]['rules'].insert(i, all_but_first_word(all_but_first_word(input)))
-                    self.administration.store_database()
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
-                else:
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
-
-
+                set_step(self.bot, m.conversation.id, get_plugin_name(self), 1)
             else:
-                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+                if first_word(input) == 'add':
+                    if not gid in self.administration:
+                        self.administration[gid] = {
+                            'alias': None,
+                            'description': None,
+                            'link': None,
+                            'rules': []
+                        }
+                        self.administration.store_database()
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.added % m.conversation.title, extra={'format': 'HTML'})
+                    else:
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.already_added % m.conversation.title, extra={'format': 'HTML'})
 
-            return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
+                elif first_word(input) == 'remove':
+                    if gid in self.administration:
+                        del(self.administration[gid])
+                        self.administration.store_database()
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.removed % m.conversation.title, extra={'format': 'HTML'})
+                    else:
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+
+                elif first_word(input) == 'alias':
+                    if gid in self.administration:
+                        self.administration[gid]['alias'] = all_but_first_word(input)
+                        self.administration.store_database()
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
+                    else:
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+
+                elif first_word(input) == 'motd':
+                    if gid in self.administration:
+                        self.administration[gid]['description'] = all_but_first_word(input)
+                        self.administration.store_database()
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
+                    else:
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+
+                elif first_word(input) == 'link':
+                    if gid in self.administration:
+                        self.administration[gid]['link'] = all_but_first_word(input)
+                        self.administration.store_database()
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
+                    else:
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+
+                elif first_word(input) == 'rules':
+                    if gid in self.administration:
+                        self.administration[gid]['rules'] = all_but_first_word(input).split('\n')[0:]
+                        self.administration.store_database()
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
+                    else:
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+
+                elif first_word(input) == 'rule':
+                    if gid in self.administration:
+                        try:
+                            i = int(first_word(all_but_first_word(input)))-1
+                            if i > len(self.administration[gid]['rules']):
+                                i = len(self.administration[gid]['rules'])
+                            elif i < 1:
+                                i = 0
+                        except:
+                            return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
+                        self.administration[gid]['rules'].insert(i, all_but_first_word(all_but_first_word(input)))
+                        self.administration.store_database()
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
+                    else:
+                        return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+
+
+                else:
+                    return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
 
     def always(self, m):
@@ -327,3 +312,48 @@ class plugin(object):
         self.administration.store_database()
         self.groups.store_database()
         self.users.store_database()
+
+
+    def steps(self, m, step):
+        gid = str(m.conversation.id)
+
+        if step == -1:
+            self.bot.send_message(m, self.bot.trans.plugins.administration.strings.cancel % m.conversation.title, extra={'format': 'HTML'})
+            cancel_steps(self.bot, m.conversation.id)
+
+        if step == 0:
+            self.bot.send_message(m, self.bot.trans.plugins.administration.strings.done % m.conversation.title, extra={'format': 'HTML'})
+            cancel_steps(self.bot, m.conversation.id)
+
+        elif step == 1:
+            if self.bot.trans.plugins.administration.strings.yes.lower() in m.content.lower():
+                set_step(self.bot, m.conversation.id, get_plugin_name(self), 2)
+                if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
+                    self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_link % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+
+            else:
+                cancel_steps(self.bot, m.conversation.id)
+                self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
+
+        elif step == 2:
+            set_step(self.bot, m.conversation.id, get_plugin_name(self), 3)
+            if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
+                self.administration[gid]['link'] = m.content
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_alias % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+
+        elif step == 3:
+            set_step(self.bot, m.conversation.id, get_plugin_name(self), 4)
+            if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
+                self.administration[gid]['alias'] = m.content.lower()
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_rules % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+
+        elif step == 4:
+            set_step(self.bot, m.conversation.id, get_plugin_name(self), 5)
+            if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
+                self.administration[gid]['rules'] = m.content.split('\n')
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_motd % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+
+        elif step == 5:
+            set_step(self.bot, m.conversation.id, get_plugin_name(self), -1)
+            if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
+                self.administration[gid]['motd'] = m.content

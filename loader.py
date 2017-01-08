@@ -19,12 +19,12 @@ def get_bots():
 # Imports all plugin modules to a list. #
 def import_plugins(enabled_plugins):
     plugins = []
-    logging.info('Importing plugins...')
+    logging.debug('Importing plugins...')
 
     for plugin in enabled_plugins:
         try:
             plugins.append(importlib.import_module('polaris.plugins.' + plugin))
-            logging.info('  [OK] %s ' % (plugin))
+            logging.debug('  [OK] %s ' % (plugin))
         except Exception as e:
             logging.error('  [Failed] %s: %s ' % (plugin, str(e)))
 
@@ -184,5 +184,5 @@ try:
 
 except KeyboardInterrupt:
     for bot in botlist:
-        logging.info('Exiting [%s] bot...' % bot.name)
+        logging.debug('Exiting [%s] bot...' % bot.name)
         bot.started = False

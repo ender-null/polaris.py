@@ -31,8 +31,12 @@ class plugin(object):
         title = self.bot.trans.plugins.weather.strings.title % (locality, country)
         temp = weather.temp_c
         feelslike = ""
-        if (float(weather.feelslike_c) - float(weather.temp_c)) > 0.001:
-            feelslike = self.bot.trans.plugins.weather.strings.feelslike % weather.feelslike_c
+        try:
+            if (float(weather.feelslike_c) - float(weather.temp_c)) > 0.001:
+                feelslike = self.bot.trans.plugins.weather.strings.feelslike % weather.feelslike_c
+        except:
+            pass
+
         # weather_string = weather.weather.title()
         weather_string = self.bot.trans.plugins.weather.strings[weather.icon]
         weather_icon = (self.get_weather_icon(weather.icon))

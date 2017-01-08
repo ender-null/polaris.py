@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, send_request, set_setting, get_setting, is_command
+from polaris.utils import get_input, is_command, send_request, set_setting, get_setting
 from polaris.types import AutosaveDict
 from re import findall
 

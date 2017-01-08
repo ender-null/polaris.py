@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command
+from polaris.utils import get_input, is_command, remove_html
 
 
 class plugin(object):
@@ -82,3 +82,28 @@ class plugin(object):
                             text += '\n   <i>?¿</i>'
 
         self.bot.send_message(m, text, extra={'format': 'HTML'})
+
+    def inline(self, m):
+        input = get_input(m)
+
+        results = []
+        
+        result = {
+            'type': 'article',
+            'id': '0',
+            'title': 'test',
+            'input_message_content': {
+                'message_text': 'this is a test',
+                'parse_mode': 'HTML'
+            },
+            'description': 'test description'
+        }
+
+        results.append(result)
+
+        extra = {
+            'switch_pm_text': 'switch to pm',
+            'switch_pm_parameter': 'test'
+        }
+
+        self.bot.answer_inline_query(m, results, extra)

@@ -77,8 +77,11 @@ class plugin(object):
 
             if not m.sender.id == self.pins[input]['creator']:
                 return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.not_creator % input, extra={'format': 'HTML'})
+            try:
+                del(self.pins[input])
+            except KeyErrorException:
+                return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
 
-            del(self.pins[input])
             self.pins.store_database()
             self.update_triggers()
 
