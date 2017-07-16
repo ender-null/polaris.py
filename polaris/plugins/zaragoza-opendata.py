@@ -43,9 +43,9 @@ class plugin(object):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-            url = 'http://api.drk.cat/zgzpls/bus'
+            url = 'http://api.drk.cat/zgzpls/stations'
             params = {
-                'poste': input
+                'id': input
             }
             data = send_request(url, params=params)
 
@@ -53,11 +53,11 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             if data.street:
-                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.poste, data.lines)
+                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.number, data.lines)
             else:
-                text = '<b>Parada: %s</b>\n\n' % (data.poste)
+                text = '<b>Parada: %s</b>\n\n' % (data.number)
 
-            for bus in list(data.buses):
+            for bus in list(data.transports):
                 text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus['time'], bus['line'], bus['destination'])
 
             text = text.rstrip('\n')
