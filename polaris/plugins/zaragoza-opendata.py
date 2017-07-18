@@ -43,14 +43,17 @@ class plugin(object):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-            url = 'http://api.drk.cat/zgzpls/stations'
+            url = 'http://api.drk.cat/zgzpls/bus/stations'
             params = {
-                'id': input
+                'number': input
             }
             data = send_request(url, params=params)
 
             if not data or 'errors' in data:
-                return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
+                if data['errors']['status'] == '404 Not Found':
+                    return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+                else:
+                    return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             if data.street:
                 text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.number, data.lines)

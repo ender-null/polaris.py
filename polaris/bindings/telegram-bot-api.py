@@ -26,13 +26,18 @@ class bindings(object):
         else:
             conversation = Conversation(msg.chat.id, msg.chat.title)
 
-        sender = User(msg['from'].id, msg['from'].first_name)
-        if 'last_name' in msg['from']:
-            sender.last_name = msg['from'].last_name
+        if 'from' in msg:
+            sender = User(msg['from'].id, msg['from'].first_name)
 
-        if 'username' in msg['from']:
-            sender.username = msg['from'].username
+            if 'last_name' in msg['from']:
+                sender.last_name = msg['from'].last_name
 
+            if 'username' in msg['from']:
+                sender.username = msg['from'].username
+
+        else:
+            sender = Conversation(msg['chat'].id, msg['chat'].title)
+        
         # Gets the type of the message
         extra = {}
 

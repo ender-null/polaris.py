@@ -17,6 +17,9 @@ class Bot(object):
         self.started = False
         self.plugins = None
         self.info = self.bindings.get_me()
+        
+        if self.info is None:
+            raise Exception
 
 
     def sender_worker(self):
@@ -161,7 +164,7 @@ class Bot(object):
             else:
                 trigger = command.replace('/', '^' + self.config.prefix)
 
-            if message.content and re.compile(trigger).search(message.content.lower()):
+            if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
                 if message.type == 'inline_query':
                     if hasattr(plugin, 'inline'):
                         plugin.inline(message)

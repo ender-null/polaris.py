@@ -11,7 +11,10 @@ def get_bots():
 
     for filename in os.listdir('bots'):
         if filename.endswith('.json'):
-            botlist.append(Bot(filename[:-5]))
+            try:
+                botlist.append(Bot(filename[:-5]))
+            except:
+                logging.error('  [Failed] "%s" failed to initialize' % filename[:-5])
 
     return botlist
 

@@ -16,8 +16,11 @@ class bindings(object):
         logging.getLogger("pytg").setLevel(logging.WARNING)
 
     def get_me(self):
-        msg = self.sender.get_self()
-        return User(msg.peer_id, msg.first_name, None, msg.username)
+        try:
+            msg = self.sender.get_self()
+            return User(msg.peer_id, msg.first_name, None, msg.username)
+        except:
+            return None
 
     def convert_message(self, msg):
         id = msg['id']

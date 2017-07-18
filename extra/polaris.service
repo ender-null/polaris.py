@@ -2,6 +2,7 @@
 Description=Polaris Systemd Service
 
 [Service]
+Type=forking
 ExecStart=/usr/bin/screen -dmS polaris /bin/bash runme.sh
 WorkingDirectory=/home/ender/Projects/polaris
 User=ender
