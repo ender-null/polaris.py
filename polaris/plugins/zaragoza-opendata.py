@@ -71,37 +71,32 @@ class plugin(object):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-            url = baseurl + '/recurso/urbanismo-infraestructuras/tranvia/' + input.lstrip('0') + '.json'
-            params = {
-                'rf': 'html',
-                'srsname': 'wgs84'
-            }
+            url = 'http://api.drk.cat/zgzpls/tram/stations'
+            params = {}
+            try:
+                int(input)
+                params['number'] = input
+            except ValueError:
+                params['street'] = input
 
             data = send_request(url, params=params)
-            if 'status' in data:
-                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
-            tranvias = []
+            if not data or 'errors' in data:
+                if data['errors']['status'] == '404 Not Found':
+                    return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+                else:
+                    return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n   Parada: <b>%s</b>\n\n' % (data['title'].title(), data['id'])
+            if data.street:
+                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.number, data.lines)
+            else:
+                text = '<b>Parada: %s</b>\n\n' % (data.number)
 
-            for destino in data['destinos']:
-                tranvias.append((
-                    destino['linea'],
-                    destino['destino'].rstrip(',').rstrip('.').title(),
-                    int(destino['minutos'])
-                ))
-            
-            try:
-                tranvias = sorted(tranvias, key=lambda tranvia: tranvia[2])
-            except:
-                pass
-
-            for tranvia in tranvias:
-                text += ' • <b>%s min.</b>  %s <i>%s</i>\n' % (tranvia[2], tranvia[0], tranvia[1])
+            for bus in list(data.transports):
+                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus['time'], bus['line'], bus['destination'])
 
             text = text.rstrip('\n')
-            
+
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         elif is_command(self, 3, m.content):
