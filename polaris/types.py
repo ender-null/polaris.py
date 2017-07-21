@@ -88,7 +88,7 @@ class AutosaveDict(DictObject):
     def load_database(self, merge=False):
         logging.debug("Loading database from {file}.".format(file=self._database_file))
         try:
-            with open(self._database_file, "r") as file:
+            with open(self._database_file, "r", encoding='utf8') as file:
                 json_data = file.read()
         except FileNotFoundError:
             logging.warning("File {file!r} was not found! Not loading anything!".format(file=self._database_file))
