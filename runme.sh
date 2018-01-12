@@ -1,6 +1,5 @@
 #!/bin/bash
 DIR=`dirname $0`
-export NLTK_DATA=$DIR/nltk_data 
 
 if [ ! -d "$DIR/env" ]; then
     virtualenv -q $DIR/env --no-site-packages
@@ -15,5 +14,4 @@ if [ ! -f "$DIR/env/updated" -o $DIR/requirements.txt -nt $DIR/env/updated ]; th
     echo "Requirements installed."
 fi
 
-python -B -m textblob.download_corpora
 python -B $DIR/loader.py

@@ -1,0 +1,11 @@
+[Unit]
+Description=Telegram-CLI Systemd Service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/screen -dmS tg /usr/bin/telegram-cli -p sakubo --json -P 4458 --wait-dialog-list
+WorkingDirectory=/home/ender
+User=ender
+
+[Install]
+WantedBy=default.target

@@ -164,15 +164,18 @@ class Bot(object):
             else:
                 trigger = command.replace('/', '^' + self.config.prefix)
 
-            if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
-                if message.type == 'inline_query':
-                    if hasattr(plugin, 'inline'):
-                        plugin.inline(message)
+            try:
+                if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
+                    if message.type == 'inline_query':
+                        if hasattr(plugin, 'inline'):
+                            plugin.inline(message)
 
-                else:
-                    plugin.run(message)
+                    else:
+                        plugin.run(message)
 
-                return True
+                    return True
+            except:
+                return False
 
 
     def cron_jobs(self):
