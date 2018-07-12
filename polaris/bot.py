@@ -17,7 +17,7 @@ class Bot(object):
         self.started = False
         self.plugins = None
         self.info = self.bindings.get_me()
-        
+
         if self.info is None:
             raise Exception
 
