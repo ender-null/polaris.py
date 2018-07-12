@@ -2,8 +2,8 @@ from polaris.types import AutosaveDict, Message, Conversation
 from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name
 from multiprocessing import Process, Queue
 from threading import Thread
-from time import sleep
-import importlib, logging, time, re, traceback, sys, os, json
+from time import sleep, time
+import importlib, logging, re, traceback, sys, os, json
 
 
 class Bot(object):
@@ -99,7 +99,7 @@ class Bot(object):
         try:
             triggered = False
 
-            if msg.content == None:
+            if msg.content == None or msg.date < time() - 60:
                 return
 
             step = get_step(self, msg.conversation.id)
