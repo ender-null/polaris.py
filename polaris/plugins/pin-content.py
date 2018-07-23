@@ -59,7 +59,7 @@ class plugin(object):
                 'creator': m.sender.id,
                 'type': m.reply.type
             })
-            
+            self.cached_pins = self.pins.get()
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['pinned'] % input, extra={'format': 'HTML'})
@@ -78,11 +78,9 @@ class plugin(object):
 
             if not m.sender.id == self.cached_pins[input]['creator']:
                 return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['not_creator'] % input, extra={'format': 'HTML'})
-            try:
-                self.pins.child(input).delete()
-            except KeyErrorException:
-                return self.bot.send_message(m, self.bot.trans['errors']['unknown'], extra={'format': 'HTML'})
 
+            self.pins.child(input).delete()
+            self.cached_pins = self.pins.get()
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['unpinned'] % input, extra={'format': 'HTML'})

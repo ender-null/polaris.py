@@ -10,11 +10,16 @@ import importlib, logging, re, traceback, sys, os, json
 class Bot(object):
     def __init__(self, name):
         self.name = name
-        self.config = db.reference('bots').child(self.name).get()
-        self.trans = db.reference('translations').child(self.config['translation']).get()
-        self.steps = db.reference('steps').child(self.name).get()
-        self.tags = db.reference('tags').child(self.name).get()
-        self.settings = db.reference('settings').child(self.name).get()
+        try:
+            self.config = db.reference('bots').child(self.name).get()
+            self.trans = db.reference('translations').child(self.config['translation']).get()
+            self.steps = db.reference('steps').child(self.name).get()
+            self.tags = db.reference('tags').child(self.name).get()
+            self.settings = db.reference('settings').child(self.name).get()
+
+        except db.ApiCallError as e:
+            logging.exception('Weird Firebase exception happened')
+
         self.bindings = importlib.import_module('polaris.bindings.%s' % self.config['bindings']).bindings(self)
         self.inbox = Queue()
         self.outbox = Queue()
@@ -101,8 +106,6 @@ class Bot(object):
 
     def on_message_receive(self, msg):
         try:
-            triggered = False
-
             if msg.content == None or msg.date < time() - 60:
                 return
 
@@ -151,6 +154,8 @@ class Bot(object):
 
                             if self.check_trigger(shortcut, msg, plugin):
                                 break
+        except db.ApiCallError as e:
+            logging.exception('Weird Firebase exception happened')
 
         except Exception as e:
             logging.exception(traceback.format_exc())

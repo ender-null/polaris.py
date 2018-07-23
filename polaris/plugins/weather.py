@@ -46,11 +46,11 @@ class plugin(object):
         if is_command(self, 1, m.content):
             message = u'%s\n%s %s%s\n🌡%sºC 💧%s 🌬%s m/s' % (
                 remove_html(title), weather_icon, weather_string, feelslike, temp, humidity, wind)
-            try:
-                photo = get_streetview(lat, lon, self.bot.config['api_keys']['google_developer_console'])
-            except Exception as e:
-                print(e)
-                photo = None
+            # try:
+            #     photo = get_streetview(lat, lon, self.bot.config['api_keys']['google_developer_console'])
+            # except Exception as e:
+            #     print(e)
+            photo = None
 
             if photo:
                 return self.bot.send_message(m, photo, 'photo', extra={'caption': message})

@@ -12,8 +12,11 @@ class plugin(object):
         self.commands = self.bot.trans['plugins']['administration']['commands']
         self.description = self.bot.trans['plugins']['administration']['description']
         self.administration = db.reference('administration').child(self.bot.name)
+        self.cached_administration = self.administration.get()
         self.groups = db.reference('groups').child(self.bot.name)
+        self.cached_groups = self.groups.get()
         self.users = db.reference('users').child(self.bot.name)
+        self.cached_users = self.users.get()
 
     # Plugin action #
     def run(self, m):
@@ -31,7 +34,7 @@ class plugin(object):
                         self.bot.trans['plugins']['administration']['strings']['new_chat_member']
                 else:
                     text += '\n • ' + \
-                        command['command'].replace('/', self.bot.config.prefix)
+                        command['command'].replace('/', self.bot.config['prefix'])
 
                 if 'parameters' in command:
                     for parameter in command['parameters']:
@@ -52,91 +55,91 @@ class plugin(object):
         # List all groups. #
         if is_command(self, 2, m.content):
             text = self.bot.trans['plugins']['administration']['strings']['groups']
-            for gid, attr in self.administration.get().items():
-                text += '\n • %s |%s|' % (self.groups[gid]['title'], attr['alias'])
+            for gid, attr in self.cached_administration.items():
+                text += '\n • %s |%s|' % (self.cached_groups[gid]['title'], attr['alias'])
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         # Join a group. #
         elif is_command(self, 3, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
 
-            for id in self.administration.get():
-                if (input in self.administration.get() or
-                    input in self.administration.get()[id]['alias'] or
-                        input in self.groups[id]['title']):
+            for id in self.cached_administration:
+                if (input in self.cached_administration or
+                    input in self.cached_administration[id]['alias'] or
+                        input in self.cached_groups[id]['title']):
                     gid_to_join = id
                     break
 
-            if not gid_to_join in self.administration.get():
-                return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+            if not gid_to_join in self.cached_administration:
+                return self.bot.send_message(m, self.bot.trans['plugins']['administration']['strings']['not_added'] % m.conversation.title, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n<i>%s</i>\n\n%s' % (self.groups[gid_to_join]['title'], self.administration[gid_to_join]
-                                                   ['description'], self.bot.trans.plugins.administration.strings.rules)
+            text = '<b>%s</b>\n<i>%s</i>\n\n%s' % (self.cached_groups[gid_to_join]['title'], self.cached_administration[gid_to_join]
+                                                   ['description'], self.bot.trans['plugins']['administration']['strings']['rules'])
             i = 1
-            for rule in self.administration[gid_to_join]['rules']:
+            for rule in self.cached_administration[gid_to_join]['rules']:
                 text += '\n %s. <i>%s</i>' % (i, rule)
                 i += 1
-            if not self.administration[gid_to_join]['rules']:
-                text += '\n%s' % self.bot.trans.plugins.administration.strings.norules
-            if not self.administration[gid_to_join]['link']:
-                text += '\n\n%s' % self.bot.trans.plugins.administration.strings.nolink
+            if not self.cached_administration[gid_to_join]['rules']:
+                text += '\n%s' % self.bot.trans['plugins']['administration']['strings']['norules']
+            if not self.cached_administration[gid_to_join]['link']:
+                text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['nolink']
             else:
                 text += '\n\n<a href="%s">%s</a>' % (
-                    self.administration[gid_to_join]['link'], self.bot.trans.plugins.administration.strings.join)
+                    self.cached_administration[gid_to_join]['link'], self.bot.trans['plugins']['administration']['strings']['join'])
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 
         # Information about a group. #
         elif is_command(self, 4, m.content) or is_command(self, 9, m.content):
             if m.conversation.id > 0:
-                return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
-            if not gid in self.administration:
+                return self.bot.send_message(m, self.bot.trans['errors']['group_only'], extra={'format': 'HTML'})
+            if not gid in self.cached_administration:
                 if is_command(self, 4, m.content):
-                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+                    return self.bot.send_message(m, self.bot.trans['plugins']['administration']['strings']['not_added'] % m.conversation.title, extra={'format': 'HTML'})
                 elif is_command(self, 9, m.content):
                     return
 
-            text = '<b>%s</b>\n<i>%s</i>\n\n%s' % (self.groups[gid]['title'], self.administration[gid]
-                                                   ['description'], self.bot.trans.plugins.administration.strings.rules)
+            text = '<b>%s</b>\n<i>%s</i>\n\n%s' % (self.cached_groups[gid]['title'], self.cached_administration[gid]
+                                                   ['description'], self.bot.trans['plugins']['administration']['strings']['rules'])
             i = 1
-            for rule in self.administration[gid]['rules']:
+            for rule in self.cached_administration[gid]['rules']:
                 text += '\n %s. <i>%s</i>' % (i, rule)
                 i += 1
 
             if not self.administration[gid]['rules']:
-                text += '\n%s' % self.bot.trans.plugins.administration.strings.norules
+                text += '\n%s' % self.bot.trans['plugins']['administration']['strings']['norules']
             if is_command(self, 4, m.content):
-                if not self.administration[gid]['link']:
-                    text += '\n\n%s' % self.bot.trans.plugins.administration.strings.nolink
+                if not self.cached_administration[gid]['link']:
+                    text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['nolink']
                 else:
                     text += '\n\n<a href="%s">%s</a>' % (
-                        self.bot.trans.plugins.administration.strings.join. self.administration[gid]['link'])
+                        self.bot.trans['plugins']['administration']['strings']['join'], self.administration[gid]['link'])
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 
         # Rules of a group. #
         elif is_command(self, 5, m.content):
             if m.conversation.id > 0:
-                return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
-            if not gid in self.administration:
-                return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans['errors']['group_only'], extra={'format': 'HTML'})
+            if not gid in self.cached_administration:
+                return self.bot.send_message(m, self.bot.trans['plugins']['administration']['strings']['not_added'] % m.conversation.title, extra={'format': 'HTML'})
 
             if input and is_int(input):
                 try:
                     i = int(input)
                     text = '%s. <i>%s</i>' % (i,
-                                              self.administration[gid]['rules'][i - 1])
+                                              self.cached_administration[gid]['rules'][i - 1])
                 except:
-                    text = self.bot.trans.plugins.administration.strings.notfound
+                    text = self.bot.trans['plugins']['administration']['strings']['notfound']
 
             else:
-                text = self.bot.trans.plugins.administration.strings.rules
+                text = self.bot.trans['plugins']['administration']['strings']['rules']
                 i = 1
-                for rule in self.administration[gid]['rules']:
+                for rule in self.cached_administration[gid]['rules']:
                     text += '\n %s. <i>%s</i>' % (i, rule)
                     i += 1
 
-            if not self.administration[gid]['rules']:
-                text += '\n%s' % self.bot.trans.plugins.administration.strings.norules
+            if not self.cached_administration[gid]['rules']:
+                text += '\n%s' % self.bot.trans['plugins']['administration']['strings']['norules']
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 
         # Kicks a user. #
