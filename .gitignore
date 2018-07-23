@@ -64,3 +64,4 @@ bot.log
 bots/*.json
 polaris/data/
 database.db
+serviceAccountKey.json
