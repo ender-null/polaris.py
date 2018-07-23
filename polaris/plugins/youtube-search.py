@@ -6,8 +6,8 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.trans.plugins.youtube_search.commands
-        self.description = self.bot.trans.plugins.youtube_search.description
+        self.commands = self.bot.trans['plugins']['youtube_search']['commands']
+        self.description = self.bot.trans['plugins']['youtube_search']['description']
 
     # Plugin action #
     def run(self, m):
@@ -19,13 +19,13 @@ class plugin(object):
             'part': 'snippet',
             'maxResults': '8',
             'q': input,
-            'key': self.bot.config.api_keys.google_developer_console
+            'key': self.bot.config['api_keys']['google_developer_console']
         }
 
         data = send_request(url, params)
 
         if 'error' in data and len(data['items']) == 0:
-            return self.bot.send_message(m, self.bot.trans.errors.no_results)
+            return self.bot.send_message(m, self.bot.trans['errors']['no_results'])
 
         if is_command(self, 1, m.content):
             text = 'https://youtu.be/%s' % data['items'][0]['id']['videoId']
@@ -33,7 +33,7 @@ class plugin(object):
             self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
 
         elif is_command(self, 2, m.content):
-            text = self.bot.trans.plugins.youtube_search.strings.results % input
+            text = self.bot.trans['plugins']['youtube_search']['strings']['results'] % input
             for item in data['items']:
                 if len(item['snippet']['title']) > 26:
                     item['snippet']['title'] = item['snippet']['title'][:23] + '...'

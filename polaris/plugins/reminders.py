@@ -3,6 +3,7 @@ from polaris.types import AutosaveDict, Message, Conversation
 from collections import OrderedDict
 from DictObject import DictObject
 from threading import Thread
+from firebase_admin import db
 from time import time, sleep
 
 class plugin(object):
@@ -10,9 +11,10 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.trans.plugins.reminders.commands
-        self.description = self.bot.trans.plugins.reminders.description
-        self.reminders = AutosaveDict('polaris/data/%s.reminders.json' % self.bot.name)
+        self.commands = self.bot.trans['plugins']['reminders']['commands']
+        self.description = self.bot.trans['plugins']['reminders']['description']
+        self.reminders = db.reference('reminders').child(self.bot.name)
+        self.cached_reminders = self.reminders.get()
         self.sort_reminders()
 
 
@@ -20,22 +22,21 @@ class plugin(object):
     def run(self, m):
         input = get_input(m, ignore_reply=False)
         if not input:
-            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
 
-        self.reminders.load_database()
         # Lists all pins #
         delay = first_word(input)
         if delay:
             delaytime = delay[:-1]
             unit = delay[-1:]
             if not is_int(delaytime) or is_int(unit):
-                return self.bot.send_message(m, self.bot.trans.plugins.reminders.strings.wrongdelay)
+                return self.bot.send_message(m, self.bot.trans['plugins']['reminders']['strings']['wrongdelay'])
 
         alarm = time() + self.to_seconds(delaytime, unit)
 
         text = all_but_first_word(input)
         if not text:
-            return self.bot.send_message(m, self.bot.trans.plugins.reminders.strings.noreminder)
+            return self.bot.send_message(m, self.bot.trans['plugins']['reminders']['strings']['noreminder'])
 
         reminder = DictObject(OrderedDict())
         reminder.id = '%s:%s' % (m.sender.id, time())
@@ -45,9 +46,8 @@ class plugin(object):
         reminder.first_name = m.sender.first_name
         reminder.username = m.sender.username
 
-        self.reminders.list.append(reminder)
+        self.reminders.child('list').push(reminder)
         self.sort_reminders()
-        self.reminders.store_database()
 
         if unit == 's':
             delay = delay.replace('s', ' seconds')
@@ -58,22 +58,22 @@ class plugin(object):
         if unit == 'd':
             delay = delay.replace('d', ' days')
 
-        message = self.bot.trans.plugins.reminders.strings.added % (m.sender.first_name, delay, text)
+        message = self.bot.trans['plugins']['reminders']['strings']['added'] % (m.sender.first_name, delay, text)
 
         return self.bot.send_message(m, message, extra={'format': 'HTML'})
 
 
     def cron(self):
-        self.reminders.load_database()
-        while len(self.reminders.list) > 0 and self.reminders.list[0].alarm < time():
-            reminder = self.reminders.list[0]
-            text = '<i>%s</i>\n - %s' % (reminder.text, reminder.first_name)
-            if reminder.username:
-                 text += ' (@%s)' % reminder.username
+        while len(self.cached_reminders['list']) > 0 and self.cached_reminders['list'][0]['alarm'] < time():
+            reminder = self.cached_reminders['list'][0]
+            text = '<i>%s</i>\n - %s' % (reminder['text'], reminder['first_name'])
+            if reminder['username']:
+                 text += ' (@%s)' % reminder['username']
 
-            m = Message(None, Conversation(reminder.chat_id), None, None)
+            m = Message(None, Conversation(reminder['chat_id']), None, None)
             self.bot.send_message(m, text, extra={'format': 'HTML'})
-            self.reminders.list.remove(reminder)
+            self.reminders.child('list').child(0).delete()
+            self.cached_reminders = self.reminders.get()
             self.sort_reminders()
 
 
@@ -91,9 +91,7 @@ class plugin(object):
 
     def sort_reminders(self):
         if not 'list' in self.reminders:
-            self.reminders.list = []
+            self.cached_reminders['list'] = []
 
-        if len(self.reminders.list) > 0:
-            self.reminders.list = sorted(self.reminders.list, key=lambda k: k['alarm'])
-
-        self.reminders.store_database()
+        if len(self.cached_reminders['list']) > 0:
+            self.reminders.child('list').update(sorted(self.cached_reminders['list'], key=lambda k: k['alarm']))

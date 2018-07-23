@@ -2,19 +2,19 @@ from polaris.types import AutosaveDict
 from polaris.bot import Bot
 from polaris.utils import set_logger, load_plugin_list
 from multiprocessing import Process
+from firebase_admin import credentials, db, storage
+import firebase_admin
 import os, logging, time, importlib
-
 
 # Loads the bots from the /bots/ #
 def get_bots():
     botlist = []
 
-    for filename in os.listdir('bots'):
-        if filename.endswith('.json'):
-            try:
-                botlist.append(Bot(filename[:-5]))
-            except:
-                logging.error('  [Failed] "%s" failed to initialize' % filename[:-5])
+    for bot in bots.get():
+        try:
+            botlist.append(Bot(bot))
+        except:
+            logging.error('  [Failed] "%s" failed to initialize' % bot)
 
     return botlist
 
@@ -166,7 +166,24 @@ def setup():
 # Now let's start doing stuff. #
 # setup()
 set_logger()
-logging.info('Looking for bot configurations in "bots" folder...')
+cred = credentials.Certificate('serviceAccountKey.json')
+default_app = firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://polaris-bot.firebaseio.com/',
+    'storageBucket': 'polaris-bot.appspot.com'
+})
+
+# administration = db.reference('administration')
+bots = db.reference('bots')
+# groups = db.reference('groups')
+# pins = db.reference('pins')
+# reminders = db.reference('reminders')
+# settings = db.reference('settings')
+# steps = db.reference('steps')
+# tags = db.reference('tags')
+# translations = db.reference('translations')
+# users = db.reference('users')
+
+logging.info('Looking for bot configurations in Firebase...')
 botlist = get_bots()
 
 try:

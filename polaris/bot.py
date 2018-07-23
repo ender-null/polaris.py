@@ -3,15 +3,19 @@ from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
+from firebase_admin import db
 import importlib, logging, re, traceback, sys, os, json
 
 
 class Bot(object):
     def __init__(self, name):
         self.name = name
-        self.config = AutosaveDict('bots/%s.json' % self.name)
-        self.trans = AutosaveDict('polaris/translations/%s.json' % self.config.translation)
-        self.bindings = importlib.import_module('polaris.bindings.%s' % self.config.bindings).bindings(self)
+        self.config = db.reference('bots').child(self.name).get()
+        self.trans = db.reference('translations').child(self.config['translation']).get()
+        self.steps = db.reference('steps').child(self.name).get()
+        self.tags = db.reference('tags').child(self.name).get()
+        self.settings = db.reference('settings').child(self.name).get()
+        self.bindings = importlib.import_module('polaris.bindings.%s' % self.config['bindings']).bindings(self)
         self.inbox = Queue()
         self.outbox = Queue()
         self.started = False
@@ -76,9 +80,9 @@ class Bot(object):
 
         logging.debug('Importing plugins...')
 
-        if type(self.config.plugins) is list:
-            plugins_to_load = self.config.plugins
-        elif self.config.plugins == 'all':
+        if type(self.config['plugins']) is list:
+            plugins_to_load = self.config['plugins']
+        elif self.config['plugins'] == 'all':
             plugins_to_load = load_plugin_list()
         else:
             plugins_to_load = load_plugin_list()
@@ -162,7 +166,7 @@ class Bot(object):
                (command == '/help' and '/help' in message.content)):
                 trigger = command.replace('/', '^/')
             else:
-                trigger = command.replace('/', '^' + self.config.prefix)
+                trigger = command.replace('/', '^' + self.config['prefix'])
 
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
@@ -226,5 +230,5 @@ class Bot(object):
 
 
     def send_alert(self, text):
-        message = Message(None, Conversation(self.config.alerts_conversation_id, 'Alerts'), self.info, '<pre>%s</pre>' % text, extra={'format': 'HTML', 'preview': False})
+        message = Message(None, Conversation(self.config['alerts_conversation_id'], 'Alerts'), self.info, '<pre>%s</pre>' % text, extra={'format': 'HTML', 'preview': False})
         self.outbox.put(message)

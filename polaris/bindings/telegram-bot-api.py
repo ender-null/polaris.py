@@ -9,7 +9,7 @@ class bindings(object):
         self.bot = bot
 
     def api_request(self, api_method, params=None, headers=None, files=None):
-        url = 'https://api.telegram.org/bot%s/%s' % (self.bot.config.bindings_token, api_method)
+        url = 'https://api.telegram.org/bot%s/%s' % (self.bot.config['bindings_token'], api_method)
         try:
             return send_request(url, params, headers, files, post=True)
         except:

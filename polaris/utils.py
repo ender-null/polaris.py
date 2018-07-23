@@ -3,6 +3,7 @@ from html.parser import HTMLParser
 from DictObject import DictObject
 from polaris.types import AutosaveDict
 from re import compile
+from firebase_admin import db
 import logging, requests, json, magic, mimetypes, tempfile, os, subprocess, re
 
 
@@ -22,8 +23,8 @@ def get_input(message, ignore_reply=True):
 
 
 def get_command(message):
-    if message.content.startswith(config.start):
-        command = first_word(message.content).lstrip(config.start)
+    if message.content.startswith(config['start']):
+        command = first_word(message.content).lstrip(config['start'])
         return command.replace('@' + bot.username, '')
     elif message.type == 'inline_query':
         return first_word(message.content)
@@ -33,17 +34,17 @@ def get_command(message):
 
 def is_command(self, number, text):
     if 'command' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config.prefix).lower()
+        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'friendly' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config.prefix).lower()
+        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config['prefix']).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'shortcut' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config.prefix).lower()
+        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config['prefix']).lower()
         if len(self.commands[number - 1]['shortcut']) < 3:
             trigger += ' '
         if compile(trigger).search(text.lower()):
@@ -53,31 +54,26 @@ def is_command(self, number, text):
 
 
 def set_setting(bot, uid, key, value):
-    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-
     if not isinstance(uid, str):
         uid = str(uid)
 
-    if not uid in settings:
-        settings[uid] = {}
-    settings[uid][key] = value
-    settings.store_database()
+    if not uid in bot.settings:
+        bot.settings[uid] = {}
+    bot.settings[uid][key] = value
 
 
 def get_setting(bot, uid, key):
-    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
-
     if not isinstance(uid, str):
         uid = str(uid)
 
     try:
-        return settings[uid][key]
+        return bot.settings[uid][key]
     except:
         return None
 
 
 def del_setting(bot, uid, key):
-    settings = AutosaveDict('polaris/data/%s.settings.json' % bot.name)
+    settings = bot.settings
 
     if not isinstance(uid, str):
         uid = str(uid)
@@ -87,13 +83,11 @@ def del_setting(bot, uid, key):
 
 
 def has_tag(bot, target, tag, return_match = False):
-    tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
-
     if not isinstance(target, str):
         target = str(target)
 
-    if target in tags and '?' in tag:
-        for target_tag in tags[target]:
+    if target in bot.tags and '?' in tag:
+        for target_tag in bot.tags[target]:
             if target_tag.startswith(tag.split('?')[0]):
                 if return_match:
                     return target_tag
@@ -103,7 +97,7 @@ def has_tag(bot, target, tag, return_match = False):
 
         return False
 
-    elif target in tags and tag in tags[target]:
+    elif target in bot.tags and tag in bot.tags[target]:
         return True
 
     else:
@@ -111,34 +105,29 @@ def has_tag(bot, target, tag, return_match = False):
 
 
 def set_tag(bot, target, tag):
-    tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
-
     if not isinstance(target, str):
         target = str(target)
 
-    if not target in tags:
-        tags[target] = []
+    if not target in bot.tags:
+        bot.tags[target] = []
 
-    if not tag in tags[target]:
-        tags[target].append(tag)
-        tags.store_database()
+    if not tag in bot.tags[target]:
+        db.reference('tags').child(bot.name).child(target).push(tag)
+        bot.tags = db.reference('tags').child(bot.name).get()
 
 
 def del_tag(bot, target, tag):
-    tags = AutosaveDict('polaris/data/%s.tags.json' % bot.name)
-
     if not isinstance(target, str):
         target = str(target)
 
-    tags[target].remove(tag)
-    tags.store_database()
+    db.reference('tags').child(bot.name).child(target).child(tag).delete()
 
 
 def is_admin(bot, uid):
     if not isinstance(uid, str):
         uid = str(uid)
 
-    if str(bot.config.owner) == uid:
+    if str(bot.config['owner']) == uid:
         return True
 
     elif has_tag(bot, uid, 'admin') or has_tag(bot, uid, 'owner'):
@@ -171,39 +160,33 @@ def is_mod(bot, uid, gid):
 
 
 def set_step(bot, target, plugin, step):
-    steps = AutosaveDict('polaris/data/%s.steps.json' % bot.name)
-
     if not isinstance(target, str):
         target = str(target)
 
-    steps[target] = {
+    db.reference('steps').child(bot.name).child(target).set({
         'plugin': plugin,
         'step': step
-    }
-    steps.store_database()
+    })
+    bot.steps = db.reference('steps').child(bot.name).get()
 
 
 def get_step(bot, target):
-    steps = AutosaveDict('polaris/data/%s.steps.json' % bot.name)
-
     if not isinstance(target, str):
         target = str(target)
 
-    if not target in steps:
+    if not bot.steps or not target in bot.steps:
         return None
     else:
-        return steps[target]
+        return bot.steps[target]
 
 
 def cancel_steps(bot, target):
-    steps = AutosaveDict('polaris/data/%s.steps.json' % bot.name)
-
     if not isinstance(target, str):
         target = str(target)
 
-    if target in steps:
-        del steps[target]
-        steps.store_database()
+    if target in bot.steps:
+        db.reference('steps').child(bot.name).child(target).delete()
+        bot.steps = db.reference('steps').child(bot.name).get()
 
 
 def first_word(text, i=1):

@@ -20,8 +20,7 @@ class plugin(object):
         res = requests.get(url)
 
         if res.status_code != 200:
-            send_alert('%s\n%s' % (lang.errors.connection, res.text))
-            return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans['errors']['connection_error'], extra={'format': 'HTML'})
         
         soup = BeautifulSoup(res.text, 'lxml')
 
