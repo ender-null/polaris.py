@@ -4,7 +4,15 @@ from DictObject import DictObject
 from polaris.types import AutosaveDict
 from re import compile
 from firebase_admin import db
-import logging, requests, json, magic, mimetypes, tempfile, os, subprocess, re
+import logging
+import requests
+import json
+import magic
+import mimetypes
+import tempfile
+import os
+import subprocess
+import re
 
 
 def get_input(message, ignore_reply=True):
@@ -22,9 +30,9 @@ def get_input(message, ignore_reply=True):
     return text[text.find(" ") + 1:]
 
 
-def get_command(message):
-    if message.content.startswith(config['start']):
-        command = first_word(message.content).lstrip(config['start'])
+def get_command(message, bot):
+    if message.content.startswith(bot.config['start']):
+        command = first_word(message.content).lstrip(bot.config['start'])
         return command.replace('@' + bot.username, '')
     elif message.type == 'inline_query':
         return first_word(message.content)
@@ -34,17 +42,20 @@ def get_command(message):
 
 def is_command(self, number, text):
     if 'command' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
+        trigger = self.commands[number -
+                                1]['command'].replace('/', self.bot.config['prefix']).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'friendly' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config['prefix']).lower()
+        trigger = self.commands[number - 1]['friendly'].replace(
+            '/', self.bot.config['prefix']).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'shortcut' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config['prefix']).lower()
+        trigger = self.commands[number - 1]['shortcut'].replace(
+            '/', self.bot.config['prefix']).lower()
         if len(self.commands[number - 1]['shortcut']) < 3:
             trigger += ' '
         if compile(trigger).search(text.lower()):
@@ -60,6 +71,7 @@ def set_setting(bot, uid, key, value):
     if not uid in bot.settings:
         bot.settings[uid] = {}
     bot.settings[uid][key] = value
+    db.reference('settings/%s/%s/%s' % (bot.name, uid, key)).set(bot.settings[uid][key])
 
 
 def get_setting(bot, uid, key):
@@ -73,16 +85,14 @@ def get_setting(bot, uid, key):
 
 
 def del_setting(bot, uid, key):
-    settings = bot.settings
-
     if not isinstance(uid, str):
         uid = str(uid)
 
-    del(settings[uid][key])
-    settings.store_database()
+    del(bot.settings[uid][key])
+    db.reference('settings/%s/%s/%s' % (bot.name, uid, key)).delete()
 
 
-def has_tag(bot, target, tag, return_match = False):
+def has_tag(bot, target, tag, return_match=False):
     if not isinstance(target, str):
         target = str(target)
 
@@ -112,15 +122,15 @@ def set_tag(bot, target, tag):
         bot.tags[target] = []
 
     if not tag in bot.tags[target]:
-        db.reference('tags').child(bot.name).child(target).push(tag)
-        bot.tags = db.reference('tags').child(bot.name).get()
+        bot.tags[target].append(tag)
+        db.reference('tags/%s/%s' % (bot.name, target)).set(bot.tags[target])
 
 
 def del_tag(bot, target, tag):
     if not isinstance(target, str):
         target = str(target)
-
-    db.reference('tags').child(bot.name).child(target).child(tag).delete()
+    bot.tags[target].remove(tag)
+    db.reference('tags/%s/%s' % (bot.name, target)).set(bot.tags[target])
 
 
 def is_admin(bot, uid):
@@ -163,11 +173,12 @@ def set_step(bot, target, plugin, step):
     if not isinstance(target, str):
         target = str(target)
 
-    db.reference('steps').child(bot.name).child(target).set({
+    bot.steps[target] = {
         'plugin': plugin,
         'step': step
-    })
-    bot.steps = db.reference('steps').child(bot.name).get()
+    }
+
+    db.reference('steps/%s/%s' % (bot.name, target)).set(bot.steps[target])
 
 
 def get_step(bot, target):
@@ -185,8 +196,8 @@ def cancel_steps(bot, target):
         target = str(target)
 
     if target in bot.steps:
-        db.reference('steps').child(bot.name).child(target).delete()
-        bot.steps = db.reference('steps').child(bot.name).get()
+        del(bot.steps[target])
+        db.reference('steps/%s/%s' % (bot.name, target)).delete()
 
 
 def first_word(text, i=1):
@@ -232,9 +243,11 @@ def load_plugin_list():
 def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True):
     try:
         if post:
-            r = requests.post(url, params=params, headers=headers, files=files, data=data, timeout=100)
+            r = requests.post(url, params=params, headers=headers,
+                              files=files, data=data, timeout=100)
         else:
-            r = requests.get(url, params=params, headers=headers, files=files, data=data, timeout=100)
+            r = requests.get(url, params=params, headers=headers,
+                             files=files, data=data, timeout=100)
     except:
         logging.error('Error making request to: %s' % url)
         return None
@@ -242,7 +255,8 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
     if r.status_code != 200:
         logging.error(r.text)
         while r.status_code == 429:
-            r = r.get(url, params=params, headers=headers, files=files, data=data)
+            r = r.get(url, params=params, headers=headers,
+                      files=files, data=data)
     try:
         if parse:
             return DictObject(json.loads(r.text))
@@ -288,9 +302,11 @@ def get_streetview(latitude, longitude, key, size='640x320', fov=90, heading=235
 def download(url, params=None, headers=None, method='get', extension=None):
     try:
         if method == 'post':
-            res = requests.post(url, params=params, headers=headers, stream=True)
+            res = requests.post(url, params=params,
+                                headers=headers, stream=True)
         else:
-            res = requests.get(url, params=params, headers=headers, stream=True)
+            res = requests.get(url, params=params,
+                               headers=headers, stream=True)
         if not extension:
             extension = os.path.splitext(url)[1].split('?')[0]
         f = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
@@ -336,7 +352,8 @@ def get_short_url(long_url, api_key):
     params = {'longUrl': long_url, 'key': api_key}
     headers = {'content-type': 'application/json'}
 
-    res = send_request(url, params=params, headers=headers, data=json.dumps(params), post=True)
+    res = send_request(url, params=params, headers=headers,
+                       data=json.dumps(params), post=True)
 
     return res.id
 
@@ -346,7 +363,8 @@ def mp3_to_ogg(input):
 
     with open(os.devnull, "w") as DEVNULL:
         converter = subprocess.check_call(
-            ['ffmpeg', '-i', input, '-ac', '1', '-c:a', 'opus', '-b:a', '16k', '-y', output],
+            ['ffmpeg', '-i', input, '-ac', '1', '-c:a',
+                'opus', '-b:a', '16k', '-y', output],
             stdout=DEVNULL)
 
     return output
@@ -365,8 +383,8 @@ def remove_markdown(text):
 
 def remove_html(text):
     text = re.sub('<[^<]+?>', '', text)
-    text = text.replace('&lt;', '<');
-    text = text.replace('&gt;', '>');
+    text = text.replace('&lt;', '<')
+    text = text.replace('&gt;', '>')
     return text
     s = HTMLParser()
     s.reset()
@@ -377,10 +395,17 @@ def remove_html(text):
     s.feed(text)
     return ''.join(s.fed)
 
+def init_if_empty(_dict):
+    if _dict:
+        return _dict
+    else:
+        return {}
 
 def set_logger(debug=False):
-    logFormatterConsole = logging.Formatter("[%(processName)-11.11s]  %(message)s")
-    logFormatterFile = logging.Formatter("%(asctime)s [%(processName)-11.11s] [%(levelname)-5.5s]  %(message)s")
+    logFormatterConsole = logging.Formatter(
+        "[%(processName)-11.11s]  %(message)s")
+    logFormatterFile = logging.Formatter(
+        "%(asctime)s [%(processName)-11.11s] [%(levelname)-5.5s]  %(message)s")
     rootLogger = logging.getLogger()
     if debug:
         rootLogger.setLevel(logging.DEBUG)
@@ -396,4 +421,5 @@ def set_logger(debug=False):
     rootLogger.addHandler(consoleHandler)
 
     logging.getLogger("requests").setLevel(logging.WARNING)
-    logging.getLogger("polaris.types").getChild('AutosaveDict').setLevel(logging.ERROR)
+    logging.getLogger("polaris.types").getChild(
+        'AutosaveDict').setLevel(logging.ERROR)

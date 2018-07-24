@@ -1,5 +1,5 @@
 from polaris.types import AutosaveDict, Message, Conversation
-from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name
+from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
@@ -11,11 +11,15 @@ class Bot(object):
     def __init__(self, name):
         self.name = name
         try:
-            self.config = db.reference('bots').child(self.name).get()
-            self.trans = db.reference('translations').child(self.config['translation']).get()
-            self.steps = db.reference('steps').child(self.name).get()
-            self.tags = db.reference('tags').child(self.name).get()
-            self.settings = db.reference('settings').child(self.name).get()
+            self.config = db.reference('bots/' + self.name).get()
+            self.trans = db.reference('translations/' + self.config['translation']).get()
+            self.administration = init_if_empty(db.reference('administration/' + self.name).get())
+            self.groups = init_if_empty(db.reference('groups/' + self.name).get())
+            self.users = init_if_empty(db.reference('users/' + self.name).get())
+            self.reminders = init_if_empty(db.reference('reminders/' + self.name).get())
+            self.steps = init_if_empty(db.reference('steps/' + self.name).get())
+            self.tags = init_if_empty(db.reference('tags/' + self.name).get())
+            self.settings = init_if_empty(db.reference('settings/' + self.name).get())
 
         except db.ApiCallError as e:
             logging.exception('Weird Firebase exception happened')

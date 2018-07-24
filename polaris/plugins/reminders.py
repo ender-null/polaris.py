@@ -13,8 +13,6 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['reminders']['commands']
         self.description = self.bot.trans['plugins']['reminders']['description']
-        self.reminders = db.reference('reminders').child(self.bot.name)
-        self.cached_reminders = self.reminders.get()
         self.sort_reminders()
 
 
@@ -46,7 +44,7 @@ class plugin(object):
         reminder.first_name = m.sender.first_name
         reminder.username = m.sender.username
 
-        self.reminders.child('list').push(reminder)
+        db.reference('reminders/%s/list' % self.bot.name).push(reminder)
         self.sort_reminders()
 
         if unit == 's':
@@ -64,16 +62,16 @@ class plugin(object):
 
 
     def cron(self):
-        while len(self.cached_reminders['list']) > 0 and self.cached_reminders['list'][0]['alarm'] < time():
-            reminder = self.cached_reminders['list'][0]
+        while len(self.bot.reminders['list']) > 0 and self.bot.reminders['list'][0]['alarm'] < time():
+            reminder = self.bot.reminders['list'][0]
             text = '<i>%s</i>\n - %s' % (reminder['text'], reminder['first_name'])
             if reminder['username']:
                  text += ' (@%s)' % reminder['username']
 
             m = Message(None, Conversation(reminder['chat_id']), None, None)
             self.bot.send_message(m, text, extra={'format': 'HTML'})
-            self.reminders.child('list').child(0).delete()
-            self.cached_reminders = self.reminders.get()
+            del self.bot.reminders['list'][0]
+            db.reference('reminders/%s/list/0' % self.bot.name).delete()
             self.sort_reminders()
 
 
@@ -90,8 +88,9 @@ class plugin(object):
 
 
     def sort_reminders(self):
-        if not 'list' in self.reminders:
-            self.cached_reminders['list'] = []
+        if not 'list' in self.bot.reminders:
+            self.bot.reminders['list'] = []
 
-        if len(self.cached_reminders['list']) > 0:
-            self.reminders.child('list').update(sorted(self.cached_reminders['list'], key=lambda k: k['alarm']))
+        if len(self.bot.reminders['list']) > 0:
+            self.bot.reminders['list'] = sorted(self.bot.reminders['list'], key=lambda k: k['alarm'])
+            db.reference('reminders/%s/list' % self.bot.name).update(self.bot.reminders['list'])
