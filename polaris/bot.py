@@ -151,13 +151,14 @@ class Bot(object):
                                 break
 
                         if 'shortcut' in command:
-                            if len(command['shortcut']) < 3:
-                                shortcut = command['shortcut'] + ' '
-                            else:
-                                shortcut = command['shortcut']
+                            # if len(command['shortcut']) < 3:
+                            #     shortcut = command['shortcut'] + ' '
+                            # else:
+                            #     shortcut = command['shortcut']
 
-                            if self.check_trigger(shortcut, msg, plugin):
+                            if self.check_trigger(command['shortcut'], msg, plugin):
                                 break
+
         except db.ApiCallError as e:
             logging.exception('Weird Firebase exception happened')
 

@@ -22,7 +22,7 @@ class plugin(object):
         if res.status_code != 200:
             return self.bot.send_message(m, self.bot.trans['errors']['connection_error'], extra={'format': 'HTML'})
         
-        soup = BeautifulSoup(res.text, 'lxml')
+        soup = BeautifulSoup(res.text)
 
         story = soup.find(class_='story')
         published = story.find(class_='pre').get_text()

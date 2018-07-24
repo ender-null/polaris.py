@@ -283,8 +283,8 @@ class plugin(object):
                                 i = 0
                         except:
                             return self.bot.send_message(m, self.bot.trans['errors']['unknown'], extra={'format': 'HTML'})
-                        self.bot.administration[gid]['rules'][i] = all_but_first_word(all_but_first_word(input))
-                        db.reference('administration/%s/%s/rules/%s' % (self.bot.name, gid, i)).set(self.bot.administration[gid]['rules'][i])
+                        self.bot.administration[gid]['rules'].insert(i, all_but_first_word(all_but_first_word(input)))
+                        db.reference('administration/%s/%s/rules' % (self.bot.name, gid)).set(self.bot.administration[gid]['rules'])
                         return self.bot.send_message(m, self.bot.trans['plugins']['administration']['strings']['set'] % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans['plugins']['administration']['strings']['not_added'] % m.conversation.title, extra={'format': 'HTML'})
