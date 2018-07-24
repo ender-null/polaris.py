@@ -13,7 +13,6 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['reminders']['commands']
         self.description = self.bot.trans['plugins']['reminders']['description']
-        self.sort_reminders()
 
 
     # Plugin action #
@@ -43,8 +42,7 @@ class plugin(object):
         reminder.text = text
         reminder.first_name = m.sender.first_name
         reminder.username = m.sender.username
-
-        db.reference('reminders/%s/list' % self.bot.name).push(reminder)
+        self.bot.reminders['list'].append(reminder)
         self.sort_reminders()
 
         if unit == 's':
@@ -93,4 +91,5 @@ class plugin(object):
 
         if len(self.bot.reminders['list']) > 0:
             self.bot.reminders['list'] = sorted(self.bot.reminders['list'], key=lambda k: k['alarm'])
-            db.reference('reminders/%s/list' % self.bot.name).update(self.bot.reminders['list'])
+
+        db.reference('reminders/%s/list' % self.bot.name).update(self.bot.reminders['list'])
