@@ -4,15 +4,7 @@ from DictObject import DictObject
 from polaris.types import AutosaveDict
 from re import compile
 from firebase_admin import db
-import logging
-import requests
-import json
-import magic
-import mimetypes
-import tempfile
-import os
-import subprocess
-import re
+import logging, traceback, requests, json, magic, mimetypes, tempfile, os, subprocess, re
 
 
 def get_input(message, ignore_reply=True):
@@ -400,6 +392,16 @@ def init_if_empty(_dict):
         return _dict
     else:
         return {}
+
+def catch_exception(bot, exception):
+    logging.info('Catched exception: ' + exception.__class__.__name__)
+    if (exception.__class__.__name__ == 'KeyboardInterrupt'):
+        pass
+    elif (exception.__class__.__name__ == 'ApiCallError'):
+        logging.info('Weird firebase exception')
+    else:
+        logging.exception(traceback.format_exc())
+        bot.send_alert(traceback.format_exc())
 
 def set_logger(debug=False):
     logFormatterConsole = logging.Formatter(

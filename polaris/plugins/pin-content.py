@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command
+from polaris.utils import get_input, is_command, init_if_empty
 from polaris.types import AutosaveDict
 from firebase_admin import db
 from re import findall
@@ -10,8 +10,7 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['pins']['commands']
         self.description = self.bot.trans['plugins']['pins']['description']
-        self.pins = db.reference('pins').child(self.bot.name)
-        self.cached_pins = self.pins.get()
+        self.pins = init_if_empty(db.reference('pins/' + self.bot.name).get())
         self.update_triggers()
 
     # Plugin action #
@@ -21,8 +20,8 @@ class plugin(object):
         # List all pins #
         if is_command(self, 1, m.content):
             pins = []
-            for pin in self.cached_pins:
-                if self.cached_pins[pin]['creator'] == m.sender.id:
+            for pin in self.pins:
+                if self.pins[pin]['creator'] == m.sender.id:
                     pins.append(pin)
 
             if len(pins) > 0:
@@ -51,15 +50,15 @@ class plugin(object):
             if not m.reply:
                 return self.bot.send_message(m, self.bot.trans['errors']['needs_reply'], extra={'format': 'HTML'})
 
-            if input in self.cached_pins:
+            if input in self.pins:
                 return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['already_pinned'] % input, extra={'format': 'HTML'})
 
-            self.pins.child(input).update({
+            self.pins[input] = {
                 'content': m.reply.content.replace('<','&lt;').replace('>','&gt;'),
                 'creator': m.sender.id,
                 'type': m.reply.type
-            })
-            self.cached_pins = self.pins.get()
+            }
+            db.reference('pins/%s/%s' % (self.bot.name, input)).set(self.pins[input])
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['pinned'] % input, extra={'format': 'HTML'})
@@ -73,14 +72,13 @@ class plugin(object):
                 input = input.lstrip('#')
             input = input.lower()
 
-            if not input in self.cached_pins:
+            if not input in self.pins:
                 return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['not_found'] % input, extra={'format': 'HTML'})
 
-            if not m.sender.id == self.cached_pins[input]['creator']:
+            if not m.sender.id == self.pins[input]['creator']:
                 return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['not_creator'] % input, extra={'format': 'HTML'})
 
-            self.pins.child(input).delete()
-            self.cached_pins = self.pins.get()
+            db.reference('pins/%s/%s' % (self.bot.name, input)).delete()
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['unpinned'] % input, extra={'format': 'HTML'})
@@ -92,14 +90,14 @@ class plugin(object):
             count = 3
 
             for pin in pins:
-                if pin in self.cached_pins:
+                if pin in self.pins:
                     # You can reply with a pin and the message will reply too. #
                     if m.reply:
                         reply = m.reply.id
                     else:
                         reply = m.id
 
-                    self.bot.send_message(m, self.cached_pins[pin]['content'], self.cached_pins[pin]['type'], extra={'format': 'HTML'}, reply = reply)
+                    self.bot.send_message(m, self.pins[pin]['content'], self.pins[pin]['type'], extra={'format': 'HTML'}, reply = reply)
                     count -= 1
 
                 if count == 0:
@@ -108,7 +106,7 @@ class plugin(object):
 
     def update_triggers(self):
         # Add new triggers #
-        for pin, attributes in self.cached_pins.items():
+        for pin, attributes in self.pins.items():
             if not next((i for i,d in enumerate(self.commands) if 'command' in d and d['command'] == '#' + pin), None):
                 self.commands.append({
                     'command': '#' + pin,
@@ -117,5 +115,5 @@ class plugin(object):
 
         # Remove unused triggers #
         for command in self.commands:
-            if 'hidden' in command and command['hidden'] and not command['command'].lstrip('#') in self.cached_pins:
+            if 'hidden' in command and command['hidden'] and not command['command'].lstrip('#') in self.pins:
                 self.commands.remove(command)

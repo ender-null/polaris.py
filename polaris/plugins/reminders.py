@@ -1,10 +1,11 @@
-from polaris.utils import get_input, first_word, all_but_first_word, is_int
+from polaris.utils import get_input, first_word, all_but_first_word, is_int, catch_exception, init_if_empty
 from polaris.types import AutosaveDict, Message, Conversation
 from collections import OrderedDict
 from DictObject import DictObject
 from threading import Thread
 from firebase_admin import db
 from time import time, sleep
+
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -13,6 +14,7 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['reminders']['commands']
         self.description = self.bot.trans['plugins']['reminders']['description']
+        self.reminders = init_if_empty(db.reference('reminders/' + self.bot.name).get())
 
 
     # Plugin action #
@@ -21,7 +23,6 @@ class plugin(object):
         if not input:
             return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
 
-        # Lists all pins #
         delay = first_word(input)
         if delay:
             delaytime = delay[:-1]
@@ -42,7 +43,7 @@ class plugin(object):
         reminder.text = text
         reminder.first_name = m.sender.first_name
         reminder.username = m.sender.username
-        self.bot.reminders['list'].append(reminder)
+        self.reminders['list'].append(reminder)
         self.sort_reminders()
 
         if unit == 's':
@@ -60,16 +61,20 @@ class plugin(object):
 
 
     def cron(self):
-        while len(self.bot.reminders['list']) > 0 and self.bot.reminders['list'][0]['alarm'] < time():
-            reminder = self.bot.reminders['list'][0]
+        self.reminders = init_if_empty(db.reference('reminders/' + self.bot.name).get())
+        if not 'list' in self.reminders or not self.reminders['list']:
+            self.reminders['list'] = []
+
+        while len(self.reminders['list']) > 0 and self.reminders['list'][0]['alarm'] < time():
+            reminder = self.reminders['list'][0]
             text = '<i>%s</i>\n - %s' % (reminder['text'], reminder['first_name'])
             if reminder['username']:
                  text += ' (@%s)' % reminder['username']
 
             m = Message(None, Conversation(reminder['chat_id']), None, None)
             self.bot.send_message(m, text, extra={'format': 'HTML'})
-            del self.bot.reminders['list'][0]
-            db.reference('reminders/%s/list/0' % self.bot.name).delete()
+            self.reminders['list'].remove(reminder)
+            db.reference('reminders/%s' % self.bot.name).update(self.reminders)
             self.sort_reminders()
 
 
@@ -86,10 +91,10 @@ class plugin(object):
 
 
     def sort_reminders(self):
-        if not 'list' in self.bot.reminders:
-            self.bot.reminders['list'] = []
+        if not 'list' in self.reminders or not self.reminders['list']:
+            self.reminders['list'] = []
 
-        if len(self.bot.reminders['list']) > 0:
-            self.bot.reminders['list'] = sorted(self.bot.reminders['list'], key=lambda k: k['alarm'])
+        if len(self.reminders['list']) > 0:
+            self.reminders['list'] = sorted(self.reminders['list'], key=lambda k: k['alarm'])
 
-        db.reference('reminders/%s/list' % self.bot.name).update(self.bot.reminders['list'])
+        db.reference('reminders/%s' % self.bot.name).set(self.reminders)

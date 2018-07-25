@@ -1,5 +1,5 @@
 from polaris.types import AutosaveDict, Message, Conversation
-from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty
+from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
@@ -13,16 +13,12 @@ class Bot(object):
         try:
             self.config = db.reference('bots/' + self.name).get()
             self.trans = db.reference('translations/' + self.config['translation']).get()
-            self.administration = init_if_empty(db.reference('administration/' + self.name).get())
-            self.groups = init_if_empty(db.reference('groups/' + self.name).get())
-            self.users = init_if_empty(db.reference('users/' + self.name).get())
-            self.reminders = init_if_empty(db.reference('reminders/' + self.name).get())
             self.steps = init_if_empty(db.reference('steps/' + self.name).get())
             self.tags = init_if_empty(db.reference('tags/' + self.name).get())
             self.settings = init_if_empty(db.reference('settings/' + self.name).get())
 
-        except db.ApiCallError as e:
-            logging.exception('Weird Firebase exception happened')
+        except Exception as e:
+            catch_exception(self, e)
 
         self.bindings = importlib.import_module('polaris.bindings.%s' % self.config['bindings']).bindings(self)
         self.inbox = Queue()
@@ -42,8 +38,8 @@ class Bot(object):
                 msg = self.outbox.get()
                 logging.info(' %s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
                 self.bindings.send_message(msg)
-        except KeyboardInterrupt:
-            pass
+        except Exception as e:
+            catch_exception(self, e)
 
 
     def messages_handler(self):
@@ -58,8 +54,8 @@ class Bot(object):
 
                 self.on_message_receive(msg)
 
-        except KeyboardInterrupt:
-            pass
+        except Exception as e:
+            catch_exception(self, e)
 
 
     def start(self):
@@ -159,12 +155,8 @@ class Bot(object):
                             if self.check_trigger(command['shortcut'], msg, plugin):
                                 break
 
-        except db.ApiCallError as e:
-            logging.exception('Weird Firebase exception happened')
-
         except Exception as e:
-            logging.exception(traceback.format_exc())
-            self.send_alert(traceback.format_exc())
+            catch_exception(self, e)
 
 
     def check_trigger(self, command, message, plugin):
@@ -193,15 +185,14 @@ class Bot(object):
 
 
     def cron_jobs(self):
-        try:
-            while(self.started):
-                for plugin in self.plugins:
+        while(self.started):
+            for plugin in self.plugins:
+                try:
                     if hasattr(plugin, 'cron'):
                         plugin.cron()
-
-                sleep(5)
-        except KeyboardInterrupt:
-            pass
+                except Exception as e:
+                    catch_exception(self, e)
+            sleep(5)
 
 
     # METHODS TO MANAGE MESSAGES #
