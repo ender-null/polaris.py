@@ -75,7 +75,7 @@ def set_setting(bot, uid, key, value):
     if not uid in bot.settings:
         bot.settings[uid] = {}
     bot.settings[uid][key] = value
-    db.reference('settings/%s/%s/%s' % (bot.name, uid, key)).set(bot.settings[uid][key])
+    set_data('settings/%s/%s/%s' % (bot.name, uid, key), bot.settings[uid][key])
 
 
 def get_setting(bot, uid, key):
@@ -93,7 +93,7 @@ def del_setting(bot, uid, key):
         uid = str(uid)
 
     del(bot.settings[uid][key])
-    db.reference('settings/%s/%s/%s' % (bot.name, uid, key)).delete()
+    delete_data('settings/%s/%s/%s' % (bot.name, uid, key))
 
 
 def has_tag(bot, target, tag, return_match=False):
@@ -127,14 +127,14 @@ def set_tag(bot, target, tag):
 
     if not tag in bot.tags[target]:
         bot.tags[target].append(tag)
-        db.reference('tags/%s/%s' % (bot.name, target)).set(bot.tags[target])
+        set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
 
 
 def del_tag(bot, target, tag):
     if not isinstance(target, str):
         target = str(target)
     bot.tags[target].remove(tag)
-    db.reference('tags/%s/%s' % (bot.name, target)).set(bot.tags[target])
+    delete_data('tags/%s/%s' % (bot.name, target))
 
 
 def is_admin(bot, uid):
@@ -182,7 +182,7 @@ def set_step(bot, target, plugin, step):
         'step': step
     }
 
-    db.reference('steps/%s/%s' % (bot.name, target)).set(bot.steps[target])
+    set_data('steps/%s/%s' % (bot.name, target), bot.steps[target])
 
 
 def get_step(bot, target):
@@ -201,7 +201,7 @@ def cancel_steps(bot, target):
 
     if target in bot.steps:
         del(bot.steps[target])
-        db.reference('steps/%s/%s' % (bot.name, target)).delete()
+        delete_data('steps/%s/%s' % (bot.name, target))
 
 
 def first_word(text, i=1):
@@ -363,15 +363,19 @@ def get_short_url(long_url, api_key):
 
 
 def mp3_to_ogg(input):
-    output = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg').name
+    try:
+        output = tempfile.NamedTemporaryFile(delete=False, suffix='.ogg').name
+        with open(os.devnull, "w") as DEVNULL:
+            subprocess.check_call(
+                ['ffmpeg', '-i', input, '-ac', '1', '-c:a',
+                    'opus', '-b:a', '16k', '-y', output],
+                stdout=DEVNULL)
 
-    with open(os.devnull, "w") as DEVNULL:
-        converter = subprocess.check_call(
-            ['ffmpeg', '-i', input, '-ac', '1', '-c:a',
-                'opus', '-b:a', '16k', '-y', output],
-            stdout=DEVNULL)
-
-    return output
+        return output
+    except Exception as e:
+        logging.info('ffmpeg -i ' + input + '-ac 1 -c:a opus -b:a 16k -y ' + output)
+        logging.error(e)
+        return None
 
 
 def remove_markdown(text):
@@ -399,11 +403,13 @@ def remove_html(text):
     s.feed(text)
     return ''.join(s.fed)
 
+
 def init_if_empty(_dict):
     if _dict:
         return _dict
     else:
         return {}
+
 
 def catch_exception(bot, exception):
     logging.info('Catched exception: ' + exception.__class__.__name__)
@@ -414,6 +420,7 @@ def catch_exception(bot, exception):
         logging.exception(traceback.format_exc())
         bot.send_alert(traceback.format_exc())
 
+
 def wait_until_received(path):
     while True:
         try:
@@ -422,6 +429,33 @@ def wait_until_received(path):
         except:
             continue
     return data
+
+def set_data(path, value):
+    while True:
+        try:
+            db.reference(path).set(value)
+            break
+        except:
+            continue
+
+
+def update_data(path, value):
+    while True:
+        try:
+            db.reference(path).update(value)
+            break
+        except:
+            continue
+
+
+def delete_data(path):
+    while True:
+        try:
+            db.reference(path).delete()
+            break
+        except:
+            continue
+
 
 def set_logger(debug=False):
     logFormatterConsole = logging.Formatter(

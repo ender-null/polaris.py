@@ -1,5 +1,5 @@
 from polaris.utils import get_input, mp3_to_ogg, send_request, download, first_word, all_but_first_word
-import logging
+
 
 class plugin(object):
     # Loads the text strings from the bots language #

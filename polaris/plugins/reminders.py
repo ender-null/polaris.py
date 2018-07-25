@@ -1,4 +1,4 @@
-from polaris.utils import get_input, first_word, all_but_first_word, is_int, catch_exception, init_if_empty, wait_until_received
+from polaris.utils import get_input, first_word, all_but_first_word, is_int, catch_exception, init_if_empty, wait_until_received, set_data
 from polaris.types import AutosaveDict, Message, Conversation
 from collections import OrderedDict
 from DictObject import DictObject
@@ -74,7 +74,7 @@ class plugin(object):
             m = Message(None, Conversation(reminder['chat_id']), None, None)
             self.bot.send_message(m, text, extra={'format': 'HTML'})
             self.reminders['list'].remove(reminder)
-            db.reference('reminders/%s' % self.bot.name).update(self.reminders)
+            set_data('reminders/%s' % self.bot.name, self.reminders)
             self.sort_reminders()
 
 
@@ -97,4 +97,4 @@ class plugin(object):
         if len(self.reminders['list']) > 0:
             self.reminders['list'] = sorted(self.reminders['list'], key=lambda k: k['alarm'])
 
-        db.reference('reminders/%s' % self.bot.name).set(self.reminders)
+        set_data('reminders/%s' % self.bot.name, self.reminders)

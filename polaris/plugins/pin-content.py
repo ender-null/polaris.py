@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, init_if_empty, wait_until_received
+from polaris.utils import get_input, is_command, init_if_empty, wait_until_received, set_data, delete_data
 from polaris.types import AutosaveDict
 from firebase_admin import db
 from firebase_admin.db import ApiCallError
@@ -59,7 +59,7 @@ class plugin(object):
                 'creator': m.sender.id,
                 'type': m.reply.type
             }
-            db.reference('pins/%s/%s' % (self.bot.name, input)).set(self.pins[input])
+            set_data('pins/%s/%s' % (self.bot.name, input), self.pins[input])
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['pinned'] % input, extra={'format': 'HTML'})
@@ -79,7 +79,7 @@ class plugin(object):
             if not m.sender.id == self.pins[input]['creator']:
                 return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['not_creator'] % input, extra={'format': 'HTML'})
 
-            db.reference('pins/%s/%s' % (self.bot.name, input)).delete()
+            delete_data('pins/%s/%s' % (self.bot.name, input))
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['unpinned'] % input, extra={'format': 'HTML'})
