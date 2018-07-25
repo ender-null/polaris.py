@@ -183,11 +183,15 @@ class Bot(object):
                 trigger = command.replace('/', '^' + self.config['prefix'])
                 if not friendly:
                     # trigger = trigger.replace('@' + self.info.username.lower(), '')
-                    if (parameters and ' ' in message.content) or len(trigger) <= 4:
+                    if not parameters:
+                        trigger += '$'
+                    elif parameters and ' ' not in message.content:
+                        trigger += '$'
+                    elif parameters and ' ' in message.content:
                         trigger += ' '
 
-                    elif not parameters:
-                        trigger += '$'
+                    if message.conversation.id == self.config['owner']:
+                        logging.info('trigger: \'' + trigger + '\', content: \'' + message.content + '\'')
 
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
