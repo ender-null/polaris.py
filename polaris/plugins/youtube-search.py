@@ -12,6 +12,8 @@ class plugin(object):
     # Plugin action #
     def run(self, m):
         input = get_input(m, ignore_reply=False)
+        if not input:
+            return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
 
         url = 'https://www.googleapis.com/youtube/v3/search'
         params = {

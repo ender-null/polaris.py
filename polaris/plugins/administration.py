@@ -1,6 +1,7 @@
 from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name, init_if_empty
 from polaris.types import AutosaveDict
 from firebase_admin import db
+from firebase_admin.db import ApiCallError
 from re import findall
 
 
@@ -11,7 +12,12 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['administration']['commands']
         self.description = self.bot.trans['plugins']['administration']['description']
-        self.administration = init_if_empty(db.reference('administration/' + self.bot.name).get())
+        while True:
+            try:
+                self.administration = init_if_empty(db.reference('administration/' + self.bot.name).get())
+                break
+            except ApiCallError:
+                continue
 
     # Plugin action #
     def run(self, m):

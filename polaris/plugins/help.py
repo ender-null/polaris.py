@@ -31,7 +31,7 @@ class plugin(object):
                         # Adds the command and parameters#
                         if input in command['command'].replace('/', '').rstrip('\s'):
                             text += '\n • ' + command['command'].replace('/', self.bot.config['prefix'])
-                            if 'parameters' in command:
+                            if 'parameters' in command and command['parameters']:
                                 for parameter in command['parameters']:
                                     name, required = list(parameter.items())[0]
                                     # Bold for required parameters, and italic for optional #
@@ -68,7 +68,7 @@ class plugin(object):
                             text += ' - ?¿'
                     else:
                         text += '\n • ' + command['command'].replace('/', self.bot.config['prefix'])
-                        if 'parameters' in command:
+                        if 'parameters' in command and command['parameters']:
                             for parameter in command['parameters']:
                                 name, required = list(parameter.items())[0]
                                 # Bold for required parameters, and italic for optional #

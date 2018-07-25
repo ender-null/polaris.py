@@ -40,6 +40,10 @@ class Bot(object):
                 msg = self.outbox.get()
                 logging.info(' %s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
                 self.bindings.send_message(msg)
+
+        except KeyboardInterrupt:
+            pass
+
         except Exception as e:
             catch_exception(self, e)
 
@@ -55,6 +59,9 @@ class Bot(object):
                     logging.info('%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
 
                 self.on_message_receive(msg)
+
+        except KeyboardInterrupt:
+            pass
 
         except Exception as e:
             catch_exception(self, e)
@@ -140,30 +147,33 @@ class Bot(object):
 
                     # Check if any command of a plugin matches. #
                     for command in plugin.commands:
+                        if 'parameters' not in command:
+                            command['parameters'] = None
+
                         if 'command' in command:
-                            if self.check_trigger(command['command'], msg, plugin):
+                            if self.check_trigger(command['command'], command['parameters'], msg, plugin):
                                 break
 
                         if 'friendly' in command:
-                            if self.check_trigger(command['friendly'], msg, plugin):
+                            if self.check_trigger(command['friendly'], command['parameters'], msg, plugin, True):
                                 break
 
                         if 'shortcut' in command:
-                            # if len(command['shortcut']) < 3:
-                            #     shortcut = command['shortcut'] + ' '
-                            # else:
-                            #     shortcut = command['shortcut']
-
-                            if self.check_trigger(command['shortcut'], msg, plugin):
+                            if self.check_trigger(command['shortcut'], command['parameters'], msg, plugin):
                                 break
+
+        except KeyboardInterrupt:
+            pass
 
         except Exception as e:
             catch_exception(self, e)
 
 
-    def check_trigger(self, command, message, plugin):
+    def check_trigger(self, command, parameters, message, plugin, friendly = False):
         if isinstance(command, str):
             command = command.lower()
+            if isinstance(message.content, str) and message.content.endswith('@' + self.info.username) and ' ' not in message.content:
+                message.content = message.content.replace('@' + self.info.username, '')
 
             # If the commands are not /start or /help, set the correct command start symbol. #
             if ((command == '/start' and '/start' in message.content) or
@@ -171,9 +181,17 @@ class Bot(object):
                 trigger = command.replace('/', '^/')
             else:
                 trigger = command.replace('/', '^' + self.config['prefix'])
+                if not friendly:
+                    # trigger = trigger.replace('@' + self.info.username.lower(), '')
+                    if (parameters and ' ' in message.content) or len(trigger) <= 4:
+                        trigger += ' '
+
+                    elif not parameters:
+                        trigger += '$'
 
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
+                    logging.info('trigger: ' + trigger + ', content: ' + message.content)
                     if message.type == 'inline_query':
                         if hasattr(plugin, 'inline'):
                             plugin.inline(message)
@@ -184,6 +202,7 @@ class Bot(object):
                     return True
             except:
                 return False
+        return False
 
 
     def cron_jobs(self):
@@ -192,6 +211,9 @@ class Bot(object):
                 try:
                     if hasattr(plugin, 'cron'):
                         plugin.cron()
+
+                except KeyboardInterrupt:
+                    pass
                 except Exception as e:
                     catch_exception(self, e)
             sleep(5)

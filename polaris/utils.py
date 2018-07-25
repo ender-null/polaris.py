@@ -33,23 +33,31 @@ def get_command(message, bot):
 
 
 def is_command(self, number, text):
+    if isinstance(text, str) and text.endswith('@' + self.bot.info.username) and ' ' not in text:
+        text = text.replace('@' + self.bot.info.username, '')
+
     if 'command' in self.commands[number - 1]:
-        trigger = self.commands[number -
-                                1]['command'].replace('/', self.bot.config['prefix']).lower()
+        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
+        if 'parameters' in self.commands[number - 1] and ' ' in text:
+            trigger += ' '
+        else:
+            trigger += '$'
+
         if compile(trigger).search(text.lower()):
             return True
 
     if 'friendly' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['friendly'].replace(
-            '/', self.bot.config['prefix']).lower()
+        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config['prefix']).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'shortcut' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['shortcut'].replace(
-            '/', self.bot.config['prefix']).lower()
-        if len(self.commands[number - 1]['shortcut']) < 3:
+        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config['prefix']).lower()
+        if len(trigger) <= 4:
             trigger += ' '
+        else:
+            trigger += '$'
+
         if compile(trigger).search(text.lower()):
             return True
 
@@ -395,10 +403,9 @@ def init_if_empty(_dict):
 
 def catch_exception(bot, exception):
     logging.info('Catched exception: ' + exception.__class__.__name__)
-    if (exception.__class__.__name__ == 'KeyboardInterrupt'):
+    if (exception.__class__.__name__ == 'ApiCallError'):
+        # logging.info('Weird firebase exception')
         pass
-    elif (exception.__class__.__name__ == 'ApiCallError'):
-        logging.info('Weird firebase exception')
     else:
         logging.exception(traceback.format_exc())
         bot.send_alert(traceback.format_exc())
