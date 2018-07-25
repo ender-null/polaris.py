@@ -414,6 +414,15 @@ def catch_exception(bot, exception):
         logging.exception(traceback.format_exc())
         bot.send_alert(traceback.format_exc())
 
+def wait_until_received(path):
+    while True:
+        try:
+            data = init_if_empty(db.reference(path).get())
+            break
+        except:
+            continue
+    return data
+
 def set_logger(debug=False):
     logFormatterConsole = logging.Formatter(
         "[%(processName)-11.11s]  %(message)s")

@@ -1,5 +1,5 @@
 from polaris.types import AutosaveDict, Message, Conversation
-from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception
+from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
@@ -11,13 +11,13 @@ class Bot(object):
     def __init__(self, name):
         self.name = name
         try:
-            self.config = db.reference('bots/' + self.name).get()
-            self.trans = db.reference('translations/' + self.config['translation']).get()
-            self.users = init_if_empty(db.reference('users/' + self.name).get())
-            self.groups = init_if_empty(db.reference('groups/' + self.name).get())
-            self.steps = init_if_empty(db.reference('steps/' + self.name).get())
-            self.tags = init_if_empty(db.reference('tags/' + self.name).get())
-            self.settings = init_if_empty(db.reference('settings/' + self.name).get())
+            self.config = wait_until_received('bots/' + self.name)
+            self.trans = wait_until_received('translations/' + self.config['translation'])
+            self.users = wait_until_received('users/' + self.name)
+            self.groups = wait_until_received('groups/' + self.name)
+            self.steps = wait_until_received('steps/' + self.name)
+            self.tags = wait_until_received('tags/' + self.name)
+            self.settings = wait_until_received('settings/' + self.name)
 
         except Exception as e:
             catch_exception(self, e)
@@ -190,12 +190,8 @@ class Bot(object):
                     elif parameters and ' ' in message.content:
                         trigger += ' '
 
-                    if message.conversation.id == self.config['owner']:
-                        logging.info('trigger: \'' + trigger + '\', content: \'' + message.content + '\'')
-
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
-                    logging.info('trigger: ' + trigger + ', content: ' + message.content)
                     if message.type == 'inline_query':
                         if hasattr(plugin, 'inline'):
                             plugin.inline(message)

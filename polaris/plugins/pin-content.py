@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, init_if_empty
+from polaris.utils import get_input, is_command, init_if_empty, wait_until_received
 from polaris.types import AutosaveDict
 from firebase_admin import db
 from firebase_admin.db import ApiCallError
@@ -11,12 +11,7 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['pins']['commands']
         self.description = self.bot.trans['plugins']['pins']['description']
-        while True:
-            try:
-                self.pins = init_if_empty(db.reference('pins/' + self.bot.name).get())
-                break
-            except ApiCallError:
-                continue
+        self.pins = wait_until_received('pins/' + self.bot.name)
         self.update_triggers()
 
     # Plugin action #

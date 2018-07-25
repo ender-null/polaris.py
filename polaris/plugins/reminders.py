@@ -1,4 +1,4 @@
-from polaris.utils import get_input, first_word, all_but_first_word, is_int, catch_exception, init_if_empty
+from polaris.utils import get_input, first_word, all_but_first_word, is_int, catch_exception, init_if_empty, wait_until_received
 from polaris.types import AutosaveDict, Message, Conversation
 from collections import OrderedDict
 from DictObject import DictObject
@@ -14,7 +14,7 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['reminders']['commands']
         self.description = self.bot.trans['plugins']['reminders']['description']
-        self.reminders = init_if_empty(db.reference('reminders/' + self.bot.name).get())
+        self.reminders = wait_until_received('reminders/' + self.bot.name)
 
 
     # Plugin action #
@@ -61,7 +61,7 @@ class plugin(object):
 
 
     def cron(self):
-        self.reminders = init_if_empty(db.reference('reminders/' + self.bot.name).get())
+        self.reminders = wait_until_received('reminders/' + self.bot.name)
         if not 'list' in self.reminders or not self.reminders['list']:
             self.reminders['list'] = []
 

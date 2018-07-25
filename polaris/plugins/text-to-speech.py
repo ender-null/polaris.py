@@ -10,7 +10,6 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
-        logging.info('running')
         input = get_input(m, ignore_reply=False)
         if not input:
             return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
@@ -38,8 +37,6 @@ class plugin(object):
                 
         if not text:
             return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
-
-        logging.info('pre request')
     
         url = 'http://translate.google.com/translate_tts'
         params = {
@@ -56,14 +53,10 @@ class plugin(object):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.8 Safari/537.36"
         }
 
-        logging.info('downloading')
         file = download(url, params, headers)
-        logging.info('converting')
         voice = mp3_to_ogg(file)
-        logging.info('converted')
 
         if voice:
-            logging.info('voice')
             return self.bot.send_message(m, voice, 'voice')
         else:
             return self.bot.send_message(m, self.bot.trans['errors']['download_failed'])
