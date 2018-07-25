@@ -12,8 +12,6 @@ class plugin(object):
         self.commands = self.bot.trans['plugins']['administration']['commands']
         self.description = self.bot.trans['plugins']['administration']['description']
         self.administration = init_if_empty(db.reference('administration/' + self.bot.name).get())
-        self.groups = init_if_empty(db.reference('groups/' + self.bot.name).get())
-        self.users = init_if_empty(db.reference('users/' + self.bot.name).get())
 
     # Plugin action #
     def run(self, m):
@@ -55,9 +53,9 @@ class plugin(object):
             for gid, attr in self.administration.items():
                 if self.administration[gid]['public']:
                     if self.administration[gid]['alias']:
-                        text += '\n • %s |%s|' % (self.groups[gid]['title'], attr['alias'])
+                        text += '\n • %s |%s|' % (self.bot.groups[gid]['title'], attr['alias'])
                     else:
-                        text += '\n • %s' % (self.groups[gid]['title'])
+                        text += '\n • %s' % (self.bot.groups[gid]['title'])
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         # Join a group. #
@@ -66,14 +64,14 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
 
             for id in self.administration:
-                if (input in self.administration or input in self.administration[id]['alias'] or input in self.groups[id]['title']):
+                if (input in self.administration or input in self.administration[id]['alias'] or input in self.bot.groups[id]['title']):
                     gid_to_join = id
                     break
 
             if not gid_to_join in self.administration:
                 return self.bot.send_message(m, self.bot.trans['plugins']['administration']['strings']['not_added'] % m.conversation.title, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>' % self.groups[gid_to_join]['title']
+            text = '<b>%s</b>' % self.bot.groups[gid_to_join]['title']
             if self.administration[gid_to_join]['motd']:
                 text += '\n<i>%s</i>' % self.administration[gid_to_join]['motd']
 
@@ -107,7 +105,7 @@ class plugin(object):
                 elif is_command(self, 9, m.content):
                     return
 
-            text = '<b>%s</b>' % self.groups[gid]['title']
+            text = '<b>%s</b>' % self.bot.groups[gid]['title']
             if self.administration[gid]['motd']:
                 text += '\n<i>%s</i>' % self.administration[gid]['motd']
 
@@ -313,39 +311,39 @@ class plugin(object):
         # Update group data #
         gid = str(m.conversation.id)
         if m.conversation.id < 0:
-            if self.groups:
-                if gid in self.groups:
-                    self.groups[gid]['title'] = m.conversation.title
-                    self.groups[gid]['messages'] += 1
-                    db.reference('groups/%s/%s' % (self.bot.name, gid)).set(self.groups[gid])
+            if self.bot.groups:
+                if gid in self.bot.groups:
+                    self.bot.groups[gid]['title'] = m.conversation.title
+                    self.bot.groups[gid]['messages'] += 1
+                    db.reference('groups/%s/%s' % (self.bot.name, gid)).set(self.bot.groups[gid])
 
                 else:
-                    self.groups[gid] = {
+                    self.bot.groups[gid] = {
                         "title": m.conversation.title,
                         "messages": 1
                     }
-                    db.reference('groups/%s/%s' % (self.bot.name, gid)).set(self.groups[gid])
+                    db.reference('groups/%s/%s' % (self.bot.name, gid)).set(self.bot.groups[gid])
 
         # Update user data #
         uid = str(m.sender.id)
-        if self.users:
-            if uid in self.users:
-                self.users[uid]['first_name'] = m.sender.first_name
+        if self.bot.users:
+            if uid in self.bot.users:
+                self.bot.users[uid]['first_name'] = m.sender.first_name
                 if hasattr(m.sender, 'last_name'):
-                    self.users[uid]['last_name'] = m.sender.last_name
+                    self.bot.users[uid]['last_name'] = m.sender.last_name
                 if hasattr(m.sender, 'username'):
-                    self.users[uid]['username'] = m.sender.username
-                self.users[uid]['messages'] += 1
-                db.reference('users/%s/%s' % (self.bot.name, uid)).set(self.users[uid])
+                    self.bot.users[uid]['username'] = m.sender.username
+                self.bot.users[uid]['messages'] += 1
+                db.reference('users/%s/%s' % (self.bot.name, uid)).set(self.bot.users[uid])
 
             else:
-                self.users[uid] = {
+                self.bot.users[uid] = {
                     "first_name": m.sender.first_name,
                     "last_name": m.sender.last_name,
                     "username": m.sender.username,
                     "messages": 1
                 }
-                db.reference('users/%s/%s' % (self.bot.name, uid)).set(self.users[uid])
+                db.reference('users/%s/%s' % (self.bot.name, uid)).set(self.bot.users[uid])
 
         # Update group id when upgraded to supergroup #
         if m.type == 'notification' and m.content == 'upgrade_to_supergroup':
@@ -357,10 +355,10 @@ class plugin(object):
                 db.reference('administration/%s/%s' % (self.bot.name, to_id)).set(self.administration[to_id])
                 db.reference('administration/%s/%s' % (self.bot.name, from_id)).delete()
 
-            self.groups[to_id] = self.groups[from_id]
-            del self.groups[from_id]
+            self.bot.groups[to_id] = self.bot.groups[from_id]
+            del self.bot.groups[from_id]
             db.reference('groups/%s/%s' % (self.bot.name, from_id)).delete()
-            db.reference('groups/%s/%s' % (self.bot.name, to_id)).set(self.groups[to_id])
+            db.reference('groups/%s/%s' % (self.bot.name, to_id)).set(self.bot.groups[to_id])
 
 
     def steps(self, m, step):

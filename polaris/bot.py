@@ -13,6 +13,8 @@ class Bot(object):
         try:
             self.config = db.reference('bots/' + self.name).get()
             self.trans = db.reference('translations/' + self.config['translation']).get()
+            self.users = init_if_empty(db.reference('users/' + self.name).get())
+            self.groups = init_if_empty(db.reference('groups/' + self.name).get())
             self.steps = init_if_empty(db.reference('steps/' + self.name).get())
             self.tags = init_if_empty(db.reference('tags/' + self.name).get())
             self.settings = init_if_empty(db.reference('settings/' + self.name).get())
