@@ -38,7 +38,7 @@ def is_command(self, number, text):
 
     if 'command' in self.commands[number - 1]:
         trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
-        if 'parameters' not in self.commands[number - 1]:
+        if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
         elif 'parameters' in self.commands[number - 1] and ' ' not in text:
             trigger += '$'
@@ -55,7 +55,7 @@ def is_command(self, number, text):
 
     if 'shortcut' in self.commands[number - 1]:
         trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config['prefix']).lower()
-        if 'parameters' not in self.commands[number - 1]:
+        if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
         elif 'parameters' in self.commands[number - 1] and ' ' not in text:
             trigger += '$'

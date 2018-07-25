@@ -183,7 +183,7 @@ class Bot(object):
                 trigger = command.replace('/', '^' + self.config['prefix'])
                 if not friendly:
                     # trigger = trigger.replace('@' + self.info.username.lower(), '')
-                    if not parameters:
+                    if not parameters and trigger.startswith('^'):
                         trigger += '$'
                     elif parameters and ' ' not in message.content:
                         trigger += '$'
