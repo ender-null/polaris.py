@@ -68,21 +68,22 @@ class Bot(object):
 
 
     def start(self):
-        self.started = True
-        self.plugins = self.init_plugins()
+        if not 'enabled' in self.config or self.config['enabled']:
+            self.started = True
+            self.plugins = self.init_plugins()
 
-        logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
+            logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
 
-        jobs = []
-        jobs.append(Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
-        jobs.append(Process(target=self.sender_worker, name='%s S.' % self.name))
-        jobs.append(Process(target=self.cron_jobs, name='%s' % self.name))
+            jobs = []
+            jobs.append(Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
+            jobs.append(Process(target=self.sender_worker, name='%s S.' % self.name))
+            jobs.append(Process(target=self.cron_jobs, name='%s' % self.name))
 
-        for job in jobs:
-            job.daemon = True
-            job.start()
+            for job in jobs:
+                job.daemon = True
+                job.start()
 
-        Process(target=self.messages_handler, name='%s' % self.name).start()
+            Process(target=self.messages_handler, name='%s' % self.name).start()
 
 
     def stop(self):

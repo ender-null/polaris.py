@@ -15,6 +15,7 @@
             },
             "bindings": "telegram-bot-api",
             "bindings_token": "YOUR_BOT_TOKEN",
+            "enabled": true,
             "owner": 12345678,
             "plugins": "all",
             "prefix": "/",
