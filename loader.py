@@ -1,10 +1,11 @@
 from polaris.types import AutosaveDict
 from polaris.bot import Bot
-from polaris.utils import set_logger, load_plugin_list
+from polaris.utils import set_logger, load_plugin_list, catch_exception
 from multiprocessing import Process
+from time import sleep
 from firebase_admin import credentials, db, storage
 import firebase_admin
-import os, logging, time, importlib
+import os, logging, importlib
 
 # Loads the bots from the /bots/ #
 def get_bots():
@@ -13,7 +14,7 @@ def get_bots():
     for bot in bots.get():
         try:
             botlist.append(Bot(bot))
-        except:
+        except Exception as e:
             logging.error('  [Failed] "%s" failed to initialize' % bot)
 
     return botlist
@@ -196,7 +197,7 @@ try:
         for bot in botlist:
             if not bot.started:
                 exited += 1
-            time.sleep(1)
+            sleep(1)
 
         if exited == len(botlist):
             logging.info('All bots have exited, finishing.')

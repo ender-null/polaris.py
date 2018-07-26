@@ -20,7 +20,7 @@ class Bot(object):
             self.settings = wait_until_received('settings/' + self.name)
 
         except Exception as e:
-            catch_exception(self, e)
+            catch_exception(e, self)
 
         self.bindings = importlib.import_module('polaris.bindings.%s' % self.config['bindings']).bindings(self)
         self.inbox = Queue()
@@ -45,7 +45,7 @@ class Bot(object):
             pass
 
         except Exception as e:
-            catch_exception(self, e)
+            catch_exception(e, self)
 
 
     def messages_handler(self):
@@ -64,7 +64,7 @@ class Bot(object):
             pass
 
         except Exception as e:
-            catch_exception(self, e)
+            catch_exception(e, self)
 
 
     def start(self):
@@ -166,7 +166,7 @@ class Bot(object):
             pass
 
         except Exception as e:
-            catch_exception(self, e)
+            catch_exception(e, self)
 
 
     def check_trigger(self, command, parameters, message, plugin, friendly = False):
@@ -215,7 +215,7 @@ class Bot(object):
                 except KeyboardInterrupt:
                     pass
                 except Exception as e:
-                    catch_exception(self, e)
+                    catch_exception(e, self)
             sleep(5)
 
 

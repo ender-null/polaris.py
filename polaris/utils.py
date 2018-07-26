@@ -411,13 +411,10 @@ def init_if_empty(_dict):
         return {}
 
 
-def catch_exception(bot, exception):
+def catch_exception(exception, bot = None):
     logging.info('Catched exception: ' + exception.__class__.__name__)
-    if (exception.__class__.__name__ == 'ApiCallError'):
-        # logging.info('Weird firebase exception')
-        pass
-    else:
-        logging.exception(traceback.format_exc())
+    logging.exception(traceback.format_exc())
+    if bot:
         bot.send_alert(traceback.format_exc())
 
 
