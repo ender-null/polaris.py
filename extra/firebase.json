@@ -1,0 +1,527 @@
+{
+    "bots": {
+        "polaris": {
+            "alerts_conversation_id": -12345678,
+            "api_keys": {
+                "cat_api": "YOUR_API_KEY",
+                "giphy": "YOUR_API_KEY",
+                "google_custom_search_engine": "YOUR_API_KEY",
+                "google_developer_console": "YOUR_API_KEY",
+                "lastfm": "YOUR_API_KEY",
+                "microsoft_azure_key": "YOUR_API_KEY",
+                "riot_api": "YOUR_API_KEY",
+                "weather_underground": "YOUR_API_KEY",
+                "wolfram_alpha": "YOUR_API_KEY"
+            },
+            "bindings": "telegram-bot-api",
+            "bindings_token": "YOUR_BOT_TOKEN",
+            "owner": 12345678,
+            "plugins": "all",
+            "prefix": "/",
+            "translation": "default"
+        }
+    },
+    "translations": {
+        "default": {
+            "errors": {
+                "admin_required": "Only works with <b>admin privileges</b>.",
+                "connection_error": "Connection error.",
+                "download_failed": "Download failed.",
+                "exception_found": "Exception found.",
+                "group_only": "Only works with <b>groups</b>.",
+                "invalid_argument": "Invalid argument.",
+                "invalid_syntax": "Invalid syntax.",
+                "missing_id": "Missing id.",
+                "missing_parameter": "Missing parameter.",
+                "needs_reply": "Only works with <b>replies</b>.",
+                "no_results": "No results.",
+                "permission_required": "Permission required.",
+                "private_only": "Only works in <b>private</b>.",
+                "unknown": "Unknown error."
+            },
+            "plugins": {
+                "about": {
+                    "commands": [
+                        {
+                            "command": "/about",
+                            "description": "Info about the bot.",
+                            "friendly": "^About you"
+                        }
+                    ],
+                    "description": "Info about the bot.",
+                    "strings": {
+                        "greeting": "Hi! I'm <b>%s</b>!\nNice to meet you.",
+                        "help": "Write %shelp to know what I can do!",
+                        "license": "<b>Polaris</b> (including all plugins and documentation) is <b>free software</b>; you are free to redistribute it and/or modify it under the terms of the <b>GNU AGPLv3</b>.",
+                        "stats": "👤 %s users\n👥 %s groups",
+                        "version": "Running <a href=\"https://git.io/polaris\">polaris</a> <code>%s</code> by @luksireiku."
+                    }
+                },
+                "administration": {
+                    "commands": [
+                        {
+                            "command": "/administration",
+                            "description": "Group administration command list.",
+                            "friendly": "^Group administration commands",
+                            "shortcut": "/ghelp"
+                        },
+                        {
+                            "command": "/groups",
+                            "description": "Lists all groups.",
+                            "friendly": "^Group list",
+                            "shortcut": "/gr"
+                        },
+                        {
+                            "command": "/join",
+                            "description": "Returns info and invite link.",
+                            "friendly": "^Join",
+                            "parameters": [
+                                {
+                                    "name | alias": true
+                                }
+                            ],
+                            "shortcut": "/j"
+                        },
+                        {
+                            "command": "/group",
+                            "description": "Returns information of the current group.",
+                            "friendly": "^Group information",
+                            "hidden": true,
+                            "shortcut": "/grp"
+                        },
+                        {
+                            "command": "/rules",
+                            "description": "Returns rules of the current group.",
+                            "friendly": "^Rules",
+                            "hidden": true,
+                            "shortcut": "/r"
+                        },
+                        {
+                            "command": "/kill",
+                            "description": "Kicks the specified user.",
+                            "friendly": "^Kill",
+                            "hidden": true,
+                            "parameters": [
+                                {
+                                    "name | id": true
+                                }
+                            ],
+                            "shortcut": "/k"
+                        },
+                        {
+                            "command": "/banhammer",
+                            "description": "Bans the specified user.",
+                            "friendly": "^Banhammer",
+                            "hidden": true,
+                            "parameters": [
+                                {
+                                    "name | id": true
+                                }
+                            ],
+                            "shortcut": "/ban"
+                        },
+                        {
+                            "command": "/configure",
+                            "description": "Configures group",
+                            "friendly": "^Configure group",
+                            "hidden": true,
+                            "parameters": [
+                                {
+                                    "id | alias": true
+                                }
+                            ],
+                            "shortcut": "/cfg"
+                        },
+                        {
+                            "command": "^new_chat_member$",
+                            "description": "Shows the MOTD and the rules to new members",
+                            "hidden": true
+                        }
+                    ],
+                    "description": "Many features to administrate chats.",
+                    "strings": {
+                        "added": "<b>%s</b> was added to the list of groups.",
+                        "already_added": "<b>%s</b> is already in the list of groups.",
+                        "ask_alias": "Send me the alias you want to use for <b>%s</b>. Alias is used to join easier the group later.\n\nPress /cancel to skip it and finish.",
+                        "ask_link": "Send me the invite link for <b>%s</b>.\n\nPress /cancel to skip it and finish.",
+                        "ask_motd": "Send me the Message of the Day (MOTD) for <b>%s</b>, it's used as description or to show announcements.\n\nPress /cancel to skip it and finish.",
+                        "ask_rules": "Send me the rules for <b>%s</b>, each rule separated with breaklines and without numbers at the begining.\n\nPress /cancel to skip it and finish.",
+                        "ask_to_add": "Add group <b>%s</b>? <b>Yes</b> or <b>No</b>.",
+                        "cancel": "I'm not going to ask you anything more about <b>%s</b>, all data was saved.",
+                        "commands": "<b>Group Commands</b>:",
+                        "done": "<b>%s</b> configuration successful.",
+                        "groups": "<b>Groups</b>:",
+                        "join": "Join Group",
+                        "new_chat_member": "New member added",
+                        "nolink": "<i>No invite link</i>",
+                        "norules": "<i>No rules</i>",
+                        "not_added": "<b>%s</b> isn't in the list of groups.",
+                        "notfound": "<i>Rule not set</i>.",
+                        "rules": "<b>Rules</b>:",
+                        "set": "The parameter of <b>%s</b> was set.",
+                        "yes": "Yes"
+                    }
+                },
+                "cats": {
+                    "commands": [
+                        {
+                            "command": "/cat",
+                            "description": "Send a cute cat.",
+                            "friendly": "(pussy|kitty|kitten)"
+                        }
+                    ],
+                    "description": "Send pictures of cats."
+                },
+                "echo": {
+                    "commands": [
+                        {
+                            "command": "/echo",
+                            "description": "Repeats whatever you want.",
+                            "friendly": "^Echo ",
+                            "parameters": [
+                                {
+                                    "text": true
+                                }
+                            ],
+                            "shortcut": "/e"
+                        }
+                    ],
+                    "description": "Simplest plugin ever."
+                },
+                "help": {
+                    "commands": [
+                        {
+                            "command": "/help ",
+                            "description": "Help about commands.",
+                            "friendly": "^Help",
+                            "parameters": [
+                                {
+                                    "command": false
+                                }
+                            ],
+                            "shortcut": "/h"
+                        }
+                    ],
+                    "description": "Shows the bot help.",
+                    "strings": {
+                        "commands": "<b>Commands</b>:"
+                    }
+                },
+                "image_search": {
+                    "commands": [
+                        {
+                            "command": "/image",
+                            "description": "Returns a image from Google.",
+                            "friendly": "^Image of ",
+                            "parameters": [
+                                {
+                                    "query": true
+                                }
+                            ],
+                            "shortcut": "/i"
+                        },
+                        {
+                            "command": "/insfw",
+                            "description": "Returns a image from Google with filter disabled.",
+                            "hidden": true,
+                            "parameters": [
+                                {
+                                    "query": true
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "Returns a image from Google."
+                },
+                "jokes": {
+                    "commands": [
+                        {
+                            "command": "/joke",
+                            "description": "Random joke.",
+                            "friendly": "joke"
+                        }
+                    ],
+                    "description": "Random jokes."
+                },
+                "lastfm": {
+                    "commands": [
+                        {
+                            "command": "/nowplaying",
+                            "description": "Shows the last track played on last.fm.",
+                            "friendly": "Now playing",
+                            "parameters": [
+                                {
+                                    "username": false
+                                }
+                            ],
+                            "shortcut": "/np"
+                        },
+                        {
+                            "command": "/fmset",
+                            "hidden": true
+                        }
+                    ],
+                    "description": "Shows the last track played on last.fm. You can add your username from last.fm with /fmset",
+                    "strings": {
+                        "last_played": "<b>%s</b> last played:",
+                        "might_be": "This might be it on YouTube:",
+                        "no_username": "Didn't find any username, configure it with /fmset.",
+                        "now_playing": "<b>%s</b> is playing:",
+                        "username_set": "Your last.fm username was set, you can change it with /fmset."
+                    }
+                },
+                "pins": {
+                    "commands": [
+                        {
+                            "command": "/pins",
+                            "description": "Lists the pins of the current user.",
+                            "friendly": "List pins"
+                        },
+                        {
+                            "command": "/pin",
+                            "description": "Sets a pin.",
+                            "friendly": "Pin as ",
+                            "parameters": [
+                                {
+                                    "name": true
+                                }
+                            ]
+                        },
+                        {
+                            "command": "/unpin",
+                            "description": "Deletes a pin.",
+                            "friendly": "Unpin ",
+                            "parameters": [
+                                {
+                                    "name": true
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "Commands for noobs c:",
+                    "strings": {
+                        "already_pinned": "<b>#%s</b> already exists, can't be set.",
+                        "no_pins": "You don't have any pin yet.",
+                        "not_creator": "<b>#%s</b> you don't have permission to delete it.",
+                        "not_found": "<b>#%s</b> doesn't exist.",
+                        "pinned": "<b>#%s</b> was set",
+                        "pins": "<b>You created %s pins</b>:",
+                        "unpinned": "<b>#%s</b> was deleted."
+                    }
+                },
+                "reminders": {
+                    "commands": [
+                        {
+                            "command": "/remindme",
+                            "description": "Sets a reminder.",
+                            "friendly": "^remind me",
+                            "parameters": [
+                                {
+                                    "delay": true
+                                },
+                                {
+                                    "text": true
+                                }
+                            ],
+                            "shortcut": "/rm"
+                        }
+                    ],
+                    "description": "Send messages with delay.",
+                    "strings": {
+                        "added": "<b>%s</b>, I'll remint you in <b>%s</b> to <i>%s</i>.",
+                        "noreminder": "I need to know that I have to remind you.",
+                        "wrongdelay": "The delay must be in this format: '(entero)(s|m|h|d)'.\nExample: '2h' for 2 hours."
+                    }
+                },
+                "russian_roulette": {
+                    "commands": [
+                        {
+                            "command": "/roulette",
+                            "description": "Russian roulette, if you lose you will be kicked and banned.",
+                            "friendly": "^(Russian |)roulette"
+                        }
+                    ],
+                    "description": "Russian roulette, if you lose you will be kicked and banned.",
+                    "strings": {
+                        "bang": "<b>Bang!</b> %s died in a dumb way",
+                        "cant_bang": "<b>Bang!</b> %s I can't kill you, but play dead, or something. ¯\\_(ツ)_/¯",
+                        "empty": "<b>You were lucky %s!</b> <b>%s</b> shots left."
+                    }
+                },
+                "tags": {
+                    "commands": [
+                        {
+                            "command": "/tag",
+                            "description": "Sets a tag for an user or group.",
+                            "friendly": "^Tag as",
+                            "hidden": true,
+                            "parameters": [
+                                {
+                                    "tagname": true
+                                }
+                            ]
+                        },
+                        {
+                            "command": "/untag",
+                            "description": "Removes a tag of an user or group.",
+                            "friendly": "^Remove tag",
+                            "hidden": true,
+                            "parameters": [
+                                {
+                                    "tagname": true
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "Allows tagging of users and groups.",
+                    "strings": {
+                        "already_tagged": "<b>👤 %s</b>\n🏷 %s",
+                        "not_tagged": "<b>👤 %s</b>\n🏷",
+                        "tagged": "<b>👤 %s</b>\n🏷 +%s",
+                        "untagged": "<b>👤 %s</b>\n🏷 -%s"
+                    }
+                },
+                "text_to_speech": {
+                    "commands": [
+                        {
+                            "command": "/voice",
+                            "description": "Converts text to speech.",
+                            "friendly": "^Say ",
+                            "parameters": [
+                                {
+                                    "text": true
+                                }
+                            ],
+                            "shortcut": "/v"
+                        }
+                    ],
+                    "description": "Converts text to speech."
+                },
+                "weather": {
+                    "commands": [
+                        {
+                            "command": "/weather",
+                            "description": "Current weather.",
+                            "friendly": "Weather from ",
+                            "parameters": [
+                                {
+                                    "location": true
+                                }
+                            ],
+                            "shortcut": "/w"
+                        },
+                        {
+                            "command": "/forecast",
+                            "description": "3 day forecast.",
+                            "friendly": "Forecast from ",
+                            "parameters": [
+                                {
+                                    "location": true
+                                }
+                            ],
+                            "shortcut": "/f"
+                        }
+                    ],
+                    "description": "Displays weather of places.",
+                    "strings": {
+                        "chanceflurries": "Flurries Chance",
+                        "chancerain": "Rain Chance",
+                        "chancesleet": "Sleet Chance",
+                        "chancesnow": "Snow Chance",
+                        "chancetstorms": "Storm Chance",
+                        "clear": "Clear",
+                        "cloudy": "Cloudy",
+                        "feelslike": " (Feels like %sºC)",
+                        "flurries": "Flurries",
+                        "fog": "Fog",
+                        "friday": "Friday",
+                        "hazy": "Hazy",
+                        "monday": "Monday",
+                        "mostlycloudy": "Mostly Cloudy",
+                        "partlycloudy": "Partly Cloudy",
+                        "partlysunny": "Partly Sunny",
+                        "rain": "Rain",
+                        "saturday": "Saturday",
+                        "sleet": "Sleet",
+                        "snow": "Snow",
+                        "sunday": "Sunday",
+                        "sunny": "Sunny",
+                        "thursday": "Thursday",
+                        "title": "<b>Weather of %s (%s)</b>:",
+                        "titleforecast": "<b>Forecast of %s (%s)</b>:",
+                        "tstorms": "Thunder Storm",
+                        "tuesday": "Tuesday",
+                        "wednesday": "Wednesday"
+                    }
+                },
+                "web_search": {
+                    "commands": [
+                        {
+                            "command": "/google",
+                            "description": "Searches in Google.",
+                            "friendly": "^Search ",
+                            "parameters": [
+                                {
+                                    "query": true
+                                }
+                            ],
+                            "shortcut": "/g"
+                        },
+                        {
+                            "command": "/glucky",
+                            "description": "Returns first Google result.",
+                            "parameters": [
+                                {
+                                    "query": true
+                                }
+                            ],
+                            "shortcut": "/gl"
+                        },
+                        {
+                            "command": "/gnsfw",
+                            "description": "Searches in Google with filter disabled.",
+                            "hidden": true,
+                            "parameters": [
+                                {
+                                    "query": true
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "Searches Google.",
+                    "strings": {
+                        "results": "<b>Results of</b> <i>%s</i>:"
+                    }
+                },
+                "youtube_search": {
+                    "commands": [
+                        {
+                            "command": "/youtube",
+                            "description": "Returns first YouTube video.",
+                            "friendly": "^Youtube video of ",
+                            "parameters": [
+                                {
+                                    "query": true
+                                }
+                            ],
+                            "shortcut": "/yt"
+                        },
+                        {
+                            "command": "/ylist",
+                            "description": "Returns 8 YouTube videos.",
+                            "parameters": [
+                                {
+                                    "query": true
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "Searches YouTube.",
+                    "strings": {
+                        "results": "<b>Results of</b> <i>%s</i>:"
+                    }
+                }
+            }
+        }
+    }
+}
