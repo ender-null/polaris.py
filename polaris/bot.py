@@ -201,7 +201,8 @@ class Bot(object):
                         plugin.run(message)
 
                     return True
-            except:
+            except Exception as e:
+                catch_exception(e, self)
                 return False
         return False
 
