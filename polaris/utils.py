@@ -3,6 +3,7 @@ from html.parser import HTMLParser
 from DictObject import DictObject
 from polaris.types import AutosaveDict
 from re import compile
+from time import sleep
 from firebase_admin import db
 import logging, traceback, requests, json, magic, mimetypes, tempfile, os, subprocess, re
 
@@ -259,8 +260,10 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
     if r.status_code != 200:
         logging.error(r.text)
         while r.status_code == 429:
-            r = r.get(url, params=params, headers=headers,
-                      files=files, data=data)
+            sleep(5)
+            return send_request(url, params, headers, files, data, post, parse)
+            # r = r.get(url, params=params, headers=headers,
+            #           files=files, data=data)
     try:
         if parse:
             return DictObject(json.loads(r.text))
