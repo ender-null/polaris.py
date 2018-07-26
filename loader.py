@@ -1,6 +1,6 @@
 from polaris.types import AutosaveDict
 from polaris.bot import Bot
-from polaris.utils import set_logger, load_plugin_list, catch_exception
+from polaris.utils import set_logger, load_plugin_list, catch_exception, wait_until_received
 from multiprocessing import Process
 from time import sleep
 from firebase_admin import credentials, db, storage
@@ -173,16 +173,7 @@ default_app = firebase_admin.initialize_app(cred, {
     'storageBucket': 'polaris-bot.appspot.com'
 })
 
-# administration = db.reference('administration')
-bots = db.reference('bots')
-# groups = db.reference('groups')
-# pins = db.reference('pins')
-# reminders = db.reference('reminders')
-# settings = db.reference('settings')
-# steps = db.reference('steps')
-# tags = db.reference('tags')
-# translations = db.reference('translations')
-# users = db.reference('users')
+bots = wait_until_received('bots')
 
 logging.info('Looking for bot configurations in Firebase...')
 botlist = get_bots()
