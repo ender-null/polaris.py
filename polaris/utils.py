@@ -266,7 +266,8 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
             return DictObject(json.loads(r.text))
         else:
             return r.url
-    except:
+    except Exception as e:
+        catch_exception(e)
         return None
 
 
