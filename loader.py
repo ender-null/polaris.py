@@ -11,7 +11,7 @@ import os, logging, importlib
 def get_bots():
     botlist = []
 
-    for bot in bots.get():
+    for bot in bots:
         try:
             botlist.append(Bot(bot))
         except Exception as e:
