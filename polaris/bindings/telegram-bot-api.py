@@ -17,7 +17,8 @@ class bindings(object):
 
     def get_me(self):
         r = self.api_request('getMe')
-        return User(r.result.id, r.result.first_name, None, r.result.username)
+        if r:
+            return User(r.result.id, r.result.first_name, None, r.result.username)
 
     def convert_message(self, msg):
         id = msg.message_id
