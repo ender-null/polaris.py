@@ -1,5 +1,5 @@
 from polaris.types import AutosaveDict, Message, Conversation
-from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received
+from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received, has_tag
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
@@ -118,7 +118,7 @@ class Bot(object):
 
     def on_message_receive(self, msg):
         try:
-            if msg.content == None or msg.date < time() - 60:
+            if msg.content == None or msg.date < time() - 60 or (msg.sender.id != self.config['owner'] and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted'))):
                 return
 
             step = get_step(self, msg.conversation.id)
