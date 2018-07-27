@@ -85,6 +85,8 @@ class Bot(object):
 
             Process(target=self.messages_handler, name='%s' % self.name).start()
 
+        else:
+            logging.info('[%s] is not enabled!' % self.name)
 
     def stop(self):
         self.started = False
