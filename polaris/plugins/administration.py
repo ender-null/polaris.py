@@ -53,7 +53,7 @@ class plugin(object):
             for gid, attr in self.administration.items():
                 if self.administration[gid]['public']:
                     if self.administration[gid]['alias']:
-                        text += '\n • %s |%s|' % (self.bot.groups[gid]['title'], attr['alias'])
+                        text += '\n • %s |<b>%s</b>|' % (self.bot.groups[gid]['title'], attr['alias'])
                     else:
                         text += '\n • %s' % (self.bot.groups[gid]['title'])
             return self.bot.send_message(m, text, extra={'format': 'HTML'})
