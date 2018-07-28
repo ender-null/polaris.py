@@ -26,4 +26,4 @@ class plugin(object):
 
         text = '%s\n\n%s\n\n%s\n\n%s' % (greeting, help, version, stats)
 
-        self.bot.send_message(m, text, extra={'format': 'HTML'})
+        self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
