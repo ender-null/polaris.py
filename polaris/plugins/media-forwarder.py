@@ -16,12 +16,13 @@ class plugin(object):
             for tag in self.bot.tags[id]:
                 if tag.startswith('resend:'):
                     cid = tag.split(':')[1]
-                    if m.type == 'photo' or m.type == 'document' or m.type == 'url':
+                    if m.type == 'photo' or m.type == 'video' or m.type == 'document' or (m.type == 'text' and 'urls' in m.extra):
                         r = deepcopy(m)
                         r.conversation.id = cid
                         
-                        if m.type == 'url':
-                            self.bot.send_message(r, m.content, extra={'preview': True})
+                        if 'urls' in r.extra:
+                            for url in r.extra['urls']:
+                                self.bot.send_message(r, url, extra={'preview': True})
                         else:
                             self.bot.send_message(r, m.content, m.type, extra={'preview': True})
 
