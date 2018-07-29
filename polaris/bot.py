@@ -205,6 +205,7 @@ class Bot(object):
                     return True
             except Exception as e:
                 catch_exception(e, self)
+                self.send_message(message, self.trans['errors']['exception_found'], extra={'format': 'HTML'})
                 return False
         return False
 
