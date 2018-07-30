@@ -4,7 +4,7 @@ from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
 from firebase_admin import db
-import importlib, logging, re, traceback, sys, os, json
+import importlib, logging, re, traceback, sys, os, json, signal
 
 
 class Bot(object):
@@ -27,6 +27,7 @@ class Bot(object):
         self.outbox = Queue()
         self.started = False
         self.plugins = None
+        self.jobs = None
         self.info = self.bindings.get_me()
 
         if self.info is None:
@@ -40,6 +41,8 @@ class Bot(object):
                 msg = self.outbox.get()
                 logging.info(' %s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
                 self.bindings.send_message(msg)
+
+            logging.info('sender stoped')
 
         except KeyboardInterrupt:
             pass
@@ -60,6 +63,8 @@ class Bot(object):
 
                 self.on_message_receive(msg)
 
+            logging.info(' messafged handler stoped')
+
         except KeyboardInterrupt:
             pass
 
@@ -69,27 +74,34 @@ class Bot(object):
 
     def start(self):
         if not 'enabled' in self.config or self.config['enabled']:
+            if self.started:
+                self.stop()
+
             self.started = True
             self.plugins = self.init_plugins()
 
             logging.info('Connected as %s (@%s)' % (self.info.first_name, self.info.username))
 
-            jobs = []
-            jobs.append(Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
-            jobs.append(Process(target=self.sender_worker, name='%s S.' % self.name))
-            jobs.append(Process(target=self.cron_jobs, name='%s' % self.name))
+            self.jobs = []
+            self.jobs.append(Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
+            self.jobs.append(Process(target=self.sender_worker, name='%s S.' % self.name))
+            self.jobs.append(Process(target=self.cron_jobs, name='%s C.' % self.name))
+            self.jobs.append(Process(target=self.messages_handler, name='%s' % self.name))
 
-            for job in jobs:
+            for job in self.jobs:
+                #if job.name != self.name:
                 job.daemon = True
                 job.start()
-
-            Process(target=self.messages_handler, name='%s' % self.name).start()
 
         else:
             logging.info('[%s] is not enabled!' % self.name)
 
     def stop(self):
         self.started = False
+        for job in self.jobs:
+            # if job.daemon:
+            logging.info('Terminating process [%s] with PID %s' % (job.name, job.pid))
+            os.kill(job.pid, signal.SIGKILL)
 
 
     def init_plugins(self):

@@ -284,9 +284,9 @@ class bindings(object):
         try:
             last_update = 0
 
-            while (self.bot.started):
+            while self.bot.started:
                 res = get_updates(last_update + 1)
-                if res:
+                if res and 'result' in res:
                     result = res.result
                     for u in result:
                         if u.update_id > last_update:
@@ -316,7 +316,8 @@ class bindings(object):
             pass
 
         except Exception as e:
-            catch_exception(self.bot, e)
+            if self.bot.started:
+                catch_exception(self.bot, e)
 
 
 

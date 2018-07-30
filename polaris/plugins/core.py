@@ -20,7 +20,7 @@ class plugin(object):
 
         # Shutdown
         if is_command(self, 1, m.content):
-            self.bot.started = False
+            self.bot.stop()
             text = self.bot.trans['plugins']['core']['strings']['shutting_down']
 
         # Restart
