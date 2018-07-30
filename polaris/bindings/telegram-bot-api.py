@@ -1,5 +1,5 @@
 from polaris.types import Message, Conversation, User
-from polaris.utils import send_request
+from polaris.utils import send_request, catch_exception
 from six import string_types
 import logging, json
 
@@ -38,7 +38,7 @@ class bindings(object):
 
         else:
             sender = Conversation(msg['chat'].id, msg['chat'].title)
-        
+
         # Gets the type of the message
         extra = {}
 
@@ -247,8 +247,8 @@ class bindings(object):
             reply = None
 
         return Message(id, conversation, sender, content, type, date, reply, extra)
-        
-    
+
+
     def convert_inline(self, msg):
         id = msg.id
         conversation = Conversation(msg['from'].id, msg['from'].first_name)
@@ -270,51 +270,55 @@ class bindings(object):
 
 
     def receiver_worker(self):
+        logging.debug('Starting receiver worker...')
+        def get_updates(offset=None, limit=None, timeout=None):
+            params = {}
+            if offset:
+                params['offset'] = offset
+            if limit:
+                params['limit'] = limit
+            if timeout:
+                params['timeout'] = timeout
+            return self.api_request('getUpdates', params)
+
         try:
-            logging.debug('Starting receiver worker...')
-            def get_updates(offset=None, limit=None, timeout=None):
-                params = {}
-                if offset:
-                    params['offset'] = offset
-                if limit:
-                    params['limit'] = limit
-                if timeout:
-                    params['timeout'] = timeout
-                return self.api_request('getUpdates', params)
+            last_update = 0
 
-            while self.bot.started:
-                last_update = 0
+            while (self.bot.started):
+                res = get_updates(last_update + 1)
+                if res:
+                    result = res.result
+                    for u in result:
+                        if u.update_id > last_update:
+                            last_update = u.update_id
 
-                while (self.bot.started):
-                    res = get_updates(last_update + 1)
-                    if res:
-                        result = res.result
-                        for u in result:
-                            if u.update_id > last_update:
-                                last_update = u.update_id
+                            if 'inline_query' in u:
+                                message = self.convert_inline(u.inline_query)
+                                self.bot.inbox.put(message)
 
-                                if 'inline_query' in u:
-                                    message = self.convert_inline(u.inline_query)
-                                    self.bot.inbox.put(message)
+                            elif 'message' in u:
+                                message = self.convert_message(u.message)
+                                self.bot.inbox.put(message)
 
-                                elif 'message' in u:
-                                    message = self.convert_message(u.message)
-                                    self.bot.inbox.put(message)
+                            elif 'edited_message' in u:
+                                message = self.convert_message(u.edited_message)
+                                self.bot.inbox.put(message)
 
-                                elif 'edited_message' in u:
-                                    message = self.convert_message(u.edited_message)
-                                    self.bot.inbox.put(message)
+                            elif 'channel_post' in u:
+                                message = self.convert_message(u.channel_post)
+                                self.bot.inbox.put(message)
 
-                                elif 'channel_post' in u:
-                                    message = self.convert_message(u.channel_post)
-                                    self.bot.inbox.put(message)
-
-                                elif 'edited_channel_post' in u:
-                                    message = self.convert_message(u.edited_channel_post)
-                                    self.bot.inbox.put(message)
+                            elif 'edited_channel_post' in u:
+                                message = self.convert_message(u.edited_channel_post)
+                                self.bot.inbox.put(message)
 
         except KeyboardInterrupt:
             pass
+
+        except Exception as e:
+            catch_exception(self.bot, e)
+
+
 
     def send_message(self, message):
         if message.type == 'text':
