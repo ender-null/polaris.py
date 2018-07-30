@@ -88,23 +88,39 @@ class plugin(object):
         input = get_input(m)
 
         results = []
-        
-        result = {
-            'type': 'article',
-            'id': '0',
-            'title': 'test',
-            'input_message_content': {
-                'message_text': 'this is a test',
-                'parse_mode': 'HTML'
-            },
-            'description': 'test description'
-        }
 
-        results.append(result)
+        for plugin in self.bot.plugins:
+            if hasattr(plugin, 'inline'):
+                for command in plugin.commands:
+                    if not 'hidden' in command or not command['hidden']:
+                        title = command['command'].replace('/', '')
 
-        extra = {
-            'switch_pm_text': 'switch to pm',
-            'switch_pm_parameter': 'test'
-        }
+                        if 'description' in command:
+                            description = command['description']
+                        else:
+                            description = ''
 
-        self.bot.answer_inline_query(m, results, extra)
+                        parameters = ''
+                        if 'parameters' in command and command['parameters']:
+                            for parameter in command['parameters']:
+                                name, required = list(parameter.items())[0]
+                                # Bold for required parameters, and italic for optional #
+                                if required:
+                                    parameters = ' <b>&lt;%s&gt;</b>' % name
+                                else:
+                                    parameters = ' [%s]' % name
+
+                        results.append({
+                            'type': 'article',
+                            'id': command['command'].replace('/', self.bot.config['prefix']),
+                            'title': title,
+                            'input_message_content': {
+                                'message_text': command['command'].replace('/', self.bot.config['prefix'])
+                            },
+                            'description': description
+                        })
+
+        self.bot.answer_inline_query(m, results, extra={
+            'switch_pm_text': 'Switch to PM',
+            'switch_pm_parameter': m.content
+        })

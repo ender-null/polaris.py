@@ -42,8 +42,6 @@ class Bot(object):
                 logging.info(' %s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
                 self.bindings.send_message(msg)
 
-            logging.info('sender stoped')
-
         except KeyboardInterrupt:
             pass
 
@@ -62,8 +60,6 @@ class Bot(object):
                     logging.info('%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
 
                 self.on_message_receive(msg)
-
-            logging.info(' messafged handler stoped')
 
         except KeyboardInterrupt:
             pass
@@ -130,7 +126,10 @@ class Bot(object):
 
     def on_message_receive(self, msg):
         try:
-            if msg.content == None or msg.date < time() - 60 or (msg.sender.id != self.config['owner'] and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted'))):
+            if msg.content == None or (msg.type != 'inline_query' and msg.date < time() - 60):
+                return
+
+            if msg.sender.id != self.config['owner'] and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted')):
                 return
 
             step = get_step(self, msg.conversation.id)
@@ -158,7 +157,7 @@ class Bot(object):
                     # If no query show help #
                     if msg.type == 'inline_query':
                         if msg.content == '':
-                            msg.content = '/help'
+                            msg.content = 'help'
 
                     # Check if any command of a plugin matches. #
                     for command in plugin.commands:
@@ -195,7 +194,11 @@ class Bot(object):
                (command == '/help' and '/help' in message.content)):
                 trigger = command.replace('/', '^/')
             else:
-                trigger = command.replace('/', '^' + self.config['prefix'])
+                if message.type == 'inline_query':
+                    trigger = command.replace('/', '^')
+                else:
+                    trigger = command.replace('/', '^' + self.config['prefix'])
+
                 if not friendly:
                     # trigger = trigger.replace('@' + self.info.username.lower(), '')
                     if not parameters and trigger.startswith('^'):

@@ -15,6 +15,7 @@ def get_bots():
         try:
             botlist.append(Bot(bot))
         except Exception as e:
+            catch_exception(e)
             logging.error('  [Failed] "%s" failed to initialize' % bot)
 
     return botlist

@@ -1,5 +1,5 @@
 from polaris.types import Message, Conversation, User
-from polaris.utils import remove_html, remove_markdown, download
+from polaris.utils import remove_html, remove_markdown, download, catch_exception
 from pytg.receiver import Receiver
 from pytg.sender import Sender
 from pytg.utils import coroutine
@@ -11,9 +11,9 @@ import json, logging
 class bindings(object):
     def __init__(self, bot):
         self.bot = bot
-        self.receiver = Receiver(host="localhost", port=self.bot.config.bindings_token)
-        self.sender = Sender(host="localhost", port=self.bot.config.bindings_token)
-        logging.getLogger("pytg").setLevel(logging.WARNING)
+        self.receiver = Receiver(host='localhost', port=self.bot.config['bindings_token'])
+        self.sender = Sender(host='localhost', port=self.bot.config['bindings_token'])
+        logging.getLogger('pytg').setLevel(logging.WARNING)
 
     def get_me(self):
         try:
@@ -94,13 +94,12 @@ class bindings(object):
         return Message(id, conversation, sender, content, type, date, reply, extra)
 
     def receiver_worker(self):
+        logging.debug('Starting receiver worker...')
         try:
-            logging.debug('Starting receiver worker...')
-            while self.bot.started:
-                self.receiver.start()
-                self.receiver.message(self.main_loop())
-        except KeyboardInterrupt:
-            pass
+            self.receiver.start()
+            self.receiver.message(self.main_loop())
+        except Exception as e:
+            catch_exception(e, self.bot)
 
     def send_message(self, message):
         if not message.extra:
@@ -201,18 +200,19 @@ class bindings(object):
     @coroutine
     def main_loop(self):
         while self.bot.started:
-            msg = (yield)
-            if (msg.event == 'message' and msg.own == False) or msg.event == 'service':
-                message = self.convert_message(msg)
-                self.bot.inbox.put(message)
+            try:
+                msg = (yield)
+                if (msg.event == 'message' and msg.own == False) or msg.event == 'service':
+                    message = self.convert_message(msg)
+                    self.bot.inbox.put(message)
 
-                try:
                     if message.conversation.id > 0:
                         self.sender.mark_read(self.peer(message.sender.id))
                     else:
                         self.sender.mark_read(self.peer(message.conversation.id))
-                except Exception as e:
-                    logging.error(e)
+
+            except Exception as e:
+                catch_exception(e, self.bot)
 
 
     def peer(self, chat_id):

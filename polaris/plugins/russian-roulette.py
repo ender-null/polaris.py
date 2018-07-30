@@ -20,7 +20,7 @@ class plugin(object):
         roulette = has_tag(self.bot, gid, 'roulette:?', return_match = True)
         
         if roulette:
-            bullets = int(roulette.split(':')[1])
+            bullets = int(roulette[0].split(':')[1])
 
         if not bullets:
             set_tag(self.bot, gid, 'roulette:6')

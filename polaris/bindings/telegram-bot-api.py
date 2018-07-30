@@ -317,7 +317,7 @@ class bindings(object):
 
         except Exception as e:
             if self.bot.started:
-                catch_exception(self.bot, e)
+                catch_exception(e, self.bot)
 
 
 
