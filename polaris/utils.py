@@ -38,7 +38,11 @@ def is_command(self, number, text):
         text = text.replace('@' + self.bot.info.username, '')
 
     if 'command' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
+        if ((self.commands[number - 1]['command'] == '/start' and '/start' in text)
+            or (self.commands[number - 1]['command'] == '/help' and '/help' in text)):
+            trigger = self.commands[number - 1]['command'].replace('/', '^/')
+        else:
+            trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
         if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
         elif 'parameters' in self.commands[number - 1] and ' ' not in text:
@@ -100,17 +104,19 @@ def del_setting(bot, uid, key):
 def has_tag(bot, target, tag, return_match=False):
     if not isinstance(target, str):
         target = str(target)
-
+    tags = []
     if target in bot.tags and '?' in tag:
         for target_tag in bot.tags[target]:
             if target_tag.startswith(tag.split('?')[0]):
                 if return_match:
-                    return target_tag
-
+                    tags.append(target_tag)
                 else:
                     return True
 
-        return False
+        if return_match:
+            return tags
+        else:
+            return False
 
     elif target in bot.tags and tag in bot.tags[target]:
         return True

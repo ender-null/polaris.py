@@ -23,12 +23,12 @@ class plugin(object):
             self.bot.stop()
             text = self.bot.trans['plugins']['core']['strings']['shutting_down']
 
-        # Restart
+        # Reload plugins
         elif is_command(self, 2, m.content):
-            self.bot.start()
-            text = self.bot.trans['plugins']['core']['strings']['restarting']
+            self.plugins = self.init_plugins()
+            text = self.bot.trans['plugins']['core']['strings']['reloading_plugins']
 
-        # Reload
+        # Reload database
         elif is_command(self, 3, m.content):
             self.bot.config = wait_until_received('bots/' + self.bot.name)
             self.bot.trans = wait_until_received('translations/' + self.bot.config['translation'])
@@ -37,7 +37,7 @@ class plugin(object):
             self.bot.steps = wait_until_received('steps/' + self.bot.name)
             self.bot.tags = wait_until_received('tags/' + self.bot.name)
             self.bot.settings = wait_until_received('settings/' + self.bot.name)
-            text = self.bot.trans['plugins']['core']['strings']['reloading']
+            text = self.bot.trans['plugins']['core']['strings']['reloading_database']
 
         # Send messages
         elif is_command(self, 4, m.content):
@@ -47,7 +47,7 @@ class plugin(object):
         elif is_command(self, 5, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
-            text = '<code>%s</code>' % (subprocess.getoutput(input))
+            return self.bot.send_message(m, '<code>%s</code>' % (subprocess.getoutput(input)), extra={'format': 'HTML'})
 
         # Run python code
         elif is_command(self, 6, m.content):
@@ -62,7 +62,7 @@ class plugin(object):
             exec(input)
 
             if cout.getvalue():
-                text = '<code>%s</code>' % str(cout.getvalue())
+                return self.bot.send_message(m, '<code>%s</code>' % str(cout.getvalue()), extra={'format': 'HTML'})
 
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__

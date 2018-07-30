@@ -22,24 +22,20 @@ class plugin(object):
         else:
             target = str(m.sender.id)
 
-        # text = self.bot.trans['plugins']['info']['strings']['info']
         text = ''
 
         if int(target) > 0:
             if target in self.bot.users:
                 if 'first_name' in self.bot.users[target] and self.bot.users[target]['first_name']:
-                    text += '\n👤 ' + self.bot.users[target]['first_name']
+                    user = '\n👤 ' + self.bot.users[target]['first_name']
 
                 if 'last_name' in self.bot.users[target] and self.bot.users[target]['last_name']:
-                    text += ' ' + self.bot.users[target]['last_name']
+                    user += ' ' + self.bot.users[target]['last_name']
 
                 if 'username' in self.bot.users[target] and self.bot.users[target]['username']:
-                    text += '\n@' + self.bot.users[target]['username']
-
-                text += '\n🆔 ' + target
-
-                if 'messages' in self.bot.users[target] and self.bot.users[target]['messages']:
-                    text += '\n📧 ' + str(self.bot.users[target]['messages'])
+                    user += '\n@' + self.bot.users[target]['username']
+                    
+                text = self.bot.trans['plugins']['info']['strings']['user_info'] % (user, target, self.bot.users[target]['messages'])
 
             if target in self.bot.tags:
                 text += '\n🏷 '
@@ -49,12 +45,9 @@ class plugin(object):
         else:
             if target in self.bot.groups:
                 if 'title' in self.bot.groups[target] and self.bot.groups[target]['title']:
-                    text += '\n👥 ' + self.bot.groups[target]['title']
+                    group = '\n👥 ' + self.bot.groups[target]['title']
 
-                text += '\n🆔 ' + target
-
-                if 'messages' in self.bot.groups[target] and self.bot.groups[target]['messages']:
-                    text += '\n📧 ' + str(self.bot.groups[target]['messages'])
+                text = self.bot.trans['plugins']['info']['strings']['group_info'] % (group, target, self.bot.groups[target]['messages'])
 
             if gid in self.bot.tags:
                 text += '\n🏷 '
@@ -66,12 +59,9 @@ class plugin(object):
             text += '\n\n'
             if gid in self.bot.groups:
                 if 'title' in self.bot.groups[gid] and self.bot.groups[gid]['title']:
-                    text += '\n👥 ' + self.bot.groups[gid]['title']
+                    group = '\n👥 ' + self.bot.groups[gid]['title']
 
-                text += '\n🆔 ' + gid
-
-                if 'messages' in self.bot.groups[gid] and self.bot.groups[gid]['messages']:
-                    text += '\n📧 ' + str(self.bot.groups[gid]['messages'])
+                text = self.bot.trans['plugins']['info']['strings']['group_info'] % (group, gid, self.bot.groups[gid]['messages'])
 
             if gid in self.bot.tags:
                 text += '\n🏷 '
