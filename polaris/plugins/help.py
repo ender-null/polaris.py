@@ -59,13 +59,28 @@ class plugin(object):
                 # If the command is hidden, ignore it #
                 if not 'hidden' in command or not command['hidden']:
                     # Adds the command and parameters#
-                    if self.commands[-1]['command'].replace('/', self.bot.config['prefix']) in m.content:
-                        text += '\n' + command['command'].lstrip('/')
+                    if is_command(self, 3, m.content):
+                        show = False
+                        if 'parameters' in command and command['parameters']:
+                            allOptional = True
+                            for parameter in command['parameters']:
+                                name, required = list(parameter.items())[0]
+                                if required:
+                                    allOptional = False
 
-                        if 'description' in command:
-                            text += ' - %s' % command['description']
+                            show = allOptional
+
                         else:
-                            text += ' - ?¿'
+                            show = True
+
+                        if show:
+                            text += '\n' + command['command'].lstrip('/')
+
+                            if 'description' in command:
+                                text += ' - %s' % command['description']
+                            else:
+                                text += ' - ?¿'
+
                     else:
                         text += '\n • ' + command['command'].replace('/', self.bot.config['prefix'])
                         if 'parameters' in command and command['parameters']:
