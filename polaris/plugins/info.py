@@ -27,7 +27,7 @@ class plugin(object):
         if int(target) > 0:
             if target in self.bot.users:
                 if 'first_name' in self.bot.users[target] and self.bot.users[target]['first_name']:
-                    user = '\n👤 ' + self.bot.users[target]['first_name']
+                    user = self.bot.users[target]['first_name']
 
                 if 'last_name' in self.bot.users[target] and self.bot.users[target]['last_name']:
                     user += ' ' + self.bot.users[target]['last_name']
@@ -45,7 +45,7 @@ class plugin(object):
         else:
             if target in self.bot.groups:
                 if 'title' in self.bot.groups[target] and self.bot.groups[target]['title']:
-                    group = '\n👥 ' + self.bot.groups[target]['title']
+                    group = self.bot.groups[target]['title']
 
                 text = self.bot.trans['plugins']['info']['strings']['group_info'] % (group, target, self.bot.groups[target]['messages'])
 
@@ -59,7 +59,7 @@ class plugin(object):
             text += '\n\n'
             if gid in self.bot.groups:
                 if 'title' in self.bot.groups[gid] and self.bot.groups[gid]['title']:
-                    group = '\n👥 ' + self.bot.groups[gid]['title']
+                    group = self.bot.groups[gid]['title']
 
                 text = self.bot.trans['plugins']['info']['strings']['group_info'] % (group, gid, self.bot.groups[gid]['messages'])
 
