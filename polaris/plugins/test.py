@@ -10,6 +10,7 @@ class plugin(object):
                 'command': '/test',
                 'description': 'test',
                 'parameters': [],
+                'hidden': True
             }
         ]
         self.description = "Test"
