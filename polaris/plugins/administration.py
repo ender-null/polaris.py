@@ -1,7 +1,7 @@
 from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name, init_if_empty, wait_until_received, set_data, delete_data
 from polaris.types import AutosaveDict
 from firebase_admin import db
-from re import findall
+from re import findall, compile
 
 
 class plugin(object):
@@ -64,7 +64,9 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
 
             for id in self.administration:
-                if (input in self.administration or input in self.administration[id]['alias'] or input in self.bot.groups[id]['title']):
+                if (input in self.administration
+                    or compile('^' + input.lower() + '$').search(self.administration[id]['alias'].lower())
+                    or compile('^' + input.lower() + '$').search(self.bot.groups[id]['title'].lower())):
                     gid_to_join = id
                     break
 

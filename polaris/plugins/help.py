@@ -120,7 +120,4 @@ class plugin(object):
                             'description': description
                         })
 
-        self.bot.answer_inline_query(m, results, extra={
-            'switch_pm_text': 'Switch to PM',
-            'switch_pm_parameter': m.content
-        })
+        self.bot.answer_inline_query(m, results)
