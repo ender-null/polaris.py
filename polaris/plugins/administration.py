@@ -51,12 +51,12 @@ class plugin(object):
         if is_command(self, 2, m.content):
             text = self.bot.trans['plugins']['administration']['strings']['groups']
             for gid, attr in self.administration.items():
-                if self.administration[gid]['public']:
+                if self.administration[gid]['public'] and 'link' in self.administration[gid]:
+                    text += '\n • <a href="%s">%s</a>' % (self.administration[gid]['link'], self.bot.groups[gid]['title'])
                     if self.administration[gid]['alias']:
-                        text += '\n • %s |<b>%s</b>|' % (self.bot.groups[gid]['title'], attr['alias'])
-                    else:
-                        text += '\n • %s' % (self.bot.groups[gid]['title'])
-            return self.bot.send_message(m, text, extra={'format': 'HTML'})
+                        text += ' /<b>%s</b>/' % attr['alias']
+
+            return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 
         # Join a group. #
         elif is_command(self, 3, m.content):
@@ -85,10 +85,10 @@ class plugin(object):
             if not self.administration[gid_to_join]['rules']:
                 text += '\n%s' % self.bot.trans['plugins']['administration']['strings']['norules']
 
-            if self.administration[gid_to_join]['public']:
-                text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['public_group']
-            else:
-                text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['private_group']
+            # if self.administration[gid_to_join]['public']:
+            #     text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['public_group']
+            # else:
+            #     text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['private_group']
 
             if not self.administration[gid_to_join]['link']:
                 text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['nolink']
@@ -120,10 +120,10 @@ class plugin(object):
             if not self.administration[gid]['rules']:
                 text += '\n%s' % self.bot.trans['plugins']['administration']['strings']['norules']
 
-            if self.administration[gid]['public']:
-                text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['public_group']
-            else:
-                text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['private_group']
+            # if self.administration[gid]['public']:
+            #     text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['public_group']
+            # else:
+            #     text += '\n\n%s' % self.bot.trans['plugins']['administration']['strings']['private_group']
 
             if is_command(self, 4, m.content):
                 if not self.administration[gid]['link']:
