@@ -14,19 +14,19 @@ class plugin(object):
         if not input:
             return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
 
+        
         lat, lon, locality, country = get_coords(input)
+        if not lat or not lon:
+            return self.bot.send_message(m, self.bot.trans['errors']['no_results'], extra={'format': 'HTML'})
 
         url = 'http://api.wunderground.com/api/%s/webcams/conditions/forecast/q/%s,%s.json' % (
-            self.bot.config['api_keys']['weather_underground'], lat, lon)
+                self.bot.config['api_keys']['weather_underground'], lat, lon)
 
         data = send_request(url)
-
-        try:
-            weather = data.current_observation
-            forecast = data.forecast.simpleforecast.forecastday
-            webcams = data.webcams
-        except:
-            return self.bot.send_message(m, self.bot.trans['errors']['no_results'])
+    
+        weather = data.current_observation
+        forecast = data.forecast.simpleforecast.forecastday
+        webcams = data.webcams
 
         title = self.bot.trans['plugins']['weather']['strings']['title'] % (locality, country)
         temp = weather.temp_c
@@ -55,7 +55,7 @@ class plugin(object):
             if photo:
                 return self.bot.send_message(m, photo, 'photo', extra={'caption': message})
             else:
-                return self.bot.send_message(m, message, 'text', extra={'format': 'HTML'})
+                return self.bot.send_message(m, message, extra={'format': 'HTML'})
 
         elif is_command(self, 2, m.content):
             message = self.bot.trans['plugins']['weather']['strings']['titleforecast'] % (locality, country)

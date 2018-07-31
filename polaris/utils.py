@@ -289,14 +289,17 @@ def get_coords(input):
     if not data or data['status'] == 'ZERO_RESULTS':
         return False, False, False, False
 
-    locality = data.results[0].address_components[0].long_name
-    for address in data.results[0].address_components:
-        if 'country' in address['types']:
-            country = address['long_name']
+    if len(data.results) > 0:
+        locality = data.results[0].address_components[0].long_name
+        for address in data.results[0].address_components:
+            if 'country' in address['types']:
+                country = address['long_name']
 
-    return (data['results'][0]['geometry']['location']['lat'],
-            data['results'][0]['geometry']['location']['lng'],
-            locality, country)
+        return (data['results'][0]['geometry']['location']['lat'],
+                data['results'][0]['geometry']['location']['lng'],
+                locality, country)
+    else:
+        return (None, None, None, None)
 
 
 def get_streetview(latitude, longitude, key, size='640x320', fov=90, heading=235, pitch=10):
