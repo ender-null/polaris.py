@@ -265,7 +265,7 @@ class bindings(object):
 
 
     def convert_links(self, string):
-        for link in BeautifulSoup(string, 'lxml').findAll("a"):
+        for link in BeautifulSoup(string, 'html.parser').findAll("a"):
             string = string.replace(str(link), link.get("href"))
         return string
 
