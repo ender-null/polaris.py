@@ -65,7 +65,10 @@ class plugin(object):
                 }
 
             else:
-                if not date in self.bot.poles[gid] or not 'pole' in self.bot.poles[gid][date]:
+                if not date in self.bot.poles[gid]:
+                    self.bot.poles[gid][date] = {}
+
+                if not 'pole' in self.bot.poles[gid][date]:
                     self.bot.poles[gid][date]['pole'] = uid
                 else:
                     return
@@ -85,7 +88,10 @@ class plugin(object):
                 }
 
             else:
-                if not date in self.bot.poles[gid] or not 'subpole' in self.bot.poles[gid][date]:
+                if not date in self.bot.poles[gid]:
+                    self.bot.poles[gid] = {}
+
+                if not 'subpole' in self.bot.poles[gid][date]:
                     self.bot.poles[gid][date]['subpole'] = uid
                 else:
                     return
@@ -104,7 +110,10 @@ class plugin(object):
                     }
                 }
             else:
-                if not date in self.bot.poles[gid] or not 'fail' in self.bot.poles[gid][date]:
+                if not date in self.bot.poles[gid]:
+                    self.bot.poles[gid][date] = {}
+
+                if not 'fail' in self.bot.poles[gid][date]:
                     self.bot.poles[gid][date]['fail'] = uid
                 else:
                     return
