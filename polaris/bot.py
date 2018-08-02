@@ -34,6 +34,7 @@ class Bot(object):
             self.administration = wait_until_received('administration/' + self.name)
             self.pins = wait_until_received('pins/' + self.name)
             self.reminders = wait_until_received('reminders/' + self.name)
+            self.poles = wait_until_received('poles/' + self.name)
         except Exception as e:
             catch_exception(e, self)
 
