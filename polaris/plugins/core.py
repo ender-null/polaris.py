@@ -30,13 +30,7 @@ class plugin(object):
 
         # Reload database
         elif is_command(self, 3, m.content):
-            self.bot.config = wait_until_received('bots/' + self.bot.name)
-            self.bot.trans = wait_until_received('translations/' + self.bot.config['translation'])
-            self.bot.users = wait_until_received('users/' + self.bot.name)
-            self.bot.groups = wait_until_received('groups/' + self.bot.name)
-            self.bot.steps = wait_until_received('steps/' + self.bot.name)
-            self.bot.tags = wait_until_received('tags/' + self.bot.name)
-            self.bot.settings = wait_until_received('settings/' + self.bot.name)
+            self.bot.get_database()
             text = self.bot.trans['plugins']['core']['strings']['reloading_database']
 
         # Send messages

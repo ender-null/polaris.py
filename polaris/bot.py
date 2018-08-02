@@ -10,18 +10,7 @@ import importlib, logging, re, traceback, sys, os, json, signal
 class Bot(object):
     def __init__(self, name):
         self.name = name
-        try:
-            self.config = wait_until_received('bots/' + self.name)
-            self.trans = wait_until_received('translations/' + self.config['translation'])
-            self.users = wait_until_received('users/' + self.name)
-            self.groups = wait_until_received('groups/' + self.name)
-            self.steps = wait_until_received('steps/' + self.name)
-            self.tags = wait_until_received('tags/' + self.name)
-            self.settings = wait_until_received('settings/' + self.name)
-
-        except Exception as e:
-            catch_exception(e, self)
-
+        self.get_database()
         self.bindings = importlib.import_module('polaris.bindings.%s' % self.config['bindings']).bindings(self)
         self.inbox = Queue()
         self.outbox = Queue()
@@ -32,6 +21,21 @@ class Bot(object):
 
         if self.info is None:
             raise Exception
+
+    def get_database(self):
+        try:
+            self.config = wait_until_received('bots/' + self.name)
+            self.trans = wait_until_received('translations/' + self.config['translation'])
+            self.users = wait_until_received('users/' + self.name)
+            self.groups = wait_until_received('groups/' + self.name)
+            self.steps = wait_until_received('steps/' + self.name)
+            self.tags = wait_until_received('tags/' + self.name)
+            self.settings = wait_until_received('settings/' + self.name)
+            self.administration = wait_until_received('administration/' + self.name)
+            self.pins = wait_until_received('pins/' + self.name)
+            self.reminders = wait_until_received('reminders/' + self.name)
+        except Exception as e:
+            catch_exception(e, self)
 
 
     def sender_worker(self):

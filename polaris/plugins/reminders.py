@@ -14,7 +14,6 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans['plugins']['reminders']['commands']
         self.description = self.bot.trans['plugins']['reminders']['description']
-        self.reminders = wait_until_received('reminders/' + self.bot.name)
 
 
     # Plugin action #
@@ -43,7 +42,9 @@ class plugin(object):
         reminder.text = text
         reminder.first_name = m.sender.first_name
         reminder.username = m.sender.username
-        self.reminders['list'].append(reminder)
+        if not 'list' in self.bot.reminders or not self.bot.reminders['list']:
+            self.bot.reminders['list'] = []
+        self.bot.reminders['list'].append(reminder)
         self.sort_reminders()
 
         if unit == 's':
@@ -61,20 +62,20 @@ class plugin(object):
 
 
     def cron(self):
-        self.reminders = wait_until_received('reminders/' + self.bot.name)
-        if not 'list' in self.reminders or not self.reminders['list']:
-            self.reminders['list'] = []
+        self.bot.reminders = wait_until_received('reminders/' + self.bot.name)
+        if not 'list' in self.bot.reminders or not self.bot.reminders['list']:
+            self.bot.reminders['list'] = []
 
-        while len(self.reminders['list']) > 0 and self.reminders['list'][0]['alarm'] < time():
-            reminder = self.reminders['list'][0]
+        while len(self.bot.reminders['list']) > 0 and self.bot.reminders['list'][0]['alarm'] < time():
+            reminder = self.bot.reminders['list'][0]
             text = '<i>%s</i>\n - %s' % (reminder['text'], reminder['first_name'])
             if reminder['username']:
                  text += ' (@%s)' % reminder['username']
 
             m = Message(None, Conversation(reminder['chat_id']), None, None)
             self.bot.send_message(m, text, extra={'format': 'HTML'})
-            self.reminders['list'].remove(reminder)
-            set_data('reminders/%s' % self.bot.name, self.reminders)
+            self.bot.reminders['list'].remove(reminder)
+            set_data('reminders/%s' % self.bot.name, self.bot.reminders)
             self.sort_reminders()
 
 
@@ -91,10 +92,10 @@ class plugin(object):
 
 
     def sort_reminders(self):
-        if not 'list' in self.reminders or not self.reminders['list']:
-            self.reminders['list'] = []
+        if not 'list' in self.bot.reminders or not self.bot.reminders['list']:
+            self.bot.reminders['list'] = []
 
-        if len(self.reminders['list']) > 0:
-            self.reminders['list'] = sorted(self.reminders['list'], key=lambda k: k['alarm'])
+        if len(self.bot.reminders['list']) > 0:
+            self.bot.reminders['list'] = sorted(self.bot.reminders['list'], key=lambda k: k['alarm'])
 
-        set_data('reminders/%s' % self.bot.name, self.reminders)
+        set_data('reminders/%s' % self.bot.name, self.bot.reminders)
