@@ -28,20 +28,20 @@ class plugin(object):
         if not data or 'error' in data:
             return self.bot.send_message(m, self.bot.trans['errors']['connection_error'])
 
-        if data.searchInformation.totalResults == 0:
+        if data.searchInformation.totalResults == 0 or len(data.items) == 0:
             return self.bot.send_message(m, self.bot.trans['errors']['no_results'])
 
 
         if is_command(self, 1, m.content):
             text = self.bot.trans['plugins']['web_search']['strings']['results'] % input
-            for item in data['items']:
-                if len(item['title']) > 26:
-                    item['title'] = item['title'][:23] + '...'
+            for item in data.items:
+                if len(item.title) > 26:
+                    item.title = item.title[:23] + '...'
                 text += '\n • <a href="%s">%s</a>' % (item['link'], item['title'])
 
             self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 
         elif is_command(self, 2, m.content):
-            text = data['items'][0]['link']
+            text = data.items[0].link
         
             self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
