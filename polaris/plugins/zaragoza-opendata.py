@@ -41,7 +41,7 @@ class plugin(object):
 
         if is_command(self, 1, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = 'http://api.drk.cat/zgzpls/bus/stations'
             params = {
@@ -50,10 +50,10 @@ class plugin(object):
             data = send_request(url, params=params)
 
             if not data or 'errors' in data:
-                if data['errors']['status'] == '404 Not Found':
-                    return self.bot.send_message(m, self.bot.trans['errors']['no_results'], extra={'format': 'HTML'})
+                if data.errors.status == '404 Not Found':
+                    return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
                 else:
-                    return self.bot.send_message(m, self.bot.trans['errors']['connection_error'], extra={'format': 'HTML'})
+                    return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             if data.street:
                 text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.number, data.lines)
@@ -61,7 +61,7 @@ class plugin(object):
                 text = '<b>Parada: %s</b>\n\n' % (data.number)
 
             for bus in list(data.transports):
-                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus['time'], bus['line'], bus['destination'])
+                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus.time, bus.line, bus.destination)
 
             text = text.rstrip('\n')
 
@@ -69,23 +69,23 @@ class plugin(object):
 
         elif is_command(self, 2, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = 'http://api.drk.cat/zgzpls/tram/stations'
             params = {}
             try:
                 int(input)
-                params['number'] = input
+                params.number = input
             except ValueError:
-                params['street'] = input
+                params.street = input
 
             data = send_request(url, params=params)
 
             if not data or 'errors' in data:
-                if data['errors']['status'] == '404 Not Found':
-                    return self.bot.send_message(m, self.bot.trans['errors']['no_results'], extra={'format': 'HTML'})
+                if data.errors.status == '404 Not Found':
+                    return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
                 else:
-                    return self.bot.send_message(m, self.bot.trans['errors']['connection_error'], extra={'format': 'HTML'})
+                    return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             if data.street:
                 text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.number, data.lines)
@@ -93,7 +93,7 @@ class plugin(object):
                 text = '<b>Parada: %s</b>\n\n' % (data.number)
 
             for bus in list(data.transports):
-                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus['time'], bus['line'], bus['destination'])
+                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus.time, bus.line, bus.destination)
 
             text = text.rstrip('\n')
 
@@ -101,7 +101,7 @@ class plugin(object):
 
         elif is_command(self, 3, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
            
 
             url = baseurl + '/recurso/urbanismo-infraestructuras/estacion-bicicleta/' + input.lstrip('0') + '.json'
@@ -112,8 +112,8 @@ class plugin(object):
 
             data = send_request(url, params=params)
             if 'error' in data:
-                return self.bot.send_message(m, self.bot.trans['errors']['no_results'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (data['title'].title(), data['id'], data['bicisDisponibles'], data['anclajesDisponibles'])
+            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (data.title.title(), data.id, data.bicisDisponibles, data.anclajesDisponibles)
             
             return self.bot.send_message(m, text, extra={'format': 'HTML'})

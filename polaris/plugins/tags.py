@@ -5,18 +5,18 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.trans['plugins']['tags']['commands']
-        self.description = self.bot.trans['plugins']['tags']['description']
+        self.commands = self.bot.trans.plugins.tags.commands
+        self.description = self.bot.trans.plugins.tags.description
 
     # Plugin action #
     def run(self, m):
         input = get_input(m)
 
         if not is_trusted(self.bot, m.sender.id):
-            return self.bot.send_message(m, self.bot.trans['errors']['permission_required'], extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
         if not input:
-            return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         if m.reply:
             target = str(m.reply.sender.id)
@@ -43,11 +43,11 @@ class plugin(object):
             for tag in tags:
                 if not has_tag(self.bot, target, tag):
                     set_tag(self.bot, target, tag)
-            return self.bot.send_message(m, self.bot.trans['plugins']['tags']['strings']['tagged'] % (name, tags), extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.plugins.tags.strings.tagged % (name, tags), extra={'format': 'HTML'})
 
         # Removes a tag from user or group. #
         elif is_command(self, 2, m.content):
             for tag in tags:
                 if has_tag(self.bot, target, tag):
                     del_tag(self.bot, target, tag)
-            return self.bot.send_message(m, self.bot.trans['plugins']['tags']['strings']['untagged'] % (name, tags), extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.plugins.tags.strings.untagged % (name, tags), extra={'format': 'HTML'})

@@ -419,7 +419,7 @@ def remove_html(text):
 
 def init_if_empty(_dict):
     if _dict:
-        return _dict
+        return DictObject(_dict)
     else:
         return {}
 

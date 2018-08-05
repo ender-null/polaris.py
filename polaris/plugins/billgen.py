@@ -28,4 +28,4 @@ class plugin(object):
         if photo:
             return self.bot.send_message(m, photo, 'photo')
         else:
-            return self.bot.send_message(m, self.bot.trans['errors']['download_failed'])
+            return self.bot.send_message(m, self.bot.trans.errors.download_failed)

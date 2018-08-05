@@ -5,8 +5,8 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.trans['plugins']['info']['commands']
-        self.description = self.bot.trans['plugins']['info']['description']
+        self.commands = self.bot.trans.plugins.info.commands
+        self.description = self.bot.trans.plugins.info.description
 
     # Plugin action #
     def run(self, m):
@@ -26,16 +26,16 @@ class plugin(object):
 
         if int(target) > 0:
             if target in self.bot.users:
-                if 'first_name' in self.bot.users[target] and self.bot.users[target]['first_name']:
-                    user = self.bot.users[target]['first_name']
+                if 'first_name' in self.bot.users[target] and self.bot.users[target].first_name:
+                    user = self.bot.users[target].first_name
 
-                if 'last_name' in self.bot.users[target] and self.bot.users[target]['last_name']:
-                    user += ' ' + self.bot.users[target]['last_name']
+                if 'last_name' in self.bot.users[target] and self.bot.users[target].last_name:
+                    user += ' ' + self.bot.users[target].last_name
 
-                if 'username' in self.bot.users[target] and self.bot.users[target]['username']:
-                    user += '\n@' + self.bot.users[target]['username']
+                if 'username' in self.bot.users[target] and self.bot.users[target].username:
+                    user += '\n@' + self.bot.users[target].username
                     
-                text = self.bot.trans['plugins']['info']['strings']['user_info'] % (user, target, self.bot.users[target]['messages'])
+                text = self.bot.trans.plugins.info.strings.user_info % (user, target, self.bot.users[target].messages)
 
             if target in self.bot.tags:
                 text += '\n🏷 '
@@ -44,10 +44,10 @@ class plugin(object):
                 text = text[:-2]
         else:
             if target in self.bot.groups:
-                if 'title' in self.bot.groups[target] and self.bot.groups[target]['title']:
-                    group = self.bot.groups[target]['title']
+                if 'title' in self.bot.groups[target] and self.bot.groups[target].title:
+                    group = self.bot.groups[target].title
 
-                text = self.bot.trans['plugins']['info']['strings']['group_info'] % (group, target, self.bot.groups[target]['messages'])
+                text = self.bot.trans.plugins.info.strings.group_info % (group, target, self.bot.groups[target].messages)
 
             if gid in self.bot.tags:
                 text += '\n🏷 '
@@ -58,10 +58,10 @@ class plugin(object):
         if int(gid) < 0 and not input:
             text += '\n\n'
             if gid in self.bot.groups:
-                if 'title' in self.bot.groups[gid] and self.bot.groups[gid]['title']:
-                    group = self.bot.groups[gid]['title']
+                if 'title' in self.bot.groups[gid] and self.bot.groups[gid].title:
+                    group = self.bot.groups[gid].title
 
-                text = self.bot.trans['plugins']['info']['strings']['group_info'] % (group, gid, self.bot.groups[gid]['messages'])
+                text = self.bot.trans.plugins.info.strings.group_info % (group, gid, self.bot.groups[gid].messages)
 
             if gid in self.bot.tags:
                 text += '\n🏷 '

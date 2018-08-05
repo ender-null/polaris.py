@@ -9,8 +9,8 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.trans['plugins']['pins']['commands']
-        self.description = self.bot.trans['plugins']['pins']['description']
+        self.commands = self.bot.trans.plugins.pins.commands
+        self.description = self.bot.trans.plugins.pins.description
         self.update_triggers()
 
     # Plugin action #
@@ -21,37 +21,37 @@ class plugin(object):
         if is_command(self, 1, m.content):
             pins = []
             for pin in self.bot.pins:
-                if self.bot.pins[pin]['creator'] == m.sender.id:
+                if self.bot.pins[pin].creator == m.sender.id:
                     pins.append(pin)
 
             if len(pins) > 0:
-                text = self.bot.trans['plugins']['pins']['strings']['pins'] % len(pins)
+                text = self.bot.trans.plugins.pins.strings.pins % len(pins)
                 for pin in pins:
                     text += '\n • #%s' % pin
 
             else:
-                text = self.bot.trans['plugins']['pins']['strings']['no_pins']
+                text = self.bot.trans.plugins.pins.strings.no_pins
 
             # If the message is too long send an error message instead #
             if len(text) < 4096:
                 return self.bot.send_message(m, text, extra={'format': 'HTML'})
             else:
-                return self.bot.send_message(m, self.bot.trans['errors']['unknown'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
 
         # Add a pin #
         elif is_command(self, 2, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             if input.startswith('#'):
                 input = input.lstrip('#')
             input = input.lower()
 
             if not m.reply:
-                return self.bot.send_message(m, self.bot.trans['errors']['needs_reply'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.needs_reply, extra={'format': 'HTML'})
 
             if input in self.bot.pins:
-                return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['already_pinned'] % input, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.already_pinned % input, extra={'format': 'HTML'})
 
             self.bot.pins[input] = {
                 'content': m.reply.content.replace('<','&lt;').replace('>','&gt;'),
@@ -61,27 +61,27 @@ class plugin(object):
             set_data('pins/%s/%s' % (self.bot.name, input), self.bot.pins[input])
             self.update_triggers()
 
-            return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['pinned'] % input, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.pinned % input, extra={'format': 'HTML'})
 
         # Remove a pin #
         elif is_command(self, 3, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             if input.startswith('#'):
                 input = input.lstrip('#')
             input = input.lower()
 
             if not input in self.bot.pins:
-                return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['not_found'] % input, extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.not_found % input, extra={'format': 'HTML'})
 
-            if not m.sender.id == self.bot.pins[input]['creator']:
-                return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['not_creator'] % input, extra={'format': 'HTML'})
+            if not m.sender.id == self.bot.pins[input].creator:
+                return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.not_creator % input, extra={'format': 'HTML'})
 
             delete_data('pins/%s/%s' % (self.bot.name, input))
             self.update_triggers()
 
-            return self.bot.send_message(m, self.bot.trans['plugins']['pins']['strings']['unpinned'] % input, extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.unpinned % input, extra={'format': 'HTML'})
 
         # Check what pin was triggered #
         else:
@@ -97,7 +97,7 @@ class plugin(object):
                     else:
                         reply = m.id
 
-                    self.bot.send_message(m, self.bot.pins[pin]['content'], self.bot.pins[pin]['type'], extra={'format': 'HTML'}, reply = reply)
+                    self.bot.send_message(m, self.bot.pins[pin].content, self.bot.pins[pin].type, extra={'format': 'HTML'}, reply = reply)
                     count -= 1
 
                 if count == 0:
@@ -107,7 +107,7 @@ class plugin(object):
     def update_triggers(self):
         # Add new triggers #
         for pin, attributes in self.bot.pins.items():
-            if not next((i for i,d in enumerate(self.commands) if 'command' in d and d['command'] == '#' + pin), None):
+            if not next((i for i,d in enumerate(self.commands) if 'command' in d and d.command == '#' + pin), None):
                 self.commands.append({
                     'command': '#' + pin,
                     'hidden': True
@@ -115,5 +115,5 @@ class plugin(object):
 
         # Remove unused triggers #
         for command in self.commands:
-            if 'hidden' in command and command['hidden'] and not command['command'].lstrip('#') in self.bot.pins:
+            if 'hidden' in command and command.hidden and not command.command.lstrip('#') in self.bot.pins:
                 self.commands.remove(command)

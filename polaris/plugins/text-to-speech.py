@@ -5,14 +5,14 @@ class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.trans['plugins']['text_to_speech']['commands']
-        self.description = self.bot.trans['plugins']['text_to_speech']['description']
+        self.commands = self.bot.trans.plugins.text_to_speech.commands
+        self.description = self.bot.trans.plugins.text_to_speech.description
 
     # Plugin action #
     def run(self, m):
         input = get_input(m, ignore_reply=False)
         if not input:
-            return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         langs = [
             'af', 'aq', 'ar', 'hy', 'ca', 'zh', 'zh-cn', 'zh-tw', 'zh-yue',
@@ -29,14 +29,14 @@ class plugin(object):
                 text = all_but_first_word(input)
                 break
             else:
-                if self.bot.config['translation'] != 'default':
+                if self.bot.config.translation != 'default':
                     language = 'es-es'
                 else:
                     language = 'en-us'
                 text = input
                 
         if not text:
-            return self.bot.send_message(m, self.bot.trans['errors']['missing_parameter'], extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
     
         url = 'http://translate.google.com/translate_tts'
         params = {
@@ -46,7 +46,7 @@ class plugin(object):
             'total': len(text),
             'idx': 0,
             'client': 'tw-ob',
-            'key': self.bot.config['api_keys']['google_developer_console']
+            'key': self.bot.config.api_keys.google_developer_console
         }
         headers = {
             "Referer": 'http://translate.google.com/',
@@ -59,4 +59,4 @@ class plugin(object):
         if voice:
             return self.bot.send_message(m, voice, 'voice')
         else:
-            return self.bot.send_message(m, self.bot.trans['errors']['download_failed'])
+            return self.bot.send_message(m, self.bot.trans.errors.download_failed)

@@ -11,13 +11,13 @@ class plugin(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = self.bot.trans['plugins']['pole']['commands']
-        self.description = self.bot.trans['plugins']['pole']['description']
+        self.commands = self.bot.trans.plugins.pole.commands
+        self.description = self.bot.trans.plugins.pole.description
 
     # Plugin action #
     def run(self, m):
         if m.conversation.id > 0:
-            return self.bot.send_message(m, self.bot.trans['errors']['group_only'], extra={'format': 'HTML'})
+            return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
         gid = str(m.conversation.id)
         uid = m.sender.id
@@ -30,51 +30,51 @@ class plugin(object):
                 for day in self.bot.poles[gid]:
                     if 'pole' in self.bot.poles[gid][day]:
                         try:
-                            ranking[str(self.bot.poles[gid][day]['pole'])]['p'] += 1
+                            ranking[str(self.bot.poles[gid][day].pole)].p += 1
                         except:
-                            ranking[str(self.bot.poles[gid][day]['pole'])] = { 'p': 1, 's': 0, 'f': 0 }
+                            ranking[str(self.bot.poles[gid][day].pole)] = { 'p': 1, 's': 0, 'f': 0 }
 
                     if 'subpole' in self.bot.poles[gid][day]:
                         try:
-                            ranking[str(self.bot.poles[gid][day]['subpole'])]['s'] += 1
+                            ranking[str(self.bot.poles[gid][day].subpole)].s += 1
                         except:
-                            ranking[str(self.bot.poles[gid][day]['subpole'])] = { 'p': 0, 's': 1, 'f': 0 }
+                            ranking[str(self.bot.poles[gid][day].subpole)] = { 'p': 0, 's': 1, 'f': 0 }
 
                     if 'fail' in self.bot.poles[gid][day]:
                         try:
-                            ranking[str(self.bot.poles[gid][day]['fail'])]['f'] += 1
+                            ranking[str(self.bot.poles[gid][day].fail)].f += 1
                         except:
-                            ranking[str(self.bot.poles[gid][day]['fail'])] = { 'p': 0, 's': 0, 'f': 1 }
+                            ranking[str(self.bot.poles[gid][day].fail)] = { 'p': 0, 's': 0, 'f': 1 }
 
-                text = self.bot.trans['plugins']['pole']['strings']['ranking']
+                text = self.bot.trans.plugins.pole.strings.ranking
                 for uid, values in self.order_by_points(ranking):
-                    points = (values['p'] * 3) + (values['s'] * 1) + (values['f'] * 0.5)
-                    text += '\n ' + self.bot.trans['plugins']['pole']['strings']['ranking_points'] % (self.bot.users[uid]['first_name'], points)
+                    points = (values.p * 3) + (values.s * 1) + (values.f * 0.5)
+                    text += '\n ' + self.bot.trans.plugins.pole.strings.ranking_points % (self.bot.users[uid].first_name, points)
 
-                poles = '\n\n' + self.bot.trans['plugins']['pole']['strings']['poles']
+                poles = '\n\n' + self.bot.trans.plugins.pole.strings.poles
                 poles_empty = True
                 for uid, values in self.order_by_poles(ranking):
-                    if values['p']:
+                    if values.p:
                         poles_empty = False
-                        poles += '\n ' + self.bot.trans['plugins']['pole']['strings']['ranking_poles'] % (self.bot.users[uid]['first_name'], values['p'])
+                        poles += '\n ' + self.bot.trans.plugins.pole.strings.ranking_poles % (self.bot.users[uid].first_name, values.p)
                 if not poles_empty:
                     text += poles
 
-                subpoles = '\n\n' + self.bot.trans['plugins']['pole']['strings']['subpoles']
+                subpoles = '\n\n' + self.bot.trans.plugins.pole.strings.subpoles
                 subpoles_empty = True
                 for uid, values in self.order_by_subpoles(ranking):
-                    if values['s']:
+                    if values.s:
                         subpoles_empty = False
-                        subpoles += '\n ' + self.bot.trans['plugins']['pole']['strings']['ranking_subpoles'] % (self.bot.users[uid]['first_name'], values['s'])
+                        subpoles += '\n ' + self.bot.trans.plugins.pole.strings.ranking_subpoles % (self.bot.users[uid].first_name, values.s)
                 if not subpoles_empty:
                     text += subpoles
 
-                fails = '\n\n' + self.bot.trans['plugins']['pole']['strings']['fails']
+                fails = '\n\n' + self.bot.trans.plugins.pole.strings.fails
                 fails_empty = True
                 for uid, values in self.order_by_fails(ranking):
-                    if values['f']:
+                    if values.f:
                         fails_empty = False
-                        fails += '\n ' + self.bot.trans['plugins']['pole']['strings']['ranking_fails'] % (self.bot.users[uid]['first_name'], values['f'])
+                        fails += '\n ' + self.bot.trans.plugins.pole.strings.ranking_fails % (self.bot.users[uid].first_name, values.f)
                 if not fails_empty:
                     text += fails
 
@@ -95,12 +95,12 @@ class plugin(object):
                     self.bot.poles[gid][date] = {}
 
                 if not 'pole' in self.bot.poles[gid][date]:
-                    self.bot.poles[gid][date]['pole'] = uid
+                    self.bot.poles[gid][date].pole = uid
                 else:
                     return
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            text = self.bot.trans['plugins']['pole']['strings']['got_pole'] % self.bot.users[uid]['first_name']
+            text = self.bot.trans.plugins.pole.strings.got_pole % self.bot.users[uid].first_name
 
         # Subole
         elif is_command(self, 3, m.content):
@@ -120,15 +120,15 @@ class plugin(object):
 
                 if not 'pole' in self.bot.poles[gid][date]:
                     uid = str(uid)
-                    text = self.bot.trans['plugins']['pole']['strings']['too_soon'] % self.bot.users[uid]['first_name']
+                    text = self.bot.trans.plugins.pole.strings.too_soon % self.bot.users[uid].first_name
                     return self.bot.send_message(m, text, extra={'format': 'HTML'})
                 elif not 'subpole' in self.bot.poles[gid][date]:
-                    self.bot.poles[gid][date]['subpole'] = uid
+                    self.bot.poles[gid][date].subpole = uid
                 else:
                     return
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            text = self.bot.trans['plugins']['pole']['strings']['got_subpole'] % self.bot.users[uid]['first_name']
+            text = self.bot.trans.plugins.pole.strings.got_subpole % self.bot.users[uid].first_name
 
         # Fail
         elif is_command(self, 4, m.content):
@@ -148,15 +148,15 @@ class plugin(object):
                 
                 if not 'pole' in self.bot.poles[gid][date] or not 'subpole' in self.bot.poles[gid][date]:
                     uid = str(uid)
-                    text = self.bot.trans['plugins']['pole']['strings']['too_soon'] % self.bot.users[uid]['first_name']
+                    text = self.bot.trans.plugins.pole.strings.too_soon % self.bot.users[uid].first_name
                     return self.bot.send_message(m, text, extra={'format': 'HTML'})
                 elif not 'fail' in self.bot.poles[gid][date]:
-                    self.bot.poles[gid][date]['fail'] = uid
+                    self.bot.poles[gid][date].fail = uid
                 else:
                     return
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            text = self.bot.trans['plugins']['pole']['strings']['got_fail'] % self.bot.users[uid]['first_name']
+            text = self.bot.trans.plugins.pole.strings.got_fail % self.bot.users[uid].first_name
 
         if text:
             self.bot.send_message(m, text, extra={'format': 'HTML'})
@@ -164,24 +164,24 @@ class plugin(object):
     def has_pole(self, gid, uid, date):
         # Check if user has pole
         if (gid in self.bot.poles and date in self.bot.poles[gid] and (
-            ('pole' in self.bot.poles[gid][date] and self.bot.poles[gid][date]['pole'] == uid) or
-            ('subpole' in self.bot.poles[gid][date] and self.bot.poles[gid][date]['subpole'] == uid) or
-            ('fail' in self.bot.poles[gid][date] and self.bot.poles[gid][date]['fail'] == uid))):
+            ('pole' in self.bot.poles[gid][date] and self.bot.poles[gid][date].pole == uid) or
+            ('subpole' in self.bot.poles[gid][date] and self.bot.poles[gid][date].subpole == uid) or
+            ('fail' in self.bot.poles[gid][date] and self.bot.poles[gid][date].fail == uid))):
             return True
         return False
 
 
     def order_by_points(self, ranking):
-        return sorted(ranking.items(), key=lambda kv: (kv[1]['p'] * 3) + (kv[1]['s'] * 1) + (kv[1]['f'] * 0.5), reverse=True)
+        return sorted(ranking.items(), key=lambda kv: (kv[1].p * 3) + (kv[1].s * 1) + (kv[1].f * 0.5), reverse=True)
 
 
     def order_by_poles(self, ranking):
-        return sorted(ranking.items(), key=lambda kv: kv[1]['p'], reverse=True)
+        return sorted(ranking.items(), key=lambda kv: kv[1].p, reverse=True)
 
 
     def order_by_subpoles(self, ranking):
-        return sorted(ranking.items(), key=lambda kv: kv[1]['s'], reverse=True)
+        return sorted(ranking.items(), key=lambda kv: kv[1].s, reverse=True)
 
 
     def order_by_fails(self, ranking):
-        return sorted(ranking.items(), key=lambda kv: kv[1]['f'], reverse=True)
+        return sorted(ranking.items(), key=lambda kv: kv[1].f, reverse=True)
