@@ -27,7 +27,7 @@ class plugin(object):
                 for command in plugin.commands:
 
                     # If the command is hidden, ignore it #
-                    if 'hidden' in command or not command['hidden']:
+                    if ('hidden' in command and not command['hidden']) or not 'hidden' in command:
                         # Adds the command and parameters#
                         if input in command['command'].replace('/', '').rstrip('\s'):
                             text += '\n • ' + command['command'].replace('/', self.bot.config['prefix'])
