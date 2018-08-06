@@ -1,4 +1,5 @@
 from polaris.utils import get_input, is_command, get_coords, get_streetview, send_request, download, remove_html
+from DictObject import DictObject
 
 
 class plugin(object):
@@ -14,7 +15,6 @@ class plugin(object):
         if not input:
             return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-        
         lat, lon, locality, country = get_coords(input)
         if not lat or not lon:
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
@@ -38,19 +38,21 @@ class plugin(object):
             pass
 
         # weather_string = weather.weather.title()
+        if weather.icon == '':
+            weather.icon = 'clear'
         weather_string = self.bot.trans.plugins.weather.strings[weather.icon]
-        weather_icon = (self.get_weather_icon(weather.icon))
+        weather_icon = self.get_weather_icon(weather.icon)
         humidity = weather.relative_humidity
         wind = format(float(weather.wind_kph) / 3.6, '.1f')
 
         if is_command(self, 1, m.content):
             message = u'%s\n%s %s%s\n🌡%sºC 💧%s 🌬%s m/s' % (
                 remove_html(title), weather_icon, weather_string, feelslike, temp, humidity, wind)
-            try:
-                photo = get_streetview(lat, lon, self.bot.config.api_keys.google_developer_console)
-            except Exception as e:
-                catch_exception(e, self.bot)
-                photo = None
+            # try:
+            #     photo = get_streetview(lat, lon, self.bot.config.api_keys.google_developer_console)
+            # except Exception as e:
+            #     catch_exception(e, self.bot)
+            photo = None
 
             if photo:
                 return self.bot.send_message(m, photo, 'photo', extra={'caption': message})
@@ -72,29 +74,29 @@ class plugin(object):
 
     @staticmethod
     def get_weather_icon(icon):
-        weather_emoji = {}
+        weather_emoji = DictObject()
         if icon[:4] == 'nt_':
-            weather_emoji['clear'] = u'☀️'
-            weather_emoji['sunny'] = u'☀️'
-            icon = icon.lstrip('nt_')
-        else:
             weather_emoji['clear'] = u'🌙'
             weather_emoji['sunny'] = u'🌙'
-            weather_emoji['chancesnow'] = u'❄️'
-            weather_emoji['chanceflurries'] = u'❄️'
-            weather_emoji['chancerain'] = u'🌧'
-            weather_emoji['chancesleet'] = u'🌧'
-            weather_emoji['chancetstorms'] = u'🌩'
-            weather_emoji['cloudy'] = u'☁️'
-            weather_emoji['flurries'] = u'❄️'
-            weather_emoji['fog'] = u'🌫'
-            weather_emoji['hazy'] = u'🌫'
-            weather_emoji['mostlycloudy'] = u'🌤'
-            weather_emoji['partlycloudy'] = u'⛅️'
-            weather_emoji['partlysunny'] = u'⛅️'
-            weather_emoji['sleet'] = u'🌧'
-            weather_emoji['rain'] = u'🌧'
-            weather_emoji['snow'] = u'❄️'
-            weather_emoji['tstorms'] = u'⛈'
+            icon = icon.lstrip('nt_')
+        else:
+            weather_emoji['clear'] = u'☀️'
+            weather_emoji['sunny'] = u'☀️'
+        weather_emoji['chancesnow'] = u'❄️'
+        weather_emoji['chanceflurries'] = u'❄️'
+        weather_emoji['chancerain'] = u'🌧'
+        weather_emoji['chancesleet'] = u'🌧'
+        weather_emoji['chancetstorms'] = u'🌩'
+        weather_emoji['cloudy'] = u'☁️'
+        weather_emoji['flurries'] = u'❄️'
+        weather_emoji['fog'] = u'🌫'
+        weather_emoji['hazy'] = u'🌫'
+        weather_emoji['mostlycloudy'] = u'🌤'
+        weather_emoji['partlycloudy'] = u'⛅️'
+        weather_emoji['partlysunny'] = u'⛅️'
+        weather_emoji['sleet'] = u'🌧'
+        weather_emoji['rain'] = u'🌧'
+        weather_emoji['snow'] = u'❄️'
+        weather_emoji['tstorms'] = u'⛈'
 
         return weather_emoji[icon]
