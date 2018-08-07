@@ -4,6 +4,7 @@ from firebase_admin import db
 from firebase_admin.db import ApiCallError
 from datetime import datetime
 from re import findall
+from DictObject import DictObject
 import operator
 
 class plugin(object):
@@ -26,7 +27,7 @@ class plugin(object):
         # Pole ranking
         if is_command(self, 1, m.content):
             if gid in self.bot.poles:
-                ranking = {}
+                ranking = DictObject()
                 for day in self.bot.poles[gid]:
                     if 'pole' in self.bot.poles[gid][day]:
                         try:
@@ -48,7 +49,7 @@ class plugin(object):
 
                 text = self.bot.trans.plugins.pole.strings.ranking
                 for uid, values in self.order_by_points(ranking):
-                    points = (values.p * 3) + (values.s * 1) + (values.f * 0.5)
+                    points = str((values.p * 3) + (values.s * 1) + (values.f * 0.5)).rstrip('0').rstrip('.')
                     text += '\n ' + self.bot.trans.plugins.pole.strings.ranking_points % (self.bot.users[uid].first_name, points)
 
                 poles = '\n\n' + self.bot.trans.plugins.pole.strings.poles
@@ -84,15 +85,15 @@ class plugin(object):
                 return
 
             if not gid in self.bot.poles:
-                self.bot.poles[gid] = {
+                self.bot.poles[gid] = DictObject({
                     date: {
                         'pole': uid
                     }
-                }
+                })
 
             else:
                 if not date in self.bot.poles[gid]:
-                    self.bot.poles[gid][date] = {}
+                    self.bot.poles[gid][date] = DictObject()
 
                 if not 'pole' in self.bot.poles[gid][date]:
                     self.bot.poles[gid][date].pole = uid
@@ -108,15 +109,15 @@ class plugin(object):
                 return
 
             if not gid in self.bot.poles:
-                self.bot.poles[gid] = {
+                self.bot.poles[gid] = DictObject({
                     date: {
                         'subpole': uid
                     }
-                }
+                })
 
             else:
                 if not date in self.bot.poles[gid]:
-                    self.bot.poles[gid][date] = {}
+                    self.bot.poles[gid][date] = DictObject()
 
                 if not 'pole' in self.bot.poles[gid][date]:
                     uid = str(uid)
@@ -136,14 +137,14 @@ class plugin(object):
                 return
 
             if not gid in self.bot.poles:
-                self.bot.poles[gid] = {
+                self.bot.poles[gid] = DictObject({
                     date: {
                         'fail': uid
                     }
-                }
+                })
             else:
                 if not date in self.bot.poles[gid]:
-                    self.bot.poles[gid][date] = {}
+                    self.bot.poles[gid][date] = DictObject()
 
                 
                 if not 'pole' in self.bot.poles[gid][date] or not 'subpole' in self.bot.poles[gid][date]:
