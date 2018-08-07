@@ -355,8 +355,8 @@ class plugin(object):
 
         # Update group id when upgraded to supergroup #
         if m.type == 'notification' and m.content == 'upgrade_to_supergroup':
-            to_id = str(m.extra.chat_id)
-            from_id = str(m.extra.from_chat_id)
+            to_id = str(m.extra['chat_id'])
+            from_id = str(m.extra['from_chat_id'])
             if from_id in self.bot.administration:
                 self.bot.administration[to_id] = self.bot.administration[from_id]
                 del self.bot.administration[from_id]
