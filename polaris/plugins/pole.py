@@ -1,4 +1,4 @@
-from polaris.utils import is_command, wait_until_received, set_data, catch_exception
+from polaris.utils import is_command, wait_until_received, set_data, catch_exception, has_tag
 from polaris.types import AutosaveDict
 from firebase_admin import db
 from firebase_admin.db import ApiCallError
@@ -19,6 +19,9 @@ class plugin(object):
     def run(self, m):
         if m.conversation.id > 0:
             return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
+
+        if has_tag(self.bot, m.conversation.id, 'nopole'):
+            return
 
         gid = str(m.conversation.id)
         uid = m.sender.id
