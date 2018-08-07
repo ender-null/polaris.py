@@ -251,17 +251,20 @@ def load_plugin_list():
     return sorted(plugin_list)
 
 
-def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True):
+def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True, verify=True):
     try:
         if post:
             r = requests.post(url, params=params, headers=headers,
-                              files=files, data=data, timeout=100, verify=False)
+                              files=files, data=data, timeout=100, verify=verify)
         else:
             r = requests.get(url, params=params, headers=headers,
-                             files=files, data=data, timeout=100, verify=False)
+                             files=files, data=data, timeout=100, verify=verify)
     except:
         logging.error('Error making request to: %s' % url)
-        return None
+        if verify:
+            return send_request(url, params, headers, files, data, post, parse, False)
+        else:
+            return None
 
     if r.status_code != 200:
         logging.error(r.text)
@@ -316,14 +319,14 @@ def get_streetview(latitude, longitude, key, size='640x320', fov=90, heading=235
     return download(url, params=params)
 
 
-def download(url, params=None, headers=None, method='get', extension=None):
+def download(url, params=None, headers=None, method='get', extension=None, verify=True):
     try:
         if method == 'post':
             res = requests.post(url, params=params,
-                                headers=headers, stream=True, verify=False)
+                                headers=headers, stream=True, verify=verify)
         else:
             res = requests.get(url, params=params,
-                               headers=headers, stream=True, verify=False)
+                               headers=headers, stream=True, verify=verify)
         if not extension:
             extension = os.path.splitext(url)[1].split('?')[0]
         f = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
@@ -332,6 +335,10 @@ def download(url, params=None, headers=None, method='get', extension=None):
                 f.write(chunk)
     except Exception as e:
         logging.error(e)
+        if verify:
+            return download(url, params, headers, method, extension, False)
+        else:
+            return None
         return None
     f.seek(0)
     if not extension:
