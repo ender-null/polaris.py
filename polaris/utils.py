@@ -255,10 +255,10 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
     try:
         if post:
             r = requests.post(url, params=params, headers=headers,
-                              files=files, data=data, timeout=100)
+                              files=files, data=data, timeout=100, verify=False)
         else:
             r = requests.get(url, params=params, headers=headers,
-                             files=files, data=data, timeout=100)
+                             files=files, data=data, timeout=100, verify=False)
     except:
         logging.error('Error making request to: %s' % url)
         return None
@@ -320,10 +320,10 @@ def download(url, params=None, headers=None, method='get', extension=None):
     try:
         if method == 'post':
             res = requests.post(url, params=params,
-                                headers=headers, stream=True)
+                                headers=headers, stream=True, verify=False)
         else:
             res = requests.get(url, params=params,
-                               headers=headers, stream=True)
+                               headers=headers, stream=True, verify=False)
         if not extension:
             extension = os.path.splitext(url)[1].split('?')[0]
         f = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
