@@ -26,7 +26,7 @@ class plugin(object):
 
         data = send_request(url, params)
 
-        if 'error' in data or data.pageInfo.totalResults == 0:
+        if 'error' in data or int(data.pageInfo.totalResults) == 0:
             return self.bot.send_message(m, self.bot.trans.errors.no_results)
 
         if is_command(self, 1, m.content):

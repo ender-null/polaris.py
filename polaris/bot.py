@@ -254,7 +254,7 @@ class Bot(object):
         self.outbox.put(Message(None, msg.conversation, self.info, msg.content, 'forward',
                                 extra={"message": msg.id, "conversation": id}))
 
-    def answer_inline_query(self, msg, results, extra):
+    def answer_inline_query(self, msg, results, extra = {}):
         self.outbox.put(Message(msg.id, msg.conversation, self.info, json.dumps(results), 'inline_results', extra))
 
 

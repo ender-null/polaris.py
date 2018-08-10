@@ -1,4 +1,4 @@
-from polaris.utils import get_input
+from polaris.utils import get_input, is_int
 
 
 class plugin(object):
@@ -14,7 +14,18 @@ class plugin(object):
 
         gid = str(m.conversation.id)
         if input:
-            target = input
+            if is_int(input):
+                target = input
+
+            elif input.startswith('@'):
+                for uid in self.bot.users:
+                    if 'username' in self.bot.users[uid] and self.bot.users[uid].username == input[1:]:
+                        target = uid
+                        break
+
+            else:
+                self.bot.send_message(m, self.bot.trans.errors.invalid_syntax, extra={'format': 'HTML'})
+
 
         elif m.reply:
             target = str(m.reply.sender.id)
@@ -69,4 +80,4 @@ class plugin(object):
                     text += tag + ', '
                 text = text[:-2]
 
-        self.bot.send_message(m, text, extra={'format': 'Markdown'})
+        self.bot.send_message(m, text, extra={'format': 'HTML'})
