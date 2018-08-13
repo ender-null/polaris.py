@@ -15,14 +15,23 @@ class plugin(object):
         if not input:
             return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-        lat, lon, locality, country = get_coords(input)
-        if not lat or not lon:
+        status, values = get_coords(input, self.bot)
+        
+        if status == 'ZERO_RESULTS' or status == 'INVALID_REQUEST':
+            return self.bot.send_message(m, self.bot.trans.errors.api_limit_exceeded, extra={'format': 'HTML'})
+        elif status == 'OVER_DAILY_LIMIT':
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+        elif status == 'REQUEST_DENIED':
+            return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
+
+        lat, lon, locality, country = values
 
         url = 'http://api.wunderground.com/api/%s/webcams/conditions/forecast/q/%s,%s.json' % (
                 self.bot.config.api_keys.weather_underground, lat, lon)
 
         data = send_request(url)
+        if not data or not 'current_observation' in data:
+            return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
     
         weather = data.current_observation
         forecast = data.forecast.simpleforecast.forecastday

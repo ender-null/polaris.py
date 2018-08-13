@@ -85,6 +85,9 @@ class bindings(object):
                 content = None
                 extra = None
 
+            if not extra:
+                extra = {}
+
             # Generates another message object for the original message if the reply.
             if 'reply_id' in msg:
                 reply_msg = self.sender.message_get(msg.reply_id)

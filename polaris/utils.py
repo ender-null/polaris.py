@@ -9,6 +9,13 @@ import logging, traceback, requests, json, magic, mimetypes, tempfile, os, subpr
 
 
 def get_input(message, ignore_reply=True):
+    if message.extra and 'input' in message.extra:
+        return message.extra['input']
+    else:
+        return None
+
+
+def get_input_legacy(message, ignore_reply=True):
     if message.type == 'text' or message.type == 'inline_query':
         text = message.content
     else:
@@ -283,26 +290,31 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
         return None
 
 
-def get_coords(input):
-    url = 'http://maps.googleapis.com/maps/api/geocode/json'
-    params = {'address': input}
+def get_coords(input, bot=None):
+    lang = 'en'
+    if bot and bot.config.translation != 'default':
+        lang = 'es'
+    
+    url = 'https://maps.googleapis.com/maps/api/geocode/json'
+    params = {
+        'address': input,
+        'language': lang,
+        'key': bot.config.api_keys.google_developer_console
+    }
 
     data = send_request(url, params=params)
 
-    if not data or data['status'] == 'ZERO_RESULTS':
-        return False, False, False, False
-
-    if len(data.results) > 0:
+    if data and len(data.results) > 0:
         locality = data.results[0].address_components[0].long_name
         for address in data.results[0].address_components:
             if 'country' in address['types']:
                 country = address['long_name']
 
-        return (data['results'][0]['geometry']['location']['lat'],
+        return (data.status, (data['results'][0]['geometry']['location']['lat'],
                 data['results'][0]['geometry']['location']['lng'],
-                locality, country)
+                locality, country))
     else:
-        return (None, None, None, None)
+        return (data.status, (None, None, None, None))
 
 
 def get_streetview(latitude, longitude, key, size='640x320', fov=90, heading=235, pitch=10):

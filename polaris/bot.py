@@ -74,7 +74,7 @@ class Bot(object):
 
 
     def start(self):
-        if not 'enabled' in self.config or self.config['enabled']:
+        if not 'enabled' in self.config or self.config.enabled:
             if self.started:
                 self.stop()
 
@@ -110,9 +110,9 @@ class Bot(object):
 
         logging.debug('Importing plugins...')
 
-        if type(self.config['plugins']) is list:
-            plugins_to_load = self.config['plugins']
-        elif self.config['plugins'] == 'all':
+        if type(self.config.plugins) is list:
+            plugins_to_load = self.config.plugins
+        elif self.config.plugins == 'all':
             plugins_to_load = load_plugin_list()
         else:
             plugins_to_load = load_plugin_list()
@@ -141,7 +141,7 @@ class Bot(object):
 
             if step:
                 for plugin in self.plugins:
-                    if get_plugin_name(plugin) == step['plugin'] and hasattr(plugin, 'steps'):
+                    if get_plugin_name(plugin) == step.plugin and hasattr(plugin, 'steps'):
                         if msg.content.startswith('/cancel'):
                             plugin.steps(msg, -1)
                             cancel_steps(self, msg.conversation.id)
@@ -202,7 +202,7 @@ class Bot(object):
                 if message.type == 'inline_query':
                     trigger = command.replace('/', '^')
                 else:
-                    trigger = command.replace('/', '^' + self.config['prefix'])
+                    trigger = command.replace('/', '^' + self.config.prefix)
 
                 if not friendly:
                     # trigger = trigger.replace('@' + self.info.username.lower(), '')
@@ -215,6 +215,10 @@ class Bot(object):
 
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
+                    # Get the text that is next to the pattern
+                    input_match = re.compile(trigger + '([\w\t ]+)').search(message.content.lower())
+                    if input_match:
+                        message.extra['input'] = input_match.group(1)
                     if message.type == 'inline_query':
                         if hasattr(plugin, 'inline'):
                             plugin.inline(message)
@@ -225,7 +229,7 @@ class Bot(object):
                     return True
             except Exception as e:
                 catch_exception(e, self)
-                self.send_message(message, self.trans['errors']['exception_found'], extra={'format': 'HTML'})
+                self.send_message(message, self.trans.errors.exception_found, extra={'format': 'HTML'})
                 return False
         return False
 
@@ -280,5 +284,5 @@ class Bot(object):
 
 
     def send_alert(self, text):
-        message = Message(None, Conversation(self.config['alerts_conversation_id'], 'Alerts'), self.info, '<pre>%s</pre>' % text, extra={'format': 'HTML', 'preview': False})
+        message = Message(None, Conversation(self.config.alerts_conversation_id, 'Alerts'), self.info, '<pre>%s</pre>' % text, extra={'format': 'HTML', 'preview': False})
         self.outbox.put(message)
