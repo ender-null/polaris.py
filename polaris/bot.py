@@ -217,8 +217,9 @@ class Bot(object):
                 if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
                     # Get the text that is next to the pattern
                     input_match = re.compile(trigger + '([\w\t ]+)').search(message.content.lower())
-                    if input_match:
+                    if input_match and input_match.group(1):
                         message.extra['input'] = input_match.group(1)
+
                     if message.type == 'inline_query':
                         if hasattr(plugin, 'inline'):
                             plugin.inline(message)
