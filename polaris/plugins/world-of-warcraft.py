@@ -1,0 +1,133 @@
+from polaris.utils import get_input, is_command, send_request, download
+import logging
+
+
+class plugin(object):
+    # Loads the text strings from the bots language #
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.commands = self.bot.trans.plugins.world_of_warcraft.commands
+        self.description = self.bot.trans.plugins.world_of_warcraft.description
+
+    # Plugin action #
+    def run(self, m):
+        input = get_input(m, ignore_reply=False)
+        if not input:
+            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+
+        realm = ' '.join(input.split()[:-1])
+        character = input.split()[-1]
+
+        if is_command(self, 1, m.content) or is_command(self, 2, m.content):
+            if is_command(self, 1, m.content):
+                region = 'eu'
+                locale = 'en_GB'
+                if self.bot.config.translation != 'default':
+                    locale = 'es_ES'
+            else:
+                region = 'us'
+                locale = 'en_US'
+                if self.bot.config.translation != 'default':
+                    locale = 'es_MX'
+
+            url = 'https://%s.api.battle.net/wow/character/%s/%s' % (region, realm, character)
+            params = {
+                'fields': 'guild,progression',
+                'locale': locale,
+                'apikey': self.bot.config.api_keys.battle_net
+            }
+
+            data = send_request(url, params)
+
+            if not data or 'status' in data:
+                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+
+            render_url = 'https://render-%s.worldofwarcraft.com/character/' % region
+            photo = render_url + data.thumbnail.replace('avatar', 'main')
+            name = self.bot.trans.plugins.world_of_warcraft.strings.name % (data.name, data.realm, data.level)
+            race = self.bot.trans.plugins.world_of_warcraft.strings.race % (self.get_race(data.race, region), self.get_class(data['class'], region), self.get_gender(data.gender))
+            stats = self.bot.trans.plugins.world_of_warcraft.strings.stats % (data.achievementPoints, data.totalHonorableKills)
+            progression = self.get_raids(data.progression.raids)
+
+            if 'guild' in data:
+                guild = '\n&lt;%s-%s&gt;' % (data.guild.name, data.guild.realm)
+            else:
+                guild = None
+            
+            text = '<a href="%s">⁣</a>' % photo
+
+            if guild:
+                text += name + guild + race + stats + progression
+            else:
+                text += name + race + stats + progression
+
+            return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
+
+
+    def get_class(self, class_id, region):
+        locale = 'en_GB'
+        if self.bot.config.translation != 'default':
+            locale = 'es_ES'
+
+        url = 'https://%s.api.battle.net/wow/data/character/classes' % region
+        params = {
+            'locale': locale,
+            'apikey': self.bot.config.api_keys.battle_net
+        }
+
+        data = send_request(url, params)
+        for class_ in data.classes:
+            if class_.id == class_id:
+                return class_.name
+
+
+    def get_race(self, race_id, region):
+        locale = 'en_GB'
+        if self.bot.config.translation != 'default':
+            locale = 'es_ES'
+
+        url = 'https://%s.api.battle.net/wow/data/character/races' % region
+        params = {
+            'locale': locale,
+            'apikey': self.bot.config.api_keys.battle_net
+        }
+
+        data = send_request(url, params)
+        for race in data.races:
+            if race.id == race_id:
+                return race.name
+
+
+    def get_gender(self, gender_id):
+        if gender_id == 1:
+            return self.bot.trans.plugins.world_of_warcraft.strings.female
+        else:
+            return self.bot.trans.plugins.world_of_warcraft.strings.male
+
+
+    def get_raids(self, raids):
+        progression = '\n'
+        progression += '\n' + raids[-1].name
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.lfr_raid + self.get_raid_kills(raids[-1].bosses, 0)
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.normal_raid + self.get_raid_kills(raids[-1].bosses, 1)
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.heroic_raid + self.get_raid_kills(raids[-1].bosses, 2)
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.mythic_raid + self.get_raid_kills(raids[-1].bosses, 3)
+
+        return progression
+
+    def get_raid_kills(self, bosses, tier):
+        total = 0
+        kills = 0
+        for boss in bosses:
+            total += 1
+            if tier == 0 and boss.lfrKills > 0:
+                kills += 1
+            elif tier == 1 and boss.normalKills > 0:
+                kills += 1
+            elif tier == 2 and boss.heroicKills > 0:
+                kills += 1
+            elif tier == 3 and boss.mythicKills > 0:
+                kills += 1
+
+        return '%s/%s' % (kills, total)
