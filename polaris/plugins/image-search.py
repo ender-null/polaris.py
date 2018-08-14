@@ -32,7 +32,7 @@ class plugin(object):
         if not data or 'error' in data:
             return self.bot.send_message(m, self.bot.trans.errors.connection_error)
 
-        if data.searchInformation.totalResults == 0:
+        if data.searchInformation.totalResults == 0 or 'items' not in data:
             return self.bot.send_message(m, self.bot.trans.errors.no_results)
 
         try:

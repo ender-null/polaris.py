@@ -180,7 +180,7 @@ class plugin(object):
 
             if m.reply:
                 target = m.reply.sender.id
-            elif input:
+            elif is_int(input):
                 target = input
             else:
                 target = m.sender.id

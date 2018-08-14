@@ -33,7 +33,7 @@ class plugin(object):
                 text = self.bot.trans.plugins.pins.strings.no_pins
 
             # If the message is too long send an error message instead #
-            if len(text) < 4096:
+            if len(text) <= 4096:
                 return self.bot.send_message(m, text, extra={'format': 'HTML'})
             else:
                 return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
