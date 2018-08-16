@@ -20,12 +20,11 @@ class plugin(object):
             elif input.startswith('@'):
                 for uid in self.bot.users:
                     if 'username' in self.bot.users[uid] and self.bot.users[uid].username == input[1:]:
-                        target = uid
+                        target = str(uid)
                         break
 
             else:
                 self.bot.send_message(m, self.bot.trans.errors.invalid_syntax, extra={'format': 'HTML'})
-
 
         elif m.reply:
             target = str(m.reply.sender.id)
