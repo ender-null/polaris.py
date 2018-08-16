@@ -27,7 +27,7 @@ class plugin(object):
             bullets = 6
         
         if randint(1, bullets) == 1:
-            del_tag(self.bot, gid, 'roulette:%s' % bullets)
+            del_tag(self.bot, gid, 'roulette:?')
             set_tag(self.bot, gid, 'roulette:6')
 
             res = self.bot.kick_user(m, uid)

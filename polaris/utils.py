@@ -142,13 +142,24 @@ def set_tag(bot, target, tag):
     if not tag in bot.tags[target]:
         bot.tags[target].append(tag)
         set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+        return True
 
 
 def del_tag(bot, target, tag):
     if not isinstance(target, str):
         target = str(target)
-    bot.tags[target].remove(tag)
-    delete_data('tags/%s/%s' % (bot.name, target))
+
+    if target in bot.tags and '?' in tag:
+        for target_tag in bot.tags[target]:
+            if target_tag.startswith(tag.split('?')[0]):
+                bot.tags[target].remove(target_tag)
+                set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+                break
+
+    elif target in bot.tags and tag in bot.tags[target]:
+        bot.tags[target].remove(tag)
+        set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+
 
 
 def is_admin(bot, uid):
