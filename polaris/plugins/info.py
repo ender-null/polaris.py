@@ -14,18 +14,18 @@ class plugin(object):
 
         gid = str(m.conversation.id)
         if input:
+            target = '0'
             if is_int(input):
                 target = input
 
             elif input.startswith('@'):
                 for uid in self.bot.users:
-                    if 'username' in self.bot.users[uid] and self.bot.users[uid].username == input[1:]:
-                        target = uid
+                    if 'username' in self.bot.users[uid] and self.bot.users[uid].username.lower() == input[1:].lower():
+                        target = str(uid)
                         break
 
             else:
                 self.bot.send_message(m, self.bot.trans.errors.invalid_syntax, extra={'format': 'HTML'})
-
 
         elif m.reply:
             target = str(m.reply.sender.id)
@@ -34,6 +34,9 @@ class plugin(object):
             target = str(m.sender.id)
 
         text = ''
+
+        if int(target) == 0:
+            return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         if int(target) > 0:
             if target in self.bot.users:
@@ -44,7 +47,7 @@ class plugin(object):
                     user += ' ' + self.bot.users[target].last_name
 
                 if 'username' in self.bot.users[target] and self.bot.users[target].username:
-                    user += '\n@' + self.bot.users[target].username
+                    user += '\n\t     @' + self.bot.users[target].username
                     
                 text = self.bot.trans.plugins.info.strings.user_info % (user, target, self.bot.users[target].messages)
 
@@ -72,7 +75,7 @@ class plugin(object):
                 if 'title' in self.bot.groups[gid] and self.bot.groups[gid].title:
                     group = self.bot.groups[gid].title
 
-                text = self.bot.trans.plugins.info.strings.group_info % (group, gid, self.bot.groups[gid].messages)
+                text += self.bot.trans.plugins.info.strings.group_info % (group, gid, self.bot.groups[gid].messages)
 
             if gid in self.bot.tags:
                 text += '\n🏷 '

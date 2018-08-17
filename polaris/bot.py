@@ -214,11 +214,19 @@ class Bot(object):
                         trigger += ' '
 
             try:
-                if message.content and isinstance(message.content, str) and re.compile(trigger).search(message.content.lower()):
+                if message.content and isinstance(message.content, str) and re.compile(trigger, flags=re.IGNORECASE).search(message.content):
                     # Get the text that is next to the pattern
-                    input_match = re.compile(trigger + '([\w\t ]+)').search(message.content.lower())
+                    input_match = re.compile(trigger + '([\w\@\t ]+)', flags=re.IGNORECASE).search(message.content)
                     if input_match and input_match.group(1):
                         message.extra['input'] = input_match.group(1)
+
+                    # Get the text that is next to the pattern
+                    if message.reply:
+                        input_match = re.compile(trigger + '([\w\@\t ]+)', flags=re.IGNORECASE).search(message.content + ' ' + message.reply.content)
+                        if input_match and input_match.group(1):
+                            message.extra['input_reply'] = input_match.group(1)
+                    elif 'input' in message.extra:
+                         message.extra['input_reply'] = message.extra['input']
 
                     if message.type == 'inline_query':
                         if hasattr(plugin, 'inline'):

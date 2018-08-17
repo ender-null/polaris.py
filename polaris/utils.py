@@ -9,10 +9,12 @@ import logging, traceback, requests, json, magic, mimetypes, tempfile, os, subpr
 
 
 def get_input(message, ignore_reply=True):
-    if message.extra and 'input' in message.extra:
-        return message.extra['input']
-    else:
-        return None
+    if message.extra:
+        if ignore_reply and 'input' in message.extra:
+            return message.extra['input']
+        elif not ignore_reply and 'input_reply' in message.extra:
+            return message.extra['input_reply']
+    return None
 
 
 def get_input_legacy(message, ignore_reply=True):

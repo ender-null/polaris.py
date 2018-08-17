@@ -104,7 +104,10 @@ class plugin(object):
                     return
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            text = self.bot.trans.plugins.pole.strings.got_pole % self.bot.users[uid].first_name
+            user = self.bot.users[uid].first_name
+            if 'username' in self.bot.users[uid]:
+                user = '@' + self.bot.users[uid].username
+            text = self.bot.trans.plugins.pole.strings.got_pole % user
 
         # Subole
         elif is_command(self, 3, m.content):
@@ -132,7 +135,10 @@ class plugin(object):
                     return
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            text = self.bot.trans.plugins.pole.strings.got_subpole % self.bot.users[uid].first_name
+            user = self.bot.users[uid].first_name
+            if 'username' in self.bot.users[uid]:
+                user = '@' + self.bot.users[uid].username
+            text = self.bot.trans.plugins.pole.strings.got_subpole % user
 
         # Fail
         elif is_command(self, 4, m.content):
@@ -160,7 +166,10 @@ class plugin(object):
                     return
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            text = self.bot.trans.plugins.pole.strings.got_fail % self.bot.users[uid].first_name
+            user = self.bot.users[uid].first_name
+            if 'username' in self.bot.users[uid]:
+                user = '@' + self.bot.users[uid].username
+            text = self.bot.trans.plugins.pole.strings.got_fail % user
 
         if text:
             self.bot.send_message(m, text, extra={'format': 'HTML'})
