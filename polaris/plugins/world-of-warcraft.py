@@ -1,6 +1,5 @@
 from polaris.utils import get_input, is_command, send_request, download, has_tag, set_tag, del_tag
 from time import time
-import logging
 
 
 class plugin(object):
@@ -13,6 +12,7 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
+
         input = get_input(m)
         if m.reply:
             uid = str(m.reply.sender.id)
