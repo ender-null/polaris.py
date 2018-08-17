@@ -1,4 +1,5 @@
-from polaris.utils import get_input, is_command, send_request, download
+from polaris.utils import get_input, is_command, send_request, download, has_tag, set_tag, del_tag
+from time import time
 import logging
 
 
@@ -12,13 +13,24 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
-        input = get_input(m, ignore_reply=False)
+        input = get_input(m)
+        if m.reply:
+            uid = str(m.reply.sender.id)
+        else:
+            uid = str(m.sender.id)
+
         if not input:
-            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            wow = has_tag(self.bot, uid, 'wow:?', return_match = True)
+            if wow:
+                realm = ' '.join(wow[0].split(':')[1].split('/')[:-1])
+                character = wow[0].split(':')[1].split('/')[-1]
+            else:
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+        else:
+            realm = ' '.join(input.split()[:-1])
+            character = input.split()[-1]
 
-        realm = ' '.join(input.split()[:-1])
-        character = input.split()[-1]
-
+        # Get character data
         if is_command(self, 1, m.content) or is_command(self, 2, m.content):
             if is_command(self, 1, m.content):
                 region = 'eu'
@@ -44,7 +56,7 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
             render_url = 'https://render-%s.worldofwarcraft.com/character/' % region
-            photo = render_url + data.thumbnail.replace('avatar', 'main')
+            photo = render_url + data.thumbnail.replace('avatar', 'main') + '?update=%s' % int(time() / 3600)
             name = self.bot.trans.plugins.world_of_warcraft.strings.name % (data.name, data.realm, data.level)
             race = self.bot.trans.plugins.world_of_warcraft.strings.race % (self.get_race(data.race, region), self.get_class(data['class'], region), self.get_gender(data.gender))
             stats = self.bot.trans.plugins.world_of_warcraft.strings.stats % (data.achievementPoints, data.totalHonorableKills)
@@ -63,6 +75,36 @@ class plugin(object):
                 text += name + race + stats + progression
 
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
+
+        # Set character
+        elif is_command(self, 3, m.content):
+            del_tag(self.bot, uid, 'wow:?')
+            set_tag(self.bot, uid, 'wow:%s/%s' % (realm, character))
+            text = self.bot.trans.plugins.world_of_warcraft.strings.character_set % (character.title(), realm.title())
+            return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
+
+        # Reset character
+        elif is_command(self, 4, m.content):
+            del_tag(self.bot, uid, 'wow:?')
+            text = self.bot.trans.plugins.world_of_warcraft.strings.character_reset
+            return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
+
+        # Token price
+        elif is_command(self, 5, m.content):
+            url = 'https://wowtokenprices.com/current_prices.json'
+            data = send_request(url)
+
+            if data:
+                text = self.bot.trans.plugins.world_of_warcraft.strings.token_title
+                for region in data:
+                    text += self.bot.trans.plugins.world_of_warcraft.strings.token_price % (
+                        region.upper(), int(data[region].current_price / 1000),
+                        int(data[region]['1_day_low'] / 1000), int(data[region]['1_day_high'] / 1000))
+
+                return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
+
+            else:
+                return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML', 'preview': True})
 
 
     def get_class(self, class_id, region):
