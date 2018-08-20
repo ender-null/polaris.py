@@ -116,6 +116,10 @@ def has_tag(bot, target, tag, return_match=False):
     tags = []
     if target in bot.tags and '?' in tag:
         for target_tag in bot.tags[target]:
+            if not target_tag:
+                bot.tags[target].remove(target_tag)
+                set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+
             if target_tag.startswith(tag.split('?')[0]):
                 if return_match:
                     tags.append(target_tag)

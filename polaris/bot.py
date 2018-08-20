@@ -216,7 +216,7 @@ class Bot(object):
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger, flags=re.IGNORECASE).search(message.content):
                     # Get the text that is next to the pattern
-                    input_match = re.compile(trigger + '([\w\@\t ]+)', flags=re.IGNORECASE).search(message.content)
+                    input_match = re.compile(trigger + '([\w\@:\t ]+)', flags=re.IGNORECASE).search(message.content)
                     if input_match and input_match.group(1):
                         message.extra['input'] = input_match.group(1)
 

@@ -105,7 +105,7 @@ class plugin(object):
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
             user = self.bot.users[uid].first_name
-            if 'username' in self.bot.users[uid]:
+            if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_pole % user
 
@@ -136,7 +136,7 @@ class plugin(object):
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
             user = self.bot.users[uid].first_name
-            if 'username' in self.bot.users[uid]:
+            if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_subpole % user
 
@@ -155,7 +155,7 @@ class plugin(object):
                 if not date in self.bot.poles[gid]:
                     self.bot.poles[gid][date] = DictObject()
 
-                
+
                 if not 'pole' in self.bot.poles[gid][date] or not 'subpole' in self.bot.poles[gid][date]:
                     uid = str(uid)
                     text = self.bot.trans.plugins.pole.strings.too_soon % self.bot.users[uid].first_name
@@ -167,7 +167,7 @@ class plugin(object):
             set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
             user = self.bot.users[uid].first_name
-            if 'username' in self.bot.users[uid]:
+            if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_fail % user
 
