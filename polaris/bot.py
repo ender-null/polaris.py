@@ -208,7 +208,7 @@ class Bot(object):
                     # trigger = trigger.replace('@' + self.info.username.lower(), '')
                     if not parameters and trigger.startswith('^'):
                         trigger += '$'
-                    elif parameters and ' ' not in message.content:
+                    elif parameters and ' ' not in message.content and not message.reply:
                         trigger += '$'
                     elif parameters and ' ' in message.content:
                         trigger += ' '
@@ -221,12 +221,12 @@ class Bot(object):
                         message.extra['input'] = input_match.group(1)
 
                     # Get the text that is next to the pattern
-                    if message.reply:
-                        input_match = re.compile(trigger + '([\w\@\t ]+)', flags=re.IGNORECASE).search(message.content + ' ' + message.reply.content)
+                    if message.reply and message.reply.content:
+                        input_match = re.compile(trigger + '([\w\@:\t ]+)', flags=re.IGNORECASE).search(message.content + ' ' + message.reply.content)
                         if input_match and input_match.group(1):
                             message.extra['input_reply'] = input_match.group(1)
                     elif 'input' in message.extra:
-                         message.extra['input_reply'] = message.extra['input']
+                        message.extra['input_reply'] = message.extra['input']
 
                     if message.type == 'inline_query':
                         if hasattr(plugin, 'inline'):
