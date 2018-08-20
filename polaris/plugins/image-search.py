@@ -38,7 +38,7 @@ class plugin(object):
         try:
             i = randint(0, len(data['items']) - 1)
             photo = data['items'][i].link
-            caption = data['items'][i].title
+            caption = None # data['items'][i].title
 
         except Exception as e:
             self.bot.send_alert(e)
