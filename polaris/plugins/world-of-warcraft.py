@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, send_request, download, has_tag, set_tag, del_tag
+from polaris.utils import get_input, is_command, send_request, download, set_setting, get_setting, del_setting
 from time import time
 
 
@@ -20,10 +20,10 @@ class plugin(object):
             uid = str(m.sender.id)
 
         if not input:
-            wow = has_tag(self.bot, uid, 'wow:?', return_match = True)
+            wow = get_setting(self.bot, uid, 'wow')
             if wow:
-                realm = ' '.join(wow[0].split(':')[1].split('/')[:-1])
-                character = wow[0].split(':')[1].split('/')[-1]
+                realm = ' '.join(wow.split('/')[:-1])
+                character = wow.split('/')[-1]
             else:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
         else:
@@ -45,7 +45,7 @@ class plugin(object):
 
             url = 'https://%s.api.battle.net/wow/character/%s/%s' % (region, realm, character)
             params = {
-                'fields': 'guild,progression',
+                'fields': 'guild,progression,items',
                 'locale': locale,
                 'apikey': self.bot.config.api_keys.battle_net
             }
@@ -59,7 +59,7 @@ class plugin(object):
             photo = render_url + data.thumbnail.replace('avatar', 'main') + '?update=%s' % int(time() / 3600)
             name = self.bot.trans.plugins.world_of_warcraft.strings.name % (data.name, data.realm, data.level)
             race = self.bot.trans.plugins.world_of_warcraft.strings.race % (self.get_race(data.race, region), self.get_class(data['class'], region), self.get_gender(data.gender))
-            stats = self.bot.trans.plugins.world_of_warcraft.strings.stats % (data.achievementPoints, data.totalHonorableKills)
+            stats = self.bot.trans.plugins.world_of_warcraft.strings.stats % (data['items'].averageItemLevelEquipped, data.achievementPoints, data.totalHonorableKills)
             progression = self.get_raids(data.progression.raids)
 
             if 'guild' in data:
@@ -78,14 +78,13 @@ class plugin(object):
 
         # Set character
         elif is_command(self, 3, m.content):
-            del_tag(self.bot, uid, 'wow:?')
-            set_tag(self.bot, uid, 'wow:%s/%s' % (realm, character))
+            set_setting(self.bot, uid, 'wow', '%s/%s' % (realm, character))
             text = self.bot.trans.plugins.world_of_warcraft.strings.character_set % (character.title(), realm.title())
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
 
         # Reset character
         elif is_command(self, 4, m.content):
-            del_tag(self.bot, uid, 'wow:?')
+            del_setting(self.bot, uid, 'wow')
             text = self.bot.trans.plugins.world_of_warcraft.strings.character_reset
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
 
