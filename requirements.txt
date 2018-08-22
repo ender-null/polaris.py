@@ -36,5 +36,6 @@ requests==2.19.1
 requests-oauthlib==0.7.0
 rsa==3.4.2
 six==1.10.0
+systemd==0.16.1
 textblob==0.11.1
 urllib3==1.23

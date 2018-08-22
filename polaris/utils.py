@@ -5,6 +5,7 @@ from polaris.types import AutosaveDict
 from re import compile
 from time import sleep
 from firebase_admin import db
+from systemd.journal import JournaldLogHandler
 import logging, traceback, requests, json, magic, mimetypes, tempfile, os, subprocess, re
 
 

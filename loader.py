@@ -110,7 +110,7 @@ def setup():
                 config.plugins = plugins
                 config.api_keys = api_keys
                 finished = True
-            
+
             elif option == 1:
                 option = input('What bindings want to use? (Current value: "%s")\n' % bindings)
                 config.bindings = option
@@ -163,7 +163,7 @@ def setup():
                 user_input = input(bots)
                 os.remove('bots/%s.json' % botlist[int(user_input)-1])
                 print('Removed "bots/%s.json".' % botlist[int(user_input)-1])
-                
+
 
 # Now let's start doing stuff. #
 # setup()

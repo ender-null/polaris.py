@@ -1,11 +1,13 @@
 [Unit]
 Description=Polaris Systemd Service
+After=multi-user.target
 
 [Service]
-Type=forking
-ExecStart=/usr/bin/screen -dmS polaris /bin/bash runme.sh
+Type=idle
+ExecStart=/bin/sh runme.sh
 WorkingDirectory=/home/ender/Projects/polaris
+SyslogIdentifier=polaris
 User=ender
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
