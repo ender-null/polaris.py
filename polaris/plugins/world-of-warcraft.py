@@ -19,29 +19,35 @@ class plugin(object):
         else:
             uid = str(m.sender.id)
 
-        if not input:
-            wow = get_setting(self.bot, uid, 'wow')
-            if wow:
-                realm = ' '.join(wow.split('/')[:-1])
-                character = wow.split('/')[-1]
-            else:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
-        else:
-            realm = ' '.join(input.split()[:-1])
-            character = input.split()[-1]
-
         # Get character data
-        if is_command(self, 1, m.content) or is_command(self, 2, m.content):
+        if is_command(self, 1, m.content) or is_command(self, 2, m.content) or is_command(self, 3, m.content):
+            if not input:
+                wow = get_setting(self.bot, uid, 'wow')
+                if wow:
+                    realm = ' '.join(wow.split('/')[:-1])
+                    character = wow.split('/')[-1]
+                else:
+                    return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            else:
+                realm = ' '.join(input.split()[:-1])
+                character = input.split()[-1]
+                
             if is_command(self, 1, m.content):
                 region = 'eu'
                 locale = 'en_GB'
                 if self.bot.config.translation != 'default':
                     locale = 'es_ES'
-            else:
+
+            elif is_command(self, 2, m.content):
                 region = 'us'
                 locale = 'en_US'
                 if self.bot.config.translation != 'default':
                     locale = 'es_MX'
+
+            elif is_command(self, 3, m.content):
+                set_setting(self.bot, uid, 'wow', '%s/%s' % (realm, character))
+                text = self.bot.trans.plugins.world_of_warcraft.strings.character_set % (character.title(), realm.title())
+                return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
 
             url = 'https://%s.api.battle.net/wow/character/%s/%s' % (region, realm, character)
             params = {
@@ -66,7 +72,7 @@ class plugin(object):
                 guild = '\n&lt;%s-%s&gt;' % (data.guild.name, data.guild.realm)
             else:
                 guild = None
-            
+
             text = '<a href="%s">⁣</a>' % photo
 
             if guild:
@@ -74,12 +80,6 @@ class plugin(object):
             else:
                 text += name + race + stats + progression
 
-            return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
-
-        # Set character
-        elif is_command(self, 3, m.content):
-            set_setting(self.bot, uid, 'wow', '%s/%s' % (realm, character))
-            text = self.bot.trans.plugins.world_of_warcraft.strings.character_set % (character.title(), realm.title())
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
 
         # Reset character
