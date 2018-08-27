@@ -1,5 +1,5 @@
 from polaris.types import AutosaveDict, Message, Conversation
-from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received, has_tag
+from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received, has_tag, set_input
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
@@ -215,18 +215,7 @@ class Bot(object):
 
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger, flags=re.IGNORECASE).search(message.content):
-                    # Get the text that is next to the pattern
-                    input_match = re.compile(trigger + '([\w\@:\t ]+)', flags=re.IGNORECASE).search(message.content)
-                    if input_match and input_match.group(1):
-                        message.extra['input'] = input_match.group(1)
-
-                    # Get the text that is next to the pattern
-                    if message.reply and message.reply.content:
-                        input_match = re.compile(trigger + '([\w\@:\t ]+)', flags=re.IGNORECASE).search(message.content + ' ' + message.reply.content)
-                        if input_match and input_match.group(1):
-                            message.extra['input_reply'] = input_match.group(1)
-                    elif 'input' in message.extra:
-                        message.extra['input_reply'] = message.extra['input']
+                    set_input(message, trigger)
 
                     if message.type == 'inline_query':
                         if hasattr(plugin, 'inline'):

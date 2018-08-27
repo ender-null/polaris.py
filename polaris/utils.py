@@ -9,6 +9,23 @@ from systemd.journal import JournaldLogHandler
 import logging, traceback, requests, json, magic, mimetypes, tempfile, os, subprocess, re
 
 
+def set_input(message, trigger):
+    if message.type == 'text' or message.type == 'inline_query':
+        # Get the text that is next to the pattern
+        input_match = re.compile(trigger + '(.+)$', flags=re.IGNORECASE).search(message.content)
+        if input_match and input_match.group(1):
+            message.extra['input'] = input_match.group(1)
+
+        # Get the text that is next to the pattern
+        if message.reply and message.reply.content:
+            input_match = re.compile(trigger + '(.+)$', flags=re.IGNORECASE).search(message.content + ' ' + message.reply.content)
+            if input_match and input_match.group(1):
+                message.extra['input_reply'] = input_match.group(1)
+        elif 'input' in message.extra:
+            message.extra['input_reply'] = message.extra['input']
+
+    return message
+
 def get_input(message, ignore_reply=True):
     if message.extra:
         if ignore_reply and 'input' in message.extra:
@@ -121,7 +138,7 @@ def has_tag(bot, target, tag, return_match=False):
                 bot.tags[target].remove(target_tag)
                 set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
 
-            if target_tag.startswith(tag.split('?')[0]):
+            if target_tag and target_tag.startswith(tag.split('?')[0]):
                 if return_match:
                     tags.append(target_tag)
                 else:
