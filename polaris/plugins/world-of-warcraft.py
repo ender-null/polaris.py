@@ -31,7 +31,7 @@ class plugin(object):
             else:
                 realm = ' '.join(input.split()[:-1])
                 character = input.split()[-1]
-                
+
             if is_command(self, 1, m.content):
                 region = 'eu'
                 locale = 'en_GB'
@@ -149,13 +149,19 @@ class plugin(object):
 
     def get_raids(self, raids):
         progression = '\n'
-        progression += '\n' + raids[-1].name
-        progression += self.bot.trans.plugins.world_of_warcraft.strings.lfr_raid + self.get_raid_kills(raids[-1].bosses, 0)
-        progression += self.bot.trans.plugins.world_of_warcraft.strings.normal_raid + self.get_raid_kills(raids[-1].bosses, 1)
-        progression += self.bot.trans.plugins.world_of_warcraft.strings.heroic_raid + self.get_raid_kills(raids[-1].bosses, 2)
-        progression += self.bot.trans.plugins.world_of_warcraft.strings.mythic_raid + self.get_raid_kills(raids[-1].bosses, 3)
+        progression += '\n' + self.get_last_raid(raids).name
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.lfr_raid + self.get_raid_kills(self.get_last_raid(raids).bosses, 0)
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.normal_raid + self.get_raid_kills(self.get_last_raid(raids).bosses, 1)
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.heroic_raid + self.get_raid_kills(self.get_last_raid(raids).bosses, 2)
+        progression += self.bot.trans.plugins.world_of_warcraft.strings.mythic_raid + self.get_raid_kills(self.get_last_raid(raids).bosses, 3)
 
         return progression
+
+    def get_last_raid(self, raids):
+        for raid in raids:
+            if raid.id == 9389:
+                return raid
+        return raids[-1]
 
     def get_raid_kills(self, bosses, tier):
         total = 0
