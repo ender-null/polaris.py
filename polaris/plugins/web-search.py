@@ -43,5 +43,5 @@ class plugin(object):
 
         elif is_command(self, 2, m.content):
             text = data['items'][0].link
-        
+
             self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})

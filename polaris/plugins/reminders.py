@@ -41,7 +41,9 @@ class plugin(object):
         reminder.chat_id = m.conversation.id
         reminder.text = text
         reminder.first_name = m.sender.first_name
-        reminder.username = m.sender.username
+        if 'username' in m.sender
+            reminder.username = m.sender.username
+
         if not 'list' in self.bot.reminders or not self.bot.reminders.list:
             self.bot.reminders.list = []
         self.bot.reminders.list.append(reminder)
@@ -69,7 +71,7 @@ class plugin(object):
         while len(self.bot.reminders['list']) > 0 and self.bot.reminders.list[0].alarm < time():
             reminder = self.bot.reminders.list[0]
             text = '<i>%s</i>\n - %s' % (reminder.text, reminder.first_name)
-            if reminder.username:
+            if 'username' in reminder:
                  text += ' (@%s)' % reminder.username
 
             m = Message(None, Conversation(reminder.chat_id), None, None)
