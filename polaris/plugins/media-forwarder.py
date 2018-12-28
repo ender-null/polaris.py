@@ -22,6 +22,8 @@ class plugin(object):
                         
                         if 'urls' in r.extra:
                             for url in r.extra['urls']:
+                                if 'instagram' in url:
+                                    url = url.split('?')[0]
                                 self.bot.send_message(r, url, extra={'preview': True})
                         else:
                             self.bot.send_message(r, m.content, m.type, extra={'preview': True})

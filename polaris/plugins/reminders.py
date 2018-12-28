@@ -41,7 +41,7 @@ class plugin(object):
         reminder.chat_id = m.conversation.id
         reminder.text = text
         reminder.first_name = m.sender.first_name
-        if 'username' in m.sender
+        if m.sender.username:
             reminder.username = m.sender.username
 
         if not 'list' in self.bot.reminders or not self.bot.reminders.list:
