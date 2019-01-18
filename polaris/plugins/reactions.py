@@ -15,8 +15,8 @@ class plugin(object):
     def run(self, m):
         for reaction, attributes in self.bot.trans.plugins.reactions.strings.items():
             for trigger in attributes:
-                if compile(trigger, flags=IGNORECASE).search(m.content):
-                    return self.bot.send_message(m, reaction, extra={'format': 'HTML'})
+                if compile(self.format_text(trigger, m), flags=IGNORECASE).search(m.content):
+                    return self.bot.send_message(m, self.format_text(reaction, m), extra={'format': 'markdown'})
 
 
     def update_triggers(self):
@@ -26,6 +26,13 @@ class plugin(object):
         for reaction, attributes in self.bot.trans.plugins.reactions.strings.items():
             for trigger in attributes:
                 self.commands.append({
-                    'command': '(^| )' + trigger + '($| )',
+                    'command': '(^| )' + self.format_text(trigger) + '($| )',
                     'hidden': True
                 })
+
+
+    def format_text(self, text, message = None):
+        text = text.replace('BOT', self.bot.info.username.lower().replace('bot', ''))
+        if message:
+            text = text.replace('USER', message.sender.first_name)
+        return text
