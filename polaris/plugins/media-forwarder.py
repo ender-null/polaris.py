@@ -19,7 +19,7 @@ class plugin(object):
                     if m.type == 'photo' or m.type == 'video' or m.type == 'document' or (m.type == 'text' and 'urls' in m.extra):
                         r = deepcopy(m)
                         r.conversation.id = cid
-                        
+
                         if 'urls' in r.extra:
                             for url in r.extra['urls']:
                                 if 'instagram' in url:

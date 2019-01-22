@@ -471,6 +471,27 @@ def remove_html(text):
     return ''.join(s.fed)
 
 
+def get_target(bot, m, input):
+    if input:
+        target = first_word(input)
+        if is_int(target):
+            return target
+
+        elif target.startswith('@'):
+            for uid in bot.users:
+                if 'username' in bot.users[uid] and bot.users[uid].username.lower() == target[1:].lower():
+                    return str(uid)
+
+        else:
+            return bot.send_message(m, bot.trans.errors.invalid_syntax, extra={'format': 'HTML'})
+
+    elif m.reply:
+        return str(m.reply.sender.id)
+
+    else:
+        return str(m.sender.id)
+
+
 def init_if_empty(_dict):
     if _dict:
         return DictObject(_dict)

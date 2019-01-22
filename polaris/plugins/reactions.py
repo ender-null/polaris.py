@@ -26,7 +26,7 @@ class plugin(object):
         for reaction, attributes in self.bot.trans.plugins.reactions.strings.items():
             for trigger in attributes:
                 self.commands.append({
-                    'command': '(^| )' + self.format_text(trigger) + '($| )',
+                    'command': '(^| )' + self.format_text(trigger) + '\.?($| )',
                     'hidden': True
                 })
 

@@ -1,5 +1,6 @@
-from polaris.utils import get_input, is_admin, is_trusted, is_command, wait_until_received
+from polaris.utils import get_input, is_admin, is_trusted, is_command, get_target, all_but_first_word, wait_until_received
 from io import StringIO
+from copy import deepcopy
 import sys, subprocess
 
 
@@ -35,7 +36,13 @@ class plugin(object):
 
         # Send messages
         elif is_command(self, 4, m.content):
-            text = self.bot.trans.errors.not_implemented
+            if not input:
+                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            target = get_target(self.bot, m, input)
+            message = all_but_first_word(input)
+            r = deepcopy(m)
+            r.conversation.id = target
+            self.bot.send_message(r, message)
 
         # Run shell commands
         elif is_command(self, 5, m.content):
