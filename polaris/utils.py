@@ -482,6 +482,9 @@ def get_target(bot, m, input):
                 if 'username' in bot.users[uid] and bot.users[uid].username.lower() == target[1:].lower():
                     return str(uid)
 
+        elif target == '-g':
+            return str(m.conversation.id)
+
         else:
             return bot.send_message(m, bot.trans.errors.invalid_syntax, extra={'format': 'HTML'})
 

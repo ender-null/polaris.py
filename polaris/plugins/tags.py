@@ -32,6 +32,14 @@ class plugin(object):
             name = target
             input = all_but_first_word(input)
 
+        elif first_word(input).startswith('@'):
+            for uid in self.bot.users:
+                if 'username' in self.bot.users[uid] and self.bot.users[uid].username and self.bot.users[uid].username.lower() == first_word(input)[1:].lower():
+                    target = uid
+                    name = self.bot.users[uid].first_name
+                    input = all_but_first_word(input)
+                    break
+
         else:
             target = str(m.sender.id)
             name = m.sender.first_name
