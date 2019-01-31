@@ -69,7 +69,11 @@ def is_command(self, number, text):
             or (self.commands[number - 1]['command'] == '/help' and '/help' in text)):
             trigger = self.commands[number - 1]['command'].replace('/', '^/')
         else:
-            trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
+            if text[0] == '/' and 'keep_default' in self.commands[number - 1] and self.commands[number - 1]['keep_default']:
+                trigger = self.commands[number - 1]['command'].replace('/', '^/')
+            else:
+                trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
+
         if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
         elif 'parameters' in self.commands[number - 1] and ' ' not in text:
@@ -495,6 +499,12 @@ def get_target(bot, m, input):
         return str(m.sender.id)
 
 
+def time_in_range(start, end, x):
+    if start <= end:
+        return start <= x <= end
+    else:
+        return start <= x or x <= end
+
 def init_if_empty(_dict):
     if _dict:
         return DictObject(_dict)
@@ -517,6 +527,7 @@ def wait_until_received(path):
         except:
             continue
     return data
+
 
 def set_data(path, value):
     while True:

@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, init_if_empty, wait_until_received, set_data, delete_data
+from polaris.utils import get_input, is_command, init_if_empty, wait_until_received, set_data, delete_data, has_tag
 from polaris.types import AutosaveDict
 from firebase_admin import db
 from firebase_admin.db import ApiCallError
@@ -13,6 +13,9 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
+        if has_tag(self.bot, m.sender.id, 'noreactions') or has_tag(self.bot, m.conversation.id, 'noreactions'):
+            return
+
         for reaction, attributes in self.bot.trans.plugins.reactions.strings.items():
             for trigger in attributes:
                 if compile(self.format_text(trigger, m), flags=IGNORECASE).search(m.content):

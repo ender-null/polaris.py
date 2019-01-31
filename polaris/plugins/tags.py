@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, is_trusted, has_tag, set_tag, del_tag, first_word, all_but_first_word
+from polaris.utils import get_input, is_command, is_trusted, has_tag, set_tag, del_tag, first_word, all_but_first_word, is_int
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -27,7 +27,7 @@ class plugin(object):
             name = m.conversation.title
             input = all_but_first_word(input)
 
-        elif first_word(input).isdigit():
+        elif is_int(first_word(input)):
             target = first_word(input)
             name = target
             input = all_but_first_word(input)

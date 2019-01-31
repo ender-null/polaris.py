@@ -172,6 +172,9 @@ class Bot(object):
                         if 'command' in command:
                             if self.check_trigger(command['command'], command['parameters'], msg, plugin):
                                 break
+                            if 'keep_default' in command and command['keep_default']:
+                                if self.check_trigger(command['command'], command['parameters'], msg, plugin, False, True):
+                                    break
 
                         if 'friendly' in command:
                             if self.check_trigger(command['friendly'], command['parameters'], msg, plugin, True):
@@ -180,6 +183,9 @@ class Bot(object):
                         if 'shortcut' in command:
                             if self.check_trigger(command['shortcut'], command['parameters'], msg, plugin):
                                 break
+                            if 'keep_default' in command and command['keep_default']:
+                                if self.check_trigger(command['shortcut'], command['parameters'], msg, plugin, False, True):
+                                    break
 
         except KeyboardInterrupt:
             pass
@@ -188,7 +194,7 @@ class Bot(object):
             catch_exception(e, self)
 
 
-    def check_trigger(self, command, parameters, message, plugin, friendly = False):
+    def check_trigger(self, command, parameters, message, plugin, friendly = False, keep_default = False):
         if isinstance(command, str):
             command = command.lower()
             if isinstance(message.content, str) and message.content.endswith('@' + self.info.username) and ' ' not in message.content:
@@ -201,6 +207,8 @@ class Bot(object):
             else:
                 if message.type == 'inline_query':
                     trigger = command.replace('/', '^')
+                elif keep_default:
+                    trigger = command.replace('/', '^/')
                 else:
                     trigger = command.replace('/', '^' + self.config.prefix)
 

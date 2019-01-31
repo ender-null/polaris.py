@@ -17,7 +17,7 @@ class plugin(object):
 
         text = ''
 
-        if int(target) == 0:
+        if int(target) == 0 or not (target in self.bot.users or target in self.bot.groups):
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         if int(target) > 0:
