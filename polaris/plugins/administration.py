@@ -77,33 +77,34 @@ class plugin(object):
                     gid_to_join = id
                     break
 
-            if not gid_to_join in self.bot.administration:
-                return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
+            if gid_to_join:
+                if not gid_to_join in self.bot.administration:
+                    return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>' % self.bot.groups[gid_to_join].title
-            if self.bot.administration[gid_to_join].motd:
-                text += '\n<i>%s</i>' % self.bot.administration[gid_to_join].motd
+                text = '<b>%s</b>' % self.bot.groups[gid_to_join].title
+                if self.bot.administration[gid_to_join].motd:
+                    text += '\n<i>%s</i>' % self.bot.administration[gid_to_join].motd
 
-            text += '\n\n%s' % self.bot.trans.plugins.administration.strings.rules
-            i = 1
-            if 'rules' in self.bot.administration[gid_to_join]:
-                for rule in self.bot.administration[gid_to_join].rules:
-                    text += '\n %s. <i>%s</i>' % (i, rule)
-                    i += 1
-            else:
-                text += '\n%s' % self.bot.trans.plugins.administration.strings.norules
+                text += '\n\n%s' % self.bot.trans.plugins.administration.strings.rules
+                i = 1
+                if 'rules' in self.bot.administration[gid_to_join]:
+                    for rule in self.bot.administration[gid_to_join].rules:
+                        text += '\n %s. <i>%s</i>' % (i, rule)
+                        i += 1
+                else:
+                    text += '\n%s' % self.bot.trans.plugins.administration.strings.norules
 
-            # if self.bot.administration[gid_to_join].public:
-            #     text += '\n\n%s' % self.bot.trans.plugins.administration.strings.public_group
-            # else:
-            #     text += '\n\n%s' % self.bot.trans.plugins.administration.strings.private_group
+                # if self.bot.administration[gid_to_join].public:
+                #     text += '\n\n%s' % self.bot.trans.plugins.administration.strings.public_group
+                # else:
+                #     text += '\n\n%s' % self.bot.trans.plugins.administration.strings.private_group
 
-            if not self.bot.administration[gid_to_join].link:
-                text += '\n\n%s' % self.bot.trans.plugins.administration.strings.nolink
-            else:
-                text += '\n\n<a href="%s">%s</a>' % (
-                    self.bot.administration[gid_to_join].link, self.bot.trans.plugins.administration.strings.join)
-            return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
+                if not self.bot.administration[gid_to_join].link:
+                    text += '\n\n%s' % self.bot.trans.plugins.administration.strings.nolink
+                else:
+                    text += '\n\n<a href="%s">%s</a>' % (
+                        self.bot.administration[gid_to_join].link, self.bot.trans.plugins.administration.strings.join)
+                return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 
         # Information about a group. #
         elif is_command(self, 4, m.content) or is_command(self, 9, m.content):

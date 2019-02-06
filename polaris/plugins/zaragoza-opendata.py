@@ -50,7 +50,7 @@ class plugin(object):
             data = send_request(url, params=params)
 
             if not data or 'errors' in data:
-                if data.errors.status == '404 Not Found':
+                if 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
                     return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
                 else:
                     return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
@@ -72,17 +72,20 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = 'http://api.drk.cat/zgzpls/tram/stations'
-            params = {}
             try:
                 int(input)
-                params.number = input
+                params = {
+                    'number': input
+                }
             except ValueError:
-                params.street = input
+                params = {
+                    'street': input
+                }
 
             data = send_request(url, params=params)
 
             if not data or 'errors' in data:
-                if data.errors.status == '404 Not Found':
+                if 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
                     return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
                 else:
                     return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})

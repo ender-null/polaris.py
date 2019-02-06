@@ -23,7 +23,10 @@ class plugin(object):
 
         if input:
             for plugin in self.bot.plugins:
-                text = plugin.description
+                if 'description' in plugin:
+                    text = plugin.description
+                else:
+                    text = ''
 
                 for command in plugin.commands:
                     command = DictObject(command)
