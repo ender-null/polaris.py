@@ -23,7 +23,7 @@ class plugin(object):
 
         if input:
             for plugin in self.bot.plugins:
-                if 'description' in plugin:
+                if hasattr(plugin, 'description'):
                     text = plugin.description
                 else:
                     text = ''

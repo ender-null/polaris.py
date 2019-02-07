@@ -117,17 +117,18 @@ class plugin(object):
                     return
 
             text = '<b>%s</b>' % self.bot.groups[gid].title
-            if self.bot.administration[gid].motd:
+            if 'motd' in self.bot.administration[gid]:
                 text += '\n<i>%s</i>' % self.bot.administration[gid].motd
 
             text += '\n\n%s' % self.bot.trans.plugins.administration.strings.rules
             i = 1
-            for rule in self.bot.administration[gid].rules:
-                text += '\n %s. <i>%s</i>' % (i, rule)
-                i += 1
 
-            if not self.bot.administration[gid].rules:
+            if not 'rules' in self.bot.administration[gid]:
                 text += '\n%s' % self.bot.trans.plugins.administration.strings.norules
+            else:
+                for rule in self.bot.administration[gid].rules:
+                    text += '\n %s. <i>%s</i>' % (i, rule)
+                    i += 1
 
             # if self.bot.administration[gid].public:
             #     text += '\n\n%s' % self.bot.trans.plugins.administration.strings.public_group
