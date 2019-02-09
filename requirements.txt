@@ -32,7 +32,7 @@ pytg==0.4.10
 python-magic==0.4.12
 python-twitter==3.2
 pytz==2018.5
-requests==2.19.1
+requests>=2.20.0
 requests-oauthlib==0.7.0
 rsa==3.4.2
 six==1.10.0
