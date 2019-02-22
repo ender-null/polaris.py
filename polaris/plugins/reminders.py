@@ -44,7 +44,7 @@ class plugin(object):
         if m.sender.username:
             reminder.username = m.sender.username
 
-        if not 'list' in self.bot.reminders or not self.bot.reminders.list:
+        if not 'list' in self.bot.reminders or not self.bot.reminders.list or not hasattr(self.bot.reminders, 'list'):
             self.bot.reminders.list = []
         self.bot.reminders.list.append(reminder)
         self.sort_reminders()
@@ -77,8 +77,8 @@ class plugin(object):
             m = Message(None, Conversation(reminder.chat_id), None, None)
             self.bot.send_message(m, text, extra={'format': 'HTML'})
             self.bot.reminders.list.remove(reminder)
-            set_data('reminders/%s' % self.bot.name, self.bot.reminders)
             self.sort_reminders()
+            set_data('reminders/%s' % self.bot.name, self.bot.reminders)
 
 
     @staticmethod

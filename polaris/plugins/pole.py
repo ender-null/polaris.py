@@ -27,7 +27,7 @@ class plugin(object):
         uid = m.sender.id
         now = datetime.now().replace(microsecond=0)
         date = now.isoformat().split('T')[0]
-
+        text = None
 
         # Pole ranking
         if is_command(self, 1, m.content):
@@ -46,19 +46,26 @@ class plugin(object):
                             try:
                                 ranking[str(self.bot.poles[gid][day].pole)].p += 1
                             except:
-                                ranking[str(self.bot.poles[gid][day].pole)] = { 'p': 1, 's': 0, 'f': 0 }
+                                ranking[str(self.bot.poles[gid][day].pole)] = { 'p': 1, 's': 0, 'f': 0, 'i': 0 }
 
                         if 'subpole' in self.bot.poles[gid][day]:
                             try:
                                 ranking[str(self.bot.poles[gid][day].subpole)].s += 1
                             except:
-                                ranking[str(self.bot.poles[gid][day].subpole)] = { 'p': 0, 's': 1, 'f': 0 }
+                                ranking[str(self.bot.poles[gid][day].subpole)] = { 'p': 0, 's': 1, 'f': 0, 'i': 0 }
 
                         if 'fail' in self.bot.poles[gid][day]:
                             try:
                                 ranking[str(self.bot.poles[gid][day].fail)].f += 1
                             except:
-                                ranking[str(self.bot.poles[gid][day].fail)] = { 'p': 0, 's': 0, 'f': 1 }
+                                ranking[str(self.bot.poles[gid][day].fail)] = { 'p': 0, 's': 0, 'f': 1, 'i': 0 }
+
+                        
+                        if 'iron' in self.bot.poles[gid][day]:
+                            try:
+                                ranking[str(self.bot.poles[gid][day].iron)].i += 1
+                            except:
+                                ranking[str(self.bot.poles[gid][day].iron)] = { 'p': 0, 's': 0, 'f': 0, 'i': 1 }
 
                     if type == 1:
                         if 'canaria' in self.bot.poles[gid][day]:
@@ -77,7 +84,7 @@ class plugin(object):
                 text = self.bot.trans.plugins.pole.strings.ranking
                 for uid, values in self.order_by_points(ranking, type):
                     if type == 0:
-                        points = str((values.p * 3) + (values.s * 1) + (values.f * 0.5)).rstrip('0').rstrip('.')
+                        points = str((values.p * 3) + (values.s * 1) + (values.f * 0.5) + (values.i * 0.1)).rstrip('0').rstrip('.')
                     elif type == 1:
                         points = str(values.c * 1).rstrip('0').rstrip('.')
                     elif type == 2:
@@ -112,6 +119,34 @@ class plugin(object):
                     if not fails_empty:
                         text += fails
 
+                    irons = '\n\n' + self.bot.trans.plugins.pole.strings.irons
+                    irons_empty = True
+                    for uid, values in self.order_by_irons(ranking):
+                        if values.i:
+                            irons_empty = False
+                            irons += '\n ' + self.bot.trans.plugins.pole.strings.ranking_irons % (self.bot.users[uid].first_name, values.i)
+                    if not irons_empty:
+                        text += irons
+
+                elif type == 1:
+                    poles_canarias = '\n\n' + self.bot.trans.plugins.pole.strings.poles_canarias
+                    poles_canarias_empty = True
+                    for uid, values in self.order_by_poles_canarias(ranking):
+                        if values.c:
+                            poles_canarias_empty = False
+                            poles_canarias += '\n ' + self.bot.trans.plugins.pole.strings.ranking_poles % (self.bot.users[uid].first_name, values.c)
+                    if not poles_canarias_empty:
+                        text += poles_canarias
+
+                elif type == 2:
+                    poles_andaluzas = '\n\n' + self.bot.trans.plugins.pole.strings.poles_andaluzas
+                    poles_andaluzas_empty = True
+                    for uid, values in self.order_by_poles_andaluzas(ranking):
+                        if values.a:
+                            poles_andaluzas_empty = False
+                            poles_andaluzas += '\n ' + self.bot.trans.plugins.pole.strings.ranking_poles % (self.bot.users[uid].first_name, values.a)
+                    if not poles_andaluzas_empty:
+                        text += poles_andaluzas
 
         # Pole
         elif is_command(self, 2, m.content):
@@ -268,12 +303,47 @@ class plugin(object):
         if text:
             self.bot.send_message(m, text, extra={'format': 'HTML'})
 
+        # Hierro
+        elif is_command(self, 7, m.content):
+            if self.has_pole(gid, uid, date):
+                return
+
+            if not gid in self.bot.poles:
+                self.bot.poles[gid] = DictObject({
+                    date: {
+                        'iron': uid
+                    }
+                })
+            else:
+                if not date in self.bot.poles[gid]:
+                    self.bot.poles[gid][date] = DictObject()
+
+                if not 'pole' in self.bot.poles[gid][date] or not 'subpole' in self.bot.poles[gid][date] or not 'fail' in self.bot.poles[gid][date]:
+                    uid = str(uid)
+                    text = self.bot.trans.plugins.pole.strings.too_soon % self.bot.users[uid].first_name
+                    return self.bot.send_message(m, text, extra={'format': 'HTML'})
+                elif not 'iron' in self.bot.poles[gid][date]:
+                    self.bot.poles[gid][date].iron = uid
+                else:
+                    return
+            set_data('poles/%s/%s/%s' % (self.bot.name, gid, date), self.bot.poles[gid][date])
+            uid = str(uid)
+            user = self.bot.users[uid].first_name
+            if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
+                user = '@' + self.bot.users[uid].username
+            text = self.bot.trans.plugins.pole.strings.got_iron % user
+
+        if text:
+            self.bot.send_message(m, text, extra={'format': 'HTML'})
+
+
     def has_pole(self, gid, uid, date, type = 0):
         # Check if user has pole
         if gid in self.bot.poles and date in self.bot.poles[gid]:
             if type == 0 and (('pole' in self.bot.poles[gid][date] and self.bot.poles[gid][date].pole == uid) or
                 ('subpole' in self.bot.poles[gid][date] and self.bot.poles[gid][date].subpole == uid) or
-                ('fail' in self.bot.poles[gid][date] and self.bot.poles[gid][date].fail == uid)):
+                ('fail' in self.bot.poles[gid][date] and self.bot.poles[gid][date].fail == uid) or
+                ('iron' in self.bot.poles[gid][date] and self.bot.poles[gid][date].iron == uid)):
                 return True
             elif type == 1 and ('canaria' in self.bot.poles[gid][date] and self.bot.poles[gid][date].canaria == uid):
                 return True
@@ -301,3 +371,15 @@ class plugin(object):
 
     def order_by_fails(self, ranking):
         return sorted(ranking.items(), key=lambda kv: kv[1].f, reverse=True)
+
+
+    def order_by_poles_canarias(self, ranking):
+        return sorted(ranking.items(), key=lambda kv: kv[1].c, reverse=True)
+
+
+    def order_by_poles_andaluzas(self, ranking):
+        return sorted(ranking.items(), key=lambda kv: kv[1].a, reverse=True)
+
+
+    def order_by_iron(self, ranking):
+        return sorted(ranking.items(), key=lambda kv: kv[1].i, reverse=True)

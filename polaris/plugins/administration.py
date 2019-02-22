@@ -70,6 +70,7 @@ class plugin(object):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
+            gid_to_join = None
             for id in self.bot.administration:
                 if (input in self.bot.administration
                     or compile('^' + input.lower() + '$').search(self.bot.administration[id].alias.lower())
