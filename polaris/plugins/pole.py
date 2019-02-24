@@ -300,9 +300,6 @@ class plugin(object):
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_pole_andaluza % user
 
-        if text:
-            self.bot.send_message(m, text, extra={'format': 'HTML'})
-
         # Hierro
         elif is_command(self, 7, m.content):
             if self.has_pole(gid, uid, date):
