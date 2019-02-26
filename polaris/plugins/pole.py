@@ -378,5 +378,5 @@ class plugin(object):
         return sorted(ranking.items(), key=lambda kv: kv[1].a, reverse=True)
 
 
-    def order_by_iron(self, ranking):
+    def order_by_irons(self, ranking):
         return sorted(ranking.items(), key=lambda kv: kv[1].i, reverse=True)
