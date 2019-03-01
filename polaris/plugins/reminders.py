@@ -44,6 +44,7 @@ class plugin(object):
         if m.sender.username:
             reminder.username = m.sender.username
 
+        self.bot.reminders = wait_until_received('reminders/' + self.bot.name)
         if not 'list' in self.bot.reminders or not self.bot.reminders.list or not hasattr(self.bot.reminders, 'list'):
             self.bot.reminders.list = []
         self.bot.reminders.list.append(reminder)
