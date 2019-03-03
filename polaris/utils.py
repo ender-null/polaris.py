@@ -483,7 +483,7 @@ def get_target(bot, m, input):
 
         elif target.startswith('@'):
             for uid in bot.users:
-                if 'username' in bot.users[uid] and bot.users[uid].username.lower() == target[1:].lower():
+                if 'username' in bot.users[uid] and isinstance(bot.users[uid].username, str) and bot.users[uid].username.lower() == target[1:].lower():
                     return str(uid)
 
         elif target == '-g':

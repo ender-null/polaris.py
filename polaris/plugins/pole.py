@@ -80,18 +80,14 @@ class plugin(object):
                                 ranking[str(self.bot.poles[gid][day].andaluza)].a += 1
                             except:
                                 ranking[str(self.bot.poles[gid][day].andaluza)] = { 'a': 1 }
-
-                text = self.bot.trans.plugins.pole.strings.ranking
-                for uid, values in self.order_by_points(ranking, type):
-                    if type == 0:
-                        points = str((values.p * 3) + (values.s * 1) + (values.f * 0.5) + (values.i * 0.1)).rstrip('0').rstrip('.')
-                    elif type == 1:
-                        points = str(values.c * 1).rstrip('0').rstrip('.')
-                    elif type == 2:
-                        points = str(values.a * 1).rstrip('0').rstrip('.')
-                    text += '\n ' + self.bot.trans.plugins.pole.strings.ranking_points % (self.bot.users[uid].first_name, points)
-
+                text = ''
                 if type == 0:
+                    text = self.bot.trans.plugins.pole.strings.ranking
+                    for uid, values in self.order_by_points(ranking, type):    
+                        points = str((values.p * 3) + (values.s * 1) + (values.f * 0.5) + (values.i * 0.1)).rstrip('0').rstrip('.')
+                        text += '\n ' + self.bot.trans.plugins.pole.strings.ranking_points % (self.bot.users[uid].first_name, points)
+
+
                     poles = '\n\n' + self.bot.trans.plugins.pole.strings.poles
                     poles_empty = True
                     for uid, values in self.order_by_poles(ranking):
