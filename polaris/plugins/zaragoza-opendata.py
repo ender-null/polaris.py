@@ -114,7 +114,7 @@ class plugin(object):
             }
 
             data = send_request(url, params=params)
-            if 'error' in data:
+            if not data or 'error' in data:
                 return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
             text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (data.title.title(), data.id, data.bicisDisponibles, data.anclajesDisponibles)

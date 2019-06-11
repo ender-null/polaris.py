@@ -20,7 +20,7 @@ class plugin(object):
         if target and (int(target) == 0 or not (target in self.bot.users or target in self.bot.groups)):
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
-        if int(target) > 0:
+        if target and int(target) > 0:
             if target in self.bot.users:
                 if 'first_name' in self.bot.users[target] and self.bot.users[target].first_name:
                     user = self.bot.users[target].first_name

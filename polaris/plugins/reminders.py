@@ -26,7 +26,7 @@ class plugin(object):
         if delay:
             delaytime = delay[:-1]
             unit = delay[-1:]
-            if not is_int(delaytime) or is_int(unit):
+            if not is_int(delaytime) or is_int(unit) or not self.to_seconds(delaytime, unit):
                 return self.bot.send_message(m, self.bot.trans.plugins.reminders.strings.wrongdelay)
 
         alarm = time() + self.to_seconds(delaytime, unit)
