@@ -1,4 +1,4 @@
-from polaris.utils import send_request, is_command
+from polaris.utils import send_request, is_command, has_tag
 
 
 class plugin(object):
@@ -10,6 +10,9 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
+        if has_tag(self.bot, m.conversation.id, 'noanimals'):
+            return
+
         if is_command(self, 1, m.content):
             url = 'http://thecatapi.com/api/images/get'
             params = {

@@ -45,9 +45,9 @@ class plugin(object):
 
                 text = self.bot.trans.plugins.info.strings.group_info % (group, target, self.bot.groups[target].messages)
 
-            if gid in self.bot.tags:
+            if target in self.bot.tags:
                 text += '\n🏷 '
-                for tag in self.bot.tags[gid]:
+                for tag in self.bot.tags[target]:
                     text += tag + ', '
                 text = text[:-2]
 
