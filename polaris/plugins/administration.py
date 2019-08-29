@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name, init_if_empty, wait_until_received, set_data, delete_data
+from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name, init_if_empty, wait_until_received, set_data, delete_data, set_tag, has_tag
 from polaris.types import AutosaveDict
 from firebase_admin import db
 from re import findall, compile
@@ -17,6 +17,9 @@ class plugin(object):
         input = get_input(m)
         uid = str(m.sender.id)
         gid = str(m.conversation.id)
+
+        if m.sender.id != self.bot.config['owner'] and not is_trusted(self.bot, m.sender.id) and (has_tag(self.bot, m.conversation.id, 'spam') or has_tag(self.bot, m.sender.id, 'spam')):
+            return
 
         # List all administration commands. #
         if is_command(self, 1, m.content):

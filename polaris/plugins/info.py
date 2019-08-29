@@ -10,10 +10,8 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
-        input = get_input(m)
-
         gid = str(m.conversation.id)
-        target = get_target(self.bot, m, input)
+        target = get_target(self.bot, m, get_input(m))
 
         text = ''
 
@@ -51,7 +49,7 @@ class plugin(object):
                     text += tag + ', '
                 text = text[:-2]
 
-        if int(gid) < 0 and not input:
+        if int(gid) < 0 and not get_input(m):
             text += '\n\n'
             if gid in self.bot.groups:
                 if 'title' in self.bot.groups[gid] and self.bot.groups[gid].title:

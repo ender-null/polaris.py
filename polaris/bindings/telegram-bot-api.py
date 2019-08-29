@@ -53,6 +53,46 @@ class bindings(object):
                             extra['urls'] = []
                         extra['urls'].append(msg.text[entity.offset:entity.offset + entity.length])
 
+                    elif entity.type == 'text_link':
+                        if 'urls' not in extra:
+                            extra['urls'] = []
+                        extra['urls'].append(entity.url)
+
+                    elif entity.type == 'mention':
+                        if 'mentions' not in extra:
+                            extra['mentions'] = []
+                        extra['mentions'].append(msg.text[entity.offset:entity.offset + entity.length])
+
+                    elif entity.type == 'text_mention':
+                        if 'mentions' not in extra:
+                            extra['mentions'] = []
+                        extra['mentions'].append(entity.user.id)
+
+                    elif entity.type == 'hashtag':
+                        if 'hashtags' not in extra:
+                            extra['hashtags'] = []
+                        extra['hashtags'].append(msg.text[entity.offset:entity.offset + entity.length])
+
+                    elif entity.type == 'cashtag':
+                        if 'cashtags' not in extra:
+                            extra['cashtags'] = []
+                        extra['cashtags'].append(msg.text[entity.offset:entity.offset + entity.length])
+
+                    elif entity.type == 'bot_command':
+                        if 'commands' not in extra:
+                            extra['commands'] = []
+                        extra['commands'].append(msg.text[entity.offset:entity.offset + entity.length])
+
+                    elif entity.type == 'email':
+                        if 'emails' not in extra:
+                            extra['emails'] = []
+                        extra['emails'].append(msg.text[entity.offset:entity.offset + entity.length])
+
+                    elif entity.type == 'phone_number':
+                        if 'phone_numbers' not in extra:
+                            extra['phone_numbers'] = []
+                        extra['phone_numbers'].append(msg.text[entity.offset:entity.offset + entity.length])
+
         elif 'audio' in msg:
             type = 'audio'
             content = msg.audio.file_id

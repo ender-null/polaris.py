@@ -49,7 +49,7 @@ class plugin(object):
                 text = self.bot.trans.plugins.world_of_warcraft.strings.character_set % (character.title(), realm.title())
                 return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
 
-            url = 'https://%s.api.battle.net/wow/character/%s/%s' % (region, realm, character)
+            url = 'https://%s.api.blizzard.com/wow/character/%s/%s' % (region, realm, character)
             params = {
                 'fields': 'guild,progression,items',
                 'locale': locale,
@@ -111,7 +111,7 @@ class plugin(object):
         if self.bot.config.translation != 'default':
             locale = 'es_ES'
 
-        url = 'https://%s.api.battle.net/wow/data/character/classes' % region
+        url = 'https://%s.api.blizzard.com/wow/data/character/classes' % region
         params = {
             'locale': locale,
             'apikey': self.bot.config.api_keys.battle_net
@@ -128,7 +128,7 @@ class plugin(object):
         if self.bot.config.translation != 'default':
             locale = 'es_ES'
 
-        url = 'https://%s.api.battle.net/wow/data/character/races' % region
+        url = 'https://%s.api.blizzard.com/wow/data/character/races' % region
         params = {
             'locale': locale,
             'apikey': self.bot.config.api_keys.battle_net

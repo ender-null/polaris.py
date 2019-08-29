@@ -1,5 +1,5 @@
 from polaris.types import AutosaveDict, Message, Conversation
-from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received, has_tag, set_input
+from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received, has_tag, set_input, is_trusted
 from multiprocessing import Process, Queue
 from threading import Thread
 from time import sleep, time
@@ -131,27 +131,33 @@ class Bot(object):
 
     def on_message_receive(self, msg):
         try:
-            if msg.content == None or (msg.type != 'inline_query' and msg.date < time() - 60):
+            ignore_message = False
+            if msg.content == None or (msg.type != 'inline_query' and msg.date < time() - 60 * 5):
                 return
 
-            if msg.sender.id != self.config['owner'] and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted')):
-                return
+            if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id) and (has_tag(self, msg.conversation.id, 'spam') or has_tag(self, msg.sender.id, 'spam')):
+                ignore_message = True
+                self.send_message(msg, self.trans.errors.spammer_detected, extra={'format': 'HTML'})
+
+            if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id) and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted')):
+                ignore_message = True
 
             step = get_step(self, msg.conversation.id)
 
             if step:
-                for plugin in self.plugins:
-                    if get_plugin_name(plugin) == step.plugin and hasattr(plugin, 'steps'):
-                        if msg.content.startswith('/cancel'):
-                            plugin.steps(msg, -1)
-                            cancel_steps(self, msg.conversation.id)
+                if not ignore_message:
+                    for plugin in self.plugins:
+                        if get_plugin_name(plugin) == step.plugin and hasattr(plugin, 'steps'):
+                            if msg.content.startswith('/cancel'):
+                                plugin.steps(msg, -1)
+                                cancel_steps(self, msg.conversation.id)
 
-                        if msg.content.startswith('/done'):
-                            plugin.steps(msg, 0)
-                            cancel_steps(self, msg.conversation.id)
+                            if msg.content.startswith('/done'):
+                                plugin.steps(msg, 0)
+                                cancel_steps(self, msg.conversation.id)
 
-                        else:
-                            plugin.steps(msg, step['step'])
+                            else:
+                                plugin.steps(msg, step['step'])
 
             else:
                 for plugin in self.plugins:
@@ -160,32 +166,33 @@ class Bot(object):
                         plugin.always(msg)
 
                     # If no query show help #
-                    if msg.type == 'inline_query':
+                    if msg.type == 'inline_query' and not ignore_message:
                         if msg.content == '':
                             msg.content = 'help'
 
-                    # Check if any command of a plugin matches. #
-                    for command in plugin.commands:
-                        if 'parameters' not in command:
-                            command['parameters'] = None
+                    if hasattr(plugin, 'commands') and not ignore_message:
+                        # Check if any command of a plugin matches. #
+                        for command in plugin.commands:
+                            if 'parameters' not in command:
+                                command['parameters'] = None
 
-                        if 'command' in command:
-                            if self.check_trigger(command['command'], command['parameters'], msg, plugin):
-                                break
-                            if 'keep_default' in command and command['keep_default']:
-                                if self.check_trigger(command['command'], command['parameters'], msg, plugin, False, True):
+                            if 'command' in command:
+                                if self.check_trigger(command['command'], command['parameters'], msg, plugin):
+                                    break
+                                if 'keep_default' in command and command['keep_default']:
+                                    if self.check_trigger(command['command'], command['parameters'], msg, plugin, False, True):
+                                        break
+
+                            if 'friendly' in command and not has_tag(self, msg.sender.id, 'noreactions') and not has_tag(self, msg.conversation.id, 'noreactions'):
+                                if self.check_trigger(command['friendly'], command['parameters'], msg, plugin, True):
                                     break
 
-                        if 'friendly' in command and not has_tag(self, msg.sender.id, 'noreactions') and not has_tag(self, msg.conversation.id, 'noreactions'):
-                            if self.check_trigger(command['friendly'], command['parameters'], msg, plugin, True):
-                                break
-
-                        if 'shortcut' in command:
-                            if self.check_trigger(command['shortcut'], command['parameters'], msg, plugin):
-                                break
-                            if 'keep_default' in command and command['keep_default']:
-                                if self.check_trigger(command['shortcut'], command['parameters'], msg, plugin, False, True):
+                            if 'shortcut' in command:
+                                if self.check_trigger(command['shortcut'], command['parameters'], msg, plugin):
                                     break
+                                if 'keep_default' in command and command['keep_default']:
+                                    if self.check_trigger(command['shortcut'], command['parameters'], msg, plugin, False, True):
+                                        break
 
         except KeyboardInterrupt:
             pass
@@ -261,8 +268,7 @@ class Bot(object):
 
 
     def forward_message(self, msg, id):
-        self.outbox.put(Message(None, msg.conversation, self.info, msg.content, 'forward',
-                                extra={"message": msg.id, "conversation": id}))
+        self.outbox.put(Message(None, msg.conversation, self.info, msg.content, 'forward', extra={"message": msg.id, "conversation": id}))
 
     def answer_inline_query(self, msg, results, extra = {}):
         self.outbox.put(Message(msg.id, msg.conversation, self.info, json.dumps(results), 'inline_results', extra))

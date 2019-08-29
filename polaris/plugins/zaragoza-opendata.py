@@ -50,7 +50,7 @@ class plugin(object):
             data = send_request(url, params=params)
 
             if not data or 'errors' in data:
-                if 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
+                if data and 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
                     return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
                 else:
                     return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
@@ -85,7 +85,7 @@ class plugin(object):
             data = send_request(url, params=params)
 
             if not data or 'errors' in data:
-                if 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
+                if data and 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
                     return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
                 else:
                     return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
@@ -114,8 +114,12 @@ class plugin(object):
             }
 
             data = send_request(url, params=params)
-            if not data or 'error' in data:
-                return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+
+            if not data or 'errors' in data:
+                if data and 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
+                    return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+                else:
+                    return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (data.title.title(), data.id, data.bicisDisponibles, data.anclajesDisponibles)
             
