@@ -287,3 +287,6 @@ class bindings(object):
 
     def conversation_info(self, conversation_id):
         pass
+
+    def get_chat_administrators(self, conversation_id):
+        pass

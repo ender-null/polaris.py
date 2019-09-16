@@ -1,4 +1,4 @@
-from polaris.types import AutosaveDict, Message, Conversation
+from polaris.types import AutosaveDict, Message, Conversation, User
 from polaris.utils import set_logger, is_int, load_plugin_list, get_step, cancel_steps, get_plugin_name, init_if_empty, catch_exception, wait_until_received, has_tag, set_input, is_trusted
 from multiprocessing import Process, Queue
 from threading import Thread
@@ -135,11 +135,11 @@ class Bot(object):
             if msg.content == None or (msg.type != 'inline_query' and msg.date < time() - 60 * 5):
                 return
 
-            if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id) and (has_tag(self, msg.conversation.id, 'spam') or has_tag(self, msg.sender.id, 'spam')):
+            if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id, msg) and (has_tag(self, msg.conversation.id, 'spam') or has_tag(self, msg.sender.id, 'spam')):
                 ignore_message = True
                 self.send_message(msg, self.trans.errors.spammer_detected, extra={'format': 'HTML'})
 
-            if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id) and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted')):
+            if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id, msg) and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted')):
                 ignore_message = True
 
             step = get_step(self, msg.conversation.id)
@@ -277,6 +277,21 @@ class Bot(object):
     # THESE METHODS DO DIRECT ACTIONS #
     def get_file(self, file_id):
         return self.bindings.get_file(file_id)
+
+    
+    def get_chat_admins(self, conversation_id):
+        chat_administrators = self.bindings.get_chat_administrators(conversation_id)
+        admins = []
+        if chat_administrators.ok:
+            for member in chat_administrators.result:
+                user = User(member.user.id, member.user.first_name)
+                user.is_bot = member.user.is_bot
+                if 'last_name' in member.user:
+                    user.last_name = member.user.last_name
+                if 'username' in member.user:
+                    user.username = member.user.username
+                admins.append(user)
+        return admins
 
 
     def invite_user(self, msg, user_id):

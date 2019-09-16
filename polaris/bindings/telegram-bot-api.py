@@ -18,7 +18,7 @@ class bindings(object):
     def get_me(self):
         r = self.api_request('getMe')
         if r:
-            return User(r.result.id, r.result.first_name, None, r.result.username)
+            return User(r.result.id, r.result.first_name, None, r.result.username, r.result.is_bot)
 
     def convert_message(self, msg):
         id = msg.message_id
@@ -35,6 +35,9 @@ class bindings(object):
 
             if 'username' in msg['from']:
                 sender.username = msg['from'].username
+
+            if 'is_bot' in msg['from']:
+                sender.is_bot = msg['from'].is_bot
 
         else:
             sender = Conversation(msg['chat'].id, msg['chat'].title)
@@ -207,6 +210,28 @@ class bindings(object):
                 extra['address'] = msg.venue.address
             if 'foursquare_id' in msg.venue:
                 extra['foursquare_id'] = msg.venue.foursquare_id
+
+        elif 'video_note' in msg:
+            type = 'video_note'
+            content = msg.video_note.file_id
+            if 'length' in msg.video_note:
+                extra['length'] = msg.video_note.length
+            if 'duration' in msg.video_note:
+                extra['duration'] = msg.video_note.duration
+            if 'thumb' in msg.video_note:
+                extra['thumb'] = msg.video_note.thumb
+            if 'file_size' in msg.video_note:
+                extra['file_size'] = msg.video_note.file_size
+
+        elif 'poll' in msg:
+            type = 'poll'
+            content = msg.poll.question
+            if 'id' in msg.poll:
+                extra['poll_id'] = msg.poll.id
+            if 'options' in msg.poll:
+                extra['poll_options'] = msg.poll.options
+            if 'is_closed' in msg.poll:
+                extra['poll_is_closed'] = msg.poll.is_closed
 
         elif 'new_chat_member' in msg:
             type = 'notification'
@@ -632,3 +657,9 @@ class bindings(object):
             "chat_id": conversation_id
         }
         return self.api_request('getChat', params)
+
+    def get_chat_administrators(self, conversation_id):
+        params = {
+            "chat_id": conversation_id
+        }
+        return self.api_request('getChatAdministrators', params)

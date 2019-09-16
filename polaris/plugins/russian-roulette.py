@@ -1,4 +1,4 @@
-from polaris.utils import has_tag, set_tag, del_tag
+from polaris.utils import has_tag, set_tag, del_tag, im_group_admin
 from random import randint
 
 class plugin(object):
@@ -30,12 +30,16 @@ class plugin(object):
             del_tag(self.bot, gid, 'roulette:?')
             set_tag(self.bot, gid, 'roulette:6')
 
-            res = self.bot.kick_user(m, uid)
+            if im_group_admin(self.bot, m):
+                res = self.bot.kick_user(m, uid)
 
-            if not res:
-                self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.cant_bang % m.sender.first_name, extra={'format': 'HTML'})
+                if not res:
+                    self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.cant_bang % m.sender.first_name, extra={'format': 'HTML'})
+                else:
+                    self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.bang % m.sender.first_name, extra={'format': 'HTML'})
+
             else:
-                self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.bang % m.sender.first_name, extra={'format': 'HTML'})
+                self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.cant_bang % m.sender.first_name, extra={'format': 'HTML'})
 
         else:
             del_tag(self.bot, gid, 'roulette:%s' % bullets)

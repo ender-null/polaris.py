@@ -1,7 +1,6 @@
 from polaris.utils import is_command, wait_until_received, set_data, catch_exception, has_tag, time_in_range
 from polaris.types import AutosaveDict
 from firebase_admin import db
-from firebase_admin.db import ApiCallError
 from datetime import datetime, time
 from re import findall
 from DictObject import DictObject

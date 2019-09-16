@@ -1,7 +1,6 @@
 from polaris.utils import get_input, is_command, init_if_empty, wait_until_received, set_data, delete_data, has_tag
 from polaris.types import AutosaveDict
 from firebase_admin import db
-from firebase_admin.db import ApiCallError
 from re import findall, compile, IGNORECASE
 
 class plugin(object):

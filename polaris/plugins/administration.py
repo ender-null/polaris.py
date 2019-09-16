@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name, init_if_empty, wait_until_received, set_data, delete_data, set_tag, has_tag
+from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name, init_if_empty, wait_until_received, set_data, delete_data, set_tag, has_tag, im_group_admin
 from polaris.types import AutosaveDict
 from firebase_admin import db
 from re import findall, compile
@@ -18,7 +18,7 @@ class plugin(object):
         uid = str(m.sender.id)
         gid = str(m.conversation.id)
 
-        if m.sender.id != self.bot.config['owner'] and not is_trusted(self.bot, m.sender.id) and (has_tag(self.bot, m.conversation.id, 'spam') or has_tag(self.bot, m.sender.id, 'spam')):
+        if m.sender.id != self.bot.config['owner'] and not is_trusted(self.bot, m.sender.id, m) and (has_tag(self.bot, m.conversation.id, 'spam') or has_tag(self.bot, m.sender.id, 'spam')):
             return
 
         # List all administration commands. #
@@ -191,14 +191,17 @@ class plugin(object):
             else:
                 target = m.sender.id
 
-            res = self.bot.kick_user(m, target)
-            self.bot.unban_user(m, target)
-            if res is None:
-                return self.bot.send_message(m, self.bot.trans.errors.admin_required, extra={'format': 'HTML'})
-            elif not res:
-                return self.bot.send_message(m, self.bot.trans.errors.failed, extra={'format': 'HTML'})
+            if im_group_admin(self.bot, m):
+                res = self.bot.kick_user(m, target)
+                self.bot.unban_user(m, target)
+                if res is None:
+                    return self.bot.send_message(m, self.bot.trans.errors.admin_required, extra={'format': 'HTML'})
+                elif not res:
+                    return self.bot.send_message(m, self.bot.trans.errors.failed, extra={'format': 'HTML'})
+                else:
+                    return self.bot.send_message(m, '<pre>An enemy has been slain.</pre>', extra={'format': 'HTML'})
             else:
-                return self.bot.send_message(m, '<pre>An enemy has been slain.</pre>', extra={'format': 'HTML'})
+                return self.bot.send_message(m, self.bot.trans.errors.admin_required, extra={'format': 'HTML'})
 
             return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
 
@@ -348,6 +351,8 @@ class plugin(object):
                     self.bot.users[uid].last_name = m.sender.last_name
                 if hasattr(m.sender, 'username'):
                     self.bot.users[uid].username = m.sender.username
+                if hasattr(m.sender, 'is_bot'):
+                    self.bot.users[uid].is_bot = m.sender.is_bot
                 self.bot.users[uid].messages += 1
 
             else:

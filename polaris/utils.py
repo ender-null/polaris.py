@@ -189,8 +189,19 @@ def del_tag(bot, target, tag):
         set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
 
 
+def is_group_admin(bot, uid, m = None):
+    if m and m.conversation.id < 0:
+        chat_admins = bot.get_chat_admins(m.conversation.id)
+        for admin in chat_admins:
+            if uid == str(admin.id):
+                return True
 
-def is_admin(bot, uid):
+    return False
+
+def im_group_admin(bot, m):
+    return is_group_admin(bot, str(bot.info.id), m)
+
+def is_admin(bot, uid, m = None):
     if not isinstance(uid, str):
         uid = str(uid)
 
@@ -200,15 +211,16 @@ def is_admin(bot, uid):
     elif has_tag(bot, uid, 'admin') or has_tag(bot, uid, 'owner'):
         return True
 
-    else:
-        return False
+    elif is_group_admin(bot, uid, m):
+        return True
 
+    return False
 
-def is_trusted(bot, uid):
+def is_trusted(bot, uid, m = None):
     if not isinstance(uid, str):
         uid = str(uid)
 
-    if is_admin(bot, uid) or has_tag(bot, uid, 'trusted'):
+    if is_admin(bot, uid, m) or has_tag(bot, uid, 'trusted'):
         return True
 
     else:
@@ -342,6 +354,8 @@ def get_coords(input, bot=None):
     }
 
     data = send_request(url, params=params)
+    if data.status != 'OK':
+        logging.info(data)
 
     if data and len(data.results) > 0:
         locality = data.results[0].address_components[0].long_name
