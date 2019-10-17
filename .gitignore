@@ -65,3 +65,5 @@ bots/*.json
 polaris/data/
 database.db
 serviceAccountKey.json
+*.session
+*.session-journal

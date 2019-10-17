@@ -324,9 +324,6 @@ class plugin(object):
                     return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
     def always(self, m):
-        if str(m.sender.id).startswith('-100'):
-            return
-
         # Update group data #
         gid = str(m.conversation.id)
         if m.conversation.id < 0:
@@ -343,6 +340,9 @@ class plugin(object):
                 set_data('groups/%s/%s' % (self.bot.name, gid), self.bot.groups[gid])
 
         # Update user data #
+        if str(m.sender.id).startswith('-100'):
+            return
+
         uid = str(m.sender.id)
         if self.bot.users:
             if uid in self.bot.users:

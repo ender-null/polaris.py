@@ -135,9 +135,9 @@ class Bot(object):
             if msg.content == None or (msg.type != 'inline_query' and msg.date < time() - 60 * 5):
                 return
 
-            if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id, msg) and (has_tag(self, msg.conversation.id, 'spam') or has_tag(self, msg.sender.id, 'spam')):
-                ignore_message = True
-                self.send_message(msg, self.trans.errors.spammer_detected, extra={'format': 'HTML'})
+            # if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id, msg) and (has_tag(self, msg.conversation.id, 'spam') or has_tag(self, msg.sender.id, 'spam')):
+            #     ignore_message = True
+            #     self.send_message(msg, self.trans.errors.spammer_detected, extra={'format': 'HTML'})
 
             if msg.sender.id != self.config['owner'] and not is_trusted(self, msg.sender.id, msg) and (has_tag(self, msg.conversation.id, 'muted') or has_tag(self, msg.sender.id, 'muted')):
                 ignore_message = True

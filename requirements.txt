@@ -24,6 +24,7 @@ msgpack==0.6.1
 oauthlib==3.1.0
 ordereddict==1.1
 protobuf==3.9.1
+pyaes==1.6.1
 pyasn1==0.4.7
 pyasn1-modules==0.2.6
 pytg==0.4.10
@@ -36,5 +37,6 @@ rsa==4.0
 six==1.12.0
 soupsieve==1.9.3
 systemd==0.16.1
+Telethon==1.10.4
 uritemplate==3.0.0
 urllib3==1.25.3

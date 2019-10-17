@@ -36,5 +36,8 @@ class plugin(object):
     def format_text(self, text, message = None):
         text = text.replace('BOT', self.bot.info.username.lower().replace('bot', ''))
         if message:
-            text = text.replace('USER', message.sender.first_name)
+            if hasattr(message.sender, 'first_name'):
+                text = text.replace('USER', message.sender.first_name)
+            else:
+                text = text.replace('USER', message.sender.title)
         return text
