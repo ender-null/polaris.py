@@ -13,7 +13,7 @@ class plugin(object):
         if str(m.sender.id).startswith('-100'):
             return
 
-        if has_tag(self.bot, m.sender.id, 'spam'):
+        if has_tag(self.bot, m.sender.id, 'spam') and self.is_trusted_group(m):
             if not is_admin(self.bot, m.sender.id, m):
                 self.kick_spammer(m)
             elif is_trusted(self.bot, m.sender.id, m):
@@ -38,6 +38,13 @@ class plugin(object):
                     break
             if not trusted_group and not is_admin(self.bot, m.sender.id, m):
                 self.kick_spammer(m)
+
+    def is_trusted_group(self, m):
+        for gid, attr in self.bot.administration.items():
+            if str(m.receiver.id) == gid:
+                return True
+
+        return False
 
     def kick_myself(self, m):
         self.bot.kick_user(m, self.bot.info.id)
