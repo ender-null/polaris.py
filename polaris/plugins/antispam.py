@@ -41,7 +41,7 @@ class plugin(object):
 
     def is_trusted_group(self, m):
         for gid, attr in self.bot.administration.items():
-            if str(m.receiver.id) == gid:
+            if str(m.conversation.id) == gid:
                 return True
 
         return False
