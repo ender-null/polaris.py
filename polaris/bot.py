@@ -278,11 +278,11 @@ class Bot(object):
     def get_file(self, file_id):
         return self.bindings.get_file(file_id)
 
-    
+
     def get_chat_admins(self, conversation_id):
         chat_administrators = self.bindings.get_chat_administrators(conversation_id)
         admins = []
-        if chat_administrators.ok:
+        if chat_administrators and chat_administrators.ok:
             for member in chat_administrators.result:
                 user = User(member.user.id, member.user.first_name)
                 user.is_bot = member.user.is_bot
