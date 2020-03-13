@@ -227,6 +227,8 @@ class Bot(object):
                         trigger += '$'
                     elif parameters and ' ' in message.content:
                         trigger += ' '
+                elif command.startswith('/'):
+                    return False
 
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger, flags=re.IGNORECASE).search(message.content):
