@@ -36,8 +36,10 @@ class plugin(object):
                 text = self.bot.trans.plugins.coronavirus.strings.input_result % (country.title(), cases, deaths, recovered)
             else:
                 text = self.bot.trans.plugins.coronavirus.strings.result % (cases, deaths, recovered)
+                
+            text += '\n\n<a href="%s">%s</a>' % (url, self.bot.trans.plugins.coronavirus.strings.source)
 
-            self.bot.send_message(m, text, extra={'format': 'HTML'})
+            self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
 
         except Exception as e:
-            self.bot.send_alert(e)
+            self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})

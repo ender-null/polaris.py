@@ -20,7 +20,7 @@ class plugin(object):
         if is_command(self, 1, m.content):
             pins = []
             for pin in self.bot.pins:
-                if self.bot.pins[pin].creator == m.sender.id:
+                if 'creator' in self.bot.pins[pin] and self.bot.pins[pin].creator == m.sender.id:
                     pins.append(pin)
 
             if len(pins) > 0:
