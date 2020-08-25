@@ -1,7 +1,13 @@
-from polaris.utils import get_input, is_command, first_word, all_but_first_word, is_mod, is_trusted, is_int, set_step, cancel_steps, get_plugin_name, init_if_empty, wait_until_received, set_data, delete_data, set_tag, has_tag, im_group_admin
-from polaris.types import AutosaveDict
+from re import compile, findall
+
 from firebase_admin import db
-from re import findall, compile
+
+from polaris.types import AutosaveDict
+from polaris.utils import (all_but_first_word, cancel_steps, delete_data,
+                           first_word, get_input, get_plugin_name, has_tag,
+                           im_group_admin, init_if_empty, is_command, is_int,
+                           is_mod, is_trusted, set_data, set_step, set_tag,
+                           wait_until_received)
 
 
 class plugin(object):
@@ -56,7 +62,8 @@ class plugin(object):
                 for gid, attr in self.bot.administration.items():
                     if 'public' in self.bot.administration[gid] and self.bot.administration[gid].public:
                         if 'link' in self.bot.administration[gid] and self.bot.config.bindings != 'telegram-cli':
-                            text += '\n • <a href="%s">%s</a>' % (self.bot.administration[gid].link, self.bot.groups[gid].title)
+                            text += '\n • <a href="%s">%s</a>' % (
+                                self.bot.administration[gid].link, self.bot.groups[gid].title)
                         else:
                             text += '\n • %s' % self.bot.groups[gid].title
 
@@ -77,7 +84,7 @@ class plugin(object):
             for id in self.bot.administration:
                 if (input in self.bot.administration
                     or compile('^' + input.lower() + '$').search(self.bot.administration[id].alias.lower())
-                    or compile('^' + input.lower() + '$').search(self.bot.groups[id].title.lower())):
+                        or compile('^' + input.lower() + '$').search(self.bot.groups[id].title.lower())):
                     gid_to_join = id
                     break
 
@@ -227,7 +234,8 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if not input:
-                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_to_add % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_to_add %
+                                      m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
                 if not gid in self.bot.administration:
                     self.bot.administration[gid] = {
                         'alias': None,
@@ -236,7 +244,8 @@ class plugin(object):
                         'rules': [],
                         'public': False
                     }
-                    set_data('administration/%s/%s' % (self.bot.name, gid), self.bot.administration[gid])
+                    set_data('administration/%s/%s' %
+                             (self.bot.name, gid), self.bot.administration[gid])
                 set_step(self.bot, m.conversation.id, get_plugin_name(self), 1)
             else:
                 if first_word(input) == 'add':
@@ -248,7 +257,8 @@ class plugin(object):
                             'rules': [],
                             'public': False
                         }
-                        set_data('administration/%s/%s' % (self.bot.name, gid), self.bot.administration[gid])
+                        set_data('administration/%s/%s' %
+                                 (self.bot.name, gid), self.bot.administration[gid])
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.added % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.already_added % m.conversation.title, extra={'format': 'HTML'})
@@ -256,39 +266,48 @@ class plugin(object):
                 elif first_word(input) == 'remove':
                     if gid in self.bot.administration:
                         del self.bot.administration[gid]
-                        delete_data('administration/%s/%s' % (self.bot.name, gid))
+                        delete_data('administration/%s/%s' %
+                                    (self.bot.name, gid))
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.removed % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
 
                 elif first_word(input) == 'alias':
                     if gid in self.bot.administration:
-                        self.bot.administration[gid].alias = all_but_first_word(input).lower()
-                        set_data('administration/%s/%s/alias' % (self.bot.name, gid), self.bot.administration[gid].alias)
+                        self.bot.administration[gid].alias = all_but_first_word(
+                            input).lower()
+                        set_data('administration/%s/%s/alias' %
+                                 (self.bot.name, gid), self.bot.administration[gid].alias)
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
 
                 elif first_word(input) == 'motd':
                     if gid in self.bot.administration:
-                        self.bot.administration[gid].motd = all_but_first_word(input)
-                        set_data('administration/%s/%s/motd' % (self.bot.name, gid), self.bot.administration[gid].motd)
+                        self.bot.administration[gid].motd = all_but_first_word(
+                            input)
+                        set_data('administration/%s/%s/motd' %
+                                 (self.bot.name, gid), self.bot.administration[gid].motd)
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
 
                 elif first_word(input) == 'link':
                     if gid in self.bot.administration:
-                        self.bot.administration[gid].link = all_but_first_word(input)
-                        set_data('administration/%s/%s/link' % (self.bot.name, gid), self.bot.administration[gid].link)
+                        self.bot.administration[gid].link = all_but_first_word(
+                            input)
+                        set_data('administration/%s/%s/link' %
+                                 (self.bot.name, gid), self.bot.administration[gid].link)
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
 
                 elif first_word(input) == 'rules':
                     if gid in self.bot.administration:
-                        self.bot.administration[gid].rules = all_but_first_word(all_but_first_word(input).split('\n')[0:])
-                        set_data('administration/%s/%s/rules' % (self.bot.name, gid), self.bot.administration[gid].rules)
+                        self.bot.administration[gid].rules = all_but_first_word(
+                            all_but_first_word(input).split('\n')[0:])
+                        set_data('administration/%s/%s/rules' %
+                                 (self.bot.name, gid), self.bot.administration[gid].rules)
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
@@ -303,8 +322,10 @@ class plugin(object):
                                 i = 0
                         except:
                             return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
-                        self.bot.administration[gid].rules.insert(i, all_but_first_word(all_but_first_word(input)))
-                        set_data('administration/%s/%s/rules' % (self.bot.name, gid), self.bot.administration[gid].rules)
+                        self.bot.administration[gid].rules.insert(
+                            i, all_but_first_word(all_but_first_word(input)))
+                        set_data('administration/%s/%s/rules' %
+                                 (self.bot.name, gid), self.bot.administration[gid].rules)
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
@@ -315,7 +336,8 @@ class plugin(object):
                             self.bot.administration[gid].public = True
                         else:
                             self.bot.administration[gid].public = False
-                        set_data('administration/%s/%s/public' % (self.bot.name, gid), self.bot.administration[gid].public)
+                        set_data('administration/%s/%s/public' %
+                                 (self.bot.name, gid), self.bot.administration[gid].public)
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.set % m.conversation.title, extra={'format': 'HTML'})
                     else:
                         return self.bot.send_message(m, self.bot.trans.plugins.administration.strings.not_added % m.conversation.title, extra={'format': 'HTML'})
@@ -333,7 +355,8 @@ class plugin(object):
 
             elif first_word(input) == 'photo':
                 if m.reply and m.reply.type == 'photo':
-                    return self.bot.send_message(m, 'setChatPhoto', 'system', extra={'photo': m.reply.content})
+                    photo = self.bot.get_file(m.reply.content, True)
+                    return self.bot.send_message(m, 'setChatPhoto', 'system', extra={'photo': photo})
 
             elif first_word(input) == 'promote':
                 if m.reply:
@@ -350,8 +373,7 @@ class plugin(object):
                 else:
                     target = m.sender.id
 
-                return self.bot.send_message(m, 'promoteChatMember', 'system', extra={'user_id': target, 'custom_title': all_but_first_word(input)})
-
+                return self.bot.send_message(m, 'setChatAdministratorCustomTitle', 'system', extra={'user_id': target, 'custom_title': all_but_first_word(input)})
 
             elif first_word(input) == 'unban':
                 if m.reply:
@@ -376,6 +398,12 @@ class plugin(object):
             elif first_word(input) == 'unpin':
                 return self.bot.send_message(m, 'unpinChatMessage', 'system')
 
+            elif first_word(input) == 'delete':
+                if m.reply:
+                    self.bot.send_message(m, 'deleteMessage', 'system', extra={
+                                          'message_id':  m.id})
+                    return self.bot.send_message(m, 'deleteMessage', 'system', extra={'message_id': m.reply.id})
+
             elif first_word(input) == 'leave':
                 return self.bot.send_message(m, 'leaveChat', 'system')
 
@@ -391,7 +419,6 @@ class plugin(object):
                 ]
                 return self.bot.send_message(m, ', '.join(valid_values))
 
-
     def always(self, m):
         # Update group data #
         gid = str(m.conversation.id)
@@ -406,7 +433,8 @@ class plugin(object):
                         "title": m.conversation.title,
                         "messages": 1
                     }
-                set_data('groups/%s/%s' % (self.bot.name, gid), self.bot.groups[gid])
+                set_data('groups/%s/%s' %
+                         (self.bot.name, gid), self.bot.groups[gid])
 
         # Update user data #
         if str(m.sender.id).startswith('-100'):
@@ -440,63 +468,76 @@ class plugin(object):
             if from_id in self.bot.administration:
                 self.bot.administration[to_id] = self.bot.administration[from_id]
                 del self.bot.administration[from_id]
-                set_data('administration/%s/%s' % (self.bot.name, to_id), self.bot.administration[to_id])
+                set_data('administration/%s/%s' %
+                         (self.bot.name, to_id), self.bot.administration[to_id])
                 delete_data('administration/%s/%s' % (self.bot.name, from_id))
 
             self.bot.groups[to_id] = self.bot.groups[from_id]
             del self.bot.groups[from_id]
-            set_data('groups/%s/%s' % (self.bot.name, to_id), self.bot.groups[to_id])
+            set_data('groups/%s/%s' %
+                     (self.bot.name, to_id), self.bot.groups[to_id])
             delete_data('groups/%s/%s' % (self.bot.name, from_id))
-
 
     def steps(self, m, step):
         gid = str(m.conversation.id)
 
         if step == -1:
-            self.bot.send_message(m, self.bot.trans.plugins.administration.strings.cancel % m.conversation.title, extra={'format': 'HTML'})
+            self.bot.send_message(m, self.bot.trans.plugins.administration.strings.cancel %
+                                  m.conversation.title, extra={'format': 'HTML'})
             cancel_steps(self.bot, m.conversation.id)
 
         if step == 0:
-            self.bot.send_message(m, self.bot.trans.plugins.administration.strings.done % m.conversation.title, extra={'format': 'HTML'})
+            self.bot.send_message(m, self.bot.trans.plugins.administration.strings.done %
+                                  m.conversation.title, extra={'format': 'HTML'})
             cancel_steps(self.bot, m.conversation.id)
 
         elif step == 1:
             if self.bot.trans.plugins.administration.strings.yes.lower() in m.content.lower():
                 set_step(self.bot, m.conversation.id, get_plugin_name(self), 2)
                 if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
-                    self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_link % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+                    self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_link %
+                                          m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
 
             else:
                 cancel_steps(self.bot, m.conversation.id)
-                self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
+                self.bot.send_message(
+                    m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
 
         elif step == 2:
             set_step(self.bot, m.conversation.id, get_plugin_name(self), 3)
             if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
                 self.bot.administration[gid].link = m.content
-                set_data('administration/%s/%s/link' % (self.bot.name, gid), self.bot.administration[gid].link)
-                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_alias % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+                set_data('administration/%s/%s/link' %
+                         (self.bot.name, gid), self.bot.administration[gid].link)
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_alias %
+                                      m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
 
         elif step == 3:
             set_step(self.bot, m.conversation.id, get_plugin_name(self), 4)
             if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
                 self.bot.administration[gid].alias = m.content.lower()
-                set_data('administration/%s/%s/alias' % (self.bot.name, gid), self.bot.administration[gid].alias)
-                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_rules % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+                set_data('administration/%s/%s/alias' %
+                         (self.bot.name, gid), self.bot.administration[gid].alias)
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_rules %
+                                      m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
 
         elif step == 4:
             set_step(self.bot, m.conversation.id, get_plugin_name(self), 5)
             if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
                 self.bot.administration[gid].rules = m.content.split('\n')
-                set_data('administration/%s/%s/rules' % (self.bot.name, gid), self.bot.administration[gid].rules)
-                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_motd % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+                set_data('administration/%s/%s/rules' %
+                         (self.bot.name, gid), self.bot.administration[gid].rules)
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_motd %
+                                      m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
 
         elif step == 5:
             set_step(self.bot, m.conversation.id, get_plugin_name(self), 6)
             if not m.content.startswith('/cancel') and not m.content.startswith('/done'):
                 self.bot.administration[gid].motd = m.content
-                set_data('administration/%s/%s/motd' % (self.bot.name, gid), self.bot.administration[gid].motd)
-                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_public % m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
+                set_data('administration/%s/%s/motd' %
+                         (self.bot.name, gid), self.bot.administration[gid].motd)
+                self.bot.send_message(m, self.bot.trans.plugins.administration.strings.ask_public %
+                                      m.conversation.title, extra={'format': 'HTML', 'force_reply': True})
 
         elif step == 6:
             set_step(self.bot, m.conversation.id, get_plugin_name(self), -1)
@@ -505,4 +546,5 @@ class plugin(object):
                     self.bot.administration[gid].public = True
                 else:
                     self.bot.administration[gid].public = False
-                set_data('administration/%s/%s/public' % (self.bot.name, gid), self.bot.administration[gid].public)
+                set_data('administration/%s/%s/public' %
+                         (self.bot.name, gid), self.bot.administration[gid].public)

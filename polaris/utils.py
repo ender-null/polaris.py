@@ -1,11 +1,21 @@
-from polaris.types import json2obj
+import json
+import logging
+import mimetypes
+import os
+import re
+import subprocess
+import tempfile
+import traceback
 from html.parser import HTMLParser
-from DictObject import DictObject
-from polaris.types import AutosaveDict
 from re import compile
 from time import sleep
+
+import magic
+import requests
+from DictObject import DictObject
 from firebase_admin import db
-import logging, traceback, requests, json, magic, mimetypes, tempfile, os, subprocess, re
+
+from polaris.types import AutosaveDict, json2obj
 
 
 def set_input(message, trigger):

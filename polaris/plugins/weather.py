@@ -1,6 +1,11 @@
-from polaris.utils import get_input, is_command, get_coords, get_streetview, send_request, download, remove_html
-from DictObject import DictObject
 import logging
+
+from DictObject import DictObject
+
+from polaris.utils import (catch_exception, download, get_coords, get_input,
+                           get_streetview, is_command, remove_html,
+                           send_request)
+
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -16,7 +21,7 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         status, values = get_coords(input, self.bot)
-        
+
         if status == 'ZERO_RESULTS' or status == 'INVALID_REQUEST':
             return self.bot.send_message(m, self.bot.trans.errors.api_limit_exceeded, extra={'format': 'HTML'})
         elif status == 'OVER_DAILY_LIMIT':
@@ -40,7 +45,8 @@ class plugin(object):
         if not data or data.cod != 200:
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
-        title = self.bot.trans.plugins.weather.strings.title % (locality, country)
+        title = self.bot.trans.plugins.weather.strings.title % (
+            locality, country)
         # weather_string = weather.weather.title()
         #weather_string = str(self.bot.trans.plugins.weather.strings[data.weather.id])
         weather_string = data.weather[0].main
@@ -61,7 +67,8 @@ class plugin(object):
             message = u'%s\n%s %s%s\n🌡%sºC 💧%s%% 🌬%s m/s' % (
                 remove_html(title), weather_icon, weather_string, feelslike, temp, humidity, wind)
             try:
-                photo = get_streetview(lat, lon, self.bot.config.api_keys.google_developer_console)
+                photo = get_streetview(
+                    lat, lon, self.bot.config.api_keys.google_developer_console)
             except Exception as e:
                 catch_exception(e, self.bot)
                 photo = None

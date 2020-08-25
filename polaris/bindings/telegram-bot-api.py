@@ -1,7 +1,10 @@
-from polaris.types import Message, Conversation, User
-from polaris.utils import send_request, catch_exception
+import json
+import logging
+
 from six import string_types
-import logging, json
+
+from polaris.types import Conversation, Message, User
+from polaris.utils import catch_exception, download, send_request
 
 
 class bindings(object):
@@ -9,7 +12,8 @@ class bindings(object):
         self.bot = bot
 
     def api_request(self, api_method, params=None, headers=None, files=None):
-        url = 'https://api.telegram.org/bot%s/%s' % (self.bot.config['bindings_token'], api_method)
+        url = 'https://api.telegram.org/bot%s/%s' % (
+            self.bot.config['bindings_token'], api_method)
         try:
             return send_request(url, params, headers, files, post=True)
         except:
@@ -54,7 +58,8 @@ class bindings(object):
                     if entity.type == 'url':
                         if 'urls' not in extra:
                             extra['urls'] = []
-                        extra['urls'].append(msg.text[entity.offset:entity.offset + entity.length])
+                        extra['urls'].append(
+                            msg.text[entity.offset:entity.offset + entity.length])
 
                     elif entity.type == 'text_link':
                         if 'urls' not in extra:
@@ -64,7 +69,8 @@ class bindings(object):
                     elif entity.type == 'mention':
                         if 'mentions' not in extra:
                             extra['mentions'] = []
-                        extra['mentions'].append(msg.text[entity.offset:entity.offset + entity.length])
+                        extra['mentions'].append(
+                            msg.text[entity.offset:entity.offset + entity.length])
 
                     elif entity.type == 'text_mention':
                         if 'mentions' not in extra:
@@ -74,27 +80,32 @@ class bindings(object):
                     elif entity.type == 'hashtag':
                         if 'hashtags' not in extra:
                             extra['hashtags'] = []
-                        extra['hashtags'].append(msg.text[entity.offset:entity.offset + entity.length])
+                        extra['hashtags'].append(
+                            msg.text[entity.offset:entity.offset + entity.length])
 
                     elif entity.type == 'cashtag':
                         if 'cashtags' not in extra:
                             extra['cashtags'] = []
-                        extra['cashtags'].append(msg.text[entity.offset:entity.offset + entity.length])
+                        extra['cashtags'].append(
+                            msg.text[entity.offset:entity.offset + entity.length])
 
                     elif entity.type == 'bot_command':
                         if 'commands' not in extra:
                             extra['commands'] = []
-                        extra['commands'].append(msg.text[entity.offset:entity.offset + entity.length])
+                        extra['commands'].append(
+                            msg.text[entity.offset:entity.offset + entity.length])
 
                     elif entity.type == 'email':
                         if 'emails' not in extra:
                             extra['emails'] = []
-                        extra['emails'].append(msg.text[entity.offset:entity.offset + entity.length])
+                        extra['emails'].append(
+                            msg.text[entity.offset:entity.offset + entity.length])
 
                     elif entity.type == 'phone_number':
                         if 'phone_numbers' not in extra:
                             extra['phone_numbers'] = []
-                        extra['phone_numbers'].append(msg.text[entity.offset:entity.offset + entity.length])
+                        extra['phone_numbers'].append(
+                            msg.text[entity.offset:entity.offset + entity.length])
 
         elif 'audio' in msg:
             type = 'audio'
@@ -313,7 +324,6 @@ class bindings(object):
 
         return Message(id, conversation, sender, content, type, date, reply, extra)
 
-
     def convert_inline(self, msg):
         id = msg.id
         conversation = Conversation(msg['from'].id, msg['from'].first_name)
@@ -329,13 +339,13 @@ class bindings(object):
         type = 'inline_query'
         date = None
         reply = None
-        extra =  {'offset': msg.offset}
+        extra = {'offset': msg.offset}
 
         return Message(id, conversation, sender, content, type, date, reply, extra)
 
-
     def receiver_worker(self):
         logging.debug('Starting receiver worker...')
+
         def get_updates(offset=None, limit=None, timeout=None):
             params = {}
             if offset:
@@ -366,7 +376,8 @@ class bindings(object):
                                 self.bot.inbox.put(message)
 
                             elif 'edited_message' in u:
-                                message = self.convert_message(u.edited_message)
+                                message = self.convert_message(
+                                    u.edited_message)
                                 self.bot.inbox.put(message)
 
                             elif 'channel_post' in u:
@@ -374,7 +385,8 @@ class bindings(object):
                                 self.bot.inbox.put(message)
 
                             elif 'edited_channel_post' in u:
-                                message = self.convert_message(u.edited_channel_post)
+                                message = self.convert_message(
+                                    u.edited_channel_post)
                                 self.bot.inbox.put(message)
 
         except KeyboardInterrupt:
@@ -384,11 +396,10 @@ class bindings(object):
             if self.bot.started:
                 catch_exception(e, self.bot)
 
-
-
     def send_message(self, message):
         if message.type == 'text':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "typing"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "typing"})
             params = {
                 "chat_id": message.conversation.id,
                 "text": message.content
@@ -410,7 +421,8 @@ class bindings(object):
             self.api_request('sendMessage', params)
 
         elif message.type == 'photo':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_photo"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "upload_photo"})
             params = {
                 "chat_id": message.conversation.id,
             }
@@ -431,7 +443,8 @@ class bindings(object):
             self.api_request('sendPhoto', params, files=files)
 
         elif message.type == 'audio':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_audio"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "upload_audio"})
             params = {
                 "chat_id": message.conversation.id,
             }
@@ -452,7 +465,8 @@ class bindings(object):
             self.api_request('sendAudio', params, files=files)
 
         elif message.type == 'document':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_document"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "upload_document"})
             params = {
                 "chat_id": message.conversation.id,
             }
@@ -493,7 +507,8 @@ class bindings(object):
             self.api_request('sendSticker', params, files=files)
 
         elif message.type == 'video':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "upload_video"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "upload_video"})
             params = {
                 "chat_id": message.conversation.id,
             }
@@ -514,7 +529,8 @@ class bindings(object):
             self.api_request('sendVideo', params, files=files)
 
         elif message.type == 'voice':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "record_audio"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "record_audio"})
             params = {
                 "chat_id": message.conversation.id,
             }
@@ -535,7 +551,8 @@ class bindings(object):
             self.api_request('sendVoice', params, files=files)
 
         elif message.type == 'location':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "find_location"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "find_location"})
             params = {
                 "chat_id": message.conversation.id,
                 "latitude": message.content['latitude'],
@@ -551,7 +568,8 @@ class bindings(object):
             self.api_request('sendLocation', params)
 
         elif message.type == 'venue':
-            self.api_request('sendChatAction', params={"chat_id": message.conversation.id, "action": "find_location"})
+            self.api_request('sendChatAction', params={
+                             "chat_id": message.conversation.id, "action": "find_location"})
             params = {
                 "chat_id": message.conversation.id,
                 "latitude": message.content['latitude'],
@@ -564,7 +582,6 @@ class bindings(object):
             if message.extra:
                 if 'caption' in message.extra:
                     params['caption'] = message.extra['caption']
-
 
                 if 'title' in message.extra:
                     params['title'] = message.extra['title']
@@ -619,7 +636,7 @@ class bindings(object):
 
             if message.extra and 'title' in message.extra:
                 params['title'] = message.extra['title']
-            
+
             if message.extra and 'user_id' in message.extra:
                 params['user_id'] = message.extra['user_id']
 
@@ -643,15 +660,20 @@ class bindings(object):
         else:
             logging.error("UNKNOWN MESSAGE TYPE: %s" % message.type)
 
-
     # THESE METHODS DO DIRECT ACTIONS #
-    def get_file(self, file_id):
-        return False
 
+    def get_file(self, file_id, link=False):
+        params = {
+            "file_id": file_id
+        }
+        result = self.api_request('getFile', params)
+        if link:
+            return 'https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.file_path)
+        else:
+            return download('https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.file_path))
 
     def invite_conversation_member(self, conversation_id, user_id):
         return False
-
 
     def kick_conversation_member(self, conversation_id, user_id):
         params = {
@@ -665,7 +687,6 @@ class bindings(object):
             else:
                 return False
         return True
-
 
     def unban_conversation_member(self, conversation_id, user_id):
         params = {

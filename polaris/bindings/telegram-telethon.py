@@ -1,18 +1,23 @@
-from polaris.types import Message, Conversation, User
-from polaris.utils import send_request, catch_exception, set_data
+import json
+import logging
+
 from six import string_types
-from telethon.sync import TelegramClient, events
 from telethon.sessions import StringSession
-import logging, json
+from telethon.sync import TelegramClient, events
+
+from polaris.types import Conversation, Message, User
+from polaris.utils import catch_exception, send_request, set_data
 
 
 class bindings(object):
     def __init__(self, bot):
         self.bot = bot
-        self.client = TelegramClient(StringSession(self.bot.config['bindings_token']), self.bot.config['api_keys']['telegram_app_id'], self.bot.config['api_keys']['telegram_api_hash']).start()
+        self.client = TelegramClient(StringSession(
+            self.bot.config['bindings_token']), self.bot.config['api_keys']['telegram_app_id'], self.bot.config['api_keys']['telegram_api_hash'])
+        # self.client.session.save_entities = False
+        self.client.start()
         self.clientSender = None
         self.clientReceiver = None
-
 
     def get_me(self):
         me = self.client.get_me()
@@ -20,7 +25,7 @@ class bindings(object):
 
     async def convert_message(self, msg):
         try:
-            id = msg.id 
+            id = msg.id
             raw_chat = await msg.get_chat()
             conversation = Conversation(int(raw_chat.id))
             if hasattr(raw_chat, 'title'):
@@ -45,22 +50,21 @@ class bindings(object):
         except Exception as e:
             catch_exception(e, self.bot)
 
-
     def convert_inline(self, msg):
         pass
-
 
     def receiver_worker(self):
         logging.debug('Starting receiver worker...')
         try:
-            self.clientReceiver = TelegramClient(StringSession(self.bot.config['bindings_token']), self.bot.config['api_keys']['telegram_app_id'], self.bot.config['api_keys']['telegram_api_hash'])
+            self.clientReceiver = TelegramClient(StringSession(
+                self.bot.config['bindings_token']), self.bot.config['api_keys']['telegram_app_id'], self.bot.config['api_keys']['telegram_api_hash'])
 
             @self.clientReceiver.on(events.NewMessage)
             async def on_message_receive(msg):
                 message = await self.convert_message(msg)
                 self.bot.inbox.put(message)
                 await self.clientReceiver.send_read_acknowledge(await msg.get_chat(), msg)
-                set_data('bots/%s/bindings_token' % self.bot.name, StringSession.save(self.clientReceiver.session))
+                #set_data('bots/%s/bindings_token' % self.bot.name, StringSession.save(self.clientReceiver.session))
 
             self.clientReceiver.start()
             self.clientReceiver.run_until_disconnected()
@@ -72,20 +76,29 @@ class bindings(object):
             if self.bot.started:
                 catch_exception(e, self.bot)
 
-
-
     def send_message(self, message):
         try:
             if not self.clientSender:
-                self.clientSender = TelegramClient(StringSession(self.bot.config['bindings_token']), self.bot.config['api_keys']['telegram_app_id'], self.bot.config['api_keys']['telegram_api_hash']).start()
+                self.clientSender = TelegramClient(StringSession(
+                    self.bot.config['bindings_token']), self.bot.config['api_keys']['telegram_app_id'], self.bot.config['api_keys']['telegram_api_hash']).start()
+                self.clientSender.get_dialogs()
+
+            logging.info('%s: %s' % (message.conversation.id, message.content))
+            try:
+                self.clientSender.get_entity(message.conversation.id)
+            except ValueError:
+                self.clientSender.get_participants(message.conversation.id)
 
             if message.type == 'text':
                 if 'format' in message.extra and message.extra['format'] == 'Markdown':
-                    self.clientSender.send_message(message.conversation.id, message.content, parse_mode = 'markdown')
+                    self.clientSender.send_message(
+                        message.conversation.id, message.content, parse_mode='markdown')
                 elif 'format' in message.extra and message.extra['format'] == 'HTML':
-                    self.clientSender.send_message(message.conversation.id, message.content, parse_mode = 'html')
+                    self.clientSender.send_message(
+                        message.conversation.id, message.content, parse_mode='html')
                 else:
-                    self.clientSender.send_message(message.conversation.id, message.content, parse_mode =  None)
+                    self.clientSender.send_message(
+                        message.conversation.id, message.content, parse_mode=None)
 
         except KeyboardInterrupt:
             pass
@@ -94,11 +107,10 @@ class bindings(object):
             if self.bot.started:
                 catch_exception(e, self.bot)
 
-
     # THESE METHODS DO DIRECT ACTIONS #
+
     def get_file(self, file_id):
         pass
-
 
     def invite_conversation_member(self, conversation_id, user_id):
         pass
