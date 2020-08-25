@@ -612,6 +612,34 @@ class bindings(object):
 
             self.api_request('answerInlineQuery', params)
 
+        elif message.type == 'system':
+            params = {
+                "chat_id": message.conversation.id,
+            }
+
+            if message.extra and 'title' in message.extra:
+                params['title'] = message.extra['title']
+            
+            if message.extra and 'user_id' in message.extra:
+                params['user_id'] = message.extra['user_id']
+
+            if message.extra and 'custom_title' in message.extra:
+                params['custom_title'] = message.extra['custom_title']
+
+            if message.extra and 'photo' in message.extra:
+                params['photo'] = message.extra['photo']
+
+            if message.extra and 'description' in message.extra:
+                params['description'] = message.extra['description']
+
+            if message.extra and 'message_id' in message.extra:
+                params['message_id'] = message.extra['message_id']
+
+            if message.extra and 'sticker_set_name' in message.extra:
+                params['sticker_set_name'] = message.extra['sticker_set_name']
+
+            self.api_request(message.content, params)
+
         else:
             logging.error("UNKNOWN MESSAGE TYPE: %s" % message.type)
 

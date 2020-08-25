@@ -323,6 +323,75 @@ class plugin(object):
                 else:
                     return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
+        # Aliases for telegram methods. #
+        elif is_command(self, 10, m.content):
+            if first_word(input) == 'title':
+                return self.bot.send_message(m, 'setChatTitle', 'system', extra={'title': all_but_first_word(input)})
+
+            elif first_word(input) == 'desc':
+                return self.bot.send_message(m, 'setChatDescription', 'system', extra={'description': all_but_first_word(input)})
+
+            elif first_word(input) == 'photo':
+                if m.reply and m.reply.type == 'photo':
+                    return self.bot.send_message(m, 'setChatPhoto', 'system', extra={'photo': m.reply.content})
+
+            elif first_word(input) == 'promote':
+                if m.reply:
+                    target = m.reply.sender.id
+                elif is_int(input):
+                    target = input
+                else:
+                    target = m.sender.id
+                return self.bot.send_message(m, 'promoteChatMember', 'system', extra={'user_id': target})
+
+            elif first_word(input) == 'custom_title':
+                if m.reply:
+                    target = m.reply.sender.id
+                else:
+                    target = m.sender.id
+
+                return self.bot.send_message(m, 'promoteChatMember', 'system', extra={'user_id': target, 'custom_title': all_but_first_word(input)})
+
+
+            elif first_word(input) == 'unban':
+                if m.reply:
+                    target = m.reply.sender.id
+                else:
+                    target = m.sender.id
+
+                return self.bot.send_message(m, 'unbanChatMember', 'system', extra={'user_id': target})
+
+            elif first_word(input) == 'kick':
+                if m.reply:
+                    target = m.reply.sender.id
+                else:
+                    target = m.sender.id
+
+                return self.bot.send_message(m, 'kickChatMember', 'system', extra={'user_id': target})
+
+            elif first_word(input) == 'pin':
+                if m.reply:
+                    return self.bot.send_message(m, 'pinChatMessage', 'system', extra={'message_id':  m.reply.id})
+
+            elif first_word(input) == 'unpin':
+                return self.bot.send_message(m, 'unpinChatMessage', 'system')
+
+            elif first_word(input) == 'leave':
+                return self.bot.send_message(m, 'leaveChat', 'system')
+
+            elif first_word(input) == 'stickerset':
+                return self.bot.send_message(m, 'setChatStickerSet', 'system', extra={'sticker_set_name': all_but_first_word(input)})
+
+            elif first_word(input) == 'rmstickerset':
+                return self.bot.send_message(m, 'deleteChatStickerSet', 'system')
+
+            else:
+                valid_values = [
+                    'title', 'desc', 'photo', 'promote', 'custom_title', 'unban', 'kick', 'pin', 'unpin', 'leave', 'stickerset', 'rmstickerset'
+                ]
+                return self.bot.send_message(m, ', '.join(valid_values))
+
+
     def always(self, m):
         # Update group data #
         gid = str(m.conversation.id)

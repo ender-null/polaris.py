@@ -272,18 +272,18 @@ def first_word(text, i=1):
     try:
         return text.split()[i - 1]
     except:
-        return False
+        return None
 
 
 def all_but_first_word(text):
-    if ' ' not in text:
-        return False
+    if not text or ' ' not in text:
+        return None
     return text.split(' ', 1)[1]
 
 
 def last_word(text):
-    if ' ' not in text:
-        return False
+    if not text:
+        return None
     return text.split()[-1]
 
 

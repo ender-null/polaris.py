@@ -20,6 +20,7 @@ class plugin(object):
     # Plugin action #
     def run(self, m):
         input = get_input(m)
+        commands = []
 
         if input:
             for plugin in self.bot.plugins:
@@ -85,8 +86,16 @@ class plugin(object):
 
                                 if 'description' in command:
                                     text += ' - %s' % command.description
+                                    commands.append({
+                                        'command': command.command.lstrip('/'),
+                                        'description': command.description
+                                    })
                                 else:
                                     text += ' - ?¿'
+                                    commands.append({
+                                        'command': command.command.lstrip('/'),
+                                        'description': '?¿'
+                                    })
 
                         else:
                             text += '\n • ' + command.command.replace('/', self.bot.config.prefix)
@@ -103,6 +112,9 @@ class plugin(object):
                                 text += '\n   <i>%s</i>' % command.description
                             else:
                                 text += '\n   <i>?¿</i>'
+
+        if is_command(self, 3, m.content):
+            self.bot.send_message(m, 'setMyCommands', 'system', extra={'commands': commands})
 
         self.bot.send_message(m, text, extra={'format': 'HTML'})
 

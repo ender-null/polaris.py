@@ -19,9 +19,12 @@ class plugin(object):
             elif is_trusted(self.bot, m.sender.id, m):
                 del_tag(self.bot, m.sender.id, 'spam')
         else:
-            if m.extra and 'urls' in m.extra:
-                for url in m.extra['urls']:
-                    self.check_trusted_telegram_link(m, url)
+            if m.extra:
+                if 'urls' in m.extra:
+                    for url in m.extra['urls']:
+                        self.check_trusted_telegram_link(m, url)
+                if 'caption' in m.extra:
+                    self.check_trusted_telegram_link(m, m.extra['caption'])
 
         if has_tag(self.bot, m.conversation.id, 'spam'):
             self.kick_myself(m)

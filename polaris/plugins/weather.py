@@ -1,6 +1,5 @@
 from polaris.utils import get_input, is_command, get_coords, get_streetview, send_request, download, remove_html
 from DictObject import DictObject
-import meteocalc as mc
 import logging
 
 class plugin(object):
