@@ -347,6 +347,9 @@ class plugin(object):
 
         # Aliases for telegram methods. #
         elif is_command(self, 10, m.content):
+            if not im_group_admin(self.bot, m):
+                return self.bot.send_message(m, self.bot.trans.errors.admin_required, extra={'format': 'HTML'})
+
             if first_word(input) == 'title':
                 return self.bot.send_message(m, 'setChatTitle', 'system', extra={'title': all_but_first_word(input)})
 
@@ -355,7 +358,7 @@ class plugin(object):
 
             elif first_word(input) == 'photo':
                 if m.reply and m.reply.type == 'photo':
-                    photo = self.bot.get_file(m.reply.content, True)
+                    photo = self.bot.get_file(m.reply.content)
                     return self.bot.send_message(m, 'setChatPhoto', 'system', extra={'photo': photo})
 
             elif first_word(input) == 'promote':

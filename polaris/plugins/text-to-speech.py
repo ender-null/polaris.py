@@ -1,4 +1,5 @@
-from polaris.utils import get_input, mp3_to_ogg, send_request, download, first_word, all_but_first_word
+from polaris.utils import (all_but_first_word, download, first_word, get_input,
+                           mp3_to_ogg)
 
 
 class plugin(object):
@@ -34,10 +35,10 @@ class plugin(object):
                 else:
                     language = 'en-us'
                 text = input
-                
+
         if not text:
             return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
-    
+
         url = 'http://translate.google.com/translate_tts'
         params = {
             'tl': language,

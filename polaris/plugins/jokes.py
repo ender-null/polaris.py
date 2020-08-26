@@ -1,5 +1,6 @@
-from polaris.utils import send_request
 import html
+
+from polaris.utils import send_request
 
 
 class plugin(object):
@@ -13,11 +14,12 @@ class plugin(object):
     def run(self, m):
         url = 'http://api.icndb.com/jokes/random'
 
-        data = send_request(url)
+        data = send_request(url, bot=self.bot)
 
         if not data:
             return self.bot.send_message(m, self.bot.trans.errors.connection_error)
-            
-        text = html.unescape(data.value.joke).replace('Chuck Norris', self.bot.info.first_name)
+
+        text = html.unescape(data.value.joke).replace(
+            'Chuck Norris', self.bot.info.first_name)
 
         self.bot.send_message(m, text)

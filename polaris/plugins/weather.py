@@ -40,7 +40,7 @@ class plugin(object):
             'lang': 'es'
         }
 
-        data = send_request(url, params)
+        data = send_request(url, params, bot=self.bot)
         logging.info(data)
         if not data or data.cod != 200:
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})

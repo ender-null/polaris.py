@@ -1,5 +1,6 @@
-from polaris.utils import get_input, send_request, download
 from random import randint
+
+from polaris.utils import download, get_input, is_command, send_request
 
 
 class plugin(object):
@@ -15,30 +16,34 @@ class plugin(object):
         if not input:
             return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-        url = 'https://www.googleapis.com/customsearch/v1'
+        url = 'https://api.cognitive.microsoft.com/bing/v7.0/images/search'
         params = {
             'q': input,
-            'searchType': 'image',
-            'imgSize': 'xlarge',
-            'alt': 'json',
-            'num': 8,
-            'start': 1,
-            'key': self.bot.config.api_keys.google_developer_console,
-            'cx': self.bot.config.api_keys.google_custom_search_engine
+            'count': 8,
+            'offset': 0,
+            'safeSearch': 'Strict',
+            'mkt': self.bot.config.locale,
+            'setLang': self.bot.config.locale
+        }
+        if is_command(self, 1, m.content):
+            params['safeSearch'] = 'Off'
+
+        headers = {
+            'Ocp-Apim-Subscription-Key': self.bot.config.api_keys.microsoft_azure_key
         }
 
-        data = send_request(url, params)
+        data = send_request(url, params, headers, bot=self.bot)
 
-        if not data or 'error' in data:
-            return self.bot.send_message(m, self.bot.trans.errors.connection_error)
+        if not data or data['_type'] == 'ErrorResponse':
+            return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
-        if data.searchInformation.totalResults == 0 or 'items' not in data:
-            return self.bot.send_message(m, self.bot.trans.errors.no_results)
+        if len(data.value) == 0:
+            return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         try:
-            i = randint(0, len(data['items']) - 1)
-            photo = data['items'][i].link
-            caption = None # data['items'][i].title
+            i = randint(0, len(data.value) - 1)
+            photo = data.value[i].contentUrl
+            caption = None  # data.value[i].name
 
         except Exception as e:
             self.bot.send_alert(e)

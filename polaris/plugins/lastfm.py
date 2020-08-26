@@ -1,6 +1,9 @@
-from polaris.utils import get_input, is_command, send_request, set_setting, get_setting
-from polaris.types import AutosaveDict
 from re import findall
+
+from polaris.types import AutosaveDict
+from polaris.utils import (get_input, get_setting, is_command, send_request,
+                           set_setting)
+
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -16,7 +19,8 @@ class plugin(object):
             username = get_input(m)
 
             if not username:
-                username = get_setting(self.bot, m.sender.id, 'lastfm.username')
+                username = get_setting(
+                    self.bot, m.sender.id, 'lastfm.username')
                 if not username and m.sender.username:
                     username = m.sender.username
                 if not username:
@@ -31,8 +35,7 @@ class plugin(object):
                 'user': username
             }
 
-            lastfm = send_request(url, params=params)
-
+            lastfm = send_request(url, params=params, bot=self.bot)
 
             # If the user didn't have any tracks or doesn't exist return No Results error. #
             try:
@@ -64,7 +67,6 @@ class plugin(object):
             if album:
                 text += ' - %s' % album
 
-
             # Gets the link of a Youtube video of the track. #
             url = 'https://www.googleapis.com/youtube/v3/search'
             params = {
@@ -75,13 +77,14 @@ class plugin(object):
                 'key': self.bot.config.api_keys.google_developer_console
             }
 
-            youtube = send_request(url, params=params)
+            youtube = send_request(url, params=params, bot=self.bot)
 
             if not 'error' in youtube and len(youtube['items']) > 0:
-                text += '\n\n🌐 %s\n%s\nhttps://youtu.be/%s' % (self.bot.trans.plugins.lastfm.strings.might_be, youtube['items'][0].snippet.title, youtube['items'][0].id.videoId)
+                text += '\n\n🌐 %s\n%s\nhttps://youtu.be/%s' % (
+                    self.bot.trans.plugins.lastfm.strings.might_be, youtube['items'][0].snippet.title, youtube['items'][0].id.videoId)
 
-            self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
-
+            self.bot.send_message(
+                m, text, extra={'format': 'HTML', 'preview': False})
 
         elif is_command(self, 2, m.content):
             input = get_input(m)
@@ -89,4 +92,5 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             set_setting(self.bot, m.sender.id, 'lastfm.username', input)
-            self.bot.send_message(m, self.bot.trans.plugins.lastfm.strings.username_set, extra={'format': 'HTML', 'preview': False})
+            self.bot.send_message(m, self.bot.trans.plugins.lastfm.strings.username_set, extra={
+                                  'format': 'HTML', 'preview': False})

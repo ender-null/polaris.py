@@ -1,5 +1,9 @@
-from polaris.utils import get_input, is_command, remove_html
+import json
+import logging
+
 from DictObject import DictObject
+
+from polaris.utils import get_input, is_command, remove_html
 
 
 class plugin(object):
@@ -36,10 +40,13 @@ class plugin(object):
                         if ('hidden' in command and not command.hidden) or not 'hidden' in command:
                             # Adds the command and parameters#
                             if input in command.command.replace('/', '').rstrip('\s'):
-                                text += '\n • ' + command.command.replace('/', self.bot.config.prefix)
+                                text += '\n • ' + \
+                                    command.command.replace(
+                                        '/', self.bot.config.prefix)
                                 if 'parameters' in command and command.parameters:
                                     for parameter in command.parameters:
-                                        name, required = list(parameter.items())[0]
+                                        name, required = list(
+                                            parameter.items())[0]
                                         # Bold for required parameters, and italic for optional #
                                         if required:
                                             text += ' <b>&lt;%s&gt;</b>' % name
@@ -98,7 +105,9 @@ class plugin(object):
                                     })
 
                         else:
-                            text += '\n • ' + command.command.replace('/', self.bot.config.prefix)
+                            text += '\n • ' + \
+                                command.command.replace(
+                                    '/', self.bot.config.prefix)
                             if 'parameters' in command and command.parameters:
                                 for parameter in command.parameters:
                                     name, required = list(parameter.items())[0]
@@ -114,7 +123,9 @@ class plugin(object):
                                 text += '\n   <i>?¿</i>'
 
         if is_command(self, 3, m.content):
-            self.bot.send_message(m, 'setMyCommands', 'system', extra={'commands': commands})
+            self.bot.send_message(m, 'setMyCommands', 'system', extra={
+                                  'commands': json.dumps(commands)})
+            logging.info(json.dumps(commands))
 
         self.bot.send_message(m, text, extra={'format': 'HTML'})
 

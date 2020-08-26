@@ -21,19 +21,22 @@ from polaris.types import AutosaveDict, json2obj
 def set_input(message, trigger):
     if message.type == 'text' or message.type == 'inline_query':
         # Get the text that is next to the pattern
-        input_match = re.compile(trigger + '(.+)$', flags=re.IGNORECASE).search(message.content)
+        input_match = re.compile(
+            trigger + '(.+)$', flags=re.IGNORECASE).search(message.content)
         if input_match and input_match.group(1):
             message.extra['input'] = input_match.group(1)
 
         # Get the text that is next to the pattern
         if message.reply and message.reply.content:
-            input_match = re.compile(trigger + '(.+)$', flags=re.IGNORECASE).search(message.content + ' ' + message.reply.content)
+            input_match = re.compile(trigger + '(.+)$', flags=re.IGNORECASE).search(
+                message.content + ' ' + message.reply.content)
             if input_match and input_match.group(1):
                 message.extra['input_reply'] = input_match.group(1)
         elif 'input' in message.extra:
             message.extra['input_reply'] = message.extra['input']
 
     return message
+
 
 def get_input(message, ignore_reply=True):
     if message.extra:
@@ -75,13 +78,15 @@ def is_command(self, number, text):
 
     if 'command' in self.commands[number - 1]:
         if ((self.commands[number - 1]['command'] == '/start' and '/start' in text)
-            or (self.commands[number - 1]['command'] == '/help' and '/help' in text)):
+                or (self.commands[number - 1]['command'] == '/help' and '/help' in text)):
             trigger = self.commands[number - 1]['command'].replace('/', '^/')
         else:
             if text[0] == '/' and 'keep_default' in self.commands[number - 1] and self.commands[number - 1]['keep_default']:
-                trigger = self.commands[number - 1]['command'].replace('/', '^/')
+                trigger = self.commands[number -
+                                        1]['command'].replace('/', '^/')
             else:
-                trigger = self.commands[number - 1]['command'].replace('/', self.bot.config['prefix']).lower()
+                trigger = self.commands[number - 1]['command'].replace(
+                    '/', self.bot.config['prefix']).lower()
 
         if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
@@ -94,12 +99,14 @@ def is_command(self, number, text):
             return True
 
     if 'friendly' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['friendly'].replace('/', self.bot.config['prefix']).lower()
+        trigger = self.commands[number - 1]['friendly'].replace(
+            '/', self.bot.config['prefix']).lower()
         if compile(trigger).search(text.lower()):
             return True
 
     if 'shortcut' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['shortcut'].replace('/', self.bot.config['prefix']).lower()
+        trigger = self.commands[number - 1]['shortcut'].replace(
+            '/', self.bot.config['prefix']).lower()
         if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
         elif 'parameters' in self.commands[number - 1] and ' ' not in text:
@@ -120,7 +127,8 @@ def set_setting(bot, uid, key, value):
     if not uid in bot.settings:
         bot.settings[uid] = {}
     bot.settings[uid][key] = value
-    set_data('settings/%s/%s/%s' % (bot.name, uid, key), bot.settings[uid][key])
+    set_data('settings/%s/%s/%s' %
+             (bot.name, uid, key), bot.settings[uid][key])
 
 
 def get_setting(bot, uid, key):
@@ -198,7 +206,7 @@ def del_tag(bot, target, tag):
         set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
 
 
-def is_group_admin(bot, uid, m = None):
+def is_group_admin(bot, uid, m=None):
     if m and m.conversation.id < 0:
         chat_admins = bot.get_chat_admins(m.conversation.id)
         for admin in chat_admins:
@@ -207,10 +215,12 @@ def is_group_admin(bot, uid, m = None):
 
     return False
 
+
 def im_group_admin(bot, m):
     return is_group_admin(bot, str(bot.info.id), m)
 
-def is_admin(bot, uid, m = None):
+
+def is_admin(bot, uid, m=None):
     if not isinstance(uid, str):
         uid = str(uid)
 
@@ -225,7 +235,8 @@ def is_admin(bot, uid, m = None):
 
     return False
 
-def is_trusted(bot, uid, m = None):
+
+def is_trusted(bot, uid, m=None):
     if not isinstance(uid, str):
         uid = str(uid)
 
@@ -318,7 +329,7 @@ def load_plugin_list():
     return sorted(plugin_list)
 
 
-def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True, verify=True):
+def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True, verify=True, bot=None):
     try:
         if post:
             r = requests.post(url, params=params, headers=headers,
@@ -328,24 +339,40 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
                              files=files, data=data, timeout=100, verify=verify)
     except:
         logging.error('Error making request to: %s' % url)
+        if bot:
+            bot.send_alert('Error making request to: %s' % url)
         if verify:
-            return send_request(url, params, headers, files, data, post, parse, False)
+            return send_request(url, params, headers, files, data, post, parse, False, bot)
         else:
             return None
 
     if r.status_code != 200:
         logging.error(r.text)
+        if bot:
+            bot.send_alert(r.text)
+            leave_list = ['no rights', 'no write access',
+                          'not enough rights', 'bot was kicked', 'CHANNEL_PRIVATE']
+            if bot.config['bindings'] == 'telegram-bot-api':
+                for term in leave_list:
+                    if term in r.text:
+                        bot.send_alert('Leaving chat: %s [%s]' % (
+                            params['chat_id'], bot.groups[str(params['chat_id'])].title))
+                        res = bot.bindings.api_request('leaveChat', {
+                            'chat_id': params['chat_id']
+                        })
+                        bot.send_alert(res)
+                        break
+
         while r.status_code == 429:
             sleep(5)
-            return send_request(url, params, headers, files, data, post, parse)
-            # r = r.get(url, params=params, headers=headers,
-            #           files=files, data=data)
+            return send_request(url, params, headers, files, data, post, parse, bot=bot)
     try:
         if parse:
             return DictObject(json.loads(r.text))
         else:
             return r.url
     except Exception as e:
+        logging.error(r.text)
         catch_exception(e)
         return None
 
@@ -354,7 +381,7 @@ def get_coords(input, bot=None):
     lang = 'en'
     if bot and bot.config.translation != 'default':
         lang = 'es'
-    
+
     url = 'https://maps.googleapis.com/maps/api/geocode/json'
     params = {
         'address': input,
@@ -362,7 +389,7 @@ def get_coords(input, bot=None):
         'key': bot.config.api_keys.google_developer_console
     }
 
-    data = send_request(url, params=params)
+    data = send_request(url, params=params, bot=bot)
     if data.status != 'OK':
         logging.info(data)
 
@@ -373,8 +400,8 @@ def get_coords(input, bot=None):
                 country = address['long_name']
 
         return (data.status, (data['results'][0]['geometry']['location']['lat'],
-                data['results'][0]['geometry']['location']['lng'],
-                locality, country))
+                              data['results'][0]['geometry']['location']['lng'],
+                              locality, country))
     else:
         return (data.status, (None, None, None, None))
 
@@ -467,7 +494,8 @@ def mp3_to_ogg(input):
 
         return output
     except Exception as e:
-        logging.info('ffmpeg -i ' + input + '-ac 1 -c:a opus -b:a 16k -y ' + output)
+        logging.info('ffmpeg -i ' + input +
+                     '-ac 1 -c:a opus -b:a 16k -y ' + output)
         logging.error(e)
         return None
 
@@ -528,6 +556,7 @@ def time_in_range(start, end, x):
     else:
         return start <= x or x <= end
 
+
 def init_if_empty(_dict):
     if _dict:
         return DictObject(_dict)
@@ -535,7 +564,7 @@ def init_if_empty(_dict):
         return {}
 
 
-def catch_exception(exception, bot = None):
+def catch_exception(exception, bot=None):
     logging.info('Catched exception: ' + exception.__class__.__name__)
     logging.exception(traceback.format_exc())
     if bot:

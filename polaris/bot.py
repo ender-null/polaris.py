@@ -229,8 +229,9 @@ class Bot(object):
                     '@' + self.info.username, '')
 
             # If the commands are not /start or /help, set the correct command start symbol. #
-            if ((command == '/start' and '/start' in message.content) or
-                    (command == '/help' and '/help' in message.content)):
+            if isinstance(message.content, str) and ((command == '/start' and '/start' in message.content) or
+                                                     (command == '/help' and '/help' in message.content) or
+                                                     (command == '/config' and '/config' in message.content)):
                 trigger = command.replace('/', '^/')
             else:
                 if message.type == 'inline_query':

@@ -1,4 +1,6 @@
-from polaris.utils import send_request, is_command, has_tag
+import logging
+
+from polaris.utils import has_tag, is_command, send_request
 
 
 class plugin(object):
@@ -14,24 +16,24 @@ class plugin(object):
             return
 
         if is_command(self, 1, m.content):
-            url = 'http://thecatapi.com/api/images/get'
+            url = 'https://api.thecatapi.com/v1/images/search'
             params = {
-                'format': 'src',
-                'api_key': self.bot.config.api_keys.cat_api
+                'api_key': self.bot.config.api_keys.cat_api,
+                'format': 'src'
             }
 
-            photo = send_request(url, params=params, parse=False)
+            photo = send_request(url, params=params, parse=False, bot=self.bot)
 
             if photo:
-                self.bot.send_message(m, photo, 'photo')
+                return self.bot.send_message(m, photo, 'photo')
             else:
                 return self.bot.send_message(m, self.bot.trans.errors.connection_error)
 
         elif is_command(self, 2, m.content):
             url = 'https://dog.ceo/api/breeds/image/random'
 
-            data = send_request(url)
+            data = send_request(url, bot=self.bot)
             if data:
-                self.bot.send_message(m, data.message, 'photo')
+                return self.bot.send_message(m, data.message, 'photo')
             else:
                 return self.bot.send_message(m, self.bot.trans.errors.connection_error)

@@ -11,11 +11,11 @@ class bindings(object):
     def __init__(self, bot):
         self.bot = bot
 
-    def api_request(self, api_method, params=None, headers=None, files=None):
+    def api_request(self, api_method, params=None, headers=None, data=None, files=None):
         url = 'https://api.telegram.org/bot%s/%s' % (
             self.bot.config['bindings_token'], api_method)
         try:
-            return send_request(url, params, headers, files, post=True)
+            return send_request(url, params, headers, files, data, post=True, bot=self.bot)
         except:
             return None
 
@@ -306,6 +306,13 @@ class bindings(object):
                 'message': self.convert_message(msg.pinned_message)
             }
 
+        elif 'dice' in msg:
+            type = 'dice'
+            content = msg.dice.value
+            extra = {
+                'emoji': msg.dice.emoji
+            }
+
         else:
             logging.error(msg)
             type = None
@@ -398,6 +405,9 @@ class bindings(object):
 
     def send_message(self, message):
         if message.type == 'text':
+            if not message.content:
+                return
+
             self.api_request('sendChatAction', params={
                              "chat_id": message.conversation.id, "action": "typing"})
             params = {
@@ -630,6 +640,7 @@ class bindings(object):
             self.api_request('answerInlineQuery', params)
 
         elif message.type == 'system':
+            files = None
             params = {
                 "chat_id": message.conversation.id,
             }
@@ -644,7 +655,11 @@ class bindings(object):
                 params['custom_title'] = message.extra['custom_title']
 
             if message.extra and 'photo' in message.extra:
-                params['photo'] = message.extra['photo']
+                if message.extra['photo'].startswith('/'):
+                    photo = open(message.extra['photo'], 'rb')
+                    files = {'photo': photo}
+                else:
+                    params['photo'] = message.extra['photo']
 
             if message.extra and 'description' in message.extra:
                 params['description'] = message.extra['description']
@@ -655,7 +670,7 @@ class bindings(object):
             if message.extra and 'sticker_set_name' in message.extra:
                 params['sticker_set_name'] = message.extra['sticker_set_name']
 
-            self.api_request(message.content, params)
+            self.api_request(message.content, params, files=files)
 
         else:
             logging.error("UNKNOWN MESSAGE TYPE: %s" % message.type)
@@ -668,9 +683,9 @@ class bindings(object):
         }
         result = self.api_request('getFile', params)
         if link:
-            return 'https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.file_path)
+            return 'https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.result.file_path)
         else:
-            return download('https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.file_path))
+            return download('https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.result.file_path))
 
     def invite_conversation_member(self, conversation_id, user_id):
         return False
