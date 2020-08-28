@@ -1,4 +1,4 @@
-from polaris.utils import get_input, is_int, get_target
+from polaris.utils import get_full_name, get_input, get_target, is_int
 
 
 class plugin(object):
@@ -20,16 +20,13 @@ class plugin(object):
 
         if target and int(target) > 0:
             if target in self.bot.users:
-                if 'first_name' in self.bot.users[target] and self.bot.users[target].first_name:
-                    user = self.bot.users[target].first_name
-
-                if 'last_name' in self.bot.users[target] and self.bot.users[target].last_name:
-                    user += ' ' + self.bot.users[target].last_name
+                user = get_full_name(self.bot, m.sender.id, False)
 
                 if 'username' in self.bot.users[target] and self.bot.users[target].username:
                     user += '\n\t     @' + self.bot.users[target].username
-                    
-                text = self.bot.trans.plugins.info.strings.user_info % (user, target, self.bot.users[target].messages)
+
+                text = self.bot.trans.plugins.info.strings.user_info % (
+                    user, target, self.bot.users[target].messages)
 
             if target in self.bot.tags:
                 text += '\n🏷 '
@@ -41,7 +38,8 @@ class plugin(object):
                 if 'title' in self.bot.groups[target] and self.bot.groups[target].title:
                     group = self.bot.groups[target].title
 
-                text = self.bot.trans.plugins.info.strings.group_info % (group, target, self.bot.groups[target].messages)
+                text = self.bot.trans.plugins.info.strings.group_info % (
+                    group, target, self.bot.groups[target].messages)
 
             if target in self.bot.tags:
                 text += '\n🏷 '
@@ -55,7 +53,8 @@ class plugin(object):
                 if 'title' in self.bot.groups[gid] and self.bot.groups[gid].title:
                     group = self.bot.groups[gid].title
 
-                text += self.bot.trans.plugins.info.strings.group_info % (group, gid, self.bot.groups[gid].messages)
+                text += self.bot.trans.plugins.info.strings.group_info % (
+                    group, gid, self.bot.groups[gid].messages)
 
             if gid in self.bot.tags:
                 text += '\n🏷 '

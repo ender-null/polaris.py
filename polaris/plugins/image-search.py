@@ -34,7 +34,9 @@ class plugin(object):
 
         data = send_request(url, params, headers, bot=self.bot)
 
-        if not data or data['_type'] == 'ErrorResponse':
+        if not data or 'error' in data:
+            if 'quota' in data.error.message:
+                return self.bot.send_message(m, self.bot.trans.errors.api_limit_exceeded, extra={'format': 'HTML'})
             return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
         if len(data.value) == 0:

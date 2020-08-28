@@ -1,7 +1,11 @@
-from polaris.utils import get_input, is_command, init_if_empty, wait_until_received, set_data, delete_data, has_tag
-from polaris.types import AutosaveDict
+from re import IGNORECASE, compile, findall
+
 from firebase_admin import db
-from re import findall, compile, IGNORECASE
+
+from polaris.types import AutosaveDict
+from polaris.utils import (delete_data, get_input, has_tag, init_if_empty,
+                           is_command, set_data, wait_until_received)
+
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -18,8 +22,16 @@ class plugin(object):
         for reaction, attributes in self.bot.trans.plugins.reactions.strings.items():
             for trigger in attributes:
                 if compile(self.format_text(trigger, m), flags=IGNORECASE).search(m.content):
-                    return self.bot.send_message(m, self.format_text(reaction, m), extra={'format': 'markdown'})
+                    text = self.format_text(reaction, m)
+                    types = ['photo', 'audio', 'document',
+                             'voice', 'sticker', 'video']
 
+                    for _type in types:
+                        if text.startswith(_type + ':'):
+                            content = text.split(':')[1]
+                            return self.bot.send_message(m, content, _type)
+
+                    return self.bot.send_message(m, text, extra={'format': 'markdown'})
 
     def update_triggers(self):
         self.commands = []
@@ -32,9 +44,9 @@ class plugin(object):
                     'hidden': True
                 })
 
-
-    def format_text(self, text, message = None):
-        text = text.replace('BOT', self.bot.info.username.lower().replace('bot', ''))
+    def format_text(self, text, message=None):
+        text = text.replace(
+            'BOT', self.bot.info.username.lower().replace('bot', ''))
         if message:
             if hasattr(message.sender, 'first_name'):
                 text = text.replace('USER', message.sender.first_name)

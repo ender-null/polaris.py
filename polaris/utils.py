@@ -288,6 +288,16 @@ def cancel_steps(bot, target):
         del(bot.steps[target])
         delete_data('steps/%s/%s' % (bot.name, target))
 
+def get_full_name(bot, uid, include_username=True):
+    name = ''
+    if 'first_name' in bot.users[uid] and bot.users[uid].first_name:
+        name += ' ' + bot.users[uid].first_name
+    if 'last_name' in bot.users[uid] and bot.users[uid].last_name:
+        name += ' ' + bot.users[uid].last_name
+    if include_username and 'username' in bot.users[uid] and bot.users[uid].username:
+        name += ' (@' + bot.users[uid].username + ')'
+
+    return name
 
 def first_word(text, i=1):
     try:
@@ -351,12 +361,12 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
         if bot:
             bot.send_alert(r.text)
             leave_list = ['no rights', 'no write access',
-                          'not enough rights', 'bot was kicked', 'CHANNEL_PRIVATE']
+                          'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
             if bot.config['bindings'] == 'telegram-bot-api':
                 for term in leave_list:
                     if term in r.text:
-                        bot.send_alert('Leaving chat: %s [%s]' % (
-                            params['chat_id'], bot.groups[str(params['chat_id'])].title))
+                        bot.send_admin_alert('Leaving chat: %s [%s]' % (
+                            bot.groups[str(params['chat_id'])].title, params['chat_id']))
                         res = bot.bindings.api_request('leaveChat', {
                             'chat_id': params['chat_id']
                         })

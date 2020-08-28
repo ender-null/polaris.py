@@ -1,6 +1,8 @@
-from polaris.utils import set_tag, has_tag, del_tag, is_admin, is_trusted, im_group_admin
-from re import compile, IGNORECASE
 import logging
+from re import IGNORECASE, compile
+
+from polaris.utils import (del_tag, get_full_name, has_tag, im_group_admin,
+                           is_admin, is_trusted, set_tag)
 
 
 class plugin(object):
@@ -18,6 +20,9 @@ class plugin(object):
                 self.kick_spammer(m)
             elif is_trusted(self.bot, m.sender.id, m):
                 del_tag(self.bot, m.sender.id, 'spam')
+                name = get_full_name(self.bot, m.sender.id)
+                self.bot.send_admin_alert(
+                    'Unmarking spammer: %s [%s]' % (name, m.sender.id))
         else:
             if m.extra:
                 if 'urls' in m.extra:
@@ -30,10 +35,11 @@ class plugin(object):
             self.kick_myself(m)
 
     def check_trusted_telegram_link(self, m, text):
-        input_match = compile('(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(text)
+        input_match = compile(
+            '(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(text)
         if input_match and input_match.group(1):
             group_hash = input_match.group(1)
-            trusted_group = False;
+            trusted_group = False
             for gid, attr in self.bot.administration.items():
                 group = self.bot.administration[gid]
                 if 'link' in group and group_hash in group.link:
@@ -51,9 +57,19 @@ class plugin(object):
 
     def kick_myself(self, m):
         self.bot.kick_user(m, self.bot.info.id)
+        gid = str(m.conversation.id)
+        self.bot.send_admin_alert('Kicked myself from: %s [%s]' % (
+            self.bot.groups[gid].title, gid))
 
     def kick_spammer(self, m):
+        name = get_full_name(self.bot, m.sender.id)
+        self.bot.send_admin_alert(
+            'Marked as spammer: %s [%s]' % (name, m.sender.id))
         set_tag(self.bot, m.sender.id, 'spam')
+
         if im_group_admin(self.bot, m):
             self.bot.kick_user(m, m.sender.id)
-            self.bot.send_message(m, self.bot.trans.errors.idiot_kicked, extra={'format': 'HTML'})
+            self.bot.send_admin_alert(
+                'Kicked spammer: %s [%s]' % (name, m.sender.id))
+            self.bot.send_message(
+                m, self.bot.trans.errors.idiot_kicked, extra={'format': 'HTML'})

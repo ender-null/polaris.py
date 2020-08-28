@@ -200,6 +200,7 @@ class plugin(object):
 
             if im_group_admin(self.bot, m):
                 res = self.bot.kick_user(m, target)
+                self.bot.send_alert('Kicking user: %s' % target)
                 self.bot.unban_user(m, target)
                 if res is None:
                     return self.bot.send_message(m, self.bot.trans.errors.admin_required, extra={'format': 'HTML'})

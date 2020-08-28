@@ -245,9 +245,9 @@ class Bot(object):
                     # trigger = trigger.replace('@' + self.info.username.lower(), '')
                     if not parameters and trigger.startswith('^'):
                         trigger += '$'
-                    elif parameters and ' ' not in message.content and not message.reply:
+                    elif parameters and message.content and isinstance(message.content, str) and ' ' not in message.content and not message.reply:
                         trigger += '$'
-                    elif parameters and ' ' in message.content:
+                    elif parameters and message.content and isinstance(message.content, str) and ' ' in message.content:
                         trigger += ' '
                 elif command.startswith('/'):
                     return False
@@ -334,4 +334,9 @@ class Bot(object):
     def send_alert(self, text):
         message = Message(None, Conversation(self.config.alerts_conversation_id, 'Alerts'),
                           self.info, '<pre>%s</pre>' % text, extra={'format': 'HTML', 'preview': False})
+        self.outbox.put(message)
+
+    def send_admin_alert(self, text):
+        message = Message(None, Conversation(self.config.admin_conversation_id, 'Alerts'),
+                          self.info, text, extra={'format': 'HTML', 'preview': False})
         self.outbox.put(message)
