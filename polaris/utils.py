@@ -289,6 +289,7 @@ def cancel_steps(bot, target):
         delete_data('steps/%s/%s' % (bot.name, target))
 
 def get_full_name(bot, uid, include_username=True):
+    uid = str(uid)
     name = ''
     if 'first_name' in bot.users[uid] and bot.users[uid].first_name:
         name += ' ' + bot.users[uid].first_name

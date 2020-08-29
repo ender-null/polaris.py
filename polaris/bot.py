@@ -204,7 +204,7 @@ class Bot(object):
                                     if self.check_trigger(command['command'], command['parameters'], msg, plugin, False, True):
                                         break
 
-                            if 'friendly' in command and not has_tag(self, msg.sender.id, 'noreactions') and not has_tag(self, msg.conversation.id, 'noreactions'):
+                            if 'friendly' in command and not has_tag(self, msg.sender.id, 'noreplies') and not has_tag(self, msg.conversation.id, 'noreplies'):
                                 if self.check_trigger(command['friendly'], command['parameters'], msg, plugin, True):
                                     break
 
