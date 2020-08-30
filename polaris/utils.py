@@ -29,7 +29,7 @@ def set_input(message, trigger):
         # Get the text that is next to the pattern
         if message.reply and message.reply.content:
             input_match = re.compile(trigger + '(.+)$', flags=re.IGNORECASE).search(
-                message.content + ' ' + message.reply.content)
+                str(message.content) + ' ' + str(message.reply.content))
             if input_match and input_match.group(1):
                 message.extra['input_reply'] = input_match.group(1)
         elif 'input' in message.extra:
@@ -288,6 +288,7 @@ def cancel_steps(bot, target):
         del(bot.steps[target])
         delete_data('steps/%s/%s' % (bot.name, target))
 
+
 def get_full_name(bot, uid, include_username=True):
     uid = str(uid)
     name = ''
@@ -299,6 +300,7 @@ def get_full_name(bot, uid, include_username=True):
         name += ' (@' + bot.users[uid].username + ')'
 
     return name
+
 
 def first_word(text, i=1):
     try:

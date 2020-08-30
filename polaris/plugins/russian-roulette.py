@@ -22,6 +22,7 @@ class plugin(object):
             del_tag(self.bot, gid, 'roulette:?')
             return
 
+        text = ''
         bullets = None
         roulette = has_tag(self.bot, gid, 'roulette:?', return_match=True)
 
@@ -40,15 +41,12 @@ class plugin(object):
                 res = self.bot.kick_user(m, uid)
 
                 if not res:
-                    self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.cant_bang %
-                                          m.sender.first_name, extra={'format': 'HTML'})
+                    text = self.bot.trans.plugins.russian_roulette.strings.cant_bang % m.sender.first_name
                 else:
-                    self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.bang %
-                                          m.sender.first_name, extra={'format': 'HTML'})
+                    text = self.bot.trans.plugins.russian_roulette.strings.bang % m.sender.first_name
 
             else:
-                self.bot.send_message(m, self.bot.trans.plugins.russian_roulette.strings.cant_bang %
-                                      m.sender.first_name, extra={'format': 'HTML'})
+                text = self.bot.trans.plugins.russian_roulette.strings.cant_bang % m.sender.first_name
 
         else:
             del_tag(self.bot, gid, 'roulette:%s' % bullets)
@@ -57,4 +55,4 @@ class plugin(object):
             text = self.bot.trans.plugins.russian_roulette.strings.empty % (
                 m.sender.first_name, bullets)
 
-            self.bot.send_message(m, text, extra={'format': 'HTML'})
+        self.bot.send_message(m, text, extra={'format': 'HTML'})

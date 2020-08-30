@@ -1,4 +1,5 @@
 import logging
+import re
 from re import IGNORECASE, compile
 
 from polaris.utils import (del_tag, get_full_name, has_tag, im_group_admin,
@@ -24,6 +25,11 @@ class plugin(object):
                 gid = str(m.conversation.id)
                 self.bot.send_admin_alert(
                     'Unmarking spammer: %s [%s] from group %s [%s]' % (name, m.sender.id, self.bot.groups[gid].title, gid))
+
+        elif has_tag(self.bot, m.sender.id, 'arab'):
+            if not is_admin(self.bot, m.sender.id, m):
+                self.kick_arab(m)
+
         else:
             if m.extra:
                 if 'urls' in m.extra:
@@ -34,6 +40,14 @@ class plugin(object):
 
         if has_tag(self.bot, m.conversation.id, 'spam'):
             self.kick_myself(m)
+
+        if m.type == 'text' and self.detect_arab(m.content):
+            if not has_tag(self.bot, m.sender.id, 'arab'):
+                set_tag(self.bot, m.sender.id, 'arab')
+                name = get_full_name(self.bot, m.sender.id)
+                gid = str(m.conversation.id)
+                self.bot.send_admin_alert('Marked as arab: %s [%s] from group %s [%s]' % (
+                    name, m.sender.id, self.bot.groups[gid].title, gid))
 
     def check_trusted_telegram_link(self, m, text):
         input_match = compile(
@@ -80,3 +94,31 @@ class plugin(object):
                 'Kicked spammer: %s [%s] from group %s [%s]' % (name, m.sender.id, self.bot.groups[gid].title, gid))
             self.bot.send_message(
                 m, self.bot.trans.errors.idiot_kicked, extra={'format': 'HTML'})
+
+    def kick_arab(self, m):
+        name = get_full_name(self.bot, m.sender.id)
+        gid = str(m.conversation.id)
+        if not has_tag(self.bot, m.sender.id, 'arab'):
+            self.bot.send_admin_alert(
+                'Marked as arab: %s [%s] from group %s [%s]' % (name, m.sender.id, self.bot.groups[gid].title, gid))
+            set_tag(self.bot, m.sender.id, 'arab')
+
+        if im_group_admin(self.bot, m) and has_tag(self.bot, m.conversation.id, 'antisquig'):
+            self.bot.kick_user(m, m.sender.id)
+            self.bot.send_admin_alert(
+                'Kicked arab: %s [%s] from group %s [%s]' % (name, m.sender.id, self.bot.groups[gid].title, gid))
+            self.bot.send_message(
+                m, self.bot.trans.errors.idiot_kicked, extra={'format': 'HTML'})
+
+    def detect_arab(self, text):
+        # [\216-\219][\128-\191]
+        # [\u0621-\u064A\u0660-\u0669]
+        # [\u0600-\u06ff\u0750-\u077f\ufb50-\ufbc1\ufbd3-\ufd3f\ufd50-\ufd8f\ufd92-\ufdc7\ufe70-\ufefc\ufdf0-\ufdfd]
+        if re.compile(u'[\u0600-\u06ff\u0750-\u077f\ufb50-\ufbc1\ufbd3-\ufd3f\ufd50-\ufd8f\ufd92-\ufdc7\ufe70-\ufefc\ufdf0-\ufdfd]', flags=re.IGNORECASE).search(text):
+            return True
+
+        # elif re.compile(u'\u202E', flags=re.IGNORECASE).search(text):
+        #     return True
+
+        # elif re.compile(u'\u200F', flags=re.IGNORECASE).search(text):
+        #     return True

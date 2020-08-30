@@ -16,7 +16,7 @@ class plugin(object):
         input = get_input(m, ignore_reply=False)
         parameter = first_word(input)
         enabled = ['reactions', 'roulette', 'replies', 'pole', 'fiesta']
-        disabled = ['antispam']
+        disabled = ['antispam', 'antisquig', 'polereset']
         config = {}
 
         for param in enabled:
@@ -28,12 +28,14 @@ class plugin(object):
 
         text = ''
         if not input:
+            text = self.bot.trans.plugins.config.strings.explanation % "', '".join(
+                config)
             for param in config:
                 text += '\n' + ('✔️' if config[param] else '❌') + \
                     ' ' + self.bot.trans.plugins.config.strings[param]
 
         if parameter in enabled or parameter in disabled:
-            if m.sender.id != self.bot.config['owner'] and not is_mod(self.bot, m.sender.id, m.conversation.id) and not is_trusted(self.bot, m.sender.id, m):
+            if is_trusted(self.bot, m.sender.id, m):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if config[parameter]:
