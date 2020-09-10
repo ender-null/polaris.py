@@ -13,7 +13,8 @@ class plugin(object):
         self.commands = self.bot.trans.plugins.help.commands
         self.commands.append({
             'command': '/help',
-            'hidden': True
+            'description': self.bot.trans.plugins.help.commands[0].description,
+            'keep_default': True
         })
         self.commands.append({
             'command': '/genhelp',
@@ -79,7 +80,8 @@ class plugin(object):
                             if 'parameters' in command and command.parameters:
                                 allOptional = True
                                 for parameter in command.parameters:
-                                    name, required = list(parameter.items())[0]
+                                    name, required = list(
+                                        parameter.items())[0]
                                     if required:
                                         allOptional = False
 
@@ -87,6 +89,9 @@ class plugin(object):
 
                             else:
                                 show = True
+
+                            if self.bot.config.prefix != '/' and (not 'keep_default' in command or not command.keep_default):
+                                show = False
 
                             if show:
                                 text += '\n' + command.command.lstrip('/')
@@ -123,9 +128,8 @@ class plugin(object):
                                 text += '\n   <i>?¿</i>'
 
         if is_command(self, 3, m.content):
-            self.bot.send_message(m, 'setMyCommands', 'system', extra={
+            self.bot.send_message(m, 'setMyCommands', 'api', extra={
                                   'commands': json.dumps(commands)})
-            logging.info(json.dumps(commands))
 
         self.bot.send_message(m, text, extra={'format': 'HTML'})
 

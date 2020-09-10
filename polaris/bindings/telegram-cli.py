@@ -1,18 +1,25 @@
-from polaris.types import Message, Conversation, User
-from polaris.utils import remove_html, remove_markdown, download, catch_exception
+import json
+import logging
+
+from bs4 import BeautifulSoup
+from DictObject import DictObject
+
+from polaris.types import Conversation, Message, User
+from polaris.utils import (catch_exception, download, remove_html,
+                           remove_markdown)
 from pytg.receiver import Receiver
 from pytg.sender import Sender
 from pytg.utils import coroutine
-from DictObject import DictObject
-from bs4 import BeautifulSoup
-import json, logging
 
 
 class bindings(object):
     def __init__(self, bot):
         self.bot = bot
-        self.receiver = Receiver(host='localhost', port=self.bot.config['bindings_token'])
-        self.sender = Sender(host='localhost', port=self.bot.config['bindings_token'])
+        self.no_threads = False
+        self.receiver = Receiver(
+            host='localhost', port=self.bot.config['bindings_token'])
+        self.sender = Sender(
+            host='localhost', port=self.bot.config['bindings_token'])
         logging.getLogger('pytg').setLevel(logging.WARNING)
 
     def get_me(self):
@@ -31,7 +38,8 @@ class bindings(object):
                 conversation.title = msg.sender.first_name
             else:
                 if msg.receiver.type == 'channel':
-                    conversation = Conversation(- int('100' + str(msg.receiver.peer_id)))
+                    conversation = Conversation(- int('100' +
+                                                      str(msg.receiver.peer_id)))
                 else:
                     conversation = Conversation(- int(msg.receiver.peer_id))
                 conversation.title = msg.receiver.title
@@ -46,7 +54,8 @@ class bindings(object):
                     sender.username = msg.sender.username
             else:
                 if msg.sender.type == 'channel':
-                    sender = Conversation(- int('100' + str(msg.sender.peer_id)))
+                    sender = Conversation(- int('100' +
+                                                str(msg.sender.peer_id)))
                 else:
                     sender = Conversation(- int(msg.sender.peer_id))
                 sender.first_name = msg.sender.title
@@ -129,57 +138,73 @@ class bindings(object):
                     message.content = self.convert_links(message.content)
 
                 if 'format' in message.extra and message.extra['format'] == 'HTML':
-                    self.sender.raw('[html] msg %s %s' % (self.peer(message.conversation.id), self.escape(message.content)), enable_preview=False)
+                    self.sender.raw('[html] msg %s %s' % (self.peer(
+                        message.conversation.id), self.escape(message.content)), enable_preview=False)
                 else:
-                    self.sender.send_msg(self.peer(message.conversation.id), message.content, enable_preview=False)
+                    self.sender.send_msg(
+                        self.peer(message.conversation.id), message.content, enable_preview=False)
 
             elif message.type == 'photo':
-                self.sender.send_typing(self.peer(message.conversation.id), 1)  # 7
+                self.sender.send_typing(
+                    self.peer(message.conversation.id), 1)  # 7
                 if message.reply:
-                    self.sender.reply_photo(message.reply, message.content, message.extra['caption'])
+                    self.sender.reply_photo(
+                        message.reply, message.content, message.extra['caption'])
                 else:
-                    self.sender.send_photo(self.peer(message.conversation.id), message.content, message.extra['caption'])
+                    self.sender.send_photo(
+                        self.peer(message.conversation.id), message.content, message.extra['caption'])
 
             elif message.type == 'audio':
-                self.sender.send_typing(self.peer(message.conversation.id), 1)  # 6
+                self.sender.send_typing(
+                    self.peer(message.conversation.id), 1)  # 6
                 if message.reply:
                     self.sender.reply_audio(message.reply, message.content)
                 else:
-                    self.sender.send_audio(self.peer(message.conversation.id), message.content)
+                    self.sender.send_audio(
+                        self.peer(message.conversation.id), message.content)
 
             elif message.type == 'document':
-                self.sender.send_typing(self.peer(message.conversation.id), 1)  # 8
+                self.sender.send_typing(
+                    self.peer(message.conversation.id), 1)  # 8
                 if message.reply:
                     self.sender.reply_document(message.reply, message.content)
                 else:
-                    self.sender.send_document(self.peer(message.conversation.id), message.content)
+                    self.sender.send_document(
+                        self.peer(message.conversation.id), message.content)
 
             elif message.type == 'sticker':
                 if message.reply:
                     self.sender.reply_file(message.reply, message.content)
                 else:
-                    self.sender.send_file(self.peer(message.conversation.id), message.content)
+                    self.sender.send_file(
+                        self.peer(message.conversation.id), message.content)
 
             elif message.type == 'video':
-                self.sender.send_typing(self.peer(message.conversation.id), 1)  # 4
+                self.sender.send_typing(
+                    self.peer(message.conversation.id), 1)  # 4
                 if message.reply:
                     self.sender.reply_video(message.reply, message.content)
                 else:
-                    self.sender.send_video(self.peer(message.conversation.id), message.content)
+                    self.sender.send_video(
+                        self.peer(message.conversation.id), message.content)
 
             elif message.type == 'voice':
                 self.sender.send_typing(self.peer(message.conversation.id), 5)
                 if message.reply:
                     self.sender.reply_audio(message.reply, message.content)
                 else:
-                    self.sender.send_audio(self.peer(message.conversation.id), message.content)
+                    self.sender.send_audio(
+                        self.peer(message.conversation.id), message.content)
 
             elif message.type == 'location':
-                self.sender.send_typing(self.peer(message.conversation.id), 1)  # 9
+                self.sender.send_typing(
+                    self.peer(message.conversation.id), 1)  # 9
                 if message.reply:
-                    self.sender.reply_location(message.reply, message.content['latitude'], message.content['longitude'])
+                    self.sender.reply_location(
+                        message.reply, message.content['latitude'], message.content['longitude'])
                 else:
-                    self.sender.send_location(self.peer(message.conversation.id), message.content['latitude'], message.content['longitude'])
+                    self.sender.send_location(self.peer(
+                        message.conversation.id), message.content['latitude'], message.content['longitude'])
 
             else:
                 print('UNKNOWN MESSAGE TYPE: ' + message.type)
@@ -187,7 +212,6 @@ class bindings(object):
 
         except Exception as e:
             catch_exception(e, self.bot)
-
 
     @coroutine
     def main_loop(self):
@@ -201,11 +225,11 @@ class bindings(object):
                     if message.conversation.id > 0:
                         self.sender.mark_read(self.peer(message.sender.id))
                     else:
-                        self.sender.mark_read(self.peer(message.conversation.id))
+                        self.sender.mark_read(
+                            self.peer(message.conversation.id))
 
             except Exception as e:
                 catch_exception(e, self.bot)
-
 
     def peer(self, chat_id):
         if chat_id > 0:
@@ -216,7 +240,6 @@ class bindings(object):
             else:
                 peer = 'chat#id' + str(chat_id)[1:]
         return peer
-
 
     def user_id(self, username):
         if username.startswith('@'):
@@ -231,7 +254,6 @@ class bindings(object):
         else:
             return False
 
-
     def get_id(self, user):
         if isinstance(user, int):
             return user
@@ -242,7 +264,6 @@ class bindings(object):
             id = int(self.user_id(user))
 
         return id
-
 
     def escape(self, string):
         if string is None:
@@ -255,35 +276,32 @@ class bindings(object):
             string = string.replace(CHARS_UNESCAPED[i], CHARS_ESCAPED[i])
         return string.join(["'", "'"])  # wrap with single quotes.
 
-
     def convert_links(self, string):
         for link in BeautifulSoup(string, 'html.parser').findAll("a"):
             string = string.replace(str(link), link.get("href"))
         return string
 
-
     # THESE METHODS DO DIRECT ACTIONS #
+
     def get_file(self, file_id):
         pass
 
-
     def invite_conversation_member(self, conversation_id, user_id):
         try:
-            self.sender.chat_add_user(self.peer(conversation_id), self.peer(user_id))
+            self.sender.chat_add_user(
+                self.peer(conversation_id), self.peer(user_id))
         except Exception as e:
             catch_exception(e, self.bot)
-
 
     def kick_conversation_member(self, conversation_id, user_id):
         try:
-            self.sender.chat_del_user(self.peer(conversation_id), self.peer(user_id))
+            self.sender.chat_del_user(
+                self.peer(conversation_id), self.peer(user_id))
         except Exception as e:
             catch_exception(e, self.bot)
 
-
     def unban_conversation_member(self, conversation_id, user_id):
         pass
-
 
     def conversation_info(self, conversation_id):
         pass

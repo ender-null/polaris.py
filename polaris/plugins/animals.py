@@ -8,7 +8,6 @@ class plugin(object):
     def __init__(self, bot):
         self.bot = bot
         self.commands = self.bot.trans.plugins.animals.commands
-        self.description = self.bot.trans.plugins.animals.description
 
     # Plugin action #
     def run(self, m):

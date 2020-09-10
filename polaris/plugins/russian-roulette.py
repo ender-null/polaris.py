@@ -38,7 +38,8 @@ class plugin(object):
             set_tag(self.bot, gid, 'roulette:6')
 
             if im_group_admin(self.bot, m):
-                res = self.bot.kick_user(m, uid)
+                res = self.bot.bindings.kick_conversation_member(
+                    m.conversation.id, uid)
 
                 if not res:
                     text = self.bot.trans.plugins.russian_roulette.strings.cant_bang % m.sender.first_name

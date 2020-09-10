@@ -22,14 +22,14 @@ from polaris.utils import (cancel_steps, catch_exception, get_plugin_name,
 class Bot(object):
     def __init__(self, name):
         self.name = name
-        self.get_database()
-        self.bindings = importlib.import_module(
-            'polaris.bindings.%s' % self.config['bindings']).bindings(self)
         self.inbox = Queue()
         self.outbox = Queue()
         self.started = False
         self.plugins = None
         self.jobs = None
+        self.get_database()
+        self.bindings = importlib.import_module(
+            'polaris.bindings.%s' % self.config['bindings']).bindings(self)
         self.info = self.bindings.get_me()
 
         if self.info is None:
@@ -58,8 +58,8 @@ class Bot(object):
             logging.debug('Starting sender worker...')
             while self.started:
                 msg = self.outbox.get()
-                logging.info(' %s@%s sent [%s] %s' % (msg.sender.first_name,
-                                                      msg.conversation.title, msg.type, msg.content))
+                logging.info(' [%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.first_name,
+                                                                msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                 self.bindings.send_message(msg)
 
         except KeyboardInterrupt:
@@ -75,10 +75,10 @@ class Bot(object):
                 msg = self.inbox.get()
                 try:
                     logging.info(
-                        '%s@%s sent [%s] %s' % (msg.sender.first_name, msg.conversation.title, msg.type, msg.content))
+                        '[%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.first_name, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                 except AttributeError:
                     logging.info(
-                        '%s@%s sent [%s] %s' % (msg.sender.title, msg.conversation.title, msg.type, msg.content))
+                        '[%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.title, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
 
                 self.on_message_receive(msg)
 
@@ -96,18 +96,26 @@ class Bot(object):
             self.started = True
             self.plugins = self.init_plugins()
 
-            logging.info('Connected as %s (@%s)' %
-                         (self.info.first_name, self.info.username))
+            logging.info('Connected as %s (@%s) [%s]' %
+                         (self.info.first_name, self.info.username, 'bot' if self.info.is_bot else 'user'))
 
             self.jobs = []
-            self.jobs.append(
-                Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
-            self.jobs.append(
-                Process(target=self.sender_worker, name='%s S.' % self.name))
+            if hasattr(self.bindings, 'no_threads') and self.bindings.no_threads:
+                self.bindings.start()
+            else:
+                self.started = True
+                self.jobs.append(
+                    Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
+                if hasattr(self.bindings, 'custom_sender') and self.bindings.custom_sender:
+                    pass
+                else:
+                    self.jobs.append(
+                        Process(target=self.sender_worker, name='%s S.' % self.name))
+                self.jobs.append(
+                    Process(target=self.messages_handler, name='%s' % self.name))
+
             self.jobs.append(
                 Process(target=self.cron_jobs, name='%s C.' % self.name))
-            self.jobs.append(
-                Process(target=self.messages_handler, name='%s' % self.name))
 
             for job in self.jobs:
                 # if job.name != self.name:
@@ -130,12 +138,20 @@ class Bot(object):
 
         logging.debug('Importing plugins...')
 
+        plugins_list = []
+
         if type(self.config.plugins) is list:
             plugins_to_load = self.config.plugins
         elif self.config.plugins == 'all':
             plugins_to_load = load_plugin_list()
         else:
             plugins_to_load = load_plugin_list()
+
+        if 'excluded_plugins' in self.config and type(self.config.excluded_plugins) is list:
+            plugins_list = [
+                p for p in plugins_to_load if p not in self.config.excluded_plugins]
+
+            plugins_to_load = plugins_list
 
         for plugin in plugins_to_load:
             try:
@@ -300,27 +316,23 @@ class Bot(object):
                                 json.dumps(results), 'inline_results', extra))
 
     # THESE METHODS DO DIRECT ACTIONS #
+    def get_message(self, chat_id, message_id):
+        return self.bindings.get_message(chat_id, message_id)
 
     def get_file(self, file_id, link=False):
         return self.bindings.get_file(file_id, link)
 
+    def join_by_invite_link(self, invite_link):
+        return self.bindings.join_by_invite_link(invite_link)
+
     def get_chat_admins(self, conversation_id):
-        chat_administrators = self.bindings.get_chat_administrators(
-            conversation_id)
-        admins = []
-        if chat_administrators and chat_administrators.ok:
-            for member in chat_administrators.result:
-                user = User(member.user.id, member.user.first_name)
-                user.is_bot = member.user.is_bot
-                if 'last_name' in member.user:
-                    user.last_name = member.user.last_name
-                if 'username' in member.user:
-                    user.username = member.user.username
-                admins.append(user)
-        return admins
+        return self.bindings.get_chat_administrators(conversation_id)
 
     def invite_user(self, msg, user_id):
         return self.bindings.invite_conversation_member(msg.conversation.id, user_id)
+
+    def promote_user(self, msg, user_id):
+        return self.bindings.promote_conversation_member(msg.conversation.id, user_id)
 
     def kick_user(self, msg, user_id):
         return self.bindings.kick_conversation_member(msg.conversation.id, user_id)

@@ -1,6 +1,8 @@
-from polaris.utils import get_input, is_command, send_request, is_int
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
+
+from polaris.utils import get_input, is_command, is_int, send_request
+
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -12,7 +14,7 @@ class plugin(object):
                 'friendly': '^Bus ',
                 'description': 'Tiempos de espera en el poste.',
                 'parameters': [
-                    { "número de parada": True }
+                    {"número de parada": True}
                 ],
             },
             {
@@ -20,7 +22,7 @@ class plugin(object):
                 'friendly': '^Tranvia ',
                 'description': 'Datos de una parada de tranvia.',
                 'parameters': [
-                    { "número de parada": True }
+                    {"número de parada": True}
                 ],
             },
             {
@@ -28,7 +30,7 @@ class plugin(object):
                 'friendly': '^Bizi ',
                 'description': 'Datos de una estación Bizi.',
                 'parameters': [
-                    { "número de estación": True }
+                    {"número de estación": True}
                 ],
             }
         ]
@@ -56,12 +58,14 @@ class plugin(object):
                     return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             if data.street:
-                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.number, data.lines)
+                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (
+                    data.street, data.number, data.lines)
             else:
                 text = '<b>Parada: %s</b>\n\n' % (data.number)
 
             for bus in list(data.transports):
-                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus.time, bus.line, bus.destination)
+                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (
+                    bus.time, bus.line, bus.destination)
 
             text = text.rstrip('\n')
 
@@ -91,12 +95,14 @@ class plugin(object):
                     return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             if data.street:
-                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (data.street, data.number, data.lines)
+                text = '<b>%s</b>\n   Parada: <b>%s</b>  [%s]\n\n' % (
+                    data.street, data.number, data.lines)
             else:
                 text = '<b>Parada: %s</b>\n\n' % (data.number)
 
             for bus in list(data.transports):
-                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (bus.time, bus.line, bus.destination)
+                text += ' • <b>%s</b>  %s <i>%s</i>\n' % (
+                    bus.time, bus.line, bus.destination)
 
             text = text.rstrip('\n')
 
@@ -105,9 +111,9 @@ class plugin(object):
         elif is_command(self, 3, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
-           
 
-            url = baseurl + '/recurso/urbanismo-infraestructuras/estacion-bicicleta/' + input.lstrip('0') + '.json'
+            url = baseurl + '/recurso/urbanismo-infraestructuras/estacion-bicicleta/' + \
+                input.lstrip('0') + '.json'
             params = {
                 'rf': 'html',
                 'srsname': 'utm30n'
@@ -115,12 +121,15 @@ class plugin(object):
 
             data = send_request(url, params=params)
 
-            if not data or 'errors' in data:
-                if data and 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
+            if not data or 'error' in data or 'errors' in data:
+                if data and 'error' in data and data.error == 'Parametros incorrectos':
+                    return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+                elif data and 'errors' in data and 'status' in data.errors and data.errors.status == '404 Not Found':
                     return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
                 else:
                     return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
-            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (data.title.title(), data.id, data.bicisDisponibles, data.anclajesDisponibles)
-            
+            text = '<b>%s</b>\n   Estación: <b>%s</b>\n\n • Bicis Disponibles: <b>%s</b>\n • Anclajes Disponibles: <b>%s</b>' % (
+                data.title.title(), data.id, data.bicisDisponibles, data.anclajesDisponibles)
+
             return self.bot.send_message(m, text, extra={'format': 'HTML'})

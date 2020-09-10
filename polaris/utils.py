@@ -62,6 +62,18 @@ def get_input_legacy(message, ignore_reply=True):
     return text[text.find(" ") + 1:]
 
 
+def get_command_index(self, text):
+    if isinstance(text, str) and text.endswith('@' + self.bot.info.username) and ' ' not in text:
+        text = text.replace('@' + self.bot.info.username, '')
+
+    for i in self.commands:
+        logging.info(i)
+
+
+def generate_command_help(self, text):
+    return get_command_index(self, text)
+
+
 def get_command(message, bot):
     if message.content.startswith(bot.config['start']):
         command = first_word(message.content).lstrip(bot.config['start'])
@@ -220,14 +232,28 @@ def im_group_admin(bot, m):
     return is_group_admin(bot, str(bot.info.id), m)
 
 
+def is_owner(bot, uid):
+    if not isinstance(uid, str):
+        uid = str(uid)
+
+    return str(bot.config['owner']) == uid
+
+
+def is_trusted(bot, uid, m=None):
+    if not isinstance(uid, str):
+        uid = str(uid)
+
+    return has_tag(bot, uid, 'trusted')
+
+
 def is_admin(bot, uid, m=None):
     if not isinstance(uid, str):
         uid = str(uid)
 
-    if str(bot.config['owner']) == uid:
+    if is_owner(bot, uid):
         return True
 
-    elif has_tag(bot, uid, 'admin') or has_tag(bot, uid, 'owner'):
+    elif is_trusted(bot, uid):
         return True
 
     elif is_group_admin(bot, uid, m):
@@ -236,22 +262,11 @@ def is_admin(bot, uid, m=None):
     return False
 
 
-def is_trusted(bot, uid, m=None):
-    if not isinstance(uid, str):
-        uid = str(uid)
-
-    if is_admin(bot, uid, m) or has_tag(bot, uid, 'trusted'):
-        return True
-
-    else:
-        return False
-
-
 def is_mod(bot, uid, gid):
     if not isinstance(uid, str):
         uid = str(uid)
 
-    if is_trusted(bot, uid) or has_tag(bot, uid, 'globalmod') or has_tag(bot, uid, 'mod:%s' % gid):
+    if has_tag(bot, uid, 'globalmod') or has_tag(bot, uid, 'mod:%s' % gid):
         return True
 
     else:
@@ -290,7 +305,8 @@ def cancel_steps(bot, target):
 
 
 def get_full_name(bot, uid, include_username=True):
-    uid = str(uid)
+    if not isinstance(uid, str):
+        uid = str(uid)
     name = ''
     if 'first_name' in bot.users[uid] and bot.users[uid].first_name:
         name += ' ' + bot.users[uid].first_name
@@ -300,6 +316,27 @@ def get_full_name(bot, uid, include_username=True):
         name += ' (@' + bot.users[uid].username + ')'
 
     return name
+
+
+def split_large_message(content, max_length):
+    lines = content.splitlines()
+    texts = []
+    text = ''
+    line_break = '\n'
+    length = 0
+
+    for line in lines:
+        if (length + len(line) + len(line_break)) < max_length:
+            text += line + line_break
+            length += len(line) + len(line_break)
+        else:
+            texts.append(text)
+            text = line + line_break
+            length = len(line) + len(line_break)
+
+    texts.append(text)
+
+    return texts
 
 
 def first_word(text, i=1):

@@ -21,6 +21,9 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
+        if str(m.sender.id).startswith('-100'):
+            return
+
         if m.conversation.id > 0:
             return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
@@ -361,6 +364,7 @@ class plugin(object):
             if has_tag(self.bot, m.conversation.id, 'polereset'):
                 if is_trusted(self.bot, m.sender.id, m):
                     delete_data('poles/%s/%s' % (self.bot.name, gid))
+                    self.bot.poles.pop(gid, None)
                     text = self.bot.trans.plugins.pole.strings.polereset_done
                 else:
                     text = self.bot.trans.errors.admin_required

@@ -1,4 +1,8 @@
 import logging
+import re
+
+import requests
+from bs4 import BeautifulSoup
 
 from polaris.utils import get_input, is_command, remove_html, send_request
 
@@ -16,44 +20,68 @@ class plugin(object):
         if not input:
             return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-        url = 'https://api.cognitive.microsoft.com/bing/v7.0/search'
+        url = 'https://duckduckgo.com/'
         params = {
-            'q': input,
-            'responseFilter': 'Webpages',
-            'count': 8,
-            'offset': 0,
-            'safeSearch': 'Strict',
-            'mkt': self.bot.config.locale,
-            'setLang': self.bot.config.locale
+            'q': input
         }
+        res = requests.post(url, data=params)
+        searchObj = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
+        if not searchObj:
+            return self.bot.send_message(m, self.bot.trans.errors.unknown, extra={'format': 'HTML'})
+
         headers = {
-            'Ocp-Apim-Subscription-Key': self.bot.config.api_keys.microsoft_azure_key
+            'authority': 'duckduckgo.com',
+            'accept': 'application/json, text/javascript, */*; q=0.01',
+            'sec-fetch-dest': 'empty',
+            'x-requested-with': 'XMLHttpRequest',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-mode': 'cors',
+            'referer': 'https://duckduckgo.com/',
+            'accept-language': self.bot.config.locale + ';q=0.9',
         }
-        if is_command(self, 3, m.content):
-            params['safeSearch'] = 'Off'
 
-        data = send_request(url, params, headers, bot=self.bot)
+        params = (
+            ('l', self.bot.config.locale),
+            ('o', 'json'),
+            ('q', input),
+            ('vqd', searchObj.group(1)),
+            ('f', ',,,'),
+            ('p', '1'),
+            ('v7exp', 'a'),
+        )
 
-        if not data or 'error' in data:
-            if 'quota' in data.error.message:
-                return self.bot.send_message(m, self.bot.trans.errors.api_limit_exceeded, extra={'format': 'HTML'})
+        requestUrl = url + "d.js"
+
+        data = send_request(requestUrl, headers=headers, params=params)
+        logging.info(data)
+
+        if not data or not 'results' in data:
             return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
-        if len(data.webPages.value) == 0:
+        if len(data.results) == 0:
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         if not is_command(self, 2, m.content):
             text = self.bot.trans.plugins.web_search.strings.results % input
-            for item in data.webPages.value:
-                if len(item.name) > 26:
-                    item.name = item.name[:23] + '...'
-                text += '\n • <a href="%s">%s</a>' % (item.url, item.name)
+            limit = 8
+            for item in data.results:
+                if 't' in item:
+                    logging.info(item['t'])
+                    item['t'] = remove_html(item['t'])
+                    if len(item['t']) > 26:
+                        item['t'] = item['t'][:23] + '...'
+                    text += '\n • <a href="%s">%s</a>' % (
+                        item['u'], item['t'])
+                    limit -= 1
+                    if limit <= 0:
+                        break
 
             self.bot.send_message(
                 m, text, extra={'format': 'HTML', 'preview': False})
 
         else:
-            text = data.webPages.value[0].url
+            text = data.results[0]['u']
 
             self.bot.send_message(
                 m, text, extra={'format': 'HTML', 'preview': True})

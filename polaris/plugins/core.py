@@ -1,7 +1,13 @@
-from polaris.utils import get_input, is_admin, is_trusted, is_command, get_target, all_but_first_word, wait_until_received
-from io import StringIO
+import re
+import subprocess
+import sys
 from copy import deepcopy
-import sys, subprocess
+from io import StringIO
+from re import IGNORECASE, compile
+
+from polaris.utils import (all_but_first_word, get_input, get_target, is_admin,
+                           is_command, is_owner, is_trusted,
+                           wait_until_received)
 
 
 class plugin(object):
@@ -13,7 +19,7 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
-        if not is_trusted(self.bot, m.sender.id):
+        if not is_owner(self.bot, m.sender.id) and not is_trusted(self.bot, m.sender.id):
             return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
         input = get_input(m)
@@ -70,3 +76,16 @@ class plugin(object):
 
         if text:
             self.bot.send_message(m, text, extra={'format': 'HTML'})
+
+    def always(self, m):
+        if m.conversation.id == 777000:
+            self.bot.send_admin_alert(m.content)
+            self.bot.forward_message(m, self.bot.config.owner)
+
+        if m.extra and 'urls' in m.extra:
+            for url in m.extra['urls']:
+                input_match = compile(
+                    '(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
+
+                if input_match and input_match.group(1):
+                    self.bot.join_by_invite_link(url)

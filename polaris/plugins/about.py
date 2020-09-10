@@ -1,6 +1,8 @@
-from polaris.utils import get_input, is_command, has_tag
-from firebase_admin import db
 import subprocess
+
+from firebase_admin import db
+
+from polaris.utils import get_input, has_tag, is_command, set_data
 
 
 class plugin(object):
@@ -10,25 +12,28 @@ class plugin(object):
         self.commands = self.bot.trans.plugins.about.commands
         self.commands.append({
             'command': '/start',
-            'hidden': True
+            'hidden': True,
+            'keep_default': True
         })
-        self.description = self.bot.trans.plugins.about.description
 
     # Plugin action #
     def run(self, m):
         text = None
         if is_command(self, 1, m.content) or is_command(self, 3, m.content):
-            tag = subprocess.check_output(['git', 'describe', '--tags']).decode('ascii').rstrip('\n')
+            tag = subprocess.check_output(
+                ['git', 'describe', '--tags']).decode('ascii').rstrip('\n')
 
             greeting = self.bot.trans.plugins.about.strings.greeting % self.bot.info.first_name
             version = self.bot.trans.plugins.about.strings.version % tag
             license = self.bot.trans.plugins.about.strings.license
             help = self.bot.trans.plugins.about.strings.help % self.bot.config.prefix
             donations = self.bot.trans.plugins.about.strings.donations % self.bot.config.prefix
-            stats = self.bot.trans.plugins.about.strings.stats % (len(self.bot.users), len(self.bot.groups))
+            stats = self.bot.trans.plugins.about.strings.stats % (
+                len(self.bot.users), len(self.bot.groups))
 
             if is_command(self, 1, m.content):
-                text = '%s\n\n%s\n\n%s\n%s\n\n%s\n\n%s' % (greeting, help, version, donations, license, stats)
+                text = '%s\n\n%s\n\n%s\n%s\n\n%s\n\n%s' % (
+                    greeting, help, version, donations, license, stats)
 
             else:
                 text = '%s\n\n%s\n\n%s' % (greeting, help, donations)
@@ -48,10 +53,54 @@ class plugin(object):
                     for tag in has_tag(self.bot, uid, 'supporter:?', True):
                         if ':' in tag:
                             supporters += ' | %s' % tag.split(':')[1]
- 
+
             if len(supporters) > 0:
-                text = '%s\n\n%s%s' % (donations_explanation, supporters_title, supporters)
+                text = '%s\n\n%s%s' % (
+                    donations_explanation, supporters_title, supporters)
             else:
                 text = donations_explanation
 
-        self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': False})
+        self.bot.send_message(
+            m, text, extra={'format': 'HTML', 'preview': False})
+
+    def always(self, m):
+        # Update group data #
+        gid = str(m.conversation.id)
+        if m.conversation.id < 0:
+            if self.bot.groups:
+                if gid in self.bot.groups:
+                    self.bot.groups[gid].title = m.conversation.title
+                    self.bot.groups[gid].messages += 1
+
+                else:
+                    self.bot.groups[gid] = {
+                        "title": m.conversation.title,
+                        "messages": 1
+                    }
+                set_data('groups/%s/%s' %
+                         (self.bot.name, gid), self.bot.groups[gid])
+
+        # Update user data #
+        if str(m.sender.id).startswith('-100'):
+            return
+
+        uid = str(m.sender.id)
+        if self.bot.users:
+            if uid in self.bot.users:
+                self.bot.users[uid].first_name = m.sender.first_name
+                if hasattr(m.sender, 'last_name'):
+                    self.bot.users[uid].last_name = m.sender.last_name
+                if hasattr(m.sender, 'username'):
+                    self.bot.users[uid].username = m.sender.username
+                if hasattr(m.sender, 'is_bot'):
+                    self.bot.users[uid].is_bot = m.sender.is_bot
+                self.bot.users[uid].messages += 1
+
+            else:
+                self.bot.users[uid] = {
+                    "first_name": m.sender.first_name,
+                    "last_name": m.sender.last_name,
+                    "username": m.sender.username,
+                    "messages": 1
+                }
+            set_data('users/%s/%s' % (self.bot.name, uid), self.bot.users[uid])

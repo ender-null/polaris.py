@@ -12,6 +12,7 @@ from polaris.utils import catch_exception, send_request, set_data
 class bindings(object):
     def __init__(self, bot):
         self.bot = bot
+        self.no_threads = False
         self.client = TelegramClient(StringSession(
             self.bot.config['bindings_token']), self.bot.config['api_keys']['telegram_app_id'], self.bot.config['api_keys']['telegram_api_hash'])
         # self.client.session.save_entities = False

@@ -78,6 +78,7 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.not_creator % input, extra={'format': 'HTML'})
 
             delete_data('pins/%s/%s' % (self.bot.name, input))
+            del self.bot.pins[input]
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.unpinned % input, extra={'format': 'HTML'})

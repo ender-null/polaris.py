@@ -10,6 +10,7 @@ from polaris.utils import catch_exception, download, send_request
 class bindings(object):
     def __init__(self, bot):
         self.bot = bot
+        self.no_threads = False
 
     def api_request(self, api_method, params=None, headers=None, data=None, files=None):
         url = 'https://api.telegram.org/bot%s/%s' % (
@@ -44,7 +45,7 @@ class bindings(object):
                 sender.is_bot = msg['from'].is_bot
 
         else:
-            sender = Conversation(msg['chat'].id, msg['chat'].title)
+            sender = Conversation(msg.chat.id, msg.chat.title)
 
         # Gets the type of the message
         extra = {}
@@ -616,6 +617,14 @@ class bindings(object):
 
             self.api_request('sendContact', params)
 
+        elif message.type == 'forward':
+            params = {
+                "chat_id": message.extra['conversation'],
+                "from_chat_id": message.conversation.id,
+                "message_id": message.extra['message']
+            }
+            self.api_request('forwardMessage', params)
+
         elif message.type == 'inline_results':
             params = {
                 "inline_query_id": message.id,
@@ -639,7 +648,7 @@ class bindings(object):
 
             self.api_request('answerInlineQuery', params)
 
-        elif message.type == 'system':
+        elif message.type == 'system' or message.type == 'api':
             files = None
             params = {
                 "chat_id": message.conversation.id,
@@ -670,12 +679,42 @@ class bindings(object):
             if message.extra and 'sticker_set_name' in message.extra:
                 params['sticker_set_name'] = message.extra['sticker_set_name']
 
+            if message.extra and 'commands' in message.extra:
+                params['commands'] = message.extra['commands']
+
             self.api_request(message.content, params, files=files)
 
         else:
             logging.error("UNKNOWN MESSAGE TYPE: %s" % message.type)
 
     # THESE METHODS DO DIRECT ACTIONS #
+    def get_message(self, chat_id, message_id):
+        params = {
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "caption": "."
+        }
+        result = self.api_request('editMessageCaption', params)
+        if result and 'result' in result:
+            self.api_request('editMessageCaption', params)
+            del params['caption']
+            result = self.api_request('editMessageCaption', params)
+            if result and 'result' in result:
+                return self.convert_message(result.result)
+        return None
+
+    def delete_message(self, chat_id, message_id):
+        params = {
+            "chat_id": chat_id,
+            "message_id": message_id
+        }
+        result = self.api_request('deleteMessage', params)
+        if result.ok == False:
+            if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
+                return None
+            else:
+                return False
+        return True
 
     def get_file(self, file_id, link=False):
         params = {
@@ -687,8 +726,24 @@ class bindings(object):
         else:
             return download('https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.result.file_path))
 
+    def join_by_invite_link(self, invite_link):
+        return False
+
     def invite_conversation_member(self, conversation_id, user_id):
         return False
+
+    def promote_conversation_member(self, conversation_id, user_id):
+        params = {
+            "chat_id": conversation_id,
+            "user_id": user_id
+        }
+        result = self.api_request('promoteChatMember', params)
+        if result.ok == False:
+            if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
+                return None
+            else:
+                return False
+        return True
 
     def kick_conversation_member(self, conversation_id, user_id):
         params = {
@@ -716,6 +771,47 @@ class bindings(object):
                 return False
         return True
 
+    def rename_conversation(self, conversation_id, title):
+        params = {
+            "chat_id": conversation_id,
+            "title": title
+        }
+        result = self.api_request('setChatTitle', params)
+        if result.ok == False:
+            if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
+                return None
+            else:
+                return False
+        return True
+
+    def change_conversation_description(self, conversation_id, description):
+        params = {
+            "chat_id": conversation_id,
+            "description": description
+        }
+        result = self.api_request('setChatDescription', params)
+        if result.ok == False:
+            if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
+                return None
+            else:
+                return False
+        return True
+
+    def change_conversation_photo(self, conversation_id, photo):
+        photo = open(photo, 'rb')
+        files = {'photo': photo}
+        params = {
+            "chat_id": conversation_id,
+            "photo": photo
+        }
+        result = self.api_request('setChatPhoto', params, files=files)
+        if result.ok == False:
+            if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':
+                return None
+            else:
+                return False
+        return True
+
     def conversation_info(self, conversation_id):
         params = {
             "chat_id": conversation_id
@@ -726,4 +822,16 @@ class bindings(object):
         params = {
             "chat_id": conversation_id
         }
-        return self.api_request('getChatAdministrators', params)
+        res = self.api_request('getChatAdministrators', params)
+
+        admins = []
+        if 'result' in res:
+            for member in res.result:
+                user = User(member.user.id, member.user.first_name)
+                user.is_bot = member.user.is_bot
+                if 'last_name' in member.user:
+                    user.last_name = member.user.last_name
+                if 'username' in member.user:
+                    user.username = member.user.username
+                admins.append(user)
+        return admins

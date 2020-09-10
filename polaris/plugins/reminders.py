@@ -1,10 +1,15 @@
-from polaris.utils import get_input, first_word, all_but_first_word, is_int, catch_exception, init_if_empty, wait_until_received, set_data
-from polaris.types import AutosaveDict, Message, Conversation
+import logging
 from collections import OrderedDict
-from DictObject import DictObject
 from threading import Thread
+from time import sleep, time
+
+from DictObject import DictObject
 from firebase_admin import db
-from time import time, sleep
+
+from polaris.types import AutosaveDict, Conversation, Message
+from polaris.utils import (all_but_first_word, catch_exception, first_word,
+                           get_input, init_if_empty, is_int, set_data,
+                           wait_until_received)
 
 
 class plugin(object):
@@ -15,8 +20,8 @@ class plugin(object):
         self.commands = self.bot.trans.plugins.reminders.commands
         self.description = self.bot.trans.plugins.reminders.description
 
-
     # Plugin action #
+
     def run(self, m):
         input = get_input(m, ignore_reply=False)
         if not input:
@@ -45,9 +50,8 @@ class plugin(object):
             reminder.username = m.sender.username
 
         self.bot.reminders = wait_until_received('reminders/' + self.bot.name)
-        if not 'list' in self.bot.reminders or not self.bot.reminders.list or not hasattr(self.bot.reminders, 'list'):
-            self.bot.reminders.list = []
-        self.bot.reminders.list.append(reminder)
+        self.sort_reminders()
+        self.bot.reminders['list'].append(reminder)
         self.sort_reminders()
 
         if unit == 's':
@@ -59,28 +63,27 @@ class plugin(object):
         if unit == 'd':
             delay = delay.replace('d', ' days')
 
-        message = self.bot.trans.plugins.reminders.strings.added % (m.sender.first_name, delay, text)
+        message = self.bot.trans.plugins.reminders.strings.added % (
+            m.sender.first_name, delay, text)
 
         return self.bot.send_message(m, message, extra={'format': 'HTML'})
 
-
     def cron(self):
         self.bot.reminders = wait_until_received('reminders/' + self.bot.name)
-        if not 'list' in self.bot.reminders or not self.bot.reminders.list:
+        if not 'list' in self.bot.reminders or not self.bot.reminders['list']:
             self.bot.reminders['list'] = []
 
-        while len(self.bot.reminders['list']) > 0 and self.bot.reminders.list[0].alarm < time():
-            reminder = self.bot.reminders.list[0]
+        while len(self.bot.reminders['list']) > 0 and self.bot.reminders['list'][0].alarm < time():
+            reminder = self.bot.reminders['list'][0]
             text = '<i>%s</i>\n - %s' % (reminder.text, reminder.first_name)
             if 'username' in reminder:
-                 text += ' (@%s)' % reminder.username
+                text += ' (@%s)' % reminder.username
 
             m = Message(None, Conversation(reminder.chat_id), None, None)
             self.bot.send_message(m, text, extra={'format': 'HTML'})
-            self.bot.reminders.list.remove(reminder)
+            self.bot.reminders['list'].remove(reminder)
             self.sort_reminders()
             set_data('reminders/%s' % self.bot.name, self.bot.reminders)
-
 
     @staticmethod
     def to_seconds(delaytime, unit):
@@ -93,12 +96,13 @@ class plugin(object):
         elif unit == 'd':
             return float(delaytime) * 60 * 60 * 24
 
-
     def sort_reminders(self):
-        if not 'list' in self.bot.reminders or not self.bot.reminders.list:
-            self.bot.reminders.list = []
+        logging.info('sort_reminders: %s' % self.bot.reminders)
+        if not 'list' in self.bot.reminders or not self.bot.reminders['list']:
+            self.bot.reminders['list'] = []
 
-        if len(self.bot.reminders.list) > 0:
-            self.bot.reminders.list = sorted(self.bot.reminders.list, key=lambda k: k.alarm)
+        if len(self.bot.reminders['list']) > 0:
+            self.bot.reminders['list'] = sorted(
+                self.bot.reminders['list'], key=lambda k: k.alarm)
 
         set_data('reminders/%s' % self.bot.name, self.bot.reminders)
