@@ -324,7 +324,14 @@ class bindings(object):
                         }
                     })
                     formated_text.wait()
-                    text = formated_text.update
+                    if formated_text.update:
+                        text = formated_text.update
+                    else:
+                        text = {
+                            '@type': 'formattedText',
+                            'text': message.content,
+                            'entities': []
+                        }
                 else:
                     text = {
                         '@type': 'formattedText',
@@ -606,17 +613,18 @@ class bindings(object):
         return None
 
     def join_by_invite_link(self, invite_link):
-        data = {
-            '@type': 'joinChatByInviteLink',
-            'invite_link': invite_link
-        }
-        result = self.client._send_data(data)
-        result.wait()
+        if self.bot.info.is_bot:
+            data = {
+                '@type': 'joinChatByInviteLink',
+                'invite_link': invite_link
+            }
+            result = self.client._send_data(data)
+            result.wait()
 
-        if result.error_info:
-            self.bot.send_alert(result.error_info)
-            self.bot.send_alert(data)
-            return False
+            if result.error_info:
+                self.bot.send_alert(result.error_info)
+                self.bot.send_alert(data)
+                return False
         return True
 
     def invite_conversation_member(self, conversation_id, user_id):

@@ -140,18 +140,14 @@ class Bot(object):
 
         plugins_list = []
 
-        if type(self.config.plugins) is list:
-            plugins_to_load = self.config.plugins
+        if self.config.plugins == 'all':
+            plugins_to_load = load_plugin_list()
         elif self.config.plugins == 'all':
-            plugins_to_load = load_plugin_list()
-        else:
-            plugins_to_load = load_plugin_list()
+            plugins_to_load = self.config.plugins
 
-        if 'excluded_plugins' in self.config and type(self.config.excluded_plugins) is list:
-            plugins_list = [
+        if 'excluded_plugins' in self.config:
+            plugins_to_load = [
                 p for p in plugins_to_load if p not in self.config.excluded_plugins]
-
-            plugins_to_load = plugins_list
 
         for plugin in plugins_to_load:
             try:

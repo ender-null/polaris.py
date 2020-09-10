@@ -138,9 +138,10 @@ def set_setting(bot, uid, key, value):
 
     if not uid in bot.settings:
         bot.settings[uid] = {}
+
     bot.settings[uid][key] = value
-    set_data('settings/%s/%s/%s' %
-             (bot.name, uid, key), bot.settings[uid][key])
+    set_data('settings/%s/%s' % (bot.name, uid), bot.settings[uid])
+    logging.info('END')
 
 
 def get_setting(bot, uid, key):

@@ -1,8 +1,9 @@
+import logging
 from re import findall
 
 from polaris.types import AutosaveDict
-from polaris.utils import (get_input, get_setting, is_command, send_request,
-                           set_setting)
+from polaris.utils import (del_tag, get_input, get_setting, has_tag,
+                           is_command, send_request, set_setting, set_tag)
 
 
 class plugin(object):
@@ -19,8 +20,11 @@ class plugin(object):
             username = get_input(m)
 
             if not username:
-                username = get_setting(
-                    self.bot, m.sender.id, 'lastfm.username')
+                #username = get_setting(self.bot, m.sender.id, 'lastfm.username')
+                tags = has_tag(self.bot, m.sender.id,
+                               'lastfm:?', return_match=True)
+                if len(tags) > 0:
+                    username = tags[0].split(':')[1]
                 if not username and m.sender.username:
                     username = m.sender.username
                 if not username:
@@ -91,6 +95,8 @@ class plugin(object):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-            set_setting(self.bot, m.sender.id, 'lastfm.username', input)
+            # set_setting(self.bot, m.sender.id, 'lastfm.username', input)
+            del_tag(self.bot, m.sender.id, 'lastfm:?')
+            set_tag(self.bot, m.sender.id, 'lastfm:%s' % input)
             self.bot.send_message(m, self.bot.trans.plugins.lastfm.strings.username_set, extra={
                                   'format': 'HTML', 'preview': False})
