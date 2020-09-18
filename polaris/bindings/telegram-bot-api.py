@@ -798,12 +798,11 @@ class bindings(object):
         return True
 
     def change_conversation_photo(self, conversation_id, photo):
-        photo = open(photo, 'rb')
-        files = {'photo': photo}
         params = {
             "chat_id": conversation_id,
-            "photo": photo
         }
+        photo = open(photo, 'rb')
+        files = {'photo': photo}
         result = self.api_request('setChatPhoto', params, files=files)
         if result.ok == False:
             if result.description.split(': ')[1] == 'CHAT_ADMIN_REQUIRED' or result.description.split(': ')[1] == 'Not enough rights to kick participant':

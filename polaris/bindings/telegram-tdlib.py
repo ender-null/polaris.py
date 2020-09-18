@@ -613,7 +613,7 @@ class bindings(object):
         return None
 
     def join_by_invite_link(self, invite_link):
-        if self.bot.info.is_bot:
+        if not self.bot.info.is_bot:
             data = {
                 '@type': 'joinChatByInviteLink',
                 'invite_link': invite_link

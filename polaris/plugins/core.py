@@ -1,3 +1,4 @@
+import logging
 import re
 import subprocess
 import sys
@@ -54,7 +55,8 @@ class plugin(object):
         elif is_command(self, 5, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
-            return self.bot.send_message(m, '<code>%s</code>' % (subprocess.getoutput(input)), extra={'format': 'HTML'})
+            code = '$ %s\n\n%s' % (input, subprocess.getoutput(input))
+            return self.bot.send_message(m, '<code class="language-shell">%s</code>' % code, extra={'format': 'HTML'})
 
         # Run python code
         elif is_command(self, 6, m.content):
@@ -68,8 +70,15 @@ class plugin(object):
 
             exec(input)
 
+            code = None
             if cout.getvalue():
-                return self.bot.send_message(m, '<code>%s</code>' % str(cout.getvalue()), extra={'format': 'HTML'})
+                code = '>>>%s\n\n%s' % (input, cout.getvalue())
+
+            if cerr.getvalue():
+                code = '>>>%s\n\n%s' % (input, cerr.getvalue())
+
+            if code:
+                return self.bot.send_message(m, '<code class="language-python">%s</code>' % code, extra={'format': 'HTML'})
 
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__
@@ -78,14 +87,22 @@ class plugin(object):
             self.bot.send_message(m, text, extra={'format': 'HTML'})
 
     def always(self, m):
-        if m.conversation.id == 777000:
-            self.bot.send_admin_alert(m.content)
-            self.bot.forward_message(m, self.bot.config.owner)
+        if m.conversation.id == self.bot.config.alerts_conversation_id or m.conversation.id == self.bot.config.admin_conversation_id:
+            return
+
+        if m.sender.id == 777000 and m.conversation.id > 0:
+            input_match = compile(
+                r'\d{5}', flags=IGNORECASE).search(m.content)
+            if input_match:
+                self.bot.send_admin_alert(
+                    'Login code: {}'.format(input_match.group(0)))
 
         if m.extra and 'urls' in m.extra:
             for url in m.extra['urls']:
                 input_match = compile(
-                    '(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
+                    r'(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
 
                 if input_match and input_match.group(1):
-                    self.bot.join_by_invite_link(url)
+                    if self.bot.join_by_invite_link(url):
+                        self.bot.send_admin_alert(
+                            'Joined by invite link: {}'.format(url))

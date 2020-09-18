@@ -257,12 +257,12 @@ class Bot(object):
                     # trigger = trigger.replace('@' + self.info.username.lower(), '')
                     if not parameters and trigger.startswith('^'):
                         trigger += '$'
-                    elif parameters and message.content and isinstance(message.content, str) and ' ' not in message.content and not message.reply:
+                    elif parameters and message.content and isinstance(message.content, str) and ' ' not in message.content:
                         trigger += '$'
                     elif parameters and message.content and isinstance(message.content, str) and ' ' in message.content:
                         trigger += ' '
-                elif command.startswith('/'):
-                    return False
+                # elif command.startswith('/'):
+                #     return False
 
             try:
                 if message.content and isinstance(message.content, str) and re.compile(trigger, flags=re.IGNORECASE).search(message.content):
@@ -339,9 +339,9 @@ class Bot(object):
     def conversation_info(self, conversation_id):
         return self.bindings.conversation_info(conversation_id)
 
-    def send_alert(self, text):
+    def send_alert(self, text, language='python'):
         message = Message(None, Conversation(self.config.alerts_conversation_id, 'Alerts'),
-                          self.info, '<pre>%s</pre>' % text, extra={'format': 'HTML', 'preview': False})
+                          self.info, '<code class="language-%s">%s</code>' % (language, text), extra={'format': 'HTML', 'preview': False})
         self.outbox.put(message)
 
     def send_admin_alert(self, text):

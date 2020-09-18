@@ -367,6 +367,24 @@ def is_int(number):
         return False
 
 
+def is_hex(number):
+    try:
+        number = int(number, 16)
+        return True
+    except:
+        return False
+
+
+def positive(number):
+    if is_int(number):
+        if int(number) < 0:
+            return - int(number)
+        else:
+            return int(number)
+
+    return number
+
+
 def get_plugin_name(obj):
     return str(type(obj)).split('.')[2]
 
@@ -401,6 +419,7 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
         logging.error(r.text)
         if bot:
             bot.send_alert(r.text)
+            bot.send_alert(r.url)
             leave_list = ['no rights', 'no write access',
                           'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
             if bot.config['bindings'] == 'telegram-bot-api':
@@ -419,7 +438,11 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
             return send_request(url, params, headers, files, data, post, parse, bot=bot)
     try:
         if parse:
-            return DictObject(json.loads(r.text))
+            result = json.loads(r.text)
+            if isinstance(result, dict):
+                return DictObject(result)
+            return result
+
         else:
             return r.url
     except Exception as e:
@@ -575,6 +598,24 @@ def remove_html(text):
     s.fed = []
     s.feed(text)
     return ''.join(s.fed)
+
+
+def html_to_discord_markdown(text):
+    text = re.sub(r'<i>(.+)</i>', r'_\1_', text, flags=re.MULTILINE)
+    text = re.sub(r'<b>(.+)</b>', r'**\1**', text, flags=re.MULTILINE)
+    text = re.sub(r'<u>(.+)</u>', r'__\1__', text, flags=re.MULTILINE)
+    text = re.sub(r'<pre>([\S\s]+)</pre>', r'```\1```',
+                  text, flags=re.MULTILINE)
+    text = re.sub(
+        r'<code class=\"language-([\w]+)\">([\S\s]+)</code>', r'```\1\n\2```', text, flags=re.MULTILINE)
+    text = re.sub(r'<code>([\S\s]+)</code>', r'`\1`', text, flags=re.MULTILINE)
+    text = re.sub(
+        r'<a href="(.+)\">(.+)</a>', r'[\2](\1)', text, flags=re.MULTILINE)
+
+    text = text.replace('&lt;', '<')
+    text = text.replace('&gt;', '>')
+    logging.info(text)
+    return text
 
 
 def get_target(bot, m, input):

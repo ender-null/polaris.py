@@ -12,7 +12,6 @@ class plugin(object):
     def __init__(self, bot):
         self.bot = bot
         self.commands = self.bot.trans.plugins.web_search.commands
-        self.description = self.bot.trans.plugins.web_search.description
 
     # Plugin action #
     def run(self, m):

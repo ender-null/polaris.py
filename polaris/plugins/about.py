@@ -27,16 +27,19 @@ class plugin(object):
             version = self.bot.trans.plugins.about.strings.version % tag
             license = self.bot.trans.plugins.about.strings.license
             help = self.bot.trans.plugins.about.strings.help % self.bot.config.prefix
+            about = self.bot.trans.plugins.about.strings.about % self.bot.config.prefix
+            notice = self.bot.trans.plugins.about.strings.notice
             donations = self.bot.trans.plugins.about.strings.donations % self.bot.config.prefix
             stats = self.bot.trans.plugins.about.strings.stats % (
                 len(self.bot.users), len(self.bot.groups))
 
             if is_command(self, 1, m.content):
-                text = '%s\n\n%s\n\n%s\n%s\n\n%s\n\n%s' % (
-                    greeting, help, version, donations, license, stats)
+                text = '%s\n\n%s\n\n%s\n%s\n\n%s\n%s\n\n%s\n\n%s' % (
+                    greeting, notice, help, about, version, donations, license, stats)
 
             else:
-                text = '%s\n\n%s\n\n%s' % (greeting, help, donations)
+                text = '%s\n\n%s\n\n%s\n%s\n\n%s' % (
+                    greeting, notice, help, about, donations)
 
         elif is_command(self, 2, m.content):
             donations_explanation = self.bot.trans.plugins.about.strings.donations_explanation

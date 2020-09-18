@@ -7,8 +7,9 @@ import html2markdown
 
 import discord
 from polaris.types import Conversation, Message, User
-from polaris.utils import (catch_exception, download, is_int, send_request,
-                           set_data, split_large_message)
+from polaris.utils import (catch_exception, download, html_to_discord_markdown,
+                           is_int, positive, send_request, set_data,
+                           split_large_message)
 
 
 class bindings(object):
@@ -39,6 +40,7 @@ class bindings(object):
             conversation = Conversation(msg.channel.id)
 
             if hasattr(msg.channel, 'name'):
+                conversation.id = -msg.channel.id
                 conversation.title = msg.channel.name
 
             elif hasattr(msg.channel, 'recipient'):
@@ -104,12 +106,13 @@ class bindings(object):
 
     async def send_message(self, message):
         try:
-            channel = self.client.get_channel(message.conversation.id)
+            channel = self.client.get_channel(
+                positive(message.conversation.id))
             if channel:
                 content = message.content
                 if message.extra and 'format' in message.extra:
                     if message.extra['format'] == 'HTML':
-                        content = html2markdown.convert(content)
+                        content = html_to_discord_markdown(content)
 
                 if len(content) > 2000:
                     texts = split_large_message(content, 2000)

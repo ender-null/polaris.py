@@ -23,7 +23,7 @@ class plugin(object):
                 #username = get_setting(self.bot, m.sender.id, 'lastfm.username')
                 tags = has_tag(self.bot, m.sender.id,
                                'lastfm:?', return_match=True)
-                if len(tags) > 0:
+                if tags and len(tags) > 0:
                     username = tags[0].split(':')[1]
                 if not username and m.sender.username:
                     username = m.sender.username

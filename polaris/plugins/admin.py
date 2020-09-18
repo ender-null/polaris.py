@@ -1,3 +1,4 @@
+import logging
 from re import compile, findall
 
 from firebase_admin import db
@@ -20,6 +21,7 @@ class plugin(object):
         input = get_input(m)
         uid = str(m.sender.id)
         gid = str(m.conversation.id)
+        ok = False
 
         if m.conversation.id > 0:
             return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
@@ -46,65 +48,74 @@ class plugin(object):
                 else:
                     text += '\n   <i>?¿</i>'
 
-            return self.bot.send_message(m, text, extra={'format': 'HTML'})
+            ok = self.bot.send_message(m, text, extra={'format': 'HTML'})
 
         # Title #
         if is_command(self, 2, m.content):
             if self.check_permissions(m):
-                self.bot.bindings.rename_conversation(m.conversation.id, input)
+                ok = self.bot.bindings.rename_conversation(
+                    m.conversation.id, input)
 
         # Description #
         elif is_command(self, 3, m.content):
             if self.check_permissions(m):
-                self.bot.bindings.change_conversation_description(
+                ok = self.bot.bindings.change_conversation_description(
                     m.conversation.id, input)
 
         # Photo #
         elif is_command(self, 4, m.content):
             if self.check_permissions(m):
                 if m.reply and m.reply.type == 'photo':
-                    photo = self.bot.get_file(m.reply.content)
+                    photo = self.bot.bindings.get_file(m.reply.content)
+                    logging.info(photo)
                     if photo:
-                        return self.bot.bindings.change_conversation_photo(m.conversation.id, photo)
+                        ok = self.bot.bindings.change_conversation_photo(
+                            m.conversation.id, photo)
                     else:
-                        return self.bot.bindings.change_conversation_photo(m.conversation.id, m.reply.content)
+                        ok = self.bot.bindings.change_conversation_photo(
+                            m.conversation.id, m.reply.content)
 
         # Promote #
         elif is_command(self, 5, m.content):
             if self.check_permissions(m):
                 target = get_target(self.bot, m, get_input(m))
-                return self.bot.bindings.promote_conversation_member(m.conversation.id, target)
+                ok = self.bot.bindings.promote_conversation_member(
+                    m.conversation.id, target)
 
         # Kick #
         elif is_command(self, 6, m.content):
             if self.check_permissions(m):
                 target = get_target(self.bot, m, get_input(m))
-                return self.bot.bindings.kick_conversation_member(m.conversation.id, target)
+                ok = self.bot.bindings.kick_conversation_member(
+                    m.conversation.id, target)
 
         # Unban #
         elif is_command(self, 7, m.content):
             if self.check_permissions(m):
                 target = get_target(self.bot, m, get_input(m))
-                return self.bot.bindings.unban_conversation_member(m.conversation.id, target)
+                ok = self.bot.bindings.unban_conversation_member(
+                    m.conversation.id, target)
 
         # Delete message #
         elif is_command(self, 8, m.content):
             if self.check_permissions(m):
                 self.bot.bindings.delete_message(m.conversation.id, m.id)
                 if m.reply:
-                    return self.bot.bindings.delete_message(m.conversation.id, m.reply.id)
+                    ok = self.bot.bindings.delete_message(
+                        m.conversation.id, m.reply.id)
 
         # Pin #
         elif is_command(self, 9, m.content):
             if self.check_permissions(m):
                 if m.reply:
-                    return self.bot.send_message(m, 'pinChatMessage', 'system', extra={'message_id':  m.reply.id})
+                    ok = self.bot.send_message(m, 'pinChatMessage', 'system', extra={
+                                               'message_id':  m.reply.id})
 
         # Unpin #
         elif is_command(self, 10, m.content):
             if self.check_permissions(m):
                 if m.reply:
-                    return self.bot.send_message(m, 'unpinChatMessage', 'system')
+                    ok = self.bot.send_message(m, 'unpinChatMessage', 'system')
 
         # Custom title #
         elif is_command(self, 11, m.content):
@@ -113,14 +124,19 @@ class plugin(object):
                     target = m.reply.sender.id
                 else:
                     target = m.sender.id
-                return self.bot.send_message(m, 'setChatAdministratorCustomTitle', 'api', extra={'user_id': target, 'custom_title': input})
+                ok = self.bot.send_message(m, 'setChatAdministratorCustomTitle', 'api', extra={
+                                           'user_id': target, 'custom_title': input})
 
         # Leave #
         elif is_command(self, 12, m.content):
             if not is_admin(self.bot, m.sender.id) and not is_mod(self.bot, m.sender.id, m.conversation.id):
                 self.bot.send_message(
                     m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
-            return self.bot.send_message(m, 'leaveChat', 'system')
+            ok = self.bot.send_message(m, 'leaveChat', 'system')
+
+        if not ok:
+            return self.bot.send_message(
+                m, self.bot.trans.errors.failed, extra={'format': 'HTML'})
 
     def check_permissions(self, m):
         if not im_group_admin(self.bot, m):

@@ -32,9 +32,9 @@ class plugin(object):
             logging.info('%s has resend tag: %s' %
                          (m.conversation.id, m.conversation.title))
 
-            if m.conversation.id == m.sender.id:
-                self.bot.bindings.delete_message(id, m.id)
-                return
+            # if m.conversation.id == m.sender.id:
+            #     self.bot.bindings.delete_message(id, m.id)
+            #     return
 
             for tag in self.bot.tags[id]:
                 if tag.startswith('resend:'):
