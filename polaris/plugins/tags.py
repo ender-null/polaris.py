@@ -1,6 +1,6 @@
-from polaris.utils import (all_but_first_word, del_tag, first_word, get_input,
-                           has_tag, is_command, is_int, is_owner, is_trusted,
-                           set_tag)
+from polaris.utils import (all_but_first_word, del_tag, first_word,
+                           generate_command_help, get_input, has_tag,
+                           is_command, is_int, is_owner, is_trusted, set_tag)
 
 
 class plugin(object):
@@ -19,7 +19,8 @@ class plugin(object):
             return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
         if not input:
-            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+            # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         if m.reply:
             target = str(m.reply.sender.id)

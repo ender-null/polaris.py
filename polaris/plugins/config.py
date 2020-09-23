@@ -53,4 +53,4 @@ class plugin(object):
             text = ('❌' if config[parameter] else '✔️') + \
                 ' ' + self.bot.trans.plugins.config.strings[parameter]
 
-        return self.bot.send_message(m, text, extra={'format': 'Markdown'})
+        return self.bot.send_message(m, text, extra={'format': 'HTML'})

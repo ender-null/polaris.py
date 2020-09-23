@@ -3,8 +3,6 @@ import logging
 from multiprocessing import Process
 from time import mktime, time
 
-import html2markdown
-
 import discord
 from polaris.types import Conversation, Message, User
 from polaris.utils import (catch_exception, download, html_to_discord_markdown,

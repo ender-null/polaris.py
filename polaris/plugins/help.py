@@ -3,7 +3,8 @@ import logging
 
 from DictObject import DictObject
 
-from polaris.utils import get_input, is_command, remove_html
+from polaris.utils import (generate_command_help, get_input, is_command,
+                           remove_html)
 
 
 class plugin(object):
@@ -20,7 +21,6 @@ class plugin(object):
             'command': '/genhelp',
             'hidden': True
         })
-        self.description = self.bot.trans.plugins.help.description
 
     # Plugin action #
     def run(self, m):
@@ -110,22 +110,17 @@ class plugin(object):
                                     })
 
                         else:
-                            text += '\n • ' + \
-                                command.command.replace(
-                                    '/', self.bot.config.prefix)
-                            if 'parameters' in command and command.parameters:
-                                for parameter in command.parameters:
-                                    name, required = list(parameter.items())[0]
-                                    # Bold for required parameters, and italic for optional #
-                                    if required:
-                                        text += ' <b>&lt;%s&gt;</b>' % name
-                                    else:
-                                        text += ' [%s]' % name
+                            doc = generate_command_help(
+                                plugin, command['command'], False)
+                            if doc:
+                                lines = doc.splitlines()
 
-                            if 'description' in command:
-                                text += '\n   <i>%s</i>' % command.description
-                            else:
-                                text += '\n   <i>?¿</i>'
+                                text += '\n • ' + lines[0]
+
+                                if len(lines) > 1:
+                                    text += '\n   %s' % lines[1]
+                                else:
+                                    text += '\n   <i>?¿</i>'
 
         if is_command(self, 3, m.content):
             self.bot.send_message(m, 'setMyCommands', 'api', extra={

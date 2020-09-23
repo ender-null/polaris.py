@@ -31,7 +31,7 @@ class plugin(object):
                             content = text.split(':')[1]
                             return self.bot.send_message(m, content, _type)
 
-                    return self.bot.send_message(m, text, extra={'format': 'markdown'})
+                    return self.bot.send_message(m, text, extra={'format': 'HTML'})
 
     def update_triggers(self):
         self.commands = []

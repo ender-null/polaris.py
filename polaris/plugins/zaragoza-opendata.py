@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-from polaris.utils import get_input, is_command, is_int, send_request
+from polaris.utils import (generate_command_help, get_input, is_command,
+                           is_int, send_request)
 
 
 class plugin(object):
@@ -43,7 +44,8 @@ class plugin(object):
 
         if is_command(self, 1, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = 'http://api.drk.cat/zgzpls/bus/stations'
             params = {
@@ -73,7 +75,8 @@ class plugin(object):
 
         elif is_command(self, 2, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = 'http://api.drk.cat/zgzpls/tram/stations'
             try:
@@ -110,7 +113,8 @@ class plugin(object):
 
         elif is_command(self, 3, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             url = baseurl + '/recurso/urbanismo-infraestructuras/estacion-bicicleta/' + \
                 input.lstrip('0') + '.json'

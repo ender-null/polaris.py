@@ -1,7 +1,12 @@
-from polaris.utils import get_input, is_command, init_if_empty, wait_until_received, set_data, delete_data
-from polaris.types import AutosaveDict
-from firebase_admin import db
 from re import findall
+
+from firebase_admin import db
+
+from polaris.types import AutosaveDict
+from polaris.utils import (delete_data, generate_command_help, get_input,
+                           init_if_empty, is_command, set_data,
+                           wait_until_received)
+
 
 class plugin(object):
     # Loads the text strings from the bots language #
@@ -40,7 +45,8 @@ class plugin(object):
         # Add a pin #
         elif is_command(self, 2, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             if input.startswith('#'):
                 input = input.lstrip('#')
@@ -53,11 +59,12 @@ class plugin(object):
                 return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.already_pinned % input, extra={'format': 'HTML'})
 
             self.bot.pins[input] = {
-                'content': m.reply.content.replace('<','&lt;').replace('>','&gt;'),
+                'content': m.reply.content.replace('<', '&lt;').replace('>', '&gt;'),
                 'creator': m.sender.id,
                 'type': m.reply.type
             }
-            set_data('pins/%s/%s' % (self.bot.name, input), self.bot.pins[input])
+            set_data('pins/%s/%s' %
+                     (self.bot.name, input), self.bot.pins[input])
             self.update_triggers()
 
             return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.pinned % input, extra={'format': 'HTML'})
@@ -65,7 +72,8 @@ class plugin(object):
         # Remove a pin #
         elif is_command(self, 3, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             if input.startswith('#'):
                 input = input.lstrip('#')
@@ -97,17 +105,17 @@ class plugin(object):
                     else:
                         reply = m.id
 
-                    self.bot.send_message(m, self.bot.pins[pin].content, self.bot.pins[pin].type, extra={'format': 'HTML'}, reply = reply)
+                    self.bot.send_message(m, self.bot.pins[pin].content, self.bot.pins[pin].type, extra={
+                                          'format': 'HTML'}, reply=reply)
                     count -= 1
 
                 if count == 0:
                     return
 
-
     def update_triggers(self):
         # Add new triggers #
         for pin, attributes in self.bot.pins.items():
-            if not next((i for i,d in enumerate(self.commands) if 'command' in d and d.command == '#' + pin), None):
+            if not next((i for i, d in enumerate(self.commands) if 'command' in d and d.command == '#' + pin), None):
                 self.commands.append({
                     'command': '#' + pin,
                     'hidden': True

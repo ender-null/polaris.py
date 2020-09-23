@@ -2,8 +2,9 @@ import logging
 from time import time
 
 from polaris.utils import (all_but_first_word, del_setting, download,
-                           first_word, get_input, get_setting, has_tag,
-                           is_command, send_request, set_setting)
+                           first_word, generate_command_help, get_input,
+                           get_setting, has_tag, is_command, send_request,
+                           set_setting)
 
 
 class plugin(object):
@@ -54,7 +55,8 @@ class plugin(object):
                         summoner_name = summoner_info.split('/')[1]
 
                 if not summoner_name:
-                    return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                    return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                    # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             else:
                 if first_word(input).lower() in self.regions:

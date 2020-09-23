@@ -2,8 +2,9 @@ import logging
 from re import findall
 
 from polaris.types import AutosaveDict
-from polaris.utils import (del_tag, get_input, get_setting, has_tag,
-                           is_command, send_request, set_setting, set_tag)
+from polaris.utils import (del_tag, generate_command_help, get_input,
+                           get_setting, has_tag, is_command, send_request,
+                           set_setting, set_tag)
 
 
 class plugin(object):
@@ -93,7 +94,8 @@ class plugin(object):
         elif is_command(self, 2, m.content):
             input = get_input(m)
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             # set_setting(self.bot, m.sender.id, 'lastfm.username', input)
             del_tag(self.bot, m.sender.id, 'lastfm:?')

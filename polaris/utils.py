@@ -62,21 +62,48 @@ def get_input_legacy(message, ignore_reply=True):
     return text[text.find(" ") + 1:]
 
 
-def get_command_index(self, text):
-    if isinstance(text, str) and text.endswith('@' + self.bot.info.username) and ' ' not in text:
-        text = text.replace('@' + self.bot.info.username, '')
+def get_command_index(plugin, text):
+    if isinstance(text, str) and text.endswith('@' + plugin.bot.info.username) and ' ' not in text:
+        text = text.replace('@' + plugin.bot.info.username, '')
 
-    for i in self.commands:
-        logging.info(i)
+    text = text.replace('/', plugin.bot.config['prefix'])
+
+    for i in range(len(plugin.commands)):
+        if is_command(plugin, i + 1, text):
+            return i
+
+    return None
 
 
-def generate_command_help(self, text):
-    return get_command_index(self, text)
+def generate_command_help(plugin, text, show_hidden=True):
+    index = get_command_index(plugin, text)
+    if index == None:
+        return None
+
+    command = plugin.commands[index]
+    if not show_hidden and 'hidden' in command and command['hidden']:
+        return None
+
+    doc = command['command'].replace('/', plugin.bot.config['prefix'])
+
+    if 'parameters' in command and command['parameters']:
+        for parameter in command['parameters']:
+            name, required = list(parameter.items())[0]
+            # Bold for required parameters, and italic for optional #
+            if required:
+                doc += ' <b>&lt;%s&gt;</b>' % name
+            else:
+                doc += ' [%s]' % name
+
+    if 'description' in command:
+        doc += '\n<i>%s</i>' % command['description']
+
+    return doc
 
 
 def get_command(message, bot):
-    if message.content.startswith(bot.config['start']):
-        command = first_word(message.content).lstrip(bot.config['start'])
+    if message.content.startswith(bot.config['prefix']):
+        command = first_word(message.content).lstrip(bot.config['prefix'])
         return command.replace('@' + bot.username, '')
     elif message.type == 'inline_query':
         return first_word(message.content)
@@ -84,46 +111,46 @@ def get_command(message, bot):
         return None
 
 
-def is_command(self, number, text):
-    if isinstance(text, str) and text.endswith('@' + self.bot.info.username) and ' ' not in text:
-        text = text.replace('@' + self.bot.info.username, '')
+def is_command(plugin, number, text):
+    if isinstance(text, str) and text.endswith('@' + plugin.bot.info.username) and ' ' not in text:
+        text = text.replace('@' + plugin.bot.info.username, '')
 
-    if 'command' in self.commands[number - 1]:
-        if ((self.commands[number - 1]['command'] == '/start' and '/start' in text)
-                or (self.commands[number - 1]['command'] == '/help' and '/help' in text)):
-            trigger = self.commands[number - 1]['command'].replace('/', '^/')
+    if number - 1 < len(plugin.commands) and 'command' in plugin.commands[number - 1]:
+        if ((plugin.commands[number - 1]['command'] == '/start' and '/start' in text)
+                or (plugin.commands[number - 1]['command'] == '/help' and '/help' in text)):
+            trigger = plugin.commands[number - 1]['command'].replace('/', '^/')
         else:
-            if text[0] == '/' and 'keep_default' in self.commands[number - 1] and self.commands[number - 1]['keep_default']:
-                trigger = self.commands[number -
-                                        1]['command'].replace('/', '^/')
+            if text[0] == '/' and 'keep_default' in plugin.commands[number - 1] and plugin.commands[number - 1]['keep_default']:
+                trigger = plugin.commands[number -
+                                          1]['command'].replace('/', '^/')
             else:
-                trigger = self.commands[number - 1]['command'].replace(
-                    '/', self.bot.config['prefix']).lower()
+                trigger = plugin.commands[number - 1]['command'].replace(
+                    '/', plugin.bot.config['prefix']).lower()
 
-        if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
+        if 'parameters' not in plugin.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
-        elif 'parameters' in self.commands[number - 1] and ' ' not in text:
+        elif 'parameters' in plugin.commands[number - 1] and ' ' not in text:
             trigger += '$'
-        elif 'parameters' in self.commands[number - 1] and ' ' in text:
+        elif 'parameters' in plugin.commands[number - 1] and ' ' in text:
             trigger += ' '
 
         if compile(trigger).search(text.lower()):
             return True
 
-    if 'friendly' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['friendly'].replace(
-            '/', self.bot.config['prefix']).lower()
+    if 'friendly' in plugin.commands[number - 1]:
+        trigger = plugin.commands[number - 1]['friendly'].replace(
+            '/', plugin.bot.config['prefix']).lower()
         if compile(trigger).search(text.lower()):
             return True
 
-    if 'shortcut' in self.commands[number - 1]:
-        trigger = self.commands[number - 1]['shortcut'].replace(
-            '/', self.bot.config['prefix']).lower()
-        if 'parameters' not in self.commands[number - 1] and trigger.startswith('^'):
+    if 'shortcut' in plugin.commands[number - 1]:
+        trigger = plugin.commands[number - 1]['shortcut'].replace(
+            '/', plugin.bot.config['prefix']).lower()
+        if 'parameters' not in plugin.commands[number - 1] and trigger.startswith('^'):
             trigger += '$'
-        elif 'parameters' in self.commands[number - 1] and ' ' not in text:
+        elif 'parameters' in plugin.commands[number - 1] and ' ' not in text:
             trigger += '$'
-        elif 'parameters' in self.commands[number - 1] and ' ' in text:
+        elif 'parameters' in plugin.commands[number - 1] and ' ' in text:
             trigger += ' '
 
         if compile(trigger).search(text.lower()):

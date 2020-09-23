@@ -3,7 +3,8 @@ from random import randint
 
 import requests
 
-from polaris.utils import download, get_input, is_command, send_request
+from polaris.utils import (download, generate_command_help, get_input,
+                           is_command, send_request)
 
 
 class plugin(object):
@@ -17,7 +18,8 @@ class plugin(object):
     def run(self, m):
         input = get_input(m, ignore_reply=False)
         if not input:
-            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+            # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         url = 'https://duckduckgo.com/'
         params = {

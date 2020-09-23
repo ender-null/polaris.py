@@ -2,9 +2,9 @@ import logging
 
 from DictObject import DictObject
 
-from polaris.utils import (catch_exception, download, get_coords, get_input,
-                           get_streetview, is_command, remove_html,
-                           send_request)
+from polaris.utils import (catch_exception, download, generate_command_help,
+                           get_coords, get_input, get_streetview, is_command,
+                           remove_html, send_request)
 
 
 class plugin(object):
@@ -18,7 +18,8 @@ class plugin(object):
     def run(self, m):
         input = get_input(m, ignore_reply=False)
         if not input:
-            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+            # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
         status, values = get_coords(input, self.bot)
 

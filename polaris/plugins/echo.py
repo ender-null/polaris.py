@@ -13,8 +13,7 @@ class plugin(object):
         input = get_input(m, ignore_reply=False)
 
         if not input:
-            generate_command_help(self, m.content)
-            return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+            return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+            # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-        self.bot.send_message(m, input.capitalize(),
-                              extra={'format': 'Markdown'})
+        self.bot.send_message(m, input.capitalize())
