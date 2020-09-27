@@ -8,18 +8,18 @@ class plugin(object):
     def __init__(self, bot):
         self.bot = bot
         self.commands = self.bot.trans.plugins.jokes.commands
-        self.description = self.bot.trans.plugins.jokes.description
 
     # Plugin action #
     def run(self, m):
         url = 'http://api.icndb.com/jokes/random'
+        params = {
+            'firstName': self.bot.info.first_name,
+            'lastName': self.bot.info.last_name
+        }
 
-        data = send_request(url, bot=self.bot)
+        data = send_request(url, params, bot=self.bot)
 
-        if not data:
+        if not data or data['type'] != 'success':
             return self.bot.send_message(m, self.bot.trans.errors.connection_error)
 
-        text = html.unescape(data.value.joke).replace(
-            'Chuck Norris', self.bot.info.first_name)
-
-        self.bot.send_message(m, text)
+        self.bot.send_message(m, data.value.joke, extra={'format': 'HTML'})

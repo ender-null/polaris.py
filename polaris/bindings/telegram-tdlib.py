@@ -1,11 +1,10 @@
 import json
 import logging
 
-from telegram.client import Telegram
-
 from polaris.types import Conversation, Message, User
 from polaris.utils import (catch_exception, download, is_int, send_request,
                            set_data)
+from telegram.client import Telegram
 
 
 class bindings(object):
@@ -35,7 +34,7 @@ class bindings(object):
         return User(me['id'], me['first_name'], me['last_name'], me['username'], me['type']['@type'] == 'userTypeBot')
 
     def api_request(self, api_method, params=None, headers=None, data=None, files=None):
-        url = 'https://api.telegram.org/bot%s/%s' % (
+        url = 'https://api.telegram.org/bot{}/{}'.format(
             self.bot.config['bindings_token'], api_method)
         try:
             return send_request(url, params, headers, files, data, post=True, bot=self.bot)
@@ -78,16 +77,19 @@ class bindings(object):
 
                 try:
                     logging.info(
-                        '[%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.first_name, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
+                        '[{}] {}@{} [{}] sent [{}] {}'.format(msg.sender.id, msg.sender.first_name, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                 except AttributeError:
                     logging.info(
-                        '[%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.title, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
+                        '[{}] {}@{} [{}] sent [{}] {}'.format(msg.sender.id, msg.sender.title, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                 try:
+                    if msg.content.startswith('/') or msg.content.startswith(self.bot.config.prefix):
+                        self.send_chat_action(msg.conversation.id)
                     self.bot.on_message_receive(msg)
+                    self.cancel_send_chat_action(msg.conversation.id)
                     while self.bot.outbox.qsize() > 0:
                         msg = self.bot.outbox.get()
-                        logging.info(' [%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.first_name,
-                                                                        msg.conversation.title, msg.conversation.id, msg.type, msg.content))
+                        logging.info(' [{}] {}@{} [{}] sent [{}] {}'.format(msg.sender.id, msg.sender.first_name,
+                                                                            msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                         self.send_message(msg)
 
                 except KeyboardInterrupt:
@@ -496,8 +498,7 @@ class bindings(object):
                 self.cancel_send_chat_action(message.conversation.id)
 
                 if result.error:
-                    self.bot.send_alert(result.error_info)
-                    self.bot.send_alert(data)
+                    self.request_processing(data, result.error_info)
 
                 elif message.type == 'system':
                     self.bot.send_alert(result.update)
@@ -535,7 +536,7 @@ class bindings(object):
                 'id': content
             }
 
-    def send_chat_action(self, conversation_id, type):
+    def send_chat_action(self, conversation_id, type='text'):
         action = 'chatActionTyping'
 
         if type == 'photo':
@@ -569,6 +570,22 @@ class bindings(object):
         }
         result = self.client._send_data(data)
         result.wait()
+
+    def request_processing(self, request, response):
+        self.bot.send_alert(request)
+        self.bot.send_alert(response)
+
+        leave_list = ['no rights', 'no write access',
+                      'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
+
+        for term in leave_list:
+            if term in response['message']:
+                self.bot.send_admin_alert('Leaving chat: {} [{}]'.format(
+                    self.bot.groups[str(request['chat_id'])].title, request['chat_id']))
+                res = self.bot.bindings.kick_conversation_member(
+                    request['chat_id'], self.bot.info.id)
+                self.bot.send_admin_alert(res)
+                break
 
     # THESE METHODS DO DIRECT ACTIONS #
     def get_message(self, chat_id, message_id):
@@ -606,9 +623,9 @@ class bindings(object):
             }
             result = self.api_request('getFile', params)
             if link:
-                return 'https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.result.file_path)
+                return 'https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path)
             else:
-                return download('https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.result.file_path))
+                return download('https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path))
 
         return None
 
@@ -625,7 +642,8 @@ class bindings(object):
                 self.bot.send_alert(result.error_info)
                 self.bot.send_alert(data)
                 return False
-        return True
+            return True
+        return None
 
     def invite_conversation_member(self, conversation_id, user_id):
         if self.bot.info.is_bot:

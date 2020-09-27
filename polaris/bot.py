@@ -29,7 +29,7 @@ class Bot(object):
         self.jobs = None
         self.get_database()
         self.bindings = importlib.import_module(
-            'polaris.bindings.%s' % self.config['bindings']).bindings(self)
+            'polaris.bindings.{}'.format(self.config['bindings'])).bindings(self)
         self.info = self.bindings.get_me()
 
         if self.info is None:
@@ -58,8 +58,8 @@ class Bot(object):
             logging.debug('Starting sender worker...')
             while self.started:
                 msg = self.outbox.get()
-                logging.info(' [%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.first_name,
-                                                                msg.conversation.title, msg.conversation.id, msg.type, msg.content))
+                logging.info(' [{}] {}@{} [{}] sent [{}] {}'.format(msg.sender.id, msg.sender.first_name,
+                                                                    msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                 self.bindings.send_message(msg)
 
         except KeyboardInterrupt:
@@ -75,10 +75,10 @@ class Bot(object):
                 msg = self.inbox.get()
                 try:
                     logging.info(
-                        '[%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.first_name, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
+                        '[{}] {}@{} [{}] sent [{}] {}'.format(msg.sender.id, msg.sender.first_name, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                 except AttributeError:
                     logging.info(
-                        '[%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.title, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
+                        '[{}] {}@{} [{}] sent [{}] {}'.format(msg.sender.id, msg.sender.title, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
 
                 self.on_message_receive(msg)
 
@@ -96,7 +96,7 @@ class Bot(object):
             self.started = True
             self.plugins = self.init_plugins()
 
-            logging.info('Connected as %s (@%s) [%s]' %
+            logging.info('Connected as {} (@{}) [{}]'.format
                          (self.info.first_name, self.info.username, 'bot' if self.info.is_bot else 'user'))
 
             self.jobs = []
@@ -105,17 +105,17 @@ class Bot(object):
             else:
                 self.started = True
                 self.jobs.append(
-                    Process(target=self.bindings.receiver_worker, name='%s R.' % self.name))
+                    Process(target=self.bindings.receiver_worker, name='{} R.'.format(self.name)))
                 if hasattr(self.bindings, 'custom_sender') and self.bindings.custom_sender:
                     pass
                 else:
                     self.jobs.append(
-                        Process(target=self.sender_worker, name='%s S.' % self.name))
+                        Process(target=self.sender_worker, name='{} S.'.format(self.name)))
                 self.jobs.append(
-                    Process(target=self.messages_handler, name='%s' % self.name))
+                    Process(target=self.messages_handler, name='{}'.format(self.name)))
 
             self.jobs.append(
-                Process(target=self.cron_jobs, name='%s C.' % self.name))
+                Process(target=self.cron_jobs, name='{} C.'.format(self.name)))
 
             for job in self.jobs:
                 # if job.name != self.name:
@@ -123,14 +123,14 @@ class Bot(object):
                 job.start()
 
         else:
-            logging.info('[%s] is not enabled!' % self.name)
+            logging.info('[{}] is not enabled!'.format(self.name))
 
     def stop(self):
         self.started = False
         for job in self.jobs:
             # if job.daemon:
             logging.info(
-                'Terminating process [%s] with PID %s' % (job.name, job.pid))
+                'Terminating process [{}] with PID {}'.format(job.name, job.pid))
             os.kill(job.pid, signal.SIGKILL)
 
     def init_plugins(self):
@@ -153,9 +153,9 @@ class Bot(object):
             try:
                 plugins.append(importlib.import_module(
                     'polaris.plugins.' + plugin).plugin(self))
-                logging.debug('  [OK] %s ' % (plugin))
+                logging.debug('  [OK] {} '.format(plugin))
             except Exception as e:
-                logging.error('  [Failed] %s - %s ' % (plugin, str(e)))
+                logging.error('  [Failed] {} - {} '.format(plugin, str(e)))
 
         logging.debug('  Loaded: ' + str(len(plugins)) +
                       '/' + str(len(plugins_to_load)))
@@ -341,7 +341,7 @@ class Bot(object):
 
     def send_alert(self, text, language='python'):
         message = Message(None, Conversation(self.config.alerts_conversation_id, 'Alerts'),
-                          self.info, '<code class="language-%s">%s</code>' % (language, text), extra={'format': 'HTML', 'preview': False})
+                          self.info, '<code class="language-{}">{}</code>'.format(language, text), extra={'format': 'HTML', 'preview': False})
         self.outbox.put(message)
 
     def send_admin_alert(self, text):

@@ -1,10 +1,9 @@
 import json
 import logging
 
-from six import string_types
-
 from polaris.types import Conversation, Message, User
-from polaris.utils import catch_exception, download, send_request
+from polaris.utils import catch_exception, download, replace_html, send_request
+from six import string_types
 
 
 class bindings(object):
@@ -13,10 +12,12 @@ class bindings(object):
         self.no_threads = False
 
     def api_request(self, api_method, params=None, headers=None, data=None, files=None):
-        url = 'https://api.telegram.org/bot%s/%s' % (
+        url = 'https://api.telegram.org/bot{}/{}'.format(
             self.bot.config['bindings_token'], api_method)
         try:
-            return send_request(url, params, headers, files, data, post=True, bot=self.bot)
+            res = send_request(url, params, headers, files,
+                               data, post=True, bot=self.bot)
+            self.request_processing(params, res)
         except:
             return None
 
@@ -685,7 +686,22 @@ class bindings(object):
             self.api_request(message.content, params, files=files)
 
         else:
-            logging.error("UNKNOWN MESSAGE TYPE: %s" % message.type)
+            logging.error("UNKNOWN MESSAGE TYPE: {}".format(message.type))
+
+    def request_processing(self, request, response):
+        self.bot.send_alert(request)
+        self.bot.send_alert(response)
+
+        leave_list = ['no rights', 'no write access',
+                      'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
+        for term in leave_list:
+            if term in request.result:
+                self.bot.send_admin_alert('Leaving chat: {} [{}]'.format(
+                    self.bot.groups[str(request['chat_id'])].title, request['chat_id']))
+                res = self.bot.bindings.kick_conversation_member(
+                    request['chat_id'], bot.info.id)
+                self.bot.send_admin_alert(res)
+                break
 
     # THESE METHODS DO DIRECT ACTIONS #
     def get_message(self, chat_id, message_id):
@@ -722,9 +738,9 @@ class bindings(object):
         }
         result = self.api_request('getFile', params)
         if link:
-            return 'https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.result.file_path)
+            return 'https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path)
         else:
-            return download('https://api.telegram.org/file/bot%s/%s' % (self.bot.config['bindings_token'], result.result.file_path))
+            return download('https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path))
 
     def join_by_invite_link(self, invite_link):
         return False

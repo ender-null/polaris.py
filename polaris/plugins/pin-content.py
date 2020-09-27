@@ -1,7 +1,6 @@
 from re import findall
 
 from firebase_admin import db
-
 from polaris.types import AutosaveDict
 from polaris.utils import (delete_data, generate_command_help, get_input,
                            init_if_empty, is_command, set_data,
@@ -105,9 +104,10 @@ class plugin(object):
                     else:
                         reply = m.id
 
-                    self.bot.send_message(m, self.bot.pins[pin].content, self.bot.pins[pin].type, extra={
-                                          'format': 'HTML'}, reply=reply)
-                    count -= 1
+                    if 'content' in self.bot.pins[pin] and 'type' in self.bot.pins[pin]:
+                        self.bot.send_message(m, self.bot.pins[pin].content, self.bot.pins[pin].type, extra={
+                            'format': 'HTML'}, reply=reply)
+                        count -= 1
 
                 if count == 0:
                     return

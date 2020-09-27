@@ -1,7 +1,6 @@
 import subprocess
 
 from firebase_admin import db
-
 from polaris.utils import get_input, has_tag, is_command, set_data
 
 
@@ -70,40 +69,42 @@ class plugin(object):
         # Update group data #
         gid = str(m.conversation.id)
         if m.conversation.id < 0:
-            if self.bot.groups:
-                if gid in self.bot.groups:
-                    self.bot.groups[gid].title = m.conversation.title
-                    self.bot.groups[gid].messages += 1
+            if not self.bot.groups:
+                self.bot.groups = {}
+            if gid in self.bot.groups:
+                self.bot.groups[gid]['title'] = m.conversation.title
+                self.bot.groups[gid]['messages'] += 1
 
-                else:
-                    self.bot.groups[gid] = {
-                        "title": m.conversation.title,
-                        "messages": 1
-                    }
-                set_data('groups/%s/%s' %
-                         (self.bot.name, gid), self.bot.groups[gid])
+            else:
+                self.bot.groups[gid] = {
+                    "title": m.conversation.title,
+                    "messages": 1
+                }
+            set_data('groups/%s/%s' %
+                     (self.bot.name, gid), self.bot.groups[gid])
 
         # Update user data #
         if str(m.sender.id).startswith('-100'):
             return
 
         uid = str(m.sender.id)
-        if self.bot.users:
-            if uid in self.bot.users:
-                self.bot.users[uid].first_name = m.sender.first_name
-                if hasattr(m.sender, 'last_name'):
-                    self.bot.users[uid].last_name = m.sender.last_name
-                if hasattr(m.sender, 'username'):
-                    self.bot.users[uid].username = m.sender.username
-                if hasattr(m.sender, 'is_bot'):
-                    self.bot.users[uid].is_bot = m.sender.is_bot
-                self.bot.users[uid].messages += 1
+        if not self.bot.users:
+            self.bot.users = {}
+        if uid in self.bot.users:
+            self.bot.users[uid]['first_name'] = m.sender.first_name
+            if hasattr(m.sender, 'last_name'):
+                self.bot.users[uid]['last_name'] = m.sender.last_name
+            if hasattr(m.sender, 'username'):
+                self.bot.users[uid]['username'] = m.sender.username
+            if hasattr(m.sender, 'is_bot'):
+                self.bot.users[uid]['is_bot'] = m.sender.is_bot
+            self.bot.users[uid]['messages'] += 1
 
-            else:
-                self.bot.users[uid] = {
-                    "first_name": m.sender.first_name,
-                    "last_name": m.sender.last_name,
-                    "username": m.sender.username,
-                    "messages": 1
-                }
-            set_data('users/%s/%s' % (self.bot.name, uid), self.bot.users[uid])
+        else:
+            self.bot.users[uid] = {
+                "first_name": m.sender.first_name,
+                "last_name": m.sender.last_name,
+                "username": m.sender.username,
+                "messages": 1
+            }
+        set_data('users/%s/%s' % (self.bot.name, uid), self.bot.users[uid])

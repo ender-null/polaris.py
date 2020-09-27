@@ -56,7 +56,6 @@ class plugin(object):
 
                 if not summoner_name:
                     return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
-                    # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             else:
                 if first_word(input).lower() in self.regions:
@@ -67,8 +66,7 @@ class plugin(object):
                     summoner_name = input
 
             summoner = self.summoner_by_name(summoner_name)
-
-            if not summoner:
+            if not summoner or 'status' in summoner and summoner['status']['status_code'] != 200:
                 return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
 
             account = self.account_by_puuid(summoner.puuid)
@@ -119,8 +117,7 @@ class plugin(object):
             endpoint = 'https://%s.%s' % (
                 self.region['platform'], self.base_url)
 
-        # params['api_key'] = self.bot.config.api_keys.riot_api
-        params['api_key'] = 'RGAPI-a1859206-2bfe-4fe0-9972-3ebb42e7018d'
+        params['api_key'] = self.bot.config.api_keys.riot_api
 
         return send_request(endpoint + method, params)
 

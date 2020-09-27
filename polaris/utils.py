@@ -91,12 +91,12 @@ def generate_command_help(plugin, text, show_hidden=True):
             name, required = list(parameter.items())[0]
             # Bold for required parameters, and italic for optional #
             if required:
-                doc += ' <b>&lt;%s&gt;</b>' % name
+                doc += ' <b>&lt;{}&gt;</b>'.format(name)
             else:
-                doc += ' [%s]' % name
+                doc += ' [{}]'.format(name)
 
     if 'description' in command:
-        doc += '\n<i>%s</i>' % command['description']
+        doc += '\n<i>{}</i>'.format(command['description'])
 
     return doc
 
@@ -167,7 +167,7 @@ def set_setting(bot, uid, key, value):
         bot.settings[uid] = {}
 
     bot.settings[uid][key] = value
-    set_data('settings/%s/%s' % (bot.name, uid), bot.settings[uid])
+    set_data('settings/{}/{}'.format(bot.name, uid), bot.settings[uid])
     logging.info('END')
 
 
@@ -186,7 +186,7 @@ def del_setting(bot, uid, key):
         uid = str(uid)
 
     del(bot.settings[uid][key])
-    delete_data('settings/%s/%s/%s' % (bot.name, uid, key))
+    delete_data('settings/{}/{}/{}'.format(bot.name, uid, key))
 
 
 def has_tag(bot, target, tag, return_match=False):
@@ -197,7 +197,8 @@ def has_tag(bot, target, tag, return_match=False):
         for target_tag in bot.tags[target]:
             if not target_tag:
                 bot.tags[target].remove(target_tag)
-                set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+                set_data('tags/{}/{}'.format(bot.name, target),
+                         bot.tags[target])
 
             if target_tag and target_tag.startswith(tag.split('?')[0]):
                 if return_match:
@@ -226,7 +227,7 @@ def set_tag(bot, target, tag):
 
     if not tag in bot.tags[target]:
         bot.tags[target].append(tag)
-        set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+        set_data('tags/{}/{}'.format(bot.name, target), bot.tags[target])
         return True
 
 
@@ -238,12 +239,13 @@ def del_tag(bot, target, tag):
         for target_tag in bot.tags[target]:
             if target_tag.startswith(tag.split('?')[0]):
                 bot.tags[target].remove(target_tag)
-                set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+                set_data('tags/{}/{}'.format(bot.name, target),
+                         bot.tags[target])
                 break
 
     elif target in bot.tags and tag in bot.tags[target]:
         bot.tags[target].remove(tag)
-        set_data('tags/%s/%s' % (bot.name, target), bot.tags[target])
+        set_data('tags/{}/{}'.format(bot.name, target), bot.tags[target])
 
 
 def is_group_admin(bot, uid, m=None):
@@ -294,7 +296,7 @@ def is_mod(bot, uid, gid):
     if not isinstance(uid, str):
         uid = str(uid)
 
-    if has_tag(bot, uid, 'globalmod') or has_tag(bot, uid, 'mod:%s' % gid):
+    if has_tag(bot, uid, 'globalmod') or has_tag(bot, uid, 'mod:{}'.format(gid)):
         return True
 
     else:
@@ -310,7 +312,7 @@ def set_step(bot, target, plugin, step):
         'step': step
     }
 
-    set_data('steps/%s/%s' % (bot.name, target), bot.steps[target])
+    set_data('steps/{}/{}'.format(bot.name, target), bot.steps[target])
 
 
 def get_step(bot, target):
@@ -329,7 +331,7 @@ def cancel_steps(bot, target):
 
     if target in bot.steps:
         del(bot.steps[target])
-        delete_data('steps/%s/%s' % (bot.name, target))
+        delete_data('steps/{}/{}'.format(bot.name, target))
 
 
 def get_full_name(bot, uid, include_username=True):
@@ -425,7 +427,7 @@ def load_plugin_list():
     return sorted(plugin_list)
 
 
-def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True, verify=True, bot=None):
+def send_request(url, params=None, headers=None, files=None, data=None, post=False, parse=True, verify=True, bot=None, return_error_response=False):
     try:
         if post:
             r = requests.post(url, params=params, headers=headers,
@@ -434,9 +436,9 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
             r = requests.get(url, params=params, headers=headers,
                              files=files, data=data, timeout=100, verify=verify)
     except:
-        logging.error('Error making request to: %s' % url)
+        logging.error('Error making request to: {}'.format(url))
         if bot:
-            bot.send_alert('Error making request to: %s' % url)
+            bot.send_alert('Error making request to: {}'.format(url))
         if verify:
             return send_request(url, params, headers, files, data, post, parse, False, bot)
         else:
@@ -444,21 +446,7 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
 
     if r.status_code != 200:
         logging.error(r.text)
-        if bot:
-            bot.send_alert(r.text)
-            bot.send_alert(r.url)
-            leave_list = ['no rights', 'no write access',
-                          'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
-            if bot.config['bindings'] == 'telegram-bot-api':
-                for term in leave_list:
-                    if term in r.text:
-                        bot.send_admin_alert('Leaving chat: %s [%s]' % (
-                            bot.groups[str(params['chat_id'])].title, params['chat_id']))
-                        res = bot.bindings.api_request('leaveChat', {
-                            'chat_id': params['chat_id']
-                        })
-                        bot.send_alert(res)
-                        break
+        bot.send_alert(r.text)
 
         while r.status_code == 429:
             sleep(5)
@@ -476,6 +464,25 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
         logging.error(r.text)
         catch_exception(e)
         return None
+
+
+def request_processing(r, params, bot):
+    if bot:
+        bot.send_alert(replace_html(r.text))
+        leave_list = ['no rights', 'no write access',
+                      'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
+        if bot.config['bindings'] == 'telegram-bot-api' or bot.config['bindings'] == 'telegram-tdlib':
+            for term in leave_list:
+                if term in r.text:
+                    bot.send_admin_alert('Leaving chat: {} [{}]'.format(
+                        bot.groups[str(params['chat_id'])].title, params['chat_id']))
+                    # res = bot.bindings.api_request('leaveChat', {
+                    #     'chat_id': params['chat_id']
+                    # })
+                    res = bot.bindings.kick_conversation_member(
+                        params['chat_id'], bot.info.id)
+                    bot.send_admin_alert(res)
+                    break
 
 
 def get_coords(input, bot=None):
@@ -511,7 +518,7 @@ def get_streetview(latitude, longitude, key, size='640x320', fov=90, heading=235
     url = 'http://maps.googleapis.com/maps/api/streetview'
     params = {
         'size': size,
-        'location': '%s,%s' % (latitude, longitude),
+        'location': '{},{}'.format(latitude, longitude),
         'fov': fov,
         'heading': heading,
         'pitch': pitch,
@@ -612,32 +619,29 @@ def remove_markdown(text):
     return ''.join(aux)
 
 
-def remove_html(text):
-    text = re.sub('<[^<]+?>', '', text)
+def replace_html(text):
     text = text.replace('&lt;', '<')
     text = text.replace('&gt;', '>')
     return text
-    s = HTMLParser()
-    s.reset()
-    s.reset()
-    s.strict = False
-    s.convert_charrefs = True
-    s.fed = []
-    s.feed(text)
-    return ''.join(s.fed)
+
+
+def remove_html(text):
+    text = re.sub('<[^<]+?>', '', text)
+    text = replace_html(text)
+    return text
 
 
 def html_to_discord_markdown(text):
-    text = re.sub(r'<i>(.+)</i>', r'_\1_', text, flags=re.MULTILINE)
-    text = re.sub(r'<b>(.+)</b>', r'**\1**', text, flags=re.MULTILINE)
-    text = re.sub(r'<u>(.+)</u>', r'__\1__', text, flags=re.MULTILINE)
-    text = re.sub(r'<pre>([\S\s]+)</pre>', r'```\1```',
+    text = re.sub(r'<i>([\w\s-]+)</i>', r'_\1_', text, flags=re.MULTILINE)
+    text = re.sub(r'<b>([\w\s-]+)</b>', r'**\1**', text, flags=re.MULTILINE)
+    text = re.sub(r'<u>([\w\s-]+)</u>', r'__\1__', text, flags=re.MULTILINE)
+    text = re.sub(r'<pre>([\w\s-]+)</pre>', r'```\1```',
                   text, flags=re.MULTILINE)
     text = re.sub(
-        r'<code class=\"language-([\w]+)\">([\S\s]+)</code>', r'```\1\n\2```', text, flags=re.MULTILINE)
+        r'<code class="language-([\w]+)">([\S\s]+)</code>', r'```\1\n\2```', text, flags=re.MULTILINE)
     text = re.sub(r'<code>([\S\s]+)</code>', r'`\1`', text, flags=re.MULTILINE)
     text = re.sub(
-        r'<a href="(.+)\">(.+)</a>', r'[\2](\1)', text, flags=re.MULTILINE)
+        r'<a href="([\w]+)">([\S\s]+)</a>', r'[\2](\1)', text, flags=re.MULTILINE)
 
     text = text.replace('&lt;', '<')
     text = text.replace('&gt;', '>')

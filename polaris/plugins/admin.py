@@ -2,7 +2,6 @@ import logging
 from re import compile, findall
 
 from firebase_admin import db
-
 from polaris.types import AutosaveDict
 from polaris.utils import (all_but_first_word, delete_data, get_input,
                            get_target, has_tag, im_group_admin, is_admin,
@@ -67,7 +66,6 @@ class plugin(object):
             if self.check_permissions(m):
                 if m.reply and m.reply.type == 'photo':
                     photo = self.bot.bindings.get_file(m.reply.content)
-                    logging.info(photo)
                     if photo:
                         ok = self.bot.bindings.change_conversation_photo(
                             m.conversation.id, photo)
@@ -108,14 +106,14 @@ class plugin(object):
         elif is_command(self, 9, m.content):
             if self.check_permissions(m):
                 if m.reply:
-                    ok = self.bot.send_message(m, 'pinChatMessage', 'system', extra={
+                    ok = self.bot.send_message(m, 'pinChatMessage', 'api', extra={
                                                'message_id':  m.reply.id})
 
         # Unpin #
         elif is_command(self, 10, m.content):
             if self.check_permissions(m):
                 if m.reply:
-                    ok = self.bot.send_message(m, 'unpinChatMessage', 'system')
+                    ok = self.bot.send_message(m, 'unpinChatMessage', 'api')
 
         # Custom title #
         elif is_command(self, 11, m.content):

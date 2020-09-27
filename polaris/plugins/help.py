@@ -2,7 +2,6 @@ import json
 import logging
 
 from DictObject import DictObject
-
 from polaris.utils import (generate_command_help, get_input, is_command,
                            remove_html)
 
@@ -50,14 +49,16 @@ class plugin(object):
                                             parameter.items())[0]
                                         # Bold for required parameters, and italic for optional #
                                         if required:
-                                            text += ' <b>&lt;%s&gt;</b>' % name
+                                            text += ' <b>&lt;{}&gt;</b>'.format(
+                                                name)
                                         else:
-                                            text += ' [%s]' % name
+                                            text += ' [{}]'.format(name)
 
                                 if 'description' in command:
-                                    text += '\n   <i>%s</i>' % command.description
+                                    text += '\n   <i>{}</i>'.format(
+                                        command.description)
                                 else:
-                                    text += '\n   <i>?¿</i>'
+                                    text += '\n   <i>No description</i>'
 
                                 return self.bot.send_message(m, text, extra={'format': 'HTML'})
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
@@ -72,55 +73,58 @@ class plugin(object):
             if hasattr(plugin, 'commands'):
                 for command in plugin.commands:
                     command = DictObject(command)
-                    # If the command is hidden, ignore it #
-                    if not 'hidden' in command or not command.hidden:
-                        # Adds the command and parameters#
-                        if is_command(self, 3, m.content):
-                            show = False
-                            if 'parameters' in command and command.parameters:
-                                allOptional = True
-                                for parameter in command.parameters:
-                                    name, required = list(
-                                        parameter.items())[0]
-                                    if required:
-                                        allOptional = False
+                    # Adds the command and parameters#
+                    if is_command(self, 3, m.content):
+                        show = False
+                        if 'parameters' in command and command.parameters:
+                            allOptional = True
+                            for parameter in command.parameters:
+                                name, required = list(
+                                    parameter.items())[0]
+                                if required:
+                                    allOptional = False
 
-                                show = allOptional
-
-                            else:
-                                show = True
-
-                            if self.bot.config.prefix != '/' and (not 'keep_default' in command or not command.keep_default):
-                                show = False
-
-                            if show:
-                                text += '\n' + command.command.lstrip('/')
-
-                                if 'description' in command:
-                                    text += ' - %s' % command.description
-                                    commands.append({
-                                        'command': command.command.lstrip('/'),
-                                        'description': command.description
-                                    })
-                                else:
-                                    text += ' - ?¿'
-                                    commands.append({
-                                        'command': command.command.lstrip('/'),
-                                        'description': '?¿'
-                                    })
+                            show = allOptional
 
                         else:
+                            show = True
+
+                        if self.bot.config.prefix != '/' and (not 'keep_default' in command or not command.keep_default):
+                            show = False
+
+                        if not command.command.startswith('/'):
+                            show = False
+
+                        if show:
+                            text += '\n' + command.command.lstrip('/')
+
+                            if 'description' in command:
+                                text += ' - {}'.format(command.description)
+                                commands.append({
+                                    'command': command.command.lstrip('/'),
+                                    'description': command.description
+                                })
+                            else:
+                                text += ' - No description'
+                                commands.append({
+                                    'command': command.command.lstrip('/'),
+                                    'description': 'No description'
+                                })
+
+                    else:
+                        # If the command is hidden, ignore it #
+                        if not 'hidden' in command or not command.hidden:
                             doc = generate_command_help(
                                 plugin, command['command'], False)
                             if doc:
                                 lines = doc.splitlines()
 
-                                text += '\n • ' + lines[0]
+                                text += '\n • {}'.format(lines[0])
 
                                 if len(lines) > 1:
-                                    text += '\n   %s' % lines[1]
+                                    text += '\n   {}'.format(lines[1])
                                 else:
-                                    text += '\n   <i>?¿</i>'
+                                    text += '\n   <i>No description</i>'
 
         if is_command(self, 3, m.content):
             self.bot.send_message(m, 'setMyCommands', 'api', extra={
@@ -150,9 +154,10 @@ class plugin(object):
                                 name, required = list(parameter.items())[0]
                                 # Bold for required parameters, and italic for optional #
                                 if required:
-                                    parameters = ' <b>&lt;%s&gt;</b>' % name
+                                    parameters = ' <b>&lt;{}&gt;</b>'.format(
+                                        name)
                                 else:
-                                    parameters = ' [%s]' % name
+                                    parameters = ' [{}]'.format(name)
 
                         results.append({
                             'type': 'article',
