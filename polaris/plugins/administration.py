@@ -1,7 +1,6 @@
 from re import compile, findall
 
 from firebase_admin import db
-
 from polaris.types import AutosaveDict
 from polaris.utils import (all_but_first_word, cancel_steps, del_tag,
                            delete_data, first_word, get_input, get_plugin_name,
@@ -178,7 +177,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid) and not is_mod(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m) and not is_mod(self.bot, uid, gid):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if gid in self.bot.administration:
@@ -197,7 +196,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid) and not is_mod(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m) and not is_mod(self.bot, uid, gid):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if gid in self.bot.administration:
@@ -224,7 +223,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid) and not is_mod(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m) and not is_mod(self.bot, uid, gid):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if gid in self.bot.administration:
@@ -247,7 +246,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             set_tag(self.bot, m.sender.id, 'mod:%s' % gid)
@@ -267,7 +266,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if not gid in self.bot.administration:
@@ -289,7 +288,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if gid in self.bot.administration:
@@ -304,7 +303,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if gid in self.bot.administration:
@@ -320,7 +319,7 @@ class plugin(object):
             if m.conversation.id > 0:
                 return self.bot.send_message(m, self.bot.trans.errors.group_only, extra={'format': 'HTML'})
 
-            if not is_admin(self.bot, uid, gid):
+            if not is_admin(self.bot, uid, m):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if gid in self.bot.administration:
@@ -335,7 +334,7 @@ class plugin(object):
         elif is_command(self, 15, m.content):
             if not input:
                 return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
-                
+
             if gid in self.bot.administration:
                 if input and 'true' in input.lower():
                     self.bot.administration[gid].public = True

@@ -6,9 +6,9 @@ from copy import deepcopy
 from io import StringIO
 from re import IGNORECASE, compile
 
-from polaris.utils import (all_but_first_word, get_input, get_target, is_admin,
-                           is_command, is_owner, is_trusted,
-                           wait_until_received)
+from polaris.utils import (all_but_first_word, generate_command_help,
+                           get_input, get_target, is_admin, is_command,
+                           is_owner, is_trusted, wait_until_received)
 
 
 class plugin(object):
@@ -44,7 +44,8 @@ class plugin(object):
         # Send messages
         elif is_command(self, 4, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
             target = get_target(self.bot, m, input)
             message = all_but_first_word(input)
             r = deepcopy(m)
@@ -54,14 +55,16 @@ class plugin(object):
         # Run shell commands
         elif is_command(self, 5, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
             code = '$ %s\n\n%s' % (input, subprocess.getoutput(input))
             return self.bot.send_message(m, '<code class="language-shell">%s</code>' % code, extra={'format': 'HTML'})
 
         # Run python code
         elif is_command(self, 6, m.content):
             if not input:
-                return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+                # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
             cout = StringIO()
             sys.stdout = cout
@@ -91,11 +94,10 @@ class plugin(object):
             return
 
         if m.sender.id == 777000 and m.conversation.id > 0:
-            input_match = compile(
-                r'\d{5}', flags=IGNORECASE).search(m.content)
+            input_match = compile(r'\d{5}', flags=IGNORECASE).search(m.content)
             if input_match:
-                self.bot.send_admin_alert(
-                    'Login code: {}'.format(input_match.group(0)))
+                code = u'\u200c'.join([char for char in input_match.group(0)])
+                self.bot.send_alert('Login code: {}'.format(code))
 
         if m.extra and 'urls' in m.extra:
             for url in m.extra['urls']:

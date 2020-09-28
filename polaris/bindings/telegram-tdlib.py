@@ -63,14 +63,15 @@ class bindings(object):
             if update['message']['is_outgoing']:
                 return
 
-            data = {
-                '@type': 'viewMessages',
-                'chat_id': update['message']['chat_id'],
-                'message_ids': [update['message']['id']],
-                'force_read': True
-            }
-            result = self.client._send_data(data)
-            result.wait()
+            if not self.bot.info.is_bot:
+                data = {
+                    '@type': 'viewMessages',
+                    'chat_id': update['message']['chat_id'],
+                    'message_ids': [update['message']['id']],
+                    'force_read': True
+                }
+                result = self.client._send_data(data)
+                result.wait()
 
             if 'message' in update:
                 msg = self.convert_message(update['message'])
@@ -96,7 +97,8 @@ class bindings(object):
                     pass
 
                 except Exception as e:
-                    logging.error(e)
+                    logging.error(
+                        'new_message_handler exception: {}'.format(e))
                     if self.bot.started:
                         catch_exception(e, self.bot)
 
@@ -293,7 +295,7 @@ class bindings(object):
             return Message(id, conversation, sender, content, type, date, reply, extra)
 
         except Exception as e:
-            logging.error(e)
+            logging.error('convert_message exception: {}'.format(e))
             catch_exception(e, self.bot)
 
     def convert_inline(self, msg):
@@ -309,7 +311,7 @@ class bindings(object):
             input_message_content = None
 
             if message.type == 'text':
-                if not message.content or len(message.content) == 0:
+                if not message.content or (isinstance(message.content, str) and len(message.content) == 0):
                     return
 
                 if message.extra and 'format' in message.extra:
@@ -326,9 +328,10 @@ class bindings(object):
                         }
                     })
                     formated_text.wait()
-                    if formated_text.update:
+                    if not formated_text.error:
                         text = formated_text.update
                     else:
+                        logging.info(formated_text.error_info)
                         text = {
                             '@type': 'formattedText',
                             'text': message.content,
@@ -501,14 +504,17 @@ class bindings(object):
                     self.request_processing(data, result.error_info)
 
                 elif message.type == 'system':
-                    self.bot.send_alert(result.update)
                     self.bot.send_alert(data)
+                    if result.error:
+                        self.bot.send_alert(result.error_info)
+                    else:
+                        self.bot.send_alert(result.update)
 
         except KeyboardInterrupt:
             pass
 
         except Exception as e:
-            logging.error(e)
+            logging.error('send_message exception: {}'.format(e))
             if self.bot.started:
                 catch_exception(e, self.bot)
 
@@ -579,7 +585,7 @@ class bindings(object):
                       'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
 
         for term in leave_list:
-            if term in response['message']:
+            if term in response['message'].lower():
                 self.bot.send_admin_alert('Leaving chat: {} [{}]'.format(
                     self.bot.groups[str(request['chat_id'])].title, request['chat_id']))
                 res = self.bot.bindings.kick_conversation_member(
@@ -639,8 +645,8 @@ class bindings(object):
             result.wait()
 
             if result.error_info:
-                self.bot.send_alert(result.error_info)
                 self.bot.send_alert(data)
+                self.bot.send_alert(result.error_info)
                 return False
             return True
         return None
@@ -658,8 +664,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
             return False
         return True
 
@@ -674,8 +680,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
             return False
         return True
 
@@ -690,8 +696,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
             return False
         return True
 
@@ -706,8 +712,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
             return False
         return True
 
@@ -721,8 +727,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
             return False
         return True
 
@@ -736,8 +742,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
             return False
         return True
 
@@ -751,8 +757,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
             return False
         return True
 
@@ -776,8 +782,8 @@ class bindings(object):
         result.wait()
 
         if result.error_info:
-            self.bot.send_alert(result.error_info)
             self.bot.send_alert(data)
+            self.bot.send_alert(result.error_info)
 
         admins = []
         if result.update and 'administrators' in result.update:

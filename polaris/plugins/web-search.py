@@ -3,7 +3,6 @@ import re
 
 import requests
 from bs4 import BeautifulSoup
-
 from polaris.utils import (generate_command_help, get_input, is_command,
                            remove_html, send_request)
 
@@ -55,7 +54,6 @@ class plugin(object):
         requestUrl = url + "d.js"
 
         data = send_request(requestUrl, headers=headers, params=params)
-        logging.info(data)
 
         if not data or not 'results' in data:
             return self.bot.send_message(m, self.bot.trans.errors.connection_error, extra={'format': 'HTML'})
@@ -68,7 +66,6 @@ class plugin(object):
             limit = 8
             for item in data.results:
                 if 't' in item:
-                    logging.info(item['t'])
                     item['t'] = remove_html(item['t'])
                     if len(item['t']) > 26:
                         item['t'] = item['t'][:23] + '...'

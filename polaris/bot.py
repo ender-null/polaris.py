@@ -216,7 +216,7 @@ class Bot(object):
                                     if self.check_trigger(command['command'], command['parameters'], msg, plugin, False, True):
                                         break
 
-                            if 'friendly' in command and not has_tag(self, msg.sender.id, 'noreplies') and not has_tag(self, msg.conversation.id, 'noreplies'):
+                            if 'friendly' in command and not has_tag(self, msg.sender.id, 'noreplies') and not has_tag(self, msg.conversation.id, 'noreplies') and msg.conversation.id != self.config.alerts_conversation_id and msg.conversation.id != self.config.admin_conversation_id:
                                 if self.check_trigger(command['friendly'], command['parameters'], msg, plugin, True):
                                     break
 
@@ -345,6 +345,6 @@ class Bot(object):
         self.outbox.put(message)
 
     def send_admin_alert(self, text):
-        message = Message(None, Conversation(self.config.admin_conversation_id, 'Alerts'),
+        message = Message(None, Conversation(self.config.admin_conversation_id, 'Admin'),
                           self.info, text, extra={'format': 'HTML', 'preview': False})
         self.outbox.put(message)

@@ -130,7 +130,8 @@ class plugin(object):
             if not is_admin(self.bot, m.sender.id) and not is_mod(self.bot, m.sender.id, m.conversation.id):
                 self.bot.send_message(
                     m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
-            ok = self.bot.send_message(m, 'leaveChat', 'system')
+            ok = self.bot.bindings.kick_conversation_member(
+                m.conversation.id, self.bot.info.id)
 
         if not ok:
             return self.bot.send_message(

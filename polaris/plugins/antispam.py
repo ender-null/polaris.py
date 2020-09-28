@@ -89,8 +89,9 @@ class plugin(object):
 
     def kick_myself(self, m):
         # self.bot.kick_user(m, self.bot.info.id)
-        # self.bot.bindings.kick_conversation_member(m.conversation.id, self.bot.info.id)
-        self.bot.send_message(m, 'leaveChat', 'system')
+        self.bot.bindings.kick_conversation_member(
+            m.conversation.id, self.bot.info.id)
+        # self.bot.send_message(m, 'leaveChat', 'system')
         gid = str(m.conversation.id)
         self.bot.send_admin_alert('Kicked myself from: %s [%s]' % (
             self.bot.groups[gid].title, gid))
