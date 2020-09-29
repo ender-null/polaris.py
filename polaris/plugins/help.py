@@ -11,59 +11,13 @@ class plugin(object):
     def __init__(self, bot):
         self.bot = bot
         self.commands = self.bot.trans.plugins.help.commands
-        self.commands.append({
-            'command': '/help',
-            'description': self.bot.trans.plugins.help.commands[0].description,
-            'keep_default': True
-        })
-        self.commands.append({
-            'command': '/genhelp',
-            'hidden': True
-        })
 
     # Plugin action #
     def run(self, m):
         input = get_input(m)
         commands = []
 
-        if input:
-            for plugin in self.bot.plugins:
-                if hasattr(plugin, 'description'):
-                    text = plugin.description
-                else:
-                    text = ''
-
-                if hasattr(plugin, 'commands'):
-                    for command in plugin.commands:
-                        command = DictObject(command)
-                        # If the command is hidden, ignore it #
-                        if ('hidden' in command and not command.hidden) or not 'hidden' in command:
-                            # Adds the command and parameters#
-                            if input in command.command.replace('/', '').rstrip('\s'):
-                                text += '\n • ' + \
-                                    command.command.replace(
-                                        '/', self.bot.config.prefix)
-                                if 'parameters' in command and command.parameters:
-                                    for parameter in command.parameters:
-                                        name, required = list(
-                                            parameter.items())[0]
-                                        # Bold for required parameters, and italic for optional #
-                                        if required:
-                                            text += ' <b>&lt;{}&gt;</b>'.format(
-                                                name)
-                                        else:
-                                            text += ' [{}]'.format(name)
-
-                                if 'description' in command:
-                                    text += '\n   <i>{}</i>'.format(
-                                        command.description)
-                                else:
-                                    text += '\n   <i>No description</i>'
-
-                                return self.bot.send_message(m, text, extra={'format': 'HTML'})
-            return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
-
-        if is_command(self, 3, m.content):
+        if is_command(self, 2, m.content):
             text = ''
         else:
             text = self.bot.trans.plugins.help.strings.commands
@@ -74,7 +28,7 @@ class plugin(object):
                 for command in plugin.commands:
                     command = DictObject(command)
                     # Adds the command and parameters#
-                    if is_command(self, 3, m.content):
+                    if is_command(self, 2, m.content):
                         show = False
                         if 'parameters' in command and command.parameters:
                             allOptional = True
@@ -126,7 +80,7 @@ class plugin(object):
                                 else:
                                     text += '\n   <i>No description</i>'
 
-        if is_command(self, 3, m.content):
+        if is_command(self, 2, m.content):
             self.bot.send_message(m, 'setMyCommands', 'api', extra={
                                   'commands': json.dumps(commands)})
 

@@ -9,11 +9,6 @@ class plugin(object):
     def __init__(self, bot):
         self.bot = bot
         self.commands = self.bot.trans.plugins.about.commands
-        self.commands.append({
-            'command': '/start',
-            'hidden': True,
-            'keep_default': True
-        })
 
     # Plugin action #
     def run(self, m):

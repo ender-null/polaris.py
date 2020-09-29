@@ -41,37 +41,48 @@ class bindings(object):
         except:
             return None
 
+    def server_request(self, api_method, params=None, ignore_errors=False):
+        data = {
+            '@type': api_method
+        }
+
+        if params:
+            for param in params:
+                data[param] = params[param]
+
+        result = self.client._send_data(data)
+        result.wait()
+
+        if result.error:
+            if not ignore_errors:
+                self.bot.send_alert(data)
+                self.bot.send_alert(result.error_info)
+            return None
+
+        if result.update:
+            return result.update
+        else:
+            return True
+
     def start(self):
         if not self.bot.info.is_bot:
-            # result = self.client.get_chats()
-            data = {
-                '@type': 'getChats',
+            self.server_request('getChats', {
                 'chat_list': {'@type': 'chatListMain'},
                 'offset_order': '9223372036854775807',
                 'offset_chat_id': 0,
                 'limit': 100,
-            }
-
-            result = self.client._send_data(data)
-            result.wait()
-
-            if result.error:
-                self.bot.send_alert(result.error_info)
-                self.bot.send_alert(data)
+            })
 
         def new_message_handler(update):
             if update['message']['is_outgoing']:
                 return
 
             if not self.bot.info.is_bot:
-                data = {
-                    '@type': 'viewMessages',
+                self.server_request('viewMessages', {
                     'chat_id': update['message']['chat_id'],
                     'message_ids': [update['message']['id']],
                     'force_read': True
-                }
-                result = self.client._send_data(data)
-                result.wait()
+                })
 
             if 'message' in update:
                 msg = self.convert_message(update['message'])
@@ -280,15 +291,8 @@ class bindings(object):
 
             reply = None
             if 'reply_to_message_id' in msg and msg['reply_to_message_id'] > 0:
-                data = {
-                    '@type': 'getMessage',
-                    'chat_id': msg['chat_id'],
-                    'message_id': msg['reply_to_message_id']
-                }
-                result = self.client._send_data(data)
-                result.wait()
-                if result.update:
-                    reply = self.convert_message(result.update)
+                reply = self.get_message(
+                    msg['chat_id'], msg['reply_to_message_id'])
 
             date = msg['date']
 
@@ -560,29 +564,21 @@ class bindings(object):
         elif type == 'location' or type == 'venue':
             action = 'chatActionChoosingLocation'
 
-        data = {
-            '@type': 'sendChatAction',
+        self.server_request('sendChatAction', {
             'chat_id': conversation_id,
             'action': {'@type': action}
-        }
-        result = self.client._send_data(data)
-        result.wait()
+        })
 
     def cancel_send_chat_action(self, conversation_id):
-        data = {
-            '@type': 'sendChatAction',
+        self.server_request('sendChatAction', {
             'chat_id': conversation_id,
             'action': {'@type': 'chatActionCancel'}
-        }
-        result = self.client._send_data(data)
-        result.wait()
+        })
 
     def request_processing(self, request, response):
-        self.bot.send_alert(request)
-        self.bot.send_alert(response)
-
         leave_list = ['no rights', 'no write access',
                       'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
+        other_error = True
 
         for term in leave_list:
             if term in response['message'].lower():
@@ -590,37 +586,30 @@ class bindings(object):
                     self.bot.groups[str(request['chat_id'])].title, request['chat_id']))
                 res = self.bot.bindings.kick_conversation_member(
                     request['chat_id'], self.bot.info.id)
-                self.bot.send_admin_alert(res)
+                other_error = False
                 break
+
+        if other_error:
+            self.bot.send_alert(request)
+            self.bot.send_alert(response)
 
     # THESE METHODS DO DIRECT ACTIONS #
     def get_message(self, chat_id, message_id):
-        data = {
-            '@type': 'getMessage',
+        result = self.server_request('getMessage', {
             'chat_id': chat_id,
             'message_id': message_id
-        }
-        result = self.client._send_data(data)
-        result.wait()
-        if result.update:
-            return self.convert_message(result.update)
+        }, ignore_errors = True)
+        if result:
+            return self.convert_message(result)
 
         return None
 
     def delete_message(self, chat_id, message_id):
-        data = {
-            '@type': 'deleteMessages',
+        return self.server_request('deleteMessages', {
             'chat_id': chat_id,
             'message_ids': [message_id],
             'revoke': True
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def get_file(self, file_id, link=False):
         if self.bot.info.is_bot:
@@ -636,158 +625,74 @@ class bindings(object):
         return None
 
     def join_by_invite_link(self, invite_link):
-        if not self.bot.info.is_bot:
-            data = {
-                '@type': 'joinChatByInviteLink',
-                'invite_link': invite_link
-            }
-            result = self.client._send_data(data)
-            result.wait()
+        if self.bot.info.is_bot:
+            return None
 
-            if result.error_info:
-                self.bot.send_alert(data)
-                self.bot.send_alert(result.error_info)
-                return False
-            return True
-        return None
+        return self.server_request('joinChatByInviteLink', {
+            'invite_link': invite_link
+        })
 
     def invite_conversation_member(self, conversation_id, user_id):
         if self.bot.info.is_bot:
             return False
 
-        data = {
-            '@type': 'addChatMember',
+        return self.server_request('addChatMember', {
             'chat_id': conversation_id,
             'user_id': user_id
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def promote_conversation_member(self, conversation_id, user_id):
-        data = {
-            '@type': 'setChatMemberStatus',
+        return self.server_request('setChatMemberStatus', {
             'chat_id': conversation_id,
             'user_id': user_id,
             'status': {'@type': 'chatMemberStatusAdministrator'}
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def kick_conversation_member(self, conversation_id, user_id):
-        data = {
-            '@type': 'setChatMemberStatus',
+        return self.server_request('setChatMemberStatus', {
             'chat_id': conversation_id,
             'user_id': user_id,
             'status': {'@type': 'chatMemberStatusLeft'}
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def unban_conversation_member(self, conversation_id, user_id):
-        data = {
-            '@type': 'setChatMemberStatus',
+        return self.server_request('setChatMemberStatus', {
             'chat_id': conversation_id,
             'user_id': user_id,
             'status': {'@type': 'chatMemberStatusMember'}
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def rename_conversation(self, conversation_id, title):
-        data = {
-            '@type': 'setChatTitle',
+        return self.server_request('setChatTitle', {
             'chat_id': conversation_id,
             'title': title
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def change_conversation_description(self, conversation_id, description):
-        data = {
-            '@type': 'setChatDescription',
+        return self.server_request('setChatDescription', {
             'chat_id': conversation_id,
             'description': description
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def change_conversation_photo(self, conversation_id, photo):
-        data = {
-            '@type': 'setChatPhoto',
+        return self.server_request('setChatPhoto', {
             'chat_id': conversation_id,
             'photo': photo
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
-            return False
-        return True
+        })
 
     def conversation_info(self, conversation_id):
-        data = {
-            '@type': 'getChat',
+        return self.server_request('getChat', {
             'chat_id': conversation_id
-        }
-        result = self.client._send_data(data)
-        result.wait()
-        self.bot.send_alert(result.update)
-
-        return result.update
+        })
 
     def get_chat_administrators(self, conversation_id):
-        data = {
-            '@type': 'getChatAdministrators',
+        result = self.server_request('getChatAdministrators', {
             'chat_id': conversation_id
-        }
-        result = self.client._send_data(data)
-        result.wait()
-
-        if result.error_info:
-            self.bot.send_alert(data)
-            self.bot.send_alert(result.error_info)
+        })
 
         admins = []
-        if result.update and 'administrators' in result.update:
-            for member in result.update['administrators']:
+        if result and 'administrators' in result:
+            for member in result['administrators']:
                 user = User(member['user_id'])
 
                 request = self.client.get_user(user.id)

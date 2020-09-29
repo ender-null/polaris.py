@@ -33,7 +33,17 @@ class plugin(object):
 
         elif is_int(first_word(input)):
             target = first_word(input)
-            name = target
+            if int(target) > 0 and target in self.bot.users:
+                name = self.bot.users[target].first_name
+                if '' in self.bot.users[target]:
+                    name += ' ' + self.bot.users[target].last_name
+
+            elif int(target) < 0 and target in self.bot.groups:
+                name = self.bot.groups[target].title
+
+            else:
+                name = target
+
             input = all_but_first_word(input)
 
         elif first_word(input).startswith('@'):

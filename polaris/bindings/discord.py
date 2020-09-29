@@ -3,11 +3,12 @@ import logging
 from multiprocessing import Process
 from time import mktime, time
 
-import discord
 from polaris.types import Conversation, Message, User
 from polaris.utils import (catch_exception, download, html_to_discord_markdown,
                            is_int, positive, send_request, set_data,
                            split_large_message)
+
+import discord
 
 
 class bindings(object):
@@ -15,6 +16,9 @@ class bindings(object):
         self.bot = bot
         self.custom_sender = True
         self.client = discord.Client()
+
+    def server_request(self, api_method, params=None):
+        return None
 
     def get_me(self):
         return User(0, self.bot.name, None, self.bot.name)

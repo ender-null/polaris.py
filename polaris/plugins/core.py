@@ -50,7 +50,7 @@ class plugin(object):
             message = all_but_first_word(input)
             r = deepcopy(m)
             r.conversation.id = target
-            self.bot.send_message(r, message)
+            return self.bot.send_message(r, message)
 
         # Run shell commands
         elif is_command(self, 5, m.content):

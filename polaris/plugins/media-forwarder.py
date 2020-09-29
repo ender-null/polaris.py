@@ -14,20 +14,6 @@ class plugin(object):
     def always(self, m):
         id = str(m.conversation.id)
 
-        if id == '-1001003803132' or id == '-1001339508722':
-            logging.info('message from channel: %s' %
-                         (m.conversation.title))
-            if id in self.bot.tags:
-                logging.info('tags S: %s' % self.bot.tags[id])
-            elif m.conversation.id in self.bot.tags:
-                logging.info('tags I: %s' % self.bot.tags[m.conversation.id])
-            else:
-                logging.info('no tags for id: %s' % id)
-
-        if has_tag(self.bot, id, 'media:?'):
-            del_tag(self.bot, id, 'media:?')
-            set_tag(self.bot, id, 'media:%s' % m.id)
-
         if has_tag(self.bot, id, 'resend:?') or has_tag(self.bot, id, 'fwd:?'):
             logging.info('%s has resend tag: %s' %
                          (m.conversation.id, m.conversation.title))
@@ -59,6 +45,3 @@ class plugin(object):
                     cid = tag.split(':')[1]
                     if m.type == 'photo' or m.type == 'document' or m.type == 'url':
                         self.bot.forward_message(m, cid)
-
-            if not has_tag(self.bot, id, 'media:?'):
-                set_tag(self.bot, id, 'media:1')

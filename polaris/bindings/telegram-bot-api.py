@@ -21,6 +21,9 @@ class bindings(object):
         except:
             return None
 
+    def server_request(self, api_method, params=None):
+        return None
+
     def get_me(self):
         r = self.api_request('getMe')
         if r:
@@ -831,17 +834,20 @@ class bindings(object):
         params = {
             "chat_id": conversation_id
         }
-        return self.api_request('getChat', params)
+        result = self.api_request('getChat', params)
+        if result.ok == False:
+            return False
+        return result.result
 
     def get_chat_administrators(self, conversation_id):
         params = {
             "chat_id": conversation_id
         }
-        res = self.api_request('getChatAdministrators', params)
+        result = self.api_request('getChatAdministrators', params)
 
         admins = []
-        if 'result' in res:
-            for member in res.result:
+        if 'result' in result:
+            for member in result.result:
                 user = User(member.user.id, member.user.first_name)
                 user.is_bot = member.user.is_bot
                 if 'last_name' in member.user:

@@ -446,7 +446,8 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
 
     if r.status_code != 200:
         logging.error(r.text)
-        bot.send_alert(r.text)
+        if bot:
+            bot.send_alert(r.text)
 
         while r.status_code == 429:
             sleep(5)
@@ -653,11 +654,18 @@ def get_target(bot, m, input):
     if input:
         target = first_word(input)
         if is_int(target):
-            return target
+            return str(target)
 
         elif target.startswith('@'):
+            if bot.info.username.lower() == target[1:].lower():
+                return str(bot.info.id)
+
             for uid in bot.users:
                 if 'username' in bot.users[uid] and isinstance(bot.users[uid].username, str) and bot.users[uid].username.lower() == target[1:].lower():
+                    return str(uid)
+
+            for gid in bot.groups:
+                if 'username' in bot.groups[gid] and isinstance(bot.groups[gid].username, str) and bot.groups[gid].username.lower() == target[1:].lower():
                     return str(uid)
 
         elif target == '-g':
