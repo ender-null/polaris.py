@@ -97,7 +97,8 @@ class bindings(object):
                     if msg.content.startswith('/') or msg.content.startswith(self.bot.config.prefix):
                         self.send_chat_action(msg.conversation.id)
                     self.bot.on_message_receive(msg)
-                    self.cancel_send_chat_action(msg.conversation.id)
+                    if msg.content.startswith('/') or msg.content.startswith(self.bot.config.prefix):
+                        self.send_chat_action(msg.conversation.id, 'cancel')
                     while self.bot.outbox.qsize() > 0:
                         msg = self.bot.outbox.get()
                         logging.info(' [{}] {}@{} [{}] sent [{}] {}'.format(msg.sender.id, msg.sender.first_name,
@@ -485,7 +486,7 @@ class bindings(object):
                     params['commands'] = message.extra['commands']
 
                 self.api_request(message.content, params, files=files)
-                self.cancel_send_chat_action(message.conversation.id)
+                self.send_chat_action(message.conversation.id, 'cancel')
                 return
 
             if input_message_content:
@@ -502,7 +503,7 @@ class bindings(object):
                 result = self.client._send_data(data)
 
                 result.wait()
-                self.cancel_send_chat_action(message.conversation.id)
+                self.send_chat_action(message.conversation.id, 'cancel')
 
                 if result.error:
                     self.request_processing(data, result.error_info)
@@ -564,15 +565,12 @@ class bindings(object):
         elif type == 'location' or type == 'venue':
             action = 'chatActionChoosingLocation'
 
-        self.server_request('sendChatAction', {
+        elif type == 'cancel':
+            action = 'chatActionCancel'
+
+        return self.server_request('sendChatAction', {
             'chat_id': conversation_id,
             'action': {'@type': action}
-        })
-
-    def cancel_send_chat_action(self, conversation_id):
-        self.server_request('sendChatAction', {
-            'chat_id': conversation_id,
-            'action': {'@type': 'chatActionCancel'}
         })
 
     def request_processing(self, request, response):
@@ -598,7 +596,7 @@ class bindings(object):
         result = self.server_request('getMessage', {
             'chat_id': chat_id,
             'message_id': message_id
-        }, ignore_errors = True)
+        }, ignore_errors=True)
         if result:
             return self.convert_message(result)
 
