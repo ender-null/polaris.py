@@ -2,8 +2,8 @@ import json
 import logging
 
 from polaris.types import Conversation, Message, User
-from polaris.utils import (catch_exception, download, is_int, send_request,
-                           set_data)
+from polaris.utils import (catch_exception, delete_data, download, is_int,
+                           send_request, set_data)
 from telegram.client import Telegram
 
 
@@ -75,7 +75,11 @@ class bindings(object):
 
         def new_message_handler(update):
             if update['message']['is_outgoing']:
-                return
+                if update['message']['is_channel_post']:
+                    if update['message']['content']['@type'] == 'messageText':
+                        return
+                else:
+                    return
 
             if not self.bot.info.is_bot:
                 self.server_request('viewMessages', {
@@ -295,6 +299,19 @@ class bindings(object):
                 reply = self.get_message(
                     msg['chat_id'], msg['reply_to_message_id'])
 
+            if 'forward_info' in msg and msg['forward_info']:
+                extra['from_chat_id'] = msg['forward_info']['from_chat_id']
+                extra['from_message_id'] = msg['forward_info']['from_message_id']
+
+                if 'chat_id' in msg['forward_info']['origin']:
+                    extra['from_chat_id'] = msg['forward_info']['origin']['chat_id']
+
+                if 'message_id' in msg['forward_info']['origin']:
+                    extra['from_message_id'] = msg['forward_info']['origin']['message_id']
+
+                if 'sender_user_id' in msg['forward_info']['origin']:
+                    extra['from_user_id'] = msg['forward_info']['origin']['sender_user_id']
+
             date = msg['date']
 
             return Message(id, conversation, sender, content, type, date, reply, extra)
@@ -363,6 +380,18 @@ class bindings(object):
                 input_message_content = {
                     '@type': 'inputMessagePhoto',
                     'photo': self.get_input_file(message.content)
+                }
+
+                if message.extra and 'caption' in message.extra:
+                    input_message_content['caption'] = {
+                        '@type': 'formattedText',
+                        'text': message.extra['caption']
+                    }
+
+            elif message.type == 'animation':
+                input_message_content = {
+                    '@type': 'inputMessageAnimation',
+                    'animation': self.get_input_file(message.content)
                 }
 
                 if message.extra and 'caption' in message.extra:
@@ -571,7 +600,7 @@ class bindings(object):
         return self.server_request('sendChatAction', {
             'chat_id': conversation_id,
             'action': {'@type': action}
-        })
+        }, ignore_errors=True)
 
     def request_processing(self, request, response):
         leave_list = ['no rights', 'no write access',
@@ -586,6 +615,16 @@ class bindings(object):
                     request['chat_id'], self.bot.info.id)
                 other_error = False
                 break
+
+        if response['message'].lower() == 'invalid remote id':
+            for pin, attributes in self.bot.pins.items():
+                if attributes.content and attributes.type in request['input_message_content'] and attributes.content == request['input_message_content'][attributes.type]['id']:
+                    delete_data('pins/%s/%s' % (self.bot.name, pin))
+                    del self.bot.pins[pin]
+                    self.bot.send_admin_alert(
+                        'Deleting invalid pin: {} [{}]'.format(pin, attributes.content))
+
+            other_error = False
 
         if other_error:
             self.bot.send_alert(request)

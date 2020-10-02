@@ -26,6 +26,8 @@ class plugin(object):
         invite_link = None
 
         gname = ''
+        gusername = ''
+        gdescription = ''
         gtags = ''
         gmessages = 0
         gmembers = 0

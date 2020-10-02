@@ -70,7 +70,7 @@ class plugin(object):
             trusted_group = False
             for gid, attr in self.bot.administration.items():
                 group = self.bot.administration[gid]
-                if 'link' in group and group_hash in group.link:
+                if group and 'link' in group and group_hash in group.link:
                     trusted_group = True
                     break
             if not trusted_group and not is_admin(self.bot, m.sender.id, m):

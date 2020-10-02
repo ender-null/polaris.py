@@ -57,10 +57,15 @@ class plugin(object):
             if input in self.bot.pins:
                 return self.bot.send_message(m, self.bot.trans.plugins.pins.strings.already_pinned % input, extra={'format': 'HTML'})
 
+            if m.reply.type == 'text' and m.reply.content.startswith(self.bot.config.prefix):
+                pin_type = 'command'
+            else:
+                pin_type = m.reply.type
+
             self.bot.pins[input] = {
                 'content': m.reply.content.replace('<', '&lt;').replace('>', '&gt;'),
                 'creator': m.sender.id,
-                'type': m.reply.type
+                'type': pin_type
             }
             set_data('pins/%s/%s' %
                      (self.bot.name, input), self.bot.pins[input])
@@ -105,8 +110,15 @@ class plugin(object):
                         reply = m.id
 
                     if 'content' in self.bot.pins[pin] and 'type' in self.bot.pins[pin]:
-                        self.bot.send_message(m, self.bot.pins[pin].content, self.bot.pins[pin].type, extra={
-                            'format': 'HTML'}, reply=reply)
+                        if (self.bot.pins[pin].type == 'command'):
+                            m.content = self.bot.pins[pin].content
+                            self.bot.inbox.put(m)
+                            return self.bot.on_message_receive(m)
+
+                        else:
+                            self.bot.send_message(m, self.bot.pins[pin].content, self.bot.pins[pin].type, extra={
+                                'format': 'HTML'}, reply=reply)
+
                         count -= 1
 
                 if count == 0:
