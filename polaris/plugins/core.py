@@ -17,6 +17,28 @@ class plugin(object):
         self.bot = bot
         self.commands = self.bot.trans.plugins.core.commands
         self.description = self.bot.trans.plugins.core.description
+        self.commands.append({
+            'command': '/setownname',
+            'parameters': [
+                {
+                    'string': True
+                }
+            ],
+            'hidden': True
+        })
+        self.commands.append({
+            'command': '/setownbio',
+            'parameters': [
+                {
+                    'string': True
+                }
+            ],
+            'hidden': True
+        })
+        self.commands.append({
+            'command': '/setownphoto',
+            'hidden': True
+        })
 
     # Plugin action #
     def run(self, m):
@@ -85,6 +107,41 @@ class plugin(object):
 
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__
+
+        # Change name
+        elif is_command(self, 7, m.content):
+            if not input:
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+            ok = self.bot.bindings.server_request(
+                'setName',  {'first_name': input, 'last_name': '☆'})
+
+            if not ok:
+                text = self.bot.trans.errors.failed
+
+        # Change bio
+        elif is_command(self, 8, m.content):
+            if not input:
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+            ok = self.bot.bindings.server_request(
+                'setBio',  {'bio': input})
+
+            if not ok:
+                text = self.bot.trans.errors.failed
+
+        # Change photo
+        elif is_command(self, 9, m.content):
+            ok = False
+            if m.reply and m.reply.type == 'photo':
+                photo = self.bot.bindings.get_file(m.reply.content)
+                if photo:
+                    ok = self.bot.bindings.server_request(
+                        'setProfilePhoto',  {'photo': self.bot.bindings.get_input_file(photo)})
+                else:
+                    ok = self.bot.bindings.server_request(
+                        'setProfilePhoto',  {'photo': self.bot.bindings.get_input_file(m.reply.content)})
+
+            if not ok:
+                text = self.bot.trans.errors.failed
 
         if text:
             self.bot.send_message(m, text, extra={'format': 'HTML'})

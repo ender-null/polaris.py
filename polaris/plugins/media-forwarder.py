@@ -1,14 +1,88 @@
 import logging
 from copy import deepcopy
+from re import IGNORECASE, compile
 
-from polaris.utils import del_tag, get_input, has_tag, set_tag
+from polaris.utils import (del_tag, first_word, generate_command_help,
+                           get_input, has_tag, is_command, set_tag)
 
 
 class plugin(object):
     # Loads the text strings from the bots language #
     def __init__(self, bot):
         self.bot = bot
-        self.commands = []
+        self.commands = [
+            {
+                'command': '/resends',
+                'hidden': True
+            },
+            {
+                'command': '/addresend',
+                'hidden': True
+            },
+            {
+                'command': '/rmresend',
+                'hidden': True
+            }
+        ]
+
+    # Plugin action #
+    def run(self, m):
+        # List #
+        if is_command(self, 1, m.content):
+            resends = []
+            forwards = []
+            text = ''
+            for gid in self.bot.tags:
+                for tag in self.bot.tags[gid]:
+                    if 'resend:' in tag:
+                        resends.append('{}:{}'.format(gid, tag.split(':')[1]))
+
+                    if 'fwd:' in tag:
+                        resends.append('{}:{}'.format(gid, tag.split(':')[1]))
+
+            if len(resends) > 0:
+                text += '<b>Resends:</b>'
+                text += self.generate_text(resends)
+
+            if len(forwards) > 0:
+                text += '\n<b>Forwards:</b>'
+                text += self.generate_text(forwards)
+
+            return self.bot.send_message(m, text, extra={'format': 'HTML'})
+
+        # Add resend #
+        elif is_command(self, 2, m.content):
+            input = get_input(m)
+            if not input:
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+
+            origin = first_word(input)
+            destination = first_word(input, 2)
+
+            if not origin or not destination:
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+
+    def generate_text(self, items):
+        text = ''
+        for item in items:
+            orig = item.split(':')[0]
+            dest = item.split(':')[1]
+
+            text += '\n'
+
+            if orig in self.bot.groups:
+                text += '\t{} [{}]'.format(self.bot.groups[orig].title, orig)
+            else:
+                text += '\t{}'.format(orig)
+
+            if dest in self.bot.groups:
+                text += ' ➡️ {} [{}]'.format(self.bot.groups[dest].title, dest)
+            else:
+                text += ' ➡️ {}'.format(dest)
+
+            text += '\n'
+
+        return text
 
     # Plugin action #
     def always(self, m):
@@ -37,10 +111,17 @@ class plugin(object):
 
                         if 'urls' in r.extra:
                             for url in r.extra['urls']:
-                                if 'instagram' in url:
-                                    url = url.split('?')[0]
-                                self.bot.send_message(
-                                    r, url, extra={'preview': True})
+                                input_match = compile(
+                                    r'(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
+
+                                if input_match and input_match.group(1) or 'joinchat/' in url:
+                                    logging.info(
+                                        'ignoring telegram url: {}'.format(url))
+                                else:
+                                    if 'instagram' in url:
+                                        url = url.split('?')[0]
+                                    self.bot.send_message(
+                                        r, url, extra={'preview': True})
                         else:
                             self.bot.send_message(
                                 r, m.content, m.type, extra={'preview': True})

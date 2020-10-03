@@ -41,7 +41,7 @@ class plugin(object):
                     except:
                         logging.error(m.extra['caption'])
 
-        if m.conversation.id < 0 and has_tag(self.bot, m.conversation.id, 'spam') or has_tag(self.bot, m.conversation.id, 'arab'):
+        if m.conversation.id < 0 and (has_tag(self.bot, m.conversation.id, 'spam') or has_tag(self.bot, m.conversation.id, 'arab')) and not has_tag(self.bot, m.conversation.id, 'resend:?') and not has_tag(self.bot, m.conversation.id, 'fwd:?'):
             self.kick_myself(m)
 
         if m.type == 'text' and self.detect_arab(m.content):
@@ -65,14 +65,15 @@ class plugin(object):
     def check_trusted_telegram_link(self, m, text):
         input_match = compile(
             '(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(text)
-        if input_match and input_match.group(1):
-            group_hash = input_match.group(1)
+        if input_match and input_match.group(1) or 'joinchat/' in text:
             trusted_group = False
-            for gid, attr in self.bot.administration.items():
-                group = self.bot.administration[gid]
-                if group and 'link' in group and group_hash in group.link:
-                    trusted_group = True
-                    break
+            if input_match:
+                group_hash = input_match.group(1)
+                for gid, attr in self.bot.administration.items():
+                    group = self.bot.administration[gid]
+                    if group and 'link' in group and group_hash in group.link:
+                        trusted_group = True
+                        break
             if not trusted_group and not is_admin(self.bot, m.sender.id, m):
                 name = get_full_name(self.bot, m.sender.id)
                 gid = str(m.conversation.id)
@@ -88,10 +89,8 @@ class plugin(object):
         return False
 
     def kick_myself(self, m):
-        # self.bot.kick_user(m, self.bot.info.id)
         self.bot.bindings.kick_conversation_member(
             m.conversation.id, self.bot.info.id)
-        # self.bot.send_message(m, 'leaveChat', 'system')
         gid = str(m.conversation.id)
         self.bot.send_admin_alert('Kicked myself from: %s [%s]' % (
             self.bot.groups[gid].title, gid))
@@ -109,6 +108,7 @@ class plugin(object):
                 self.bot.groups[gid].spammers = 1
             set_data('groups/%s/%s' %
                      (self.bot.name, gid), self.bot.groups[gid])
+
             if self.bot.groups[gid].spammers >= 10:
                 set_tag(self.bot, gid, 'spam')
                 self.bot.send_admin_alert(

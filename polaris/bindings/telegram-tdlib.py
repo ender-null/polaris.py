@@ -57,9 +57,9 @@ class bindings(object):
             if not ignore_errors:
                 self.bot.send_alert(data)
                 self.bot.send_alert(result.error_info)
-            return None
+            return False
 
-        if result.update:
+        if result.update != None:
             return result.update
         else:
             return True
@@ -618,7 +618,7 @@ class bindings(object):
 
         if response['message'].lower() == 'invalid remote id':
             for pin, attributes in self.bot.pins.items():
-                if attributes.content and attributes.type in request['input_message_content'] and attributes.content == request['input_message_content'][attributes.type]['id']:
+                if 'content' in attributes and 'type' in attributes and attributes.type in request['input_message_content'] and attributes.content == request['input_message_content'][attributes.type]['id']:
                     delete_data('pins/%s/%s' % (self.bot.name, pin))
                     del self.bot.pins[pin]
                     self.bot.send_admin_alert(
