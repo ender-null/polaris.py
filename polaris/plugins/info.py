@@ -44,6 +44,9 @@ class plugin(object):
                     if 'username' in self.bot.users[target] and self.bot.users[target].username:
                         username = '@' + self.bot.users[target].username
 
+                    if 'description' in self.bot.users[target]:
+                        description = self.bot.users[target]['description']
+
                     messages = self.bot.users[target].messages
 
                 info = self.bot.bindings.server_request(
@@ -74,6 +77,18 @@ class plugin(object):
                 if target in self.bot.groups:
                     if 'title' in self.bot.groups[target] and self.bot.groups[target].title:
                         name = self.bot.groups[target].title
+
+                    if 'username' in self.bot.groups[target]:
+                        username = '@' + self.bot.groups[target]['username']
+
+                    if 'description' in self.bot.groups[target]:
+                        description = self.bot.groups[target]['description']
+
+                    if 'member_count' in self.bot.groups[target]:
+                        members = self.bot.groups[target]['member_count']
+
+                    if 'invite_link' in self.bot.groups[target]:
+                        invite_link = self.bot.groups[target]['invite_link']
 
                     messages = self.bot.groups[target].messages
 
@@ -109,6 +124,18 @@ class plugin(object):
             if gid in self.bot.groups:
                 if 'title' in self.bot.groups[gid] and self.bot.groups[gid].title:
                     gname = self.bot.groups[gid].title
+
+                if 'username' in self.bot.groups[gid]:
+                    gusername = '@' + self.bot.groups[gid]['username']
+
+                if 'description' in self.bot.groups[gid]:
+                    gdescription = self.bot.groups[gid]['description']
+
+                if 'member_count' in self.bot.groups[gid]:
+                    gmembers = self.bot.groups[gid]['member_count']
+
+                if 'invite_link' in self.bot.groups[gid]:
+                    ginvite_link = self.bot.groups[gid]['invite_link']
 
                 gmessages = self.bot.groups[gid].messages
 

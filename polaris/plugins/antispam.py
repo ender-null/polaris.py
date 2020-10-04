@@ -2,8 +2,9 @@ import logging
 import re
 from re import IGNORECASE, compile
 
-from polaris.utils import (del_tag, get_full_name, has_tag, im_group_admin,
-                           is_admin, is_trusted, set_data, set_tag)
+from polaris.utils import (del_tag, fix_telegram_link, get_full_name, has_tag,
+                           im_group_admin, is_admin, is_trusted, set_data,
+                           set_tag)
 
 
 class plugin(object):
@@ -34,14 +35,15 @@ class plugin(object):
             if m.extra:
                 if 'urls' in m.extra:
                     for url in m.extra['urls']:
-                        self.check_trusted_telegram_link(m, url)
+                        self.check_trusted_telegram_link(
+                            m, fix_telegram_link(url))
                 if 'caption' in m.extra and m.extra['caption']:
                     try:
                         self.check_trusted_telegram_link(m, m.extra['caption'])
                     except:
                         logging.error(m.extra['caption'])
 
-        if m.conversation.id < 0 and (has_tag(self.bot, m.conversation.id, 'spam') or has_tag(self.bot, m.conversation.id, 'arab')) and not has_tag(self.bot, m.conversation.id, 'resend:?') and not has_tag(self.bot, m.conversation.id, 'fwd:?'):
+        if m.conversation.id < 0 and (has_tag(self.bot, m.conversation.id, 'spam') or has_tag(self.bot, m.conversation.id, 'arab')) and not has_tag(self.bot, m.conversation.id, 'resend:?') and not has_tag(self.bot, m.conversation.id, 'fwd:?') and self.bot.info.is_bot:
             self.kick_myself(m)
 
         if m.type == 'text' and self.detect_arab(m.content):
@@ -65,7 +67,7 @@ class plugin(object):
     def check_trusted_telegram_link(self, m, text):
         input_match = compile(
             '(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(text)
-        if input_match and input_match.group(1) or 'joinchat/' in text:
+        if input_match and input_match.group(1):
             trusted_group = False
             if input_match:
                 group_hash = input_match.group(1)

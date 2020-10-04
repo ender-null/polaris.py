@@ -2,8 +2,9 @@ import logging
 from copy import deepcopy
 from re import IGNORECASE, compile
 
-from polaris.utils import (del_tag, first_word, generate_command_help,
-                           get_input, has_tag, is_command, set_tag)
+from polaris.utils import (del_tag, first_word, fix_telegram_link,
+                           generate_command_help, get_input, has_tag,
+                           is_command, set_tag)
 
 
 class plugin(object):
@@ -86,23 +87,31 @@ class plugin(object):
 
     # Plugin action #
     def always(self, m):
-        id = str(m.conversation.id)
+        gid = str(m.conversation.id)
 
-        if has_tag(self.bot, id, 'resend:?') or has_tag(self.bot, id, 'fwd:?'):
-            for tag in self.bot.tags[id]:
+        if 'via_bot_user_id' in m.extra:
+            logging.info('ignoring message via bot: {}'.format(
+                m.extra['via_bot_user_id']))
+            return
+
+        if has_tag(self.bot, gid, 'resend:?') or has_tag(self.bot, gid, 'fwd:?'):
+            for tag in self.bot.tags[gid]:
                 forward = False
 
                 if tag.startswith('resend:') or tag.startswith('fwd:'):
-                    cid = tag.split(':')[1]
+                    cid = int(tag.split(':')[1])
                     if 'from_chat_id' in m.extra:
                         if str(m.extra['from_chat_id']) == cid:
                             break
                         elif str(m.extra['from_chat_id']) != '0':
                             if has_tag(self.bot, cid, 'resend:?') or has_tag(self.bot, cid, 'fwd:?'):
+                                logging.info('forward')
                                 forward = True
 
+                    logging.info('tag: {}, forward: {}'.format(tag, forward))
+
                 if tag.startswith('resend:') and not forward:
-                    cid = tag.split(':')[1]
+                    cid = int(tag.split(':')[1])
 
                     if m.type == 'photo' or m.type == 'video' or m.type == 'animation' or m.type == 'document' or (m.type == 'text' and 'urls' in m.extra):
                         r = deepcopy(m)
@@ -116,7 +125,7 @@ class plugin(object):
 
                                 if input_match and input_match.group(1) or 'joinchat/' in url:
                                     logging.info(
-                                        'ignoring telegram url: {}'.format(url))
+                                        'ignoring telegram url: {}'.format(fix_telegram_link(url)))
                                 else:
                                     if 'instagram' in url:
                                         url = url.split('?')[0]
@@ -126,10 +135,10 @@ class plugin(object):
                             self.bot.send_message(
                                 r, m.content, m.type, extra={'preview': True})
 
-                    else:
+                    elif m.type != 'text':
                         logging.info('invalid type: %s' % m.type)
 
                 elif tag.startswith('fwd:') or forward:
-                    cid = tag.split(':')[1]
+                    cid = int(tag.split(':')[1])
                     if m.type == 'photo' or m.type == 'document' or m.type == 'url':
                         self.bot.forward_message(m, cid)

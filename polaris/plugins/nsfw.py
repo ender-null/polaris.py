@@ -1,7 +1,7 @@
 import logging
 from random import randint
 
-from polaris.utils import generate_command_help, get_input, has_tag
+from polaris.utils import generate_command_help, get_input, has_tag, is_command
 
 
 class plugin(object):
@@ -17,7 +17,16 @@ class plugin(object):
             return self.bot.send_message(
                 m, self.bot.trans.plugins.config.strings.disabled, extra={'format': 'HTML'})
 
-        cid = '-1001230470587'
+        nsfw = '-1001230470587'
+        hentai = '-1001495126561'
+        porn = '-1001409180171'
+
+        if is_command(self, 2, m.content):
+            cid = hentai
+        elif is_command(self, 3, m.content):
+            cid = porn
+        else:
+            cid = nsfw
 
         if self.bot.info.is_bot:
             info = self.bot.conversation_info(cid)

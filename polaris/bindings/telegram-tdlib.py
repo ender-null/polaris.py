@@ -1,9 +1,10 @@
 import json
 import logging
+from time import time
 
 from polaris.types import Conversation, Message, User
-from polaris.utils import (catch_exception, delete_data, download, is_int,
-                           send_request, set_data)
+from polaris.utils import (catch_exception, delete_data, download,
+                           fix_telegram_link, is_int, send_request, set_data)
 from telegram.client import Telegram
 
 
@@ -66,14 +67,12 @@ class bindings(object):
 
     def start(self):
         if not self.bot.info.is_bot:
-            self.server_request('getChats', {
-                'chat_list': {'@type': 'chatListMain'},
-                'offset_order': '9223372036854775807',
-                'offset_chat_id': 0,
-                'limit': 100,
-            })
+            self.update_chats()
 
-        def new_message_handler(update):
+        def update_handler(update):
+            if self.last_chat_update < time() - 60 * 5:
+                self.update_chats()
+
             if update['message']['is_outgoing']:
                 if update['message']['is_channel_post']:
                     if update['message']['content']['@type'] == 'messageText':
@@ -82,6 +81,9 @@ class bindings(object):
                     return
 
             if not self.bot.info.is_bot:
+                self.server_request('openChat', {
+                    'chat_id': update['message']['chat_id']
+                })
                 self.server_request('viewMessages', {
                     'chat_id': update['message']['chat_id'],
                     'message_ids': [update['message']['id']],
@@ -109,6 +111,11 @@ class bindings(object):
                                                                             msg.conversation.title, msg.conversation.id, msg.type, msg.content))
                         self.send_message(msg)
 
+                    if not self.bot.info.is_bot:
+                        self.server_request('closeChat', {
+                            'chat_id': update['message']['chat_id']
+                        })
+
                 except KeyboardInterrupt:
                     pass
 
@@ -118,7 +125,29 @@ class bindings(object):
                     if self.bot.started:
                         catch_exception(e, self.bot)
 
-        self.client.add_message_handler(new_message_handler)
+            else:
+                logging.info('UNSUPPORTED UPDATE: {}'.format(update))
+
+        handle_types = ['updateNewMessage']
+        # handle_types = ['updateNewMessage',
+        #                 'updateMessageContent', 'updateUnreadMessageCount']
+        for update_type in handle_types:
+            self.client.add_update_handler(update_type, update_handler)
+
+    def update_chats(self):
+        chats = self.server_request('getChats', {
+            'chat_list': {'@type': 'chatListMain'},
+            'offset_order': '9223372036854775807',
+            'offset_chat_id': 0,
+            'limit': 100,
+        })
+
+        for chat_id in chats['chat_ids']:
+            self.server_request('openChat', {
+                'chat_id': chat_id
+            })
+
+        self.last_chat_update = time()
 
     def convert_message(self, msg):
         try:
@@ -160,7 +189,7 @@ class bindings(object):
                             if 'urls' not in extra:
                                 extra['urls'] = []
                             extra['urls'].append(
-                                content[entity['offset']:entity['offset'] + entity['length']])
+                                fix_telegram_link(content[entity['offset']:entity['offset'] + entity['length']]))
 
                         elif entity['type']['@type'] == 'textEntityTypeMention':
                             if 'mentions' not in extra:
@@ -290,9 +319,15 @@ class bindings(object):
                     if 'username' in raw_user:
                         extra['user'].username = str(raw_user['username'])
 
+            elif msg['content']['@type'] == 'messageUnsupported':
+                content = 'Message content that is not supported by the client'
+                type = 'unsupported'
+
             else:
-                content = '[UNSUPPORTED]'
-                type = 'text'
+                logging.info('UNSUPPORTED MESSAGE TYPE: {}'.format(
+                    msg['content']['@type']))
+                content = msg['content']['@type']
+                type = 'unsupported'
 
             reply = None
             if 'reply_to_message_id' in msg and msg['reply_to_message_id'] > 0:
@@ -311,6 +346,12 @@ class bindings(object):
 
                 if 'sender_user_id' in msg['forward_info']['origin']:
                     extra['from_user_id'] = msg['forward_info']['origin']['sender_user_id']
+
+            if 'via_bot_user_id' in msg and msg['via_bot_user_id'] > 0:
+                extra['via_bot_user_id'] = msg['via_bot_user_id']
+
+            if 'restriction_reason' in msg and msg['restriction_reason']:
+                extra['restriction_reason'] = msg['restriction_reason']
 
             date = msg['date']
 

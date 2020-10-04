@@ -100,6 +100,7 @@ class plugin(object):
                 "first_name": m.sender.first_name,
                 "last_name": m.sender.last_name,
                 "username": m.sender.username,
-                "messages": 1
+                "messages": 1,
+                "is_bot": m.sender.is_bot
             }
         set_data('users/%s/%s' % (self.bot.name, uid), self.bot.users[uid])

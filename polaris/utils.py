@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import traceback
 from html.parser import HTMLParser
-from re import compile
+from re import IGNORECASE, compile
 from time import sleep
 
 import magic
@@ -607,6 +607,16 @@ def mp3_to_ogg(input):
                      '-ac 1 -c:a opus -b:a 16k -y ' + output)
         logging.error(e)
         return None
+
+
+def fix_telegram_link(link):
+    input_match = compile(
+        r'(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(link)
+    if input_match and input_match.group(1):
+        fixed_link = 'https://t.me/joinchat/{}'.format(input_match.group(1))
+        logging.info('fixed telegram link: {}'.format(fixed_link))
+        return fixed_link
+    return link
 
 
 def remove_markdown(text):

@@ -6,9 +6,10 @@ from copy import deepcopy
 from io import StringIO
 from re import IGNORECASE, compile
 
-from polaris.utils import (all_but_first_word, generate_command_help,
-                           get_input, get_target, is_admin, is_command,
-                           is_owner, is_trusted, wait_until_received)
+from polaris.utils import (all_but_first_word, fix_telegram_link,
+                           generate_command_help, get_input, get_target,
+                           is_admin, is_command, is_owner, is_trusted,
+                           wait_until_received)
 
 
 class plugin(object):
@@ -162,6 +163,7 @@ class plugin(object):
                     r'(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
 
                 if input_match and input_match.group(1):
+                    url = fix_telegram_link(url)
                     if self.bot.join_by_invite_link(url):
                         self.bot.send_admin_alert(
                             'Joined by invite link: {}'.format(url))
