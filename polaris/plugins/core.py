@@ -9,7 +9,7 @@ from re import IGNORECASE, compile
 from polaris.utils import (all_but_first_word, fix_telegram_link,
                            generate_command_help, get_input, get_target,
                            is_admin, is_command, is_owner, is_trusted,
-                           wait_until_received)
+                           set_data, wait_until_received)
 
 
 class plugin(object):
@@ -56,7 +56,7 @@ class plugin(object):
 
         # Reload plugins
         elif is_command(self, 2, m.content):
-            self.plugins = self.init_plugins()
+            self.bot.plugins = self.bot.init_plugins()
             text = self.bot.trans.plugins.core.strings.reloading_plugins
 
         # Reload database
@@ -157,13 +157,61 @@ class plugin(object):
                 code = u'\u200c'.join([char for char in input_match.group(0)])
                 self.bot.send_alert('Login code: {}'.format(code))
 
+        urls = []
         if m.extra and 'urls' in m.extra:
-            for url in m.extra['urls']:
-                input_match = compile(
-                    r'(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
+            urls.extend(m.extra['urls'])
 
-                if input_match and input_match.group(1):
-                    url = fix_telegram_link(url)
-                    if self.bot.join_by_invite_link(url):
-                        self.bot.send_admin_alert(
-                            'Joined by invite link: {}'.format(url))
+        if m.extra and 'reply_markup' in m.extra and m.extra['reply_markup']['@type'] == 'replyMarkupInlineKeyboard':
+            for row in m.extra['reply_markup']['rows']:
+                for btn in row:
+                    if btn['type'] == 'inlineKeyboardButtonTypeUrl':
+                        urls.append(btn['url'])
+
+        for url in urls:
+            input_match = compile(
+                r'(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
+
+            if input_match and input_match.group(1):
+                url = fix_telegram_link(url)
+
+                known_link = False
+                for gid in self.bot.groups:
+                    if 'invite_link' in self.bot.groups[gid] and self.bot.groups[gid]['invite_link'] == url:
+                        known_link = True
+                        logging.info('known link: {}'.format(url))
+                        break
+
+                if not known_link:
+                    chat = self.bot.check_invite_link(url)
+                    if chat:
+                        if chat['chat_id'] == 0:
+                            ok = self.bot.join_by_invite_link(url)
+                            if ok:
+                                cid = str(ok['id'])
+                                self.bot.send_admin_alert(
+                                    'Joined {} [{}] by invite link: {}'.format(ok['title'], ok['id'], url))
+                                if cid in self.bot.groups:
+                                    self.bot.groups[cid]['invite_link'] = url
+                                    self.bot.groups[cid]['member_count'] = chat['member_count']
+                                    self.bot.groups[cid]['title'] = ok['title']
+
+                                else:
+                                    self.bot.groups[cid] = {
+                                        'invite_link': url,
+                                        'member_count': chat['member_count'],
+                                        'title': ok['title'],
+                                        'messages': 0
+                                    }
+                                set_data('groups/%s/%s' %
+                                         (self.bot.name, cid), self.bot.groups[cid])
+
+                        if gid in self.bot.groups:
+                            self.bot.groups[gid]['invite_link'] = url
+                            self.bot.groups[gid]['member_count'] = chat['member_count']
+                            self.bot.groups[gid]['title'] = chat['title']
+                            set_data('groups/%s/%s' %
+                                     (self.bot.name, gid), self.bot.groups[gid])
+
+                    else:
+                        logging.info(
+                            'invalid link: {}'.format(url))

@@ -338,12 +338,20 @@ def get_full_name(bot, uid, include_username=True):
     if not isinstance(uid, str):
         uid = str(uid)
     name = ''
-    if 'first_name' in bot.users[uid] and bot.users[uid].first_name:
-        name += ' ' + bot.users[uid].first_name
-    if 'last_name' in bot.users[uid] and bot.users[uid].last_name:
-        name += ' ' + bot.users[uid].last_name
-    if include_username and 'username' in bot.users[uid] and bot.users[uid].username:
-        name += ' (@' + bot.users[uid].username + ')'
+    if uid in bot.users:
+        if 'first_name' in bot.users[uid] and bot.users[uid].first_name:
+            name += ' ' + bot.users[uid].first_name
+        if 'last_name' in bot.users[uid] and bot.users[uid].last_name:
+            name += ' ' + bot.users[uid].last_name
+        if 'last_name' in bot.users[uid] and bot.users[uid].last_name:
+            name += ' ' + bot.users[uid].last_name
+        if include_username and 'username' in bot.users[uid] and bot.users[uid].username:
+            name += ' (@' + bot.users[uid].username + ')'
+    elif uid in bot.groups:
+        name = bot.groups[uid].title
+
+    else:
+        name = '[UNKNOWN]'
 
     return name
 
@@ -465,25 +473,6 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
         logging.error(r.text)
         catch_exception(e)
         return None
-
-
-def request_processing(r, params, bot):
-    if bot:
-        bot.send_alert(replace_html(r.text))
-        leave_list = ['no rights', 'no write access',
-                      'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
-        if bot.config['bindings'] == 'telegram-bot-api' or bot.config['bindings'] == 'telegram-tdlib':
-            for term in leave_list:
-                if term in r.text:
-                    bot.send_admin_alert('Leaving chat: {} [{}]'.format(
-                        bot.groups[str(params['chat_id'])].title, params['chat_id']))
-                    # res = bot.bindings.api_request('leaveChat', {
-                    #     'chat_id': params['chat_id']
-                    # })
-                    res = bot.bindings.kick_conversation_member(
-                        params['chat_id'], bot.info.id)
-                    bot.send_admin_alert(res)
-                    break
 
 
 def get_coords(input, bot=None):
@@ -617,6 +606,14 @@ def fix_telegram_link(link):
         logging.info('fixed telegram link: {}'.format(fixed_link))
         return fixed_link
     return link
+
+
+def escape_markdown(text):
+    characters = ['_', '*', '[', ']', '`', '(', ')']
+    for char in characters:
+        text.replace(char, '\\' + char)
+
+    return text
 
 
 def remove_markdown(text):

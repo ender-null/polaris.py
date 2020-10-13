@@ -2,7 +2,8 @@ import json
 import logging
 
 from polaris.types import Conversation, Message, User
-from polaris.utils import catch_exception, download, replace_html, send_request
+from polaris.utils import (catch_exception, download, has_tag, replace_html,
+                           send_request)
 from six import string_types
 
 
@@ -698,7 +699,7 @@ class bindings(object):
         leave_list = ['no rights', 'no write access',
                       'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
         for term in leave_list:
-            if term in request.result:
+            if term in request.result and not has_tag(self.bot, request['chat_id'], 'resend:?') and not has_tag(self.bot, request['chat_id'], 'fwd:?'):
                 self.bot.send_admin_alert('Leaving chat: {} [{}]'.format(
                     self.bot.groups[str(request['chat_id'])].title, request['chat_id']))
                 res = self.bot.bindings.kick_conversation_member(
@@ -744,6 +745,9 @@ class bindings(object):
             return 'https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path)
         else:
             return download('https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path))
+
+    def check_invite_link(self, invite_link):
+        return False
 
     def join_by_invite_link(self, invite_link):
         return False

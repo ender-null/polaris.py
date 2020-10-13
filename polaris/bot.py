@@ -318,6 +318,9 @@ class Bot(object):
     def get_file(self, file_id, link=False):
         return self.bindings.get_file(file_id, link)
 
+    def check_invite_link(self, invite_link):
+        return self.bindings.check_invite_link(invite_link)
+
     def join_by_invite_link(self, invite_link):
         return self.bindings.join_by_invite_link(invite_link)
 

@@ -4,7 +4,7 @@ from re import IGNORECASE, compile
 
 from polaris.utils import (del_tag, first_word, fix_telegram_link,
                            generate_command_help, get_input, has_tag,
-                           is_command, set_tag)
+                           is_command, is_int, set_data, set_tag)
 
 
 class plugin(object):
@@ -63,6 +63,21 @@ class plugin(object):
             if not origin or not destination:
                 return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
 
+        # Remove all resends #
+        elif is_command(self, 3, m.content):
+            input = get_input(m)
+            if not input:
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+
+            origin = first_word(input)
+
+            if not is_int(origin):
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+
+            del_tag(self.bot, origin, 'resend:?')
+            del_tag(self.bot, origin, 'fwd:?')
+            return self.bot.send_message(m, '✅', extra={'format': 'HTML'})
+
     def generate_text(self, items):
         text = ''
         for item in items:
@@ -89,9 +104,47 @@ class plugin(object):
     def always(self, m):
         gid = str(m.conversation.id)
 
+        if m.sender.is_bot:
+            logging.info('ignoring bot: {} [{}]'.format(
+                m.sender.first_name, m.sender.id))
+            return
+
+        if m.sender.id == 777000:
+            logging.info('ignoring anonymous message: {} [{}]'.format(
+                m.sender.first_name, m.sender.id))
+            return
+
+        if has_tag(self.bot, m.sender.id, 'muted'):
+            logging.info('ignoring muted user: {} [{}]'.format(
+                m.sender.first_name, m.sender.id))
+            return
+
+        if 'reply_markup' in m.extra:
+            logging.info('ignoring reply markup: {} [{}]'.format(
+                m.sender.first_name, m.sender.id))
+            return
+
         if 'via_bot_user_id' in m.extra:
-            logging.info('ignoring message via bot: {}'.format(
-                m.extra['via_bot_user_id']))
+            uid = str(m.extra['via_bot_user_id'])
+            name = None
+
+            if uid in self.bot.users:
+                name = self.bot.users[uid].first_name
+
+            else:
+                info = self.bot.bindings.server_request(
+                    'getUser',  {'user_id': int(uid)})
+                name = info['first_name']
+                self.bot.users[uid] = {
+                    'first_name': info['first_name'],
+                    'last_name': info['last_name'],
+                    'messages': 0
+                }
+                set_data('users/%s/%s' %
+                         (self.bot.name, uid), self.bot.users[uid])
+
+            logging.info('ignoring message via bot: {} [{}]'.format(
+                name, m.extra['via_bot_user_id']))
             return
 
         if has_tag(self.bot, gid, 'resend:?') or has_tag(self.bot, gid, 'fwd:?'):
@@ -101,7 +154,7 @@ class plugin(object):
                 if tag.startswith('resend:') or tag.startswith('fwd:'):
                     cid = int(tag.split(':')[1])
                     if 'from_chat_id' in m.extra:
-                        if str(m.extra['from_chat_id']) == cid:
+                        if str(m.extra['from_chat_id']) == str(cid):
                             break
                         elif str(m.extra['from_chat_id']) != '0':
                             if has_tag(self.bot, cid, 'resend:?') or has_tag(self.bot, cid, 'fwd:?'):

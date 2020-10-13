@@ -60,6 +60,9 @@ class plugin(object):
 
         tags = input.split()
 
+        if not target:
+            return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
+
         # Adds a tag to user or group. #
         if is_command(self, 1, m.content):
             for tag in tags:

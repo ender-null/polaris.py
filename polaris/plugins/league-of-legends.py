@@ -19,10 +19,21 @@ class plugin(object):
                 'hidden': True,
                 'parameters': [
                     {
+                        'region': False
+                    },
+                    {
                         'summoner name': False
                     }
                 ]
-            }
+            },
+            {
+                'command': '/lolstatus',
+                'hidden': True
+            },
+            {
+                'command': '/lolclash',
+                'hidden': True
+            },
         ]
 
         self.base_url = 'api.riotgames.com'
@@ -42,7 +53,7 @@ class plugin(object):
             uid = str(m.sender.id)
 
         # Get character data
-        if is_command(self, 1, m.content) or is_command(self, 2, m.content) or is_command(self, 3, m.content):
+        if is_command(self, 1, m.content):
             summoner_name = None
 
             if not input:
@@ -84,12 +95,15 @@ class plugin(object):
             opgg = 'http://{}.op.gg/summoner/userName={}'.format(
                 opgg_region, ''.join(summoner_name.split()))
 
-            text = '%s (Lv: %s)\n%s\n' % (
-                summoner.name, summoner.summonerLevel, account.gameName + '#' + account.tagLine)
+            text = '{} (Lv: {})'.format(summoner.name, summoner.summonerLevel)
+
+            if account and 'gameName' in account:
+                text += '\n{}\n'.format(account.gameName +
+                                        '#' + account.tagLine)
 
             if masteries:
                 text += '\nMasteries:'
-                for mastery in masteries[:3]:
+                for mastery in masteries[:5]:
                     text += '\n\t{}: Lv {} ({}k)'.format(
                         self.championIds[str(mastery['championId'])], mastery['championLevel'], int(mastery['championPoints'] / 1000))
 
@@ -110,6 +124,41 @@ class plugin(object):
                     'caption': text, 'format': 'HTML', 'preview': True})
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
 
+        # lolstatus
+        elif is_command(self, 2, m.content):
+            status = self.status()
+
+            text = status.name
+            for service in status.services:
+                online = '🔴'
+                if service.status == 'online':
+                    online = '🟢'
+                text += '\n{} {}'.format(service.name, online)
+
+                for incident in service.incidents:
+                    for update in incident.updates:
+                        severity = '🆕'
+                        if update.severity == 'info':
+                            severity = 'ℹ️'
+
+                        text += '\n{}'.format(update.updated_at)
+                        text += '\n{} '.format(severity)
+                        translated = None
+
+                        for translation in update.translations:
+                            if self.bot.config.locale == translation.locale:
+                                translated = translation.content
+
+                        if not translated:
+                            text += update.content
+
+                        else:
+                            text += translated
+
+        # lolclash
+        elif is_command(self, 3, m.content):
+            pass
+
     def api_request(self, method, params={}, regional=False):
         if regional:
             endpoint = 'https://%s.%s' % (self.region['region'], self.base_url)
@@ -117,21 +166,26 @@ class plugin(object):
             endpoint = 'https://%s.%s' % (
                 self.region['platform'], self.base_url)
 
-        params['api_key'] = self.bot.config.api_keys.riot_api
+        headers = {
+            'X-Riot-Token': self.bot.config.api_keys.riot_api
+        }
 
-        return send_request(endpoint + method, params)
+        return send_request(endpoint + method, params, headers=headers)
 
     def summoner_by_name(self, summoner_name):
-        return self.api_request('/lol/summoner/v4/summoners/by-name/%s' % summoner_name)
+        return self.api_request('/lol/summoner/v4/summoners/by-name/{}'.format(summoner_name))
 
     def account_by_puuid(self, puuid):
-        return self.api_request('/riot/account/v1/accounts/by-puuid/%s' % puuid, regional=True)
+        return self.api_request('/riot/account/v1/accounts/by-puuid/{}'.format(puuid), regional=True)
 
     def champion_masteries(self, encryptedSummonerId):
-        return self.api_request('/lol/champion-mastery/v4/champion-masteries/by-summoner/%s' % encryptedSummonerId)
+        return self.api_request('/lol/champion-mastery/v4/champion-masteries/by-summoner/{}'.format(encryptedSummonerId))
 
     def league_entries(self, encryptedSummonerId):
-        return self.api_request('/lol/league/v4/entries/by-summoner/%s' % encryptedSummonerId)
+        return self.api_request('/lol/league/v4/entries/by-summoner/{}'.format(encryptedSummonerId))
+
+    def status(self):
+        return self.api_request('/lol/status/v3/shard-data')
 
     def ddragon_versions(self):
         data = send_request(

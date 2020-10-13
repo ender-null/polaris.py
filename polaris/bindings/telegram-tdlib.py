@@ -4,7 +4,8 @@ from time import time
 
 from polaris.types import Conversation, Message, User
 from polaris.utils import (catch_exception, delete_data, download,
-                           fix_telegram_link, is_int, send_request, set_data)
+                           fix_telegram_link, has_tag, is_int, send_request,
+                           set_data, split_large_message)
 from telegram.client import Telegram
 
 
@@ -42,7 +43,7 @@ class bindings(object):
         except:
             return None
 
-    def server_request(self, api_method, params=None, ignore_errors=False):
+    def server_request(self, api_method, params=None, ignore_errors=False, process_request=False, return_error=False):
         data = {
             '@type': api_method
         }
@@ -58,6 +59,11 @@ class bindings(object):
             if not ignore_errors:
                 self.bot.send_alert(data)
                 self.bot.send_alert(result.error_info)
+            if process_request:
+                self.request_processing(data, result.error_info)
+
+            if return_error:
+                return result.error_info
             return False
 
         if result.update != None:
@@ -70,8 +76,8 @@ class bindings(object):
             self.update_chats()
 
         def update_handler(update):
-            if self.last_chat_update < time() - 60 * 5:
-                self.update_chats()
+            if not self.bot.info.is_bot and self.last_chat_update < time() - 60 * 5:
+                self.update_chats(load_all=True)
 
             if update['message']['is_outgoing']:
                 if update['message']['is_channel_post']:
@@ -134,7 +140,7 @@ class bindings(object):
         for update_type in handle_types:
             self.client.add_update_handler(update_type, update_handler)
 
-    def update_chats(self):
+    def update_chats(self, load_all=False):
         chats = self.server_request('getChats', {
             'chat_list': {'@type': 'chatListMain'},
             'offset_order': '9223372036854775807',
@@ -147,6 +153,43 @@ class bindings(object):
                 'chat_id': chat_id
             })
 
+            if load_all:
+                try:
+                    if chat_id > 0:
+                        if not str(chat_id) in self.bot.users:
+                            user = self.server_request('getUser', {
+                                'user_id': chat_id
+                            })
+                            if user:
+                                self.bot.users[str(chat_id)] = {
+                                    'first_name': user['first_name'],
+                                    'last_name': user['last_name'],
+                                    'messages': 0
+                                }
+                                if len(user['username']) > 0:
+                                    self.bot.users[str(chat_id)
+                                                   ]['username'] = user['username']
+
+                                set_data('users/%s/%s' %
+                                         (self.bot.name, str(chat_id)), self.bot.users[str(chat_id)])
+                    else:
+                        if not str(chat_id) in self.bot.groups:
+                            group = self.server_request('getChat', {
+                                'chat_id': chat_id
+                            })
+                            if group:
+                                self.bot.groups[str(chat_id)] = {
+                                    'title': group['title'],
+                                    'messages': 0
+                                }
+
+                                set_data('groups/%s/%s' %
+                                         (self.bot.name, str(chat_id)), self.bot.groups[str(chat_id)])
+
+                except Exception as e:
+                    logging.error(
+                        'update_chats exception: {}'.format(e))
+
         self.last_chat_update = time()
 
     def convert_message(self, msg):
@@ -155,18 +198,16 @@ class bindings(object):
             id = msg['id']
             extra = {}
 
-            request = self.client.get_chat(msg['chat_id'])
-            request.wait()
-            raw_chat = request.update
+            raw_chat = self.server_request(
+                'getChat', {'chat_id': msg['chat_id']})
 
             conversation = Conversation(int(msg['chat_id']))
             if raw_chat and 'title' in raw_chat:
                 conversation.title = raw_chat['title']
 
             if msg['sender_user_id'] > 0:
-                request = self.client.get_user(msg['sender_user_id'])
-                request.wait()
-                raw_sender = request.update
+                raw_sender = self.server_request(
+                    'getUser', {'user_id': msg['sender_user_id']})
 
                 sender = User(int(msg['sender_user_id']))
                 if 'first_name' in raw_sender:
@@ -353,6 +394,9 @@ class bindings(object):
             if 'restriction_reason' in msg and msg['restriction_reason']:
                 extra['restriction_reason'] = msg['restriction_reason']
 
+            if 'reply_markup' in msg and msg['reply_markup']:
+                extra['reply_markup'] = msg['reply_markup']
+
             date = msg['date']
 
             return Message(id, conversation, sender, content, type, date, reply, extra)
@@ -383,18 +427,15 @@ class bindings(object):
                     else:
                         parse_mode = 'textParseModeMarkdown'
 
-                    formated_text = self.client._send_data({
-                        '@type': 'parseTextEntities',
+                    formated_text = self.server_request('parseTextEntities', {
                         'text': message.content,
                         'parse_mode': {
                             '@type': parse_mode
                         }
                     })
-                    formated_text.wait()
-                    if not formated_text.error:
-                        text = formated_text.update
+                    if formated_text:
+                        text = formated_text
                     else:
-                        logging.info(formated_text.error_info)
                         text = {
                             '@type': 'formattedText',
                             'text': message.content,
@@ -570,20 +611,18 @@ class bindings(object):
                     data['reply_to_message_id'] = message.reply
 
             if data:
-                result = self.client._send_data(data)
+                if message.type == 'text' and len(data['input_message_content']['text']['text']) > 4000:
+                    texts = split_large_message(
+                        data['input_message_content']['text']['text'], 4000)
+                    for text in texts:
+                        data['input_message_content']['text']['text'] = text
+                        result = self.server_request(
+                            data['@type'], data, process_request=True)
 
-                result.wait()
+                else:
+                    result = self.server_request(
+                        data['@type'], data, process_request=True)
                 self.send_chat_action(message.conversation.id, 'cancel')
-
-                if result.error:
-                    self.request_processing(data, result.error_info)
-
-                elif message.type == 'system':
-                    self.bot.send_alert(data)
-                    if result.error:
-                        self.bot.send_alert(result.error_info)
-                    else:
-                        self.bot.send_alert(result.update)
 
         except KeyboardInterrupt:
             pass
@@ -649,7 +688,7 @@ class bindings(object):
         other_error = True
 
         for term in leave_list:
-            if term in response['message'].lower():
+            if term in response['message'].lower() and not has_tag(self.bot, request['chat_id'], 'resend:?') and not has_tag(self.bot, request['chat_id'], 'fwd:?'):
                 self.bot.send_admin_alert('Leaving chat: {} [{}]'.format(
                     self.bot.groups[str(request['chat_id'])].title, request['chat_id']))
                 res = self.bot.bindings.kick_conversation_member(
@@ -658,7 +697,8 @@ class bindings(object):
                 break
 
         if response['message'].lower() == 'invalid remote id':
-            for pin, attributes in self.bot.pins.items():
+            pins = self.bot.pins.items()
+            for pin, attributes in pins:
                 if 'content' in attributes and 'type' in attributes and attributes.type in request['input_message_content'] and attributes.content == request['input_message_content'][attributes.type]['id']:
                     delete_data('pins/%s/%s' % (self.bot.name, pin))
                     del self.bot.pins[pin]
@@ -701,6 +741,14 @@ class bindings(object):
                 return download('https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path))
 
         return None
+
+    def check_invite_link(self, invite_link):
+        if self.bot.info.is_bot:
+            return None
+
+        return self.server_request('checkChatInviteLink', {
+            'invite_link': invite_link
+        })
 
     def join_by_invite_link(self, invite_link):
         if self.bot.info.is_bot:
@@ -766,7 +814,7 @@ class bindings(object):
     def get_chat_administrators(self, conversation_id):
         result = self.server_request('getChatAdministrators', {
             'chat_id': conversation_id
-        })
+        }, ignore_errors=True)
 
         admins = []
         if result and 'administrators' in result:

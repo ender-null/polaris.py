@@ -1,10 +1,10 @@
 from re import IGNORECASE, compile, findall
 
 from firebase_admin import db
-
 from polaris.types import AutosaveDict
-from polaris.utils import (delete_data, get_input, has_tag, init_if_empty,
-                           is_command, set_data, wait_until_received)
+from polaris.utils import (delete_data, escape_markdown, get_input, has_tag,
+                           init_if_empty, is_command, set_data,
+                           wait_until_received)
 
 
 class plugin(object):
@@ -31,7 +31,7 @@ class plugin(object):
                             content = text.split(':')[1]
                             return self.bot.send_message(m, content, _type)
 
-                    return self.bot.send_message(m, text, extra={'format': 'HTML'})
+                    return self.bot.send_message(m, text, extra={'format': 'Markdown'})
 
     def update_triggers(self):
         self.commands = []
@@ -46,10 +46,12 @@ class plugin(object):
 
     def format_text(self, text, message=None):
         text = text.replace(
-            'BOT', self.bot.info.username.lower().replace('bot', ''))
+            'BOT', escape_markdown(self.bot.info.username.lower().replace('bot', '')))
         if message:
             if hasattr(message.sender, 'first_name'):
-                text = text.replace('USER', message.sender.first_name)
+                text = text.replace('USER', escape_markdown(
+                    message.sender.first_name))
             else:
-                text = text.replace('USER', message.sender.title)
+                text = text.replace(
+                    'USER', escape_markdown(message.sender.title))
         return text

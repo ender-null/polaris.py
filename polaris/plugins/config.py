@@ -17,7 +17,7 @@ class plugin(object):
         parameter = first_word(input)
         enabled = ['reactions', 'roulette',
                    'replies', 'pole', 'fiesta', 'nsfw']
-        disabled = ['antispam', 'antisquig', 'polereset']
+        disabled = ['antispam', 'antiarab', 'antirussian', 'polereset']
         config = {}
 
         for param in enabled:

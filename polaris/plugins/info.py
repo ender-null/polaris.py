@@ -33,7 +33,20 @@ class plugin(object):
         gmembers = 0
         ginvite_link = None
 
-        if target and (int(target) == 0 or not (target in self.bot.users or target in self.bot.groups)):
+        if int(target) > 0:
+            info = self.bot.bindings.server_request(
+                'getUser',  {'user_id': int(target)})
+            info_full = self.bot.bindings.server_request(
+                'getUserFullInfo',  {'user_id': int(target)})
+
+        else:
+            if target.startswith('-100'):
+                info = self.bot.bindings.server_request(
+                    'getSupergroup',  {'supergroup_id': int(target[4:])})
+                info_full = self.bot.bindings.server_request(
+                    'getSupergroupFullInfo',  {'supergroup_id': int(target[4:])})
+
+        if target and (int(target) == 0 or not (target in self.bot.users or target in self.bot.groups or info)):
             return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         if target:
@@ -49,25 +62,27 @@ class plugin(object):
 
                     messages = self.bot.users[target].messages
 
-                info = self.bot.bindings.server_request(
-                    'getUser',  {'user_id': int(target)})
-                info_full = self.bot.bindings.server_request(
-                    'getUserFullInfo',  {'user_id': int(target)})
+                else:
+                    if info:
+                        self.bot.users[target] = {
+                            'first_name': info['first_name'],
+                            'last_name': info['last_name'],
+                            'messages': 0
+                        }
+
                 if info:
                     name = info['first_name'] + ' ' + info['last_name']
 
                     if len(info['username']) > 0:
                         username = '@' + info['username']
+                        self.bot.users[target]['username'] = username
 
                 if info_full:
                     description = info_full['bio']
-
-                    # if 'bot_info' in info_full:
-                    #     description = info_full['bot_info']['description']
-
                     self.bot.users[target]['description'] = description
-                    set_data('users/%s/%s' %
-                             (self.bot.name, target), self.bot.users[target])
+
+                set_data('users/%s/%s' %
+                         (self.bot.name, target), self.bot.users[target])
 
                 if target in self.bot.tags:
                     for tag in self.bot.tags[target]:
@@ -92,28 +107,28 @@ class plugin(object):
 
                     messages = self.bot.groups[target].messages
 
-                if target.startswith('-100'):
-                    info = self.bot.bindings.server_request(
-                        'getSupergroup',  {'supergroup_id': int(target[4:])})
-                    info_full = self.bot.bindings.server_request(
-                        'getSupergroupFullInfo',  {'supergroup_id': int(target[4:])})
-
+                else:
                     if info:
-                        if len(info['username']) > 0:
-                            username = '@' + info['username']
+                        self.bot.groups[target] = {
+                            'title': info['title'],
+                            'messages': 0
+                        }
 
+                if info:
+                    if len(info['username']) > 0:
+                        username = '@' + info['username']
                         self.bot.groups[target]['username'] = info['username']
 
-                    if info_full:
-                        description = info_full['description']
-                        members = info_full['member_count']
-                        invite_link = info_full['invite_link']
-                        self.bot.groups[target]['description'] = description
-                        self.bot.groups[target]['member_count'] = members
-                        self.bot.groups[target]['invite_link'] = invite_link
+                if info_full:
+                    description = info_full['description']
+                    members = info_full['member_count']
+                    invite_link = info_full['invite_link']
+                    self.bot.groups[target]['description'] = description
+                    self.bot.groups[target]['member_count'] = members
+                    self.bot.groups[target]['invite_link'] = invite_link
 
-                    set_data('groups/%s/%s' %
-                             (self.bot.name, target), self.bot.groups[target])
+                set_data('groups/%s/%s' %
+                         (self.bot.name, target), self.bot.groups[target])
 
                 if target in self.bot.tags:
                     for tag in self.bot.tags[target]:
@@ -174,14 +189,14 @@ class plugin(object):
             text += self.bot.trans.plugins.info.strings.group_info % (
                 name, target, messages)
 
+        if invite_link and len(invite_link) > 0:
+            text += '\n🔗 {}'.format(invite_link)
+
         if len(tags) > 0:
             text += '\n🏷 {}'.format(tags)
 
         if len(description) > 0:
             text += '\n\n{}'.format(description)
-
-        if invite_link and len(invite_link) > 0:
-            text += '\n\n{}'.format(invite_link)
 
         if int(gid) < 0 and not get_input(m):
             text += '\n\n'
@@ -189,13 +204,14 @@ class plugin(object):
                 gname += '\n\t     ' + gusername
             text += self.bot.trans.plugins.info.strings.group_info % (
                 gname, gid, gmessages)
+
+            if ginvite_link and len(ginvite_link) > 0:
+                text += '\n🔗 {}'.format(ginvite_link)
+
             if len(gtags) > 0:
                 text += '\n🏷 {}'.format(gtags)
 
             if len(gdescription) > 0:
                 text += '\n\n{}'.format(gdescription)
-
-            if ginvite_link and len(ginvite_link) > 0:
-                text += '\n\n{}'.format(ginvite_link)
 
         self.bot.send_message(m, text, extra={'format': 'HTML'})

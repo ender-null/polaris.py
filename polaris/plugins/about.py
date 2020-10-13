@@ -68,6 +68,8 @@ class plugin(object):
                 self.bot.groups = {}
             if gid in self.bot.groups:
                 self.bot.groups[gid]['title'] = m.conversation.title
+                if not 'messages' in self.bot.groups[gid]:
+                    self.bot.groups[gid]['messages'] = 0
                 self.bot.groups[gid]['messages'] += 1
 
             else:
@@ -93,6 +95,8 @@ class plugin(object):
                 self.bot.users[uid]['username'] = m.sender.username
             if hasattr(m.sender, 'is_bot'):
                 self.bot.users[uid]['is_bot'] = m.sender.is_bot
+            if not 'messages' in self.bot.users[uid]:
+                self.bot.users[uid]['messages'] = 0
             self.bot.users[uid]['messages'] += 1
 
         else:
