@@ -46,6 +46,7 @@ class plugin(object):
     # Plugin action #
     def run(self, m):
         input = get_input(m)
+        text = None
 
         if m.reply:
             uid = str(m.reply.sender.id)
@@ -95,10 +96,10 @@ class plugin(object):
             opgg = 'http://{}.op.gg/summoner/userName={}'.format(
                 opgg_region, ''.join(summoner_name.split()))
 
-            text = '{} (Lv: {})'.format(summoner.name, summoner.summonerLevel)
+            text = '{} (Lv: {})\n'.format(summoner.name, summoner.summonerLevel)
 
             if account and 'gameName' in account:
-                text += '\n{}\n'.format(account.gameName +
+                text += '{}\n'.format(account.gameName +
                                         '#' + account.tagLine)
 
             if masteries:
@@ -123,41 +124,6 @@ class plugin(object):
                 return self.bot.send_message(m, icon_url, 'photo', extra={
                     'caption': text, 'format': 'HTML', 'preview': True})
             return self.bot.send_message(m, text, extra={'format': 'HTML', 'preview': True})
-
-        # lolstatus
-        elif is_command(self, 2, m.content):
-            status = self.status()
-
-            text = status.name
-            for service in status.services:
-                online = '🔴'
-                if service.status == 'online':
-                    online = '🟢'
-                text += '\n{} {}'.format(service.name, online)
-
-                for incident in service.incidents:
-                    for update in incident.updates:
-                        severity = '🆕'
-                        if update.severity == 'info':
-                            severity = 'ℹ️'
-
-                        text += '\n{}'.format(update.updated_at)
-                        text += '\n{} '.format(severity)
-                        translated = None
-
-                        for translation in update.translations:
-                            if self.bot.config.locale == translation.locale:
-                                translated = translation.content
-
-                        if not translated:
-                            text += update.content
-
-                        else:
-                            text += translated
-
-        # lolclash
-        elif is_command(self, 3, m.content):
-            pass
 
     def api_request(self, method, params={}, regional=False):
         if regional:

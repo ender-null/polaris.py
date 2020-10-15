@@ -343,8 +343,6 @@ def get_full_name(bot, uid, include_username=True):
             name += ' ' + bot.users[uid].first_name
         if 'last_name' in bot.users[uid] and bot.users[uid].last_name:
             name += ' ' + bot.users[uid].last_name
-        if 'last_name' in bot.users[uid] and bot.users[uid].last_name:
-            name += ' ' + bot.users[uid].last_name
         if include_username and 'username' in bot.users[uid] and bot.users[uid].username:
             name += ' (@' + bot.users[uid].username + ')'
     elif uid in bot.groups:
@@ -527,7 +525,7 @@ def download(url, params=None, headers=None, method='get', extension=None, verif
             res = requests.get(url, params=params,
                                headers=headers, stream=True, verify=verify)
         if not extension:
-            extension = os.path.splitext(url)[1].split('?')[0]
+            extension = get_extension(url)
         f = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
         for chunk in res.iter_content(chunk_size=1024):
             if chunk:
@@ -555,6 +553,10 @@ def save_to_file(res):
     if not ext:
         f.name = fix_extension(f.name)
     return open(f.name, 'rb')
+
+
+def get_extension(path):
+    return os.path.splitext(path)[1].split('?')[0]
 
 
 def fix_extension(file_path):
@@ -628,8 +630,8 @@ def remove_markdown(text):
 
 
 def replace_html(text):
-    text = text.replace('&lt;', '<')
-    text = text.replace('&gt;', '>')
+    text = re.sub(r'&lt;', r'<', text, flags=re.MULTILINE)
+    text = re.sub(r'&gt;', r'>', text, flags=re.MULTILINE)
     return text
 
 
@@ -640,20 +642,21 @@ def remove_html(text):
 
 
 def html_to_discord_markdown(text):
-    text = re.sub(r'<i>([\w\s-]+)</i>', r'_\1_', text, flags=re.MULTILINE)
-    text = re.sub(r'<b>([\w\s-]+)</b>', r'**\1**', text, flags=re.MULTILINE)
-    text = re.sub(r'<u>([\w\s-]+)</u>', r'__\1__', text, flags=re.MULTILINE)
-    text = re.sub(r'<pre>([\w\s-]+)</pre>', r'```\1```',
-                  text, flags=re.MULTILINE)
-    text = re.sub(
-        r'<code class="language-([\w]+)">([\S\s]+)</code>', r'```\1\n\2```', text, flags=re.MULTILINE)
-    text = re.sub(r'<code>([\S\s]+)</code>', r'`\1`', text, flags=re.MULTILINE)
-    text = re.sub(
-        r'<a href="([\w]+)">([\S\s]+)</a>', r'[\2](\1)', text, flags=re.MULTILINE)
+    replacements = [
+        (r'<code class="language-([\w]+)">([\S\s]+)</code>', r'```\1\n\2```'),
+        # (r'<a href=\"(.[^\<]+)\">(.[^\<]+)</a>', r'[\2](\1)'),
+        (r'<a href=\"(.[^\<]+)\">(.[^\<]+)</a>', r'\1'),
+        (r'<[/]?i>', r'_'),
+        (r'<[/]?b>', r'**'),
+        (r'<[/]?u>', r'__'),
+        (r'<[/]?code>', r'`'),
+        (r'<[/]?pre>', r'```')
+    ]
 
-    text = text.replace('&lt;', '<')
-    text = text.replace('&gt;', '>')
-    logging.info(text)
+    for pattern, sub in replacements:
+        text = re.sub(pattern, sub, text, flags=re.MULTILINE)
+
+    text = replace_html(text)
     return text
 
 
@@ -674,6 +677,9 @@ def get_target(bot, m, input):
             for gid in bot.groups:
                 if 'username' in bot.groups[gid] and isinstance(bot.groups[gid].username, str) and bot.groups[gid].username.lower() == target[1:].lower():
                     return str(uid)
+
+        elif target.startswith('<@!'):
+            return re.sub(r'<@!([\d]+)>', r'\1', target, flags=re.MULTILINE)
 
         elif target == '-g':
             return str(m.conversation.id)

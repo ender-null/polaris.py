@@ -697,13 +697,14 @@ class bindings(object):
                 break
 
         if response['message'].lower() == 'invalid remote id':
-            pins = self.bot.pins.items()
-            for pin, attributes in pins:
-                if 'content' in attributes and 'type' in attributes and attributes.type in request['input_message_content'] and attributes.content == request['input_message_content'][attributes.type]['id']:
-                    delete_data('pins/%s/%s' % (self.bot.name, pin))
-                    del self.bot.pins[pin]
-                    self.bot.send_admin_alert(
-                        'Deleting invalid pin: {} [{}]'.format(pin, attributes.content))
+            pins = self.bot.pins.copy()
+            for pin in pins:
+                if 'content' in self.bot.pins[pin] and 'type' in self.bot.pins[pin] and self.bot.pins[pin]['type'] in request['input_message_content'] and self.bot.pins[pin]['content'] == request['input_message_content'][self.bot.pins[pin]['type']]['id']:
+                    if pin in self.bot.pins:
+                        delete_data('pins/%s/%s' % (self.bot.name, pin))
+                        del self.bot.pins[pin]
+                        self.bot.send_admin_alert(
+                            'Deleting invalid pin: {} [{}]'.format(pin, self.bot.pins[pin]['content']))
 
             other_error = False
 

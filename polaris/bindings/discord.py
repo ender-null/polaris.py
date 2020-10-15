@@ -1,14 +1,17 @@
 import json
 import logging
+import re
 from multiprocessing import Process
 from time import mktime, time
 
 from polaris.types import Conversation, Message, User
-from polaris.utils import (catch_exception, download, html_to_discord_markdown,
-                           is_int, positive, send_request, set_data,
-                           split_large_message)
+from polaris.utils import (catch_exception, download, get_extension,
+                           html_to_discord_markdown, is_int, positive,
+                           send_request, set_data, split_large_message)
 
 import discord
+from discord.embeds import Embed
+from discord.file import File
 
 
 class bindings(object):
@@ -36,7 +39,7 @@ class bindings(object):
                          (time(), mktime(msg.created_at.timetuple())))
             reply = None
 
-            sender = User(msg.author.id, msg.author.name, msg.author.discriminator,
+            sender = User(msg.author.id, msg.author.name, '#' + msg.author.discriminator,
                           msg.author.name + '#' + msg.author.discriminator, msg.author.bot)
 
             conversation = Conversation(msg.channel.id)
@@ -46,6 +49,7 @@ class bindings(object):
                 conversation.title = msg.channel.name
 
             elif hasattr(msg.channel, 'recipient'):
+                conversation.id = msg.channel.recipient.id
                 conversation.title = msg.channel.recipient.name
 
             return Message(id, conversation, sender, content, type, date, reply, extra)
@@ -69,7 +73,7 @@ class bindings(object):
         async def on_ready():
             self.bot.info = User(self.client.user.id, self.client.user.name, self.client.user.discriminator,
                                  self.client.user.name + '#' + self.client.user.discriminator, self.client.user.bot)
-            status = '%sstart' % self.bot.config.prefix
+            status = '{}help'.format(self.bot.config.prefix)
             activity = discord.Activity(
                 type=discord.ActivityType.listening, name=status)
             await self.client.change_presence(activity=activity)
@@ -89,6 +93,12 @@ class bindings(object):
                 logging.info(
                     '[%s] %s@%s [%s] sent [%s] %s' % (msg.sender.id, msg.sender.title, msg.conversation.title, msg.conversation.id, msg.type, msg.content))
             try:
+                if msg.content.startswith('/') or msg.content.startswith(self.bot.config.prefix):
+                    if int(msg.conversation.id) > 0:
+                        chat = self.client.get_user(msg.conversation.id)
+                    else:
+                        chat = self.client.get_channel(positive(msg.conversation.id))
+                    await chat.trigger_typing()
                 self.bot.on_message_receive(msg)
                 while self.bot.outbox.qsize() > 0:
                     msg = self.bot.outbox.get()
@@ -103,26 +113,8 @@ class bindings(object):
                 logging.error(e)
                 if self.bot.started:
                     catch_exception(e, self.bot)
-
-        self.client.run(self.bot.config['bindings_token'])
-
-    async def send_message(self, message):
         try:
-            channel = self.client.get_channel(
-                positive(message.conversation.id))
-            if channel:
-                content = message.content
-                if message.extra and 'format' in message.extra:
-                    if message.extra['format'] == 'HTML':
-                        content = html_to_discord_markdown(content)
-
-                if len(content) > 2000:
-                    texts = split_large_message(content, 2000)
-                    for text in texts:
-                        await channel.send(text)
-
-                else:
-                    await channel.send(content)
+            self.client.run(self.bot.config['bindings_token'])
 
         except KeyboardInterrupt:
             pass
@@ -131,6 +123,77 @@ class bindings(object):
             logging.error(e)
             if self.bot.started:
                 catch_exception(e, self.bot)
+
+    async def send_message(self, message):
+        try:
+            if int(message.conversation.id) > 0:
+                chat = self.client.get_user(message.conversation.id)
+            else:
+                chat = self.client.get_channel(positive(message.conversation.id))
+            await chat.trigger_typing()
+            if message.type == 'text':
+                content = self.add_discord_mentions(chat, message.content)
+                if message.extra:
+                    if 'format' in message.extra and message.extra['format'] == 'HTML':
+                        content = html_to_discord_markdown(content)
+                    if 'preview' in message.extra and not message.extra['preview']:
+                        content = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', r'<\g<0>>', content, flags=re.MULTILINE)
+
+                if len(content) > 2000:
+                    texts = split_large_message(content, 2000)
+                    for text in texts:
+                        await chat.send(text)
+
+                else:
+                    await chat.send(content)
+
+            elif message.type == 'photo' or message.type == 'document' or message.type == 'video' or message.type == 'voice':
+                send_content = True
+                embed = Embed()
+
+                if message.extra and 'caption' in message.extra and message.extra['caption']:
+                    lines = message.extra['caption'].split('\n')
+                    embed.title = lines[0]
+                    embed.description = '\n'.join(lines[1:])
+                    send_content = False
+
+                if send_content:
+                    if message.content.startswith('/'):
+                        await chat.send(file=discord.File(message.content, filename=message.type + get_extension(message.content)))
+                    else:
+                        await chat.send(message.content)
+
+                else:
+                    if message.content.startswith('/'):
+                        await chat.send(file=discord.File(message.content, filename=message.type + get_extension(message.content)), embed=embed)
+                    elif message.content.startswith('http'):
+                        if message.type == 'photo':
+                            embed.set_image(url=message.content)
+                        elif message.type == 'video':
+                            embed.set_video(url=message.content)
+                        else:
+                            embed.url = message.content
+                        await chat.send(embed=embed)
+
+        except KeyboardInterrupt:
+            pass
+
+        except Exception as e:
+            logging.error(e)
+            if self.bot.started:
+                catch_exception(e, self.bot)
+
+    def add_discord_mentions(self, chat, content):
+        matches = re.compile(r'\@[\w]+\#[\d]+').findall(content)
+        if matches:
+            for match in matches:
+                if type(chat).__name__ == 'User':
+                    user = chat
+                else:
+                    user = discord.utils.get(chat.guild.members, name=match.split('#')[0][1:], discriminator=match.split('#')[1])
+                if user:
+                    content = re.sub(match, f'{user.mention}', content, flags=re.MULTILINE)
+        return content
 
     def get_input_file(self, content):
         return False
