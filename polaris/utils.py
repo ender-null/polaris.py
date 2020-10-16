@@ -719,8 +719,6 @@ def get_target(bot, m, input):
                 if re.compile(target, flags=re.IGNORECASE).search(name):
                     return uid
 
-            return bot.send_message(m, bot.trans.errors.invalid_syntax, extra={'format': 'HTML'})
-
     elif m.reply:
         return str(m.reply.sender.id)
 
