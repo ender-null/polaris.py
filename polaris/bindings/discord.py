@@ -184,7 +184,7 @@ class bindings(object):
                 catch_exception(e, self.bot)
 
     def add_discord_mentions(self, chat, content):
-        matches = re.compile(r'\@[\w]+\#[\d]+').findall(content)
+        matches = re.compile(r'(\@.[^\@]+\#[\d]+)').findall(content)
         if matches:
             for match in matches:
                 if type(chat).__name__ == 'User':
@@ -198,37 +198,50 @@ class bindings(object):
     def get_input_file(self, content):
         return False
 
-    def send_chat_action(self, conversation_id, type):
-        return False
-
-    def cancel_send_chat_action(self, conversation_id):
-        return False
 
     # THESE METHODS DO DIRECT ACTIONS #
-    def get_message(self, chat_id, message_id):
+    async def get_message(self, chat_id, message_id):
+        channel = await self.client.get_channel(positive(chat_id))
+        message = await channel.fetch_message(message_id)
+        return self.convert_message(message)
+
+    async def get_file(self, file_id, link=False):
         return False
 
-    def get_file(self, file_id, link=False):
+    async def join_by_invite_link(self, invite_link):
         return False
 
-    def join_by_invite_link(self, invite_link):
+    async def invite_conversation_member(self, conversation_id, user_id):
         return False
 
-    def invite_conversation_member(self, conversation_id, user_id):
+    async def promote_conversation_member(self, conversation_id, user_id):
         return False
 
-    def promote_conversation_member(self, conversation_id, user_id):
+    async def kick_conversation_member(self, conversation_id, user_id):
+        if int(conversation_id) > 0:
+            return False
+        channel = await self.client.get_channel(positive(conversation_id))
+        user = await self.client.get_user(user_id)
+        try:
+            await channel.guild.kick(user)
+            return True
+        except:
+            return False
+
+    async def unban_conversation_member(self, conversation_id, user_id):
         return False
 
-    def kick_conversation_member(self, conversation_id, user_id):
+    async def conversation_info(self, conversation_id):
         return False
 
-    def unban_conversation_member(self, conversation_id, user_id):
-        return False
-
-    def conversation_info(self, conversation_id):
-        return False
-
-    def get_chat_administrators(self, conversation_id):
+    async def get_chat_administrators(self, conversation_id):
+        if int(conversation_id) > 0:
+            return False
+        channel = await self.client.get_channel(positive(conversation_id))
         admins = []
+        for member in channel.members:
+            perms = channel.permissions_for(member)
+            if perms.administrator:
+                admins.append(User(member.id, member.name, '#' + member.discriminator, member.name + '#' + member.discriminator, member.bot))
+        logging.info(admins)
         return admins

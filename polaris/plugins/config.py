@@ -1,5 +1,5 @@
-from polaris.utils import (del_tag, first_word, get_input, has_tag, is_command,
-                           is_mod, is_trusted, set_tag)
+from polaris.utils import (del_tag, first_word, get_input, has_tag, is_admin,
+                           is_command, is_mod, is_trusted, set_tag)
 
 
 class plugin(object):
@@ -36,7 +36,7 @@ class plugin(object):
                     ' ' + self.bot.trans.plugins.config.strings[param]
 
         elif parameter in enabled or parameter in disabled:
-            if not is_trusted(self.bot, m.sender.id, m):
+            if not is_admin(self.bot, m.sender.id, m) and not is_trusted(self.bot, m.sender.id, m):
                 return self.bot.send_message(m, self.bot.trans.errors.permission_required, extra={'format': 'HTML'})
 
             if config[parameter]:

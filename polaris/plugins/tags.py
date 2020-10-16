@@ -1,6 +1,7 @@
 from polaris.utils import (all_but_first_word, del_tag, first_word,
-                           generate_command_help, get_input, has_tag,
-                           is_command, is_int, is_owner, is_trusted, set_tag)
+                           generate_command_help, get_input, get_target,
+                           get_username, has_tag, is_command, is_int, is_owner,
+                           is_trusted, set_tag)
 
 
 class plugin(object):
@@ -22,41 +23,20 @@ class plugin(object):
             return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
             # return self.bot.send_message(m, self.bot.trans.errors.missing_parameter, extra={'format': 'HTML'})
 
-        if m.reply:
-            target = str(m.reply.sender.id)
-            name = m.reply.sender.first_name
+        if not m.reply:
+            input = all_but_first_word(input)
+
+        target = get_target(self.bot, m, get_input(m))
+        if target:
+            name = get_username(self.bot, target, False)
 
         elif first_word(input) == '-g':
             target = str(m.conversation.id)
-            name = m.conversation.title
-            input = all_but_first_word(input)
-
-        elif is_int(first_word(input)):
-            target = first_word(input)
-            if int(target) > 0 and target in self.bot.users:
-                name = self.bot.users[target].first_name
-                if '' in self.bot.users[target]:
-                    name += ' ' + self.bot.users[target].last_name
-
-            elif int(target) < 0 and target in self.bot.groups:
-                name = self.bot.groups[target].title
-
-            else:
-                name = target
-
-            input = all_but_first_word(input)
-
-        elif first_word(input).startswith('@'):
-            for uid in self.bot.users:
-                if 'username' in self.bot.users[uid] and self.bot.users[uid].username and self.bot.users[uid].username.lower() == first_word(input)[1:].lower():
-                    target = uid
-                    name = self.bot.users[uid].first_name
-                    input = all_but_first_word(input)
-                    break
+            name = get_username(self.bot, target, False)
 
         else:
             target = str(m.sender.id)
-            name = m.sender.first_name
+            name = get_username(self.bot, target, False)
 
         tags = input.split()
 

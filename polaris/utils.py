@@ -15,7 +15,7 @@ import requests
 from DictObject import DictObject
 from firebase_admin import db
 
-from polaris.types import AutosaveDict, json2obj
+from polaris.types import AutosaveDict
 
 
 def set_input(message, trigger):
@@ -353,6 +353,27 @@ def get_full_name(bot, uid, include_username=True):
 
     return name
 
+def get_username(bot, uid, include_username=True):
+    if not isinstance(uid, str):
+        uid = str(uid)
+    name = ''
+    if uid in bot.users:
+        if 'first_name' in bot.users[uid] and bot.users[uid].first_name:
+            name += ' ' + bot.users[uid].first_name
+        if 'last_name' in bot.users[uid] and bot.users[uid].last_name:
+            name += ' ' + bot.users[uid].last_name
+        if 'username' in bot.users[uid] and bot.users[uid].username:
+            name = '@' + bot.users[uid].username
+    elif uid in bot.groups:
+        name = bot.groups[uid].title
+        if 'username' in bot.groups[uid] and bot.groups[uid].username:
+            name = '@' + bot.groups[uid].username
+
+    else:
+        name = '[UNKNOWN]'
+
+    return name
+
 
 def split_large_message(content, max_length):
     lines = content.splitlines()
@@ -678,13 +699,26 @@ def get_target(bot, m, input):
                 if 'username' in bot.groups[gid] and isinstance(bot.groups[gid].username, str) and bot.groups[gid].username.lower() == target[1:].lower():
                     return str(uid)
 
-        elif target.startswith('<@!'):
-            return re.sub(r'<@!([\d]+)>', r'\1', target, flags=re.MULTILINE)
+        elif target.startswith('<@'):
+            return re.sub(r'<@!?([\d]+)>', r'\1', target, flags=re.MULTILINE)
 
         elif target == '-g':
             return str(m.conversation.id)
 
         else:
+            for gid in bot.groups:
+                if re.compile(target, flags=re.IGNORECASE).search(bot.groups[gid].title):
+                    return gid
+
+            for uid in bot.users:
+                name = ''
+                if 'first_name' in bot.users[uid]:
+                    name += bot.users[uid].first_name
+                if 'last_name' in bot.users[uid]:
+                    name += bot.users[uid].last_name
+                if re.compile(target, flags=re.IGNORECASE).search(name):
+                    return uid
+
             return bot.send_message(m, bot.trans.errors.invalid_syntax, extra={'format': 'HTML'})
 
     elif m.reply:

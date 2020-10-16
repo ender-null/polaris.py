@@ -33,14 +33,14 @@ class plugin(object):
         gmembers = 0
         ginvite_link = None
 
-        if int(target) > 0:
+        if target and int(target) > 0:
             info = self.bot.bindings.server_request(
                 'getUser',  {'user_id': int(target)})
             info_full = self.bot.bindings.server_request(
                 'getUserFullInfo',  {'user_id': int(target)})
 
         else:
-            if target.startswith('-100'):
+            if target and target.startswith('-100'):
                 info = self.bot.bindings.server_request(
                     'getSupergroup',  {'supergroup_id': int(target[4:])})
                 info_full = self.bot.bindings.server_request(
@@ -52,7 +52,7 @@ class plugin(object):
         if target:
             if int(target) > 0:
                 if target in self.bot.users:
-                    name = get_full_name(self.bot, m.sender.id, False)
+                    name = get_full_name(self.bot, target, False)
 
                     if 'username' in self.bot.users[target] and self.bot.users[target].username:
                         username = '@' + self.bot.users[target].username
@@ -134,6 +134,9 @@ class plugin(object):
                     for tag in self.bot.tags[target]:
                         tags += tag + ', '
                     tags = tags[:-2]
+
+        else:
+            return self.bot.send_message(m, self.bot.trans.errors.no_results, extra={'format': 'HTML'})
 
         if int(gid) < 0 and not get_input(m):
             if gid in self.bot.groups:
