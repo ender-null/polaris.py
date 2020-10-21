@@ -9,7 +9,7 @@ class plugin(object):
 
     # Plugin action #
     def run(self, m):
-        permissions = 402909206
+        permissions = 2146959191
         url = 'https://discord.com/api/oauth2/authorize?client_id={}&permissions={}&scope=bot'.format(
             self.bot.config.discord_client_id, permissions)
         text = self.bot.trans.plugins.discord.strings.info.format(url)

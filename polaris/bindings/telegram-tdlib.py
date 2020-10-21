@@ -1,5 +1,8 @@
+import hashlib
 import json
 import logging
+import os
+import subprocess
 from time import time
 
 from polaris.types import Conversation, Message, User
@@ -13,20 +16,25 @@ class bindings(object):
     def __init__(self, bot):
         self.bot = bot
         self.no_threads = True
+        self.phone = None
+        self.bot_token = None
+
         if self.bot.config['bindings_token'].startswith('+'):
-            self.client = Telegram(
-                api_id=self.bot.config['api_keys']['telegram_app_id'],
-                api_hash=self.bot.config['api_keys']['telegram_api_hash'],
-                phone=self.bot.config['bindings_token'],
-                database_encryption_key=self.bot.config['api_keys']['database_encryption_key']
-            )
+            self.phone=self.bot.config['bindings_token']
         else:
-            self.client = Telegram(
-                api_id=self.bot.config['api_keys']['telegram_app_id'],
-                api_hash=self.bot.config['api_keys']['telegram_api_hash'],
-                bot_token=self.bot.config['bindings_token'],
-                database_encryption_key=self.bot.config['api_keys']['database_encryption_key']
-            )
+            self.bot_token=self.bot.config['bindings_token']
+
+        self.client = Telegram(
+            api_id=self.bot.config['api_keys']['telegram_app_id'],
+            api_hash=self.bot.config['api_keys']['telegram_api_hash'],
+            phone=self.phone,
+            bot_token=self.bot_token,
+            database_encryption_key=self.bot.config['api_keys']['database_encryption_key'],
+            files_directory='{}/.tdlib_files/{}/'.format(os.environ['HOME'], self.bot.name),
+            device_model='polaris',
+            application_version= subprocess.check_output(['git', 'describe', '--tags']).decode('ascii').rstrip('\n'),
+            tdlib_verbosity=1,
+        )
         self.client.login()
 
     def get_me(self):
@@ -683,8 +691,7 @@ class bindings(object):
         }, ignore_errors=True)
 
     def request_processing(self, request, response):
-        leave_list = ['no rights', 'no write access',
-                      'not enough rights to send', 'need administrator rights', 'CHANNEL_PRIVATE']
+        leave_list = ['no rights', 'no write access', 'not enough rights to send', 'need administrator rights', 'channel_private']
         other_error = True
 
         for term in leave_list:
@@ -701,11 +708,15 @@ class bindings(object):
             for pin in pins:
                 if 'content' in self.bot.pins[pin] and 'type' in self.bot.pins[pin] and self.bot.pins[pin]['type'] in request['input_message_content'] and self.bot.pins[pin]['content'] == request['input_message_content'][self.bot.pins[pin]['type']]['id']:
                     if pin in self.bot.pins:
-                        delete_data('pins/%s/%s' % (self.bot.name, pin))
-                        del self.bot.pins[pin]
                         self.bot.send_admin_alert(
                             'Deleting invalid pin: {} [{}]'.format(pin, self.bot.pins[pin]['content']))
+                        delete_data('pins/%s/%s' % (self.bot.name, pin))
+                        del self.bot.pins[pin]
 
+            other_error = False
+
+        elif response['message'].lower() == 'chat not found':
+            logging.info('Chat not found: {}'.format(request['chat_id']))
             other_error = False
 
         if other_error:
@@ -736,10 +747,11 @@ class bindings(object):
                 "file_id": file_id
             }
             result = self.api_request('getFile', params)
-            if link:
-                return 'https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path)
-            else:
-                return download('https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path))
+            if 'result' in result:
+                if link:
+                    return 'https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path)
+                else:
+                    return download('https://api.telegram.org/file/bot{}/{}'.format(self.bot.config['bindings_token'], result.result.file_path))
 
         return None
 

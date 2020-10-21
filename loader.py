@@ -1,11 +1,18 @@
-from polaris.types import AutosaveDict
-from polaris.bot import Bot
-from polaris.utils import set_logger, load_plugin_list, catch_exception, wait_until_received
+import importlib
+import logging
+import os
 from multiprocessing import Process
+from shutil import copyfile
 from time import sleep
-from firebase_admin import credentials, db, storage
+
 import firebase_admin
-import os, logging, importlib
+from firebase_admin import credentials, db, storage
+
+from polaris.bot import Bot
+from polaris.types import AutosaveDict
+from polaris.utils import (catch_exception, load_plugin_list, set_logger,
+                           wait_until_received)
+
 
 # Loads the bots from the /bots/ #
 def get_bots():
@@ -167,6 +174,7 @@ def setup():
 
 # Now let's start doing stuff. #
 # setup()
+copyfile('bot.log', 'bot.old.log')
 set_logger()
 cred = credentials.Certificate('serviceAccountKey.json')
 default_app = firebase_admin.initialize_app(cred, {

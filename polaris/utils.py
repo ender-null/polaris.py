@@ -481,10 +481,15 @@ def send_request(url, params=None, headers=None, files=None, data=None, post=Fal
             return send_request(url, params, headers, files, data, post, parse, bot=bot)
     try:
         if parse:
-            result = json.loads(r.text)
-            if isinstance(result, dict):
-                return DictObject(result)
-            return result
+            try:
+                result = json.loads(r.text)
+                if isinstance(result, dict):
+                    return DictObject(result)
+                return result
+            except Exception as e:
+                logging.error(r.text)
+                catch_exception(e)
+                return r.text
 
         else:
             return r.url

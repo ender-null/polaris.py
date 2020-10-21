@@ -4,7 +4,6 @@ from re import findall
 
 from DictObject import DictObject
 from firebase_admin import db
-
 from polaris.types import AutosaveDict
 from polaris.utils import (catch_exception, delete_data, has_tag, is_command,
                            is_trusted, set_data, time_in_range,
@@ -194,7 +193,9 @@ class plugin(object):
             set_data('poles/%s/%s/%s' %
                      (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            user = self.bot.users[uid].first_name
+            user = ''
+            if 'first_name' in self.bot.users[uid]:
+                user += self.bot.users[uid]['first_name']
             if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_pole % user
@@ -227,7 +228,9 @@ class plugin(object):
             set_data('poles/%s/%s/%s' %
                      (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            user = self.bot.users[uid].first_name
+            user = ''
+            if 'first_name' in self.bot.users[uid]:
+                user += self.bot.users[uid]['first_name']
             if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_subpole % user
@@ -259,7 +262,9 @@ class plugin(object):
             set_data('poles/%s/%s/%s' %
                      (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            user = self.bot.users[uid].first_name
+            user = ''
+            if 'first_name' in self.bot.users[uid]:
+                user += self.bot.users[uid]['first_name']
             if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_fail % user
@@ -289,7 +294,9 @@ class plugin(object):
             set_data('poles/%s/%s/%s' %
                      (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            user = self.bot.users[uid].first_name
+            user = ''
+            if 'first_name' in self.bot.users[uid]:
+                user += self.bot.users[uid]['first_name']
             if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_pole_canaria % user
@@ -322,7 +329,9 @@ class plugin(object):
             set_data('poles/%s/%s/%s' %
                      (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            user = self.bot.users[uid].first_name
+            user = ''
+            if 'first_name' in self.bot.users[uid]:
+                user += self.bot.users[uid]['first_name']
             if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_pole_andaluza % user
@@ -354,7 +363,9 @@ class plugin(object):
             set_data('poles/%s/%s/%s' %
                      (self.bot.name, gid, date), self.bot.poles[gid][date])
             uid = str(uid)
-            user = self.bot.users[uid].first_name
+            user = ''
+            if 'first_name' in self.bot.users[uid]:
+                user += self.bot.users[uid]['first_name']
             if 'username' in self.bot.users[uid] and self.bot.users[uid].username:
                 user = '@' + self.bot.users[uid].username
             text = self.bot.trans.plugins.pole.strings.got_iron % user

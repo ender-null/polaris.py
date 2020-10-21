@@ -2,9 +2,10 @@ import logging
 from copy import deepcopy
 from re import IGNORECASE, compile
 
+import requests
 from polaris.utils import (del_tag, first_word, fix_telegram_link,
                            generate_command_help, get_input, has_tag,
-                           is_command, is_int, set_data, set_tag)
+                           is_command, is_int, send_request, set_data, set_tag)
 
 
 class plugin(object):
@@ -195,3 +196,37 @@ class plugin(object):
                     cid = int(tag.split(':')[1])
                     if m.type == 'photo' or m.type == 'document' or m.type == 'url':
                         self.bot.forward_message(m, cid)
+
+        if has_tag(self.bot, gid, 'discord:?'):
+            for tag in self.bot.tags[gid]:
+                if tag.startswith('discord:'):
+                    token = tag.split(':')[1]
+                    webhook_url = 'https://discord.com/api/webhooks/{}'.format(token)
+
+                    if m.type == 'photo' or m.type == 'video' or m.type == 'animation' or m.type == 'document' or (m.type == 'text' and 'urls' in m.extra):
+                        if 'urls' in m.extra:
+                            for url in m.extra['urls']:
+                                input_match = compile(
+                                    r'(?i)(?:t|telegram|tlgrm)\.(?:me|dog)\/joinchat\/([a-zA-Z0-9\-]+)', flags=IGNORECASE).search(url)
+
+                                if input_match and input_match.group(1) or 'joinchat/' in url:
+                                    logging.info(
+                                        'ignoring telegram url: {}'.format(fix_telegram_link(url)))
+                                else:
+                                    if 'instagram' in url:
+                                        url = url.split('?')[0]
+                                    send_request(webhook_url, {
+                                        'content': url
+                                    }, post=True)
+                        else:
+                            if m.content.startswith('http'):
+                                send_request(webhook_url, {
+                                    'content': m.content
+                                }, post=True)
+                            else:
+                                file = self.bot.get_file(m.content)
+                                if file:
+                                    send_request(webhook_url, post=True, files={'file': open(file, 'rb')})
+
+                    elif m.type != 'text':
+                        logging.info('invalid type: %s' % m.type)

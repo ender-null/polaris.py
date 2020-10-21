@@ -6,10 +6,13 @@ from copy import deepcopy
 from io import StringIO
 from re import IGNORECASE, compile
 
+import requests
 from polaris.utils import (all_but_first_word, fix_telegram_link,
                            generate_command_help, get_input, get_target,
                            is_admin, is_command, is_owner, is_trusted,
                            set_data, wait_until_received)
+
+from discord import RequestsWebhookAdapter, Webhook
 
 
 class plugin(object):
@@ -38,6 +41,15 @@ class plugin(object):
         })
         self.commands.append({
             'command': '/setownphoto',
+            'hidden': True
+        }),
+        self.commands.append({
+            'command': '/createwebhook',
+            'parameters': [
+                {
+                    'name': True
+                }
+            ],
             'hidden': True
         })
 
@@ -143,6 +155,14 @@ class plugin(object):
 
             if not ok:
                 text = self.bot.trans.errors.failed
+
+        # Create webhook
+        elif is_command(self, 10, m.content) and self.bot.config.bindings == 'discord':
+            if not input:
+                return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
+            token = self.bot.bindings.create_webhook(m.conversation.id, input)
+            text = 'Created webhook: "{}" with token "{}"'.format(input, token)
+
 
         if text:
             self.bot.send_message(m, text, extra={'format': 'HTML'})

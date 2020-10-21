@@ -106,16 +106,14 @@ class Bot(object):
                 self.started = True
                 self.jobs.append(
                     Process(target=self.bindings.receiver_worker, name='{} R.'.format(self.name)))
-                if hasattr(self.bindings, 'custom_sender') and self.bindings.custom_sender:
-                    pass
-                else:
+                if not hasattr(self.bindings, 'custom_sender') or not self.bindings.custom_sender:
                     self.jobs.append(
                         Process(target=self.sender_worker, name='{} S.'.format(self.name)))
                 self.jobs.append(
                     Process(target=self.messages_handler, name='{}'.format(self.name)))
-
-            self.jobs.append(
-                Process(target=self.cron_jobs, name='{} C.'.format(self.name)))
+            if not hasattr(self.bindings, 'custom_cron') or not self.bindings.custom_cron:
+                self.jobs.append(
+                    Process(target=self.cron_jobs, name='{} C.'.format(self.name)))
 
             for job in self.jobs:
                 # if job.name != self.name:

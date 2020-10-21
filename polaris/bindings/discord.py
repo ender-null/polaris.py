@@ -1,3 +1,5 @@
+import asyncio
+import functools
 import json
 import logging
 import re
@@ -18,14 +20,13 @@ class bindings(object):
     def __init__(self, bot):
         self.bot = bot
         self.custom_sender = True
-        self.client = discord.Client()
+        self.custom_cron = True
 
     def server_request(self, api_method, params=None):
         return None
 
     def get_me(self):
         return User(0, self.bot.name, None, self.bot.name)
-        # return User(self.client.user.id, self.client.user.name, self.client.user.discriminator, self.client.user.name + '#' + self.client.user.discriminator, self.client.user.bot)
 
     def convert_message(self, msg):
         try:
@@ -68,6 +69,14 @@ class bindings(object):
 
     def receiver_worker(self):
         logging.debug('Starting receiver worker...')
+        try:
+            self.discord_loop = asyncio.new_event_loop()
+            self.client = discord.Client(loop=self.discord_loop)
+            self.bg_task = self.discord_loop.create_task(self.cron_task())
+        except Exception as e:
+            logging.error(e)
+            if self.bot.started:
+                catch_exception(e, self.bot)
 
         @self.client.event
         async def on_ready():
@@ -77,6 +86,18 @@ class bindings(object):
             activity = discord.Activity(
                 type=discord.ActivityType.listening, name=status)
             await self.client.change_presence(activity=activity)
+
+        async def on_member_join(self, member):
+            guild = member.guild
+            if guild.system_channel is not None:
+                sender = User(member.id, member.name, '#' + member.discriminator,
+                          member.name + '#' + member.discriminator, member.bot)
+                conversation = Conversation(guild.system_channel.id, guild.system_channel.name)
+                extra = {
+                    'user': sender
+                }
+
+                self.bot.outbox.put(Message(0, conversation, sender, 'new_chat_member', 'notification', time(), None, extra))
 
         @self.client.event
         async def on_message(message):
@@ -113,6 +134,7 @@ class bindings(object):
                 logging.error(e)
                 if self.bot.started:
                     catch_exception(e, self.bot)
+
         try:
             self.client.run(self.bot.config['bindings_token'])
 
@@ -123,6 +145,23 @@ class bindings(object):
             logging.error(e)
             if self.bot.started:
                 catch_exception(e, self.bot)
+
+    async def cron_task(self):
+        await self.wait_until_ready()
+
+        while not self.is_closed() and self.started:
+            for plugin in self.plugins:
+                try:
+                    if hasattr(plugin, 'cron'):
+                        plugin.cron()
+
+                except KeyboardInterrupt:
+                    pass
+                except Exception as e:
+                    catch_exception(e, self)
+            await asyncio.sleep(5)
+
+        logging.info('is closed')
 
     async def send_message(self, message):
         try:
@@ -200,44 +239,44 @@ class bindings(object):
 
 
     # THESE METHODS DO DIRECT ACTIONS #
-    async def get_message(self, chat_id, message_id):
-        channel = await self.client.get_channel(positive(chat_id))
-        message = await channel.fetch_message(message_id)
+    def get_message(self, chat_id, message_id):
+        channel = self.client.get_channel(positive(chat_id))
+        message = self.discord_loop.run(channel.fetch_message(message_id))
         return self.convert_message(message)
 
-    async def get_file(self, file_id, link=False):
+    def get_file(self, file_id, link=False):
         return False
 
-    async def join_by_invite_link(self, invite_link):
+    def join_by_invite_link(self, invite_link):
         return False
 
-    async def invite_conversation_member(self, conversation_id, user_id):
+    def invite_conversation_member(self, conversation_id, user_id):
         return False
 
-    async def promote_conversation_member(self, conversation_id, user_id):
+    def promote_conversation_member(self, conversation_id, user_id):
         return False
 
-    async def kick_conversation_member(self, conversation_id, user_id):
+    def kick_conversation_member(self, conversation_id, user_id):
         if int(conversation_id) > 0:
             return False
-        channel = await self.client.get_channel(positive(conversation_id))
-        user = await self.client.get_user(user_id)
+        channel = self.client.get_channel(positive(conversation_id))
+        user = self.client.get_user(user_id)
         try:
-            await channel.guild.kick(user)
+            self.discord_loop.run(channel.guild.kick(user))
             return True
         except:
             return False
 
-    async def unban_conversation_member(self, conversation_id, user_id):
+    def unban_conversation_member(self, conversation_id, user_id):
         return False
 
-    async def conversation_info(self, conversation_id):
+    def conversation_info(self, conversation_id):
         return False
 
-    async def get_chat_administrators(self, conversation_id):
+    def get_chat_administrators(self, conversation_id):
         if int(conversation_id) > 0:
             return False
-        channel = await self.client.get_channel(positive(conversation_id))
+        channel = self.client.get_channel(positive(conversation_id))
         admins = []
         for member in channel.members:
             perms = channel.permissions_for(member)
@@ -245,3 +284,21 @@ class bindings(object):
                 admins.append(User(member.id, member.name, '#' + member.discriminator, member.name + '#' + member.discriminator, member.bot))
         logging.info(admins)
         return admins
+
+    def create_webhook(self, channel_id, name, avatar=None):
+        if not avatar:
+            avatar = self.client.user.avatar_url
+        channel = self.client.get_channel(positive(channel_id))
+        if channel and channel.guild:
+            # avatar = asyncio.create_task(self.client.user.avatar_url.read())
+            # while not avatar.done(): pass
+            webhook = asyncio.create_task(channel.create_webhook(name=name))
+            while not avatar.done(): pass
+            logging.info(webhook.result())
+            # while not webhook.done(): pass
+            # logging.info('create_webhook: {}/{}'.format(webhook.guild_id, webhook.token))
+            # return '{}/{}'.format(webhook.guild_id, webhook.token)
+        else:
+            logging.info('invalid channel')
+
+        return None
