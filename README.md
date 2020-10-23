@@ -1,4 +1,6 @@
 # Polaris
+![Python application](https://github.com/luksireiku/polaris/workflows/Python%20application/badge.svg)
+
 A multiplatform Python bot using plugins!
 It's still in development right now, so you may get crashes and features
 may not be fully implemented or can suddenly disappear. 
