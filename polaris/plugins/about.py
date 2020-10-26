@@ -14,8 +14,11 @@ class plugin(object):
     def run(self, m):
         text = None
         if is_command(self, 1, m.content) or is_command(self, 3, m.content):
-            tag = subprocess.check_output(
-                ['git', 'describe', '--tags']).decode('ascii').rstrip('\n')
+            try:
+                tag = subprocess.check_output(
+                    ['git', 'describe', '--tags']).decode('ascii').rstrip('\n')
+            except:
+                tag = 'latest'
 
             greeting = self.bot.trans.plugins.about.strings.greeting % self.bot.info.first_name
             version = self.bot.trans.plugins.about.strings.version % tag
