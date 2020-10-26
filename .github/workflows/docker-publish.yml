@@ -101,6 +101,6 @@ jobs:
             docker stop $IMAGE_NAME
             docker rm $IMAGE_NAME
             docker container create -t --rm --name $IMAGE_NAME ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-            echo "${{ secrets.SERVICE_ACCOUNT }}" > serviceAccountKey.json
-            docker cp serviceAccountKey.json $IMAGE_NAME:/serviceAccountKey.json
+            echo '${{ secrets.SERVICE_ACCOUNT }}' > serviceAccountKey.json
+            docker cp serviceAccountKey.json $IMAGE_NAME:/usr/src/app/serviceAccountKey.json
             docker container start $IMAGE_NAME
