@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt .
 
-RUN apk add python make gcc g++
+RUN apk add python3 py3-pip make gcc g++
 RUN pip install -r requirements.txt
 
 COPY . .
