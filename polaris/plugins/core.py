@@ -160,8 +160,8 @@ class plugin(object):
         elif is_command(self, 10, m.content) and self.bot.config.bindings == 'discord':
             if not input:
                 return self.bot.send_message(m, generate_command_help(self, m.content), extra={'format': 'HTML'})
-            token = self.bot.bindings.create_webhook(m.conversation.id, input)
-            text = 'Created webhook: "{}" with token "{}"'.format(input, token)
+            self.bot.bindings.create_webhook(m.conversation.id, input)
+            text = 'Created webhook: "{}"'.format(input)
 
 
         if text:

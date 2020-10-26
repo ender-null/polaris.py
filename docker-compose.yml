@@ -1,0 +1,9 @@
+version: "3"
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./bot.log:/bot.log
+      - ./bot.old.log:/bot.old.log
+      - ./serviceAccountKey.json:/serviceAccountKey.json

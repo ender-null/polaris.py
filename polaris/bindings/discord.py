@@ -241,7 +241,7 @@ class bindings(object):
     # THESE METHODS DO DIRECT ACTIONS #
     def get_message(self, chat_id, message_id):
         channel = self.client.get_channel(positive(chat_id))
-        message = self.discord_loop.run(channel.fetch_message(message_id))
+        message = self.discord_loop.create_task(channel.fetch_message(message_id))
         return self.convert_message(message)
 
     def get_file(self, file_id, link=False):
@@ -262,7 +262,7 @@ class bindings(object):
         channel = self.client.get_channel(positive(conversation_id))
         user = self.client.get_user(user_id)
         try:
-            self.discord_loop.run(channel.guild.kick(user))
+            self.discord_loop.create_task(channel.guild.kick(user))
             return True
         except:
             return False
@@ -286,19 +286,13 @@ class bindings(object):
         return admins
 
     def create_webhook(self, channel_id, name, avatar=None):
-        if not avatar:
-            avatar = self.client.user.avatar_url
-        channel = self.client.get_channel(positive(channel_id))
-        if channel and channel.guild:
-            # avatar = asyncio.create_task(self.client.user.avatar_url.read())
-            # while not avatar.done(): pass
-            webhook = asyncio.create_task(channel.create_webhook(name=name))
-            while not avatar.done(): pass
-            logging.info(webhook.result())
-            # while not webhook.done(): pass
-            # logging.info('create_webhook: {}/{}'.format(webhook.guild_id, webhook.token))
-            # return '{}/{}'.format(webhook.guild_id, webhook.token)
-        else:
-            logging.info('invalid channel')
+        def create_webhook_request(avatar):
+            channel = self.client.get_channel(positive(channel_id))
+            if channel and channel.guild:
+                webhook = self.discord_loop.create_task(channel.create_webhook(name=name,avatar=avatar))
+            else:
+                logging.info('invalid channel')
 
-        return None
+        if not avatar:
+            avatar = self.discord_loop.create_task(self.client.user.avatar_url.read())
+            avatar.add_done_callback(lambda t: create_webhook_request(t.result()))

@@ -32,7 +32,7 @@ class bindings(object):
             database_encryption_key=self.bot.config['api_keys']['database_encryption_key'],
             files_directory='{}/.tdlib_files/{}/'.format(os.environ['HOME'], self.bot.name),
             device_model='polaris',
-            application_version= subprocess.check_output(['git', 'describe', '--tags']).decode('ascii').rstrip('\n'),
+            application_version=subprocess.check_output(['git', 'describe', '--tags']).decode('ascii').rstrip('\n'),
             tdlib_verbosity=1,
         )
         self.client.login()
