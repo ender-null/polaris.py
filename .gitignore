@@ -67,3 +67,4 @@ database.db
 serviceAccountKey.json
 *.session
 *.session-journal
+.tdlib_files

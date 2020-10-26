@@ -7,3 +7,4 @@ services:
       - ./bot.log:/bot.log
       - ./bot.old.log:/bot.old.log
       - ./serviceAccountKey.json:/serviceAccountKey.json
+      - ./.tdlib_files:/.tdlib_files
