@@ -97,10 +97,10 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            docker pull ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:latest
-            docker stop $IMAGE_NAME
-            docker rm $IMAGE_NAME
-            docker container create -t --rm --name $IMAGE_NAME ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+            docker pull ghcr.io/${{ github.repository_owner }}/polaris:latest
+            docker stop polaris
+            docker rm polaris
+            docker container create -t --rm --name $IMAGE_NAME ghcr.io/${{ github.repository_owner }}/polaris
             echo '${{ secrets.SERVICE_ACCOUNT }}' > serviceAccountKey.json
-            docker cp serviceAccountKey.json $IMAGE_NAME:/usr/src/app/serviceAccountKey.json
-            docker container start $IMAGE_NAME
+            docker cp serviceAccountKey.json polaris:/usr/src/app/serviceAccountKey.json
+            docker container start polaris
