@@ -104,4 +104,7 @@ jobs:
             echo '${{ secrets.SERVICE_ACCOUNT }}' > serviceAccountKey.json
             docker cp serviceAccountKey.json polaris:/usr/src/app/serviceAccountKey.json
             docker cp .tdlib_files polaris:/usr/src/app/.tdlib_files
+            docker cp bot.log polaris:/usr/src/app/bot.log
+            docker cp bot.old.log polaris:/usr/src/app/bot.old.log
+            docker cp .tdlib_files polaris:/usr/src/app/.tdlib_files
             docker container start polaris

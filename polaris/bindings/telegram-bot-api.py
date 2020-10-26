@@ -703,7 +703,7 @@ class bindings(object):
                 self.bot.send_admin_alert('Leaving chat: {} [{}]'.format(
                     self.bot.groups[str(request['chat_id'])].title, request['chat_id']))
                 res = self.bot.bindings.kick_conversation_member(
-                    request['chat_id'], bot.info.id)
+                    request['chat_id'], self.bot.info.id)
                 self.bot.send_admin_alert(res)
                 break
 
