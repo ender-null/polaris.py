@@ -30,6 +30,7 @@ class bindings(object):
             phone=self.phone,
             bot_token=self.bot_token,
             database_encryption_key=self.bot.config['api_keys']['database_encryption_key'],
+            library_path='/usr/local/lib/libtdjson.so',
             files_directory='{}/.tdlib_files/{}/'.format(os.getcwd(), self.bot.name),
             device_model='polaris',
             application_version='1.0',
