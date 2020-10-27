@@ -100,4 +100,4 @@ jobs:
             docker pull ghcr.io/${{ github.repository_owner }}/polaris:latest
             docker stop polaris
             docker rm polaris
-            docker run -v $PWD/bot.log:/usr/src/app/bot.log -v $PWD/bot.old.log:/usr/src/app/bot.old.log -v $PWD/serviceAccountKey.json:/usr/src/app/serviceAccountKey.json -v $PWD/.tdlib_files:/usr/src/app/.tdlib_files -ti -d --rm --name polaris ghcr.io/${{ github.repository_owner }}/polaris
+            docker run -v $PWD/bot.log:/usr/src/app/bot.log -v $PWD/bot.old.log:/usr/src/app/bot.old.log -v $PWD/serviceAccountKey.json:/usr/src/app/serviceAccountKey.json -v $PWD/.tdlib_files:/usr/src/app/.tdlib_files -ti -d --restart unless-stopped--name polaris ghcr.io/${{ github.repository_owner }}/polaris
