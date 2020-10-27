@@ -16,7 +16,7 @@ class plugin(object):
         if is_command(self, 1, m.content) or is_command(self, 3, m.content):
             try:
                 tag = subprocess.check_output(
-                    ['git', 'describe', '--tags']).decode('ascii').rstrip('\n')
+                    ['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').rstrip('\n')
             except:
                 tag = 'latest'
 
