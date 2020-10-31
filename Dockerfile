@@ -6,7 +6,8 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt .
 
-RUN apk add git python3 python3-dev py3-pip make gcc g++
+RUN apk add git python3 python3-dev py3-pip make gcc g++ ffmpeg opus
+
 RUN pip3 install -r requirements.txt
 
 COPY . .
