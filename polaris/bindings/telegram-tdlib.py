@@ -214,11 +214,11 @@ class bindings(object):
             if raw_chat and 'title' in raw_chat:
                 conversation.title = raw_chat['title']
 
-            if msg['sender_user_id'] > 0:
+            if 'user_id' in msg['sender']:
                 raw_sender = self.server_request(
-                    'getUser', {'user_id': msg['sender_user_id']})
+                    'getUser', {'user_id': msg['sender']['user_id']})
 
-                sender = User(int(msg['sender_user_id']))
+                sender = User(int(msg['sender']['user_id']))
                 if 'first_name' in raw_sender:
                     sender.first_name = str(raw_sender['first_name'])
                 if 'last_name' in raw_sender:
