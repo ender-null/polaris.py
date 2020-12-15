@@ -60,11 +60,6 @@ target/
 .idea/
 
 # Bot log and bot configurations
-bot.log
-bots/*.json
-polaris/data/
-database.db
+*.log
 serviceAccountKey.json
-*.session
-*.session-journal
 .tdlib_files
