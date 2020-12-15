@@ -60,6 +60,5 @@ target/
 .idea/
 
 # Bot log and bot configurations
-*.log
 serviceAccountKey.json
 .tdlib_files
