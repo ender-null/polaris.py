@@ -1,12 +1,12 @@
 [Unit]
-Description=Polaris Systemd Service
+Description=Polaris.py Systemd Service
 After=multi-user.target
 
 [Service]
 Type=idle
 ExecStart=/bin/sh runme.sh
-WorkingDirectory=/home/ender/Projects/polaris
-SyslogIdentifier=polaris
+WorkingDirectory=/home/ender/Projects/polaris.py
+SyslogIdentifier=polaris-py
 User=ender
 
 [Install]

@@ -1,4 +1,4 @@
-# Polaris
+# Polaris.py
 
 <a href="https://github.com/luksireiku/polaris.py/actions?query=workflow%3A%22Python+application%22">
     <img alt="Build Status" src="https://github.com/luksireiku/polaris.py/workflows/Python%20application/badge.svg"></a>
@@ -13,6 +13,6 @@ If you find a bug or have any cool idea feel free to [open an Issue](https://git
 Please read the [Wiki](https://github.com/luksireiku/polaris.py/wiki) to get some help installing and setting it up.
 You can contact me at [@endernull](http://telegram.me/endernull)
 
-**Polaris** (including all plugins and documentation) is free software; you are free to redistribute it and/or modify it under the terms of the [GNU Affero General Public License, version 3](LICENSE).
+**Polaris.py** (including all plugins and documentation) is free software; you are free to redistribute it and/or modify it under the terms of the [GNU Affero General Public License, version 3](LICENSE).
 
 **THIS PROGRAM IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND**
