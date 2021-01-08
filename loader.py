@@ -174,7 +174,7 @@ def setup():
 
 # Now let's start doing stuff. #
 # setup()
-copyfile('bot.log', 'bot.old.log')
+copyfile('/logs/bot.log', '/logs/bot.old.log')
 set_logger()
 cred = credentials.Certificate('serviceAccountKey.json')
 default_app = firebase_admin.initialize_app(cred, {

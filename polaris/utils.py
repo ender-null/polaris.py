@@ -800,7 +800,7 @@ def set_logger(debug=False):
     else:
         rootLogger.setLevel(logging.INFO)
 
-    fileHandler = logging.FileHandler("bot.log", mode='w')
+    fileHandler = logging.FileHandler("/logs/bot.log", mode='w')
     fileHandler.setFormatter(logFormatterFile)
     rootLogger.addHandler(fileHandler)
 

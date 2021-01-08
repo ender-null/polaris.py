@@ -15,7 +15,7 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  IMAGE_NAME: polaris
+  IMAGE_NAME: polaris-py
 
 jobs:
   # Run tests.
@@ -97,7 +97,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            docker pull ghcr.io/${{ github.repository_owner }}/polaris:latest
-            docker stop polaris
+            docker pull ghcr.io/${{ github.repository_owner }}/polaris-py:latest
+            docker stop polaris-py
             docker rm polaris
-            docker run -v $PWD/bot.log:/usr/src/app/bot.log -v $PWD/bot.old.log:/usr/src/app/bot.old.log -v $PWD/serviceAccountKey.json:/usr/src/app/serviceAccountKey.json -v $PWD/.tdlib_files:/usr/src/app/.tdlib_files -ti -d --restart unless-stopped --name polaris ghcr.io/${{ github.repository_owner }}/polaris
+            docker run -v $PWD/logs:/usr/src/app/logs -v $PWD/serviceAccountKey.json:/usr/src/app/serviceAccountKey.json -v $PWD/.tdlib_files:/usr/src/app/.tdlib_files -ti -d --restart unless-stopped --name polaris ghcr.io/${{ github.repository_owner }}/polaris-py

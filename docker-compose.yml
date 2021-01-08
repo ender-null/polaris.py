@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     container_name: polaris
     volumes:
-      - ./bot.log:/usr/src/app/bot.log
-      - ./bot.old.log:/usr/src/app/bot.old.log
+      - ./logs:/usr/src/app/logs
       - ./serviceAccountKey.json:/usr/src/app/serviceAccountKey.json
       - ./.tdlib_files:/usr/src/app/.tdlib_files
