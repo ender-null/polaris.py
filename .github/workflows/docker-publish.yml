@@ -79,25 +79,3 @@ jobs:
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
-
-  # Deploy image to server
-  deploy:
-    # Ensure push job passes before updating image.
-    needs: push
-
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Deploy image to server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: |
-            docker pull ghcr.io/${{ github.repository_owner }}/polaris-py:latest
-            docker stop polaris-py
-            docker rm polaris-py
-            docker run -v $PWD/logs:/usr/src/app/logs -v $PWD/serviceAccountKey.json:/usr/src/app/serviceAccountKey.json -v $PWD/.tdlib_files:/usr/src/app/.tdlib_files -ti -d --restart unless-stopped --name polaris-py ghcr.io/${{ github.repository_owner }}/polaris-py
